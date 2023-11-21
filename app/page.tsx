@@ -1,7 +1,6 @@
 "use client";
 
 import { Wrapper, Status } from "@googlemaps/react-wrapper";
-import { info } from "console";
 import {
   Children,
   cloneElement,
