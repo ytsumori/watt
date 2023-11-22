@@ -16,13 +16,22 @@ const render = (status: Status) => {
   return <h1>{status}</h1>;
 };
 
-export default function Map({ restaurants }: { restaurants: Restaurant[] }) {
+type Props = {
+  restaurants: Restaurant[];
+  selectedRestaurantID?: number;
+  onRestaurantSelect: (id: number) => void;
+};
+
+export default function Map({
+  restaurants,
+  selectedRestaurantID,
+  onRestaurantSelect,
+}: Props) {
   const [zoom, setZoom] = useState(15);
   const [center, setCenter] = useState<google.maps.LatLngLiteral>({
     lat: 34.67932578786201,
     lng: 135.4961550080261,
   });
-  const [selectedRestaurantID, setSelectedRestaurantID] = useState<number>();
 
   const handleIdle = useCallback(
     (map: google.maps.Map) => {
@@ -38,9 +47,12 @@ export default function Map({ restaurants }: { restaurants: Restaurant[] }) {
     [center, zoom]
   );
 
-  const handleRestaurantSelect = useCallback((restaurantID: number) => {
-    setSelectedRestaurantID(restaurantID);
-  }, []);
+  const handleRestaurantSelect = useCallback(
+    (restaurantID: number) => {
+      onRestaurantSelect(restaurantID);
+    },
+    [onRestaurantSelect]
+  );
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -66,10 +78,12 @@ export default function Map({ restaurants }: { restaurants: Restaurant[] }) {
       render={render}
     >
       <MapComponent
-        className="w-screen h-screen"
+        className="w-full h-full"
         center={center}
         onIdle={handleIdle}
         zoom={zoom}
+        disableDefaultUI
+        clickableIcons={false}
       >
         {restaurants.map((restaurant) => (
           <Marker
@@ -77,7 +91,13 @@ export default function Map({ restaurants }: { restaurants: Restaurant[] }) {
             position={{ lat: restaurant.latitude, lng: restaurant.longitude }}
             title={restaurant.name}
             selected={restaurant.id === selectedRestaurantID}
-            onClick={() => handleRestaurantSelect(restaurant.id)}
+            onClick={() => {
+              setCenter({
+                lat: restaurant.latitude,
+                lng: restaurant.longitude,
+              });
+              handleRestaurantSelect(restaurant.id);
+            }}
             clickable
           />
         ))}
@@ -145,8 +165,6 @@ function Marker({ selected, onClick, ...options }: MarkerProps) {
   const [marker, setMarker] = useState<google.maps.Marker>();
   const [infoWindow, setInfoWindow] = useState<google.maps.InfoWindow>();
 
-  const handleClick = useCallback(onClick, [onClick]);
-
   useEffect(() => {
     if (!infoWindow) {
       setInfoWindow(new google.maps.InfoWindow());
@@ -171,7 +189,7 @@ function Marker({ selected, onClick, ...options }: MarkerProps) {
       if (selected) {
         const selectedIcon: google.maps.Symbol = {
           path: "M-1.547 12l6.563-6.609-1.406-1.406-5.156 5.203-2.063-2.109-1.406 1.406zM0 0q2.906 0 4.945 2.039t2.039 4.945q0 1.453-0.727 3.328t-1.758 3.516-2.039 3.070-1.711 2.273l-0.75 0.797q-0.281-0.328-0.75-0.867t-1.688-2.156-2.133-3.141-1.664-3.445-0.75-3.375q0-2.906 2.039-4.945t4.945-2.039z",
-          fillColor: "blue",
+          fillColor: "#38B2AC",
           fillOpacity: 1,
           strokeWeight: 0,
           scale: 2,

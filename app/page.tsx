@@ -1,7 +1,7 @@
 import prisma from "@/lib/prisma";
-import Map from "@/components/map";
+import HomePage from "@/components/home-page";
 
 export default async function Home() {
   const restaurants = await prisma.restaurant.findMany();
-  return <Map restaurants={restaurants} />;
+  return <HomePage restaurants={restaurants} />;
 }
