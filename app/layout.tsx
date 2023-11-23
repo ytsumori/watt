@@ -1,5 +1,3 @@
-import "./globals.css";
-import { Inter } from "next/font/google";
 import { Providers } from "./provider";
 
 export const metadata = {
@@ -8,12 +6,6 @@ export const metadata = {
   description: "My very first senbero app",
 };
 
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-  display: "swap",
-});
-
 export default function RootLayout({
   children,
 }: {
@@ -21,7 +13,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="jp">
-      <body className={inter.variable}>
+      <body>
         <Providers>{children}</Providers>
       </body>
     </html>

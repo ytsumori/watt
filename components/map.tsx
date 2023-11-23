@@ -19,19 +19,19 @@ const render = (status: Status) => {
 type Props = {
   restaurants: Restaurant[];
   selectedRestaurantID?: number;
-  onRestaurantSelect: (id: number) => void;
+  onRestaurantSelect?: (id: number) => void;
+  defaultCenter: google.maps.LatLngLiteral;
 };
 
 export default function Map({
   restaurants,
   selectedRestaurantID,
   onRestaurantSelect,
+  defaultCenter,
 }: Props) {
   const [zoom, setZoom] = useState(15);
-  const [center, setCenter] = useState<google.maps.LatLngLiteral>({
-    lat: 34.67932578786201,
-    lng: 135.4961550080261,
-  });
+  const [center, setCenter] =
+    useState<google.maps.LatLngLiteral>(defaultCenter);
 
   const handleIdle = useCallback(
     (map: google.maps.Map) => {
@@ -49,28 +49,29 @@ export default function Map({
 
   const handleRestaurantSelect = useCallback(
     (restaurantID: number) => {
-      onRestaurantSelect(restaurantID);
+      if (onRestaurantSelect) onRestaurantSelect(restaurantID);
     },
     [onRestaurantSelect]
   );
 
-  useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position: GeolocationPosition) => {
-          setCenter({
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-          });
-        },
-        () => {
-          window.alert("現在地を取得できませんでした。");
-        }
-      );
-    } else {
-      window.alert("現在地を取得できませんでした。");
-    }
-  }, []);
+  // 現在地の取得
+  // useEffect(() => {
+  //   if (navigator.geolocation) {
+  //     navigator.geolocation.getCurrentPosition(
+  //       (position: GeolocationPosition) => {
+  //         setCenter({
+  //           lat: position.coords.latitude,
+  //           lng: position.coords.longitude,
+  //         });
+  //       },
+  //       () => {
+  //         window.alert("現在地を取得できませんでした。");
+  //       }
+  //     );
+  //   } else {
+  //     window.alert("現在地を取得できませんでした。");
+  //   }
+  // }, []);
 
   return (
     <Wrapper
@@ -78,12 +79,12 @@ export default function Map({
       render={render}
     >
       <MapComponent
-        className="w-full h-full"
         center={center}
         onIdle={handleIdle}
         zoom={zoom}
         disableDefaultUI
         clickableIcons={false}
+        style={{ height: "100%", width: "100%" }}
       >
         {restaurants.map((restaurant) => (
           <Marker
@@ -110,16 +111,9 @@ interface MapProps extends google.maps.MapOptions {
   style?: { [key: string]: string };
   onIdle: (map: google.maps.Map) => void;
   children?: React.ReactNode;
-  className?: string;
 }
 
-function MapComponent({
-  onIdle,
-  children,
-  style,
-  className,
-  ...options
-}: MapProps) {
+function MapComponent({ onIdle, children, style, ...options }: MapProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [map, setMap] = useState<google.maps.Map>();
 
@@ -144,7 +138,7 @@ function MapComponent({
 
   return (
     <>
-      <div ref={ref} id="map" style={style} className={className} />
+      <div ref={ref} id="map" style={style} />
       {Children.map(children, (child) => {
         if (isValidElement(child)) {
           // set the map prop on the child component
