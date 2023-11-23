@@ -6,6 +6,12 @@ import {
   Card,
   Heading,
   Image,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalHeader,
+  ModalOverlay,
   Step,
   StepDescription,
   StepIcon,
@@ -23,30 +29,19 @@ import {
 import Map from "@/components/map";
 import { RESTAURANTS } from "@/constants/restaurants";
 import { useEffect, useState } from "react";
+import { QrReader } from "react-qr-reader";
 
 const today = new Date();
 today.setMinutes(today.getMinutes() + 10);
-const reservationTime = today.getHours() + ":" + today.getMinutes();
-
-const steps: { title: string; description?: string; buttonLabel?: string }[] = [
-  { title: "予約" },
-  { title: "お店に移動", description: `予約時間：${reservationTime} (10分後)` },
-  {
-    title: "チェックイン",
-    buttonLabel: "チェックインに進む",
-  },
-  { title: "食事を楽しむ" },
-];
+const reservationTime =
+  today.getHours().toString().padStart(2, "0") +
+  ":" +
+  today.getMinutes().toString().padStart(2, "0");
 
 export default function Reserved() {
   const reservedRestaurant = RESTAURANTS[0];
-  const { activeStep } = useSteps({
-    index: 1,
-    count: steps.length,
-  });
   const [isCheckingIn, setIsCheckingIn] = useState(false);
   const toast = useToast();
-
   useEffect(() => {
     toast({
       title: "予約が完了しました。",
@@ -55,6 +50,34 @@ export default function Reserved() {
       isClosable: true,
     });
   });
+  const steps: {
+    title: string;
+    description?: string;
+    completeDescription?: string;
+    button?: { label: string; onClick: () => void };
+  }[] = [
+    { title: "予約" },
+    {
+      title: "お店に移動",
+      description: `予約時間：${reservationTime} (10分後)`,
+    },
+    {
+      title: "チェックイン",
+      completeDescription: "チェックイン済みです",
+      button: {
+        label: "チェックインに進む",
+        onClick: () => {
+          setIsCheckingIn(true);
+        },
+      },
+    },
+    { title: "食事を楽しむ" },
+  ];
+  const { activeStep, setActiveStep } = useSteps({
+    index: 1,
+    count: steps.length,
+  });
+
   return (
     <VStack minH="100vh" px={6} py={4} alignItems="baseline" spacing={4}>
       <Heading as="h1" size="lg">
@@ -111,12 +134,19 @@ export default function Reserved() {
 
             <VStack alignItems="baseline">
               <StepTitle>{step.title}</StepTitle>
-              {step.description && (
+              {index >= activeStep && step.description && (
                 <StepDescription>{step.description}</StepDescription>
               )}
-              {step.buttonLabel && (
-                <Button size="sm" colorScheme="teal">
-                  {step.buttonLabel}
+              {index < activeStep && step.completeDescription && (
+                <StepDescription>{step.completeDescription}</StepDescription>
+              )}
+              {index >= activeStep && step.button && (
+                <Button
+                  size="sm"
+                  colorScheme="teal"
+                  onClick={step.button.onClick}
+                >
+                  {step.button.label}
                 </Button>
               )}
             </VStack>
@@ -125,6 +155,40 @@ export default function Reserved() {
           </Step>
         ))}
       </Stepper>
+      <Modal
+        isOpen={isCheckingIn}
+        onClose={() => setIsCheckingIn(false)}
+        closeOnOverlayClick={false}
+        isCentered
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>チェックイン</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Text>
+              店に到着でき次第、店員の指示に従いチェックインQRコードを読み取ってください
+            </Text>
+            <QrReader
+              constraints={{}}
+              onResult={(result) => {
+                if (!!result) {
+                  toast({
+                    title: "チェックインが完了しました。",
+                    status: "success",
+                    duration: 3000,
+                    isClosable: true,
+                  });
+                  setActiveStep(3);
+                  setIsCheckingIn(false);
+                }
+              }}
+              containerStyle={{ width: "100%" }}
+              videoStyle={{ width: "100%" }}
+            />
+          </ModalBody>
+        </ModalContent>
+      </Modal>
     </VStack>
   );
 }
