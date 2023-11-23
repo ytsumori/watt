@@ -24,12 +24,12 @@ import {
   Text,
   VStack,
   useSteps,
-  useToast,
 } from "@chakra-ui/react";
 import Map from "@/components/map";
 import { RESTAURANTS } from "@/constants/restaurants";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { QrReader } from "react-qr-reader";
+import ViewFinder from "@/components/view-finder";
 
 const today = new Date();
 today.setMinutes(today.getMinutes() + 10);
@@ -41,15 +41,6 @@ const reservationTime =
 export default function Reserved() {
   const reservedRestaurant = RESTAURANTS[0];
   const [isCheckingIn, setIsCheckingIn] = useState(false);
-  const toast = useToast();
-  useEffect(() => {
-    toast({
-      title: "予約が完了しました。",
-      status: "success",
-      duration: 3000,
-      isClosable: true,
-    });
-  });
   const steps: {
     title: string;
     description?: string;
@@ -170,15 +161,12 @@ export default function Reserved() {
               店に到着でき次第、店員の指示に従いチェックインQRコードを読み取ってください
             </Text>
             <QrReader
-              constraints={{}}
+              ViewFinder={ViewFinder}
+              constraints={{
+                facingMode: "environment",
+              }}
               onResult={(result) => {
                 if (!!result) {
-                  toast({
-                    title: "チェックインが完了しました。",
-                    status: "success",
-                    duration: 3000,
-                    isClosable: true,
-                  });
                   setActiveStep(3);
                   setIsCheckingIn(false);
                 }
