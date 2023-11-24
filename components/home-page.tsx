@@ -2,28 +2,27 @@
 
 import { Restaurant } from "@prisma/client";
 import Map from "@/components/map";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import {
-  AlertDialog,
-  AlertDialogBody,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogOverlay,
   Box,
   Button,
   CloseButton,
+  Drawer,
+  DrawerBody,
+  DrawerCloseButton,
+  DrawerContent,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerOverlay,
   HStack,
   Heading,
   Image,
   Slide,
   Spacer,
-  Spinner,
   Text,
   VStack,
 } from "@chakra-ui/react";
-import { useReservation } from "@/hooks/useReservation";
-import { useRouter } from "next/navigation";
+import RestaurantDetail from "./restaurant-detail";
 
 export default function HomePage({
   restaurants,
@@ -31,40 +30,34 @@ export default function HomePage({
   restaurants: Restaurant[];
 }) {
   const [selectedRestaurantID, setSelectedRestaurantID] = useState<number>();
-  const [isReserving, setIsReserving] = useState(false);
+  const [focusedRestaurantId, setFocusedRestaurantId] = useState<number>();
   const handleRestaurantSelect = (id: number) => {
-    setSelectedRestaurantID(id);
+    setFocusedRestaurantId(id);
   };
-  const handleCancelReservation = () => {
-    setIsReserving(false);
-  };
-  const { isLoading, mutate } = useReservation();
-  const cancelRef = useRef<HTMLDivElement>(null);
-  const router = useRouter();
 
   return (
     <Box height="100vh" width="100vw">
       <Map
         restaurants={restaurants}
-        selectedRestaurantID={selectedRestaurantID}
+        selectedRestaurantID={focusedRestaurantId}
         onRestaurantSelect={handleRestaurantSelect}
         defaultCenter={{
           lat: 34.67938711932558,
           lng: 135.4989381822759,
         }}
       />
-      <Slide direction="bottom" in={!!selectedRestaurantID}>
+      <Slide direction="bottom" in={!!focusedRestaurantId}>
         <VStack px={6} py={4} borderTopRadius={16} bgColor="white" spacing={4}>
           <HStack width="full">
             <Heading size="md">
               {
                 restaurants.find(
-                  (restaurant) => restaurant.id === selectedRestaurantID
+                  (restaurant) => restaurant.id === focusedRestaurantId
                 )?.name
               }
             </Heading>
             <Spacer />
-            <CloseButton onClick={() => setSelectedRestaurantID(undefined)} />
+            <CloseButton onClick={() => setFocusedRestaurantId(undefined)} />
           </HStack>
           <VStack width="full" spacing={2} alignItems="baseline">
             <Image
@@ -83,46 +76,29 @@ export default function HomePage({
               </Text>
             </Text>
           </VStack>
-          <Button colorScheme="teal" onClick={() => setIsReserving(true)}>
-            予約する
+          <Button
+            colorScheme="teal"
+            onClick={() => setSelectedRestaurantID(focusedRestaurantId)}
+          >
+            詳細を見る
           </Button>
         </VStack>
       </Slide>
-      <AlertDialog
-        isOpen={isReserving}
-        onClose={handleCancelReservation}
-        leastDestructiveRef={cancelRef}
-        isCentered
+      <Drawer
+        isOpen={!!selectedRestaurantID}
+        placement="bottom"
+        onClose={() => setSelectedRestaurantID(undefined)}
       >
-        <AlertDialogOverlay />
-        <AlertDialogContent>
-          <AlertDialogHeader>予約を確定しますか？</AlertDialogHeader>
-          <AlertDialogBody>
-            {isLoading ? (
-              <Spinner />
-            ) : (
-              <>以下の内容で予約しますがよろしいですか？</>
-            )}
-          </AlertDialogBody>
-          <AlertDialogFooter>
-            <Button onClick={handleCancelReservation}>キャンセル</Button>
-            <Button
-              ml={3}
-              colorScheme="teal"
-              onClick={() =>
-                mutate({
-                  onSuccess: () => {
-                    router.push("/reservation");
-                    setIsReserving(false);
-                  },
-                })
-              }
-            >
-              予約を確定する
-            </Button>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        <DrawerOverlay />
+        <DrawerContent pb={3} borderTopRadius={16}>
+          <DrawerCloseButton />
+          <DrawerHeader>お店詳細</DrawerHeader>
+
+          <DrawerBody p={0}>
+            <RestaurantDetail />
+          </DrawerBody>
+        </DrawerContent>
+      </Drawer>
     </Box>
   );
 }

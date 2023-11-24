@@ -4,7 +4,9 @@ import {
   Box,
   Button,
   Card,
+  HStack,
   Heading,
+  IconButton,
   Image,
   Modal,
   ModalBody,
@@ -30,15 +32,10 @@ import { RESTAURANTS } from "@/constants/restaurants";
 import { useState } from "react";
 import { QrReader } from "react-qr-reader";
 import ViewFinder from "@/components/view-finder";
+import { FaInstagram } from "react-icons/fa";
+import { TabelogIcon } from "./tabelog-icon";
 
-const today = new Date();
-today.setMinutes(today.getMinutes() + 10);
-const reservationTime =
-  today.getHours().toString().padStart(2, "0") +
-  ":" +
-  today.getMinutes().toString().padStart(2, "0");
-
-export default function Reserved() {
+export default function RestaurantDetail() {
   const reservedRestaurant = RESTAURANTS[0];
   const [isCheckingIn, setIsCheckingIn] = useState(false);
   const steps: {
@@ -47,10 +44,8 @@ export default function Reserved() {
     completeDescription?: string;
     button?: { label: string; onClick: () => void };
   }[] = [
-    { title: "予約" },
     {
       title: "お店に移動",
-      description: `予約時間：${reservationTime} (10分後)`,
     },
     {
       title: "チェックイン",
@@ -63,34 +58,52 @@ export default function Reserved() {
       },
     },
     { title: "食事を楽しむ" },
+    { title: "退店" },
   ];
   const { activeStep, setActiveStep } = useSteps({
-    index: 1,
+    index: 0,
     count: steps.length,
   });
 
   return (
-    <VStack minH="100vh" px={6} py={4} alignItems="baseline" spacing={4}>
-      <Heading as="h1" size="lg">
-        予約内容
-      </Heading>
+    <VStack px={6} alignItems="baseline" spacing={4}>
       <VStack h="fit-content" spacing={2}>
         <Card variant="unstyled" direction="row">
           <Image
-            objectFit="cover"
+            objectFit="contain"
             alt="商品"
             src="https://tblg.k-img.com/resize/660x370c/restaurant/images/Rvw/108066/108066112.jpg?token=3e19a56&api=v2"
             width="40%"
           />
-          <Box p={4}>
-            <Text as="b" fontSize="md">
+          <VStack p={4}>
+            <Text as="b" fontSize="md" w="full">
               {reservedRestaurant.name}
               <br />
               <Text as="span" fontSize="sm">
                 黄金のTKG
               </Text>
             </Text>
-          </Box>
+            <HStack w="full">
+              <IconButton
+                as="a"
+                href="https://tabelog.com/osaka/A2701/A270106/27090650/"
+                target="_blank"
+                colorScheme="teal"
+                aria-label="tabelog"
+                fontSize="30px"
+                icon={<TabelogIcon />}
+              />
+              <IconButton
+                as="a"
+                href="https://www.instagram.com/menyayu0303/"
+                target="_blank"
+                colorScheme="teal"
+                aria-label="instagram"
+                fontSize="30px"
+                icon={<FaInstagram />}
+              />
+            </HStack>
+          </VStack>
         </Card>
         <Box h="25vh" w="full">
           <Map
