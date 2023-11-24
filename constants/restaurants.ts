@@ -15,4 +15,11 @@ export const RESTAURANTS: Restaurant[] = [
     longitude: 135.4989381822759,
     createdAt: new Date(),
   },
+  {
+    id: 3,
+    name: "野菜巻き串 えくぼ",
+    latitude: 34.67797768113267,
+    longitude: 135.49799714714757,
+    createdAt: new Date(),
+  },
 ];

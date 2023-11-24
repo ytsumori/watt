@@ -5,24 +5,21 @@ import Map from "@/components/map";
 import { useState } from "react";
 import {
   Box,
-  Button,
-  CloseButton,
+  Card,
+  CardBody,
+  CardHeader,
   Drawer,
   DrawerBody,
   DrawerCloseButton,
   DrawerContent,
-  DrawerFooter,
   DrawerHeader,
   DrawerOverlay,
   HStack,
-  Heading,
   Image,
-  Slide,
-  Spacer,
   Text,
-  VStack,
 } from "@chakra-ui/react";
 import RestaurantDetail from "./restaurant-detail";
+import { InView } from "react-intersection-observer";
 
 export default function HomePage({
   restaurants,
@@ -30,7 +27,9 @@ export default function HomePage({
   restaurants: Restaurant[];
 }) {
   const [selectedRestaurantID, setSelectedRestaurantID] = useState<number>();
-  const [focusedRestaurantId, setFocusedRestaurantId] = useState<number>();
+  const [focusedRestaurantId, setFocusedRestaurantId] = useState<number>(
+    restaurants[0].id
+  );
   const handleRestaurantSelect = (id: number) => {
     setFocusedRestaurantId(id);
   };
@@ -46,7 +45,57 @@ export default function HomePage({
           lng: 135.4989381822759,
         }}
       />
-      <Slide direction="bottom" in={!!focusedRestaurantId}>
+      <HStack
+        zIndex={10}
+        position="fixed"
+        left={0}
+        bottom={0}
+        overflowX="auto"
+        scrollSnapType="x mandatory"
+        marginBottom={6}
+        spacing={4}
+        className="hidden-scrollbar"
+      >
+        {restaurants.map((restaurant, index) => (
+          <InView
+            key={restaurant.id}
+            as="div"
+            threshold={1}
+            onChange={(inView) => {
+              if (inView) setFocusedRestaurantId(restaurant.id);
+            }}
+            style={{
+              scrollSnapAlign: "center",
+              scrollSnapStop: "always",
+              minWidth: "70%",
+              marginLeft: index === 0 ? "16px" : 0,
+              marginRight: index === restaurants.length - 1 ? "16px" : 0,
+            }}
+          >
+            <Card
+              width="full"
+              onClick={() => setSelectedRestaurantID(restaurant.id)}
+            >
+              <CardHeader padding={0}>
+                <Image
+                  alt="商品"
+                  src="https://tblg.k-img.com/resize/660x370c/restaurant/images/Rvw/108066/108066112.jpg?token=3e19a56&api=v2"
+                />
+              </CardHeader>
+              <CardBody padding={3}>
+                <Text as="b" fontSize="sm">
+                  {restaurant.name}
+                  <br />
+                  <Text as="span" fontSize="md">
+                    黄金のTKG
+                  </Text>
+                </Text>
+              </CardBody>
+            </Card>
+          </InView>
+        ))}
+      </HStack>
+      {/* <Slide direction="bottom" in={!!focusedRestaurantId}>
         <VStack px={6} py={4} borderTopRadius={16} bgColor="white" spacing={4}>
           <HStack width="full">
             <Heading size="md">
@@ -83,7 +132,7 @@ export default function HomePage({
             詳細を見る
           </Button>
         </VStack>
-      </Slide>
+      </Slide> */}
       <Drawer
         isOpen={!!selectedRestaurantID}
         placement="bottom"
