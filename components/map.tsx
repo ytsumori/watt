@@ -11,6 +11,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { FaBowlFood } from "react-icons/fa6";
 
 const render = (status: Status) => {
   return <h1>{status}</h1>;
@@ -32,6 +33,18 @@ export default function Map({
   const [zoom, setZoom] = useState(15);
   const [center, setCenter] =
     useState<google.maps.LatLngLiteral>(defaultCenter);
+
+  useEffect(() => {
+    const selectedRestaurant = restaurants.find(
+      (restaurant) => restaurant.id === selectedRestaurantID
+    );
+    if (selectedRestaurant) {
+      setCenter({
+        lat: selectedRestaurant.latitude,
+        lng: selectedRestaurant.longitude,
+      });
+    }
+  }, [selectedRestaurantID, restaurants]);
 
   const handleIdle = useCallback(
     (map: google.maps.Map) => {
@@ -157,13 +170,6 @@ interface MarkerProps extends google.maps.MarkerOptions {
 
 function Marker({ selected, onClick, ...options }: MarkerProps) {
   const [marker, setMarker] = useState<google.maps.Marker>();
-  const [infoWindow, setInfoWindow] = useState<google.maps.InfoWindow>();
-
-  useEffect(() => {
-    if (!infoWindow) {
-      setInfoWindow(new google.maps.InfoWindow());
-    }
-  }, [infoWindow]);
 
   useEffect(() => {
     if (!marker) {
@@ -185,13 +191,25 @@ function Marker({ selected, onClick, ...options }: MarkerProps) {
           path: "M-1.547 12l6.563-6.609-1.406-1.406-5.156 5.203-2.063-2.109-1.406 1.406zM0 0q2.906 0 4.945 2.039t2.039 4.945q0 1.453-0.727 3.328t-1.758 3.516-2.039 3.070-1.711 2.273l-0.75 0.797q-0.281-0.328-0.75-0.867t-1.688-2.156-2.133-3.141-1.664-3.445-0.75-3.375q0-2.906 2.039-4.945t4.945-2.039z",
           fillColor: "#38B2AC",
           fillOpacity: 1,
-          strokeWeight: 0,
-          scale: 2,
+          strokeWeight: 1,
+          strokeColor: "#ffffff",
+          scale: 3,
           anchor: new google.maps.Point(0, 20),
         };
         marker.setIcon(selectedIcon);
+        marker.setZIndex(100);
       } else {
-        marker.setIcon(undefined);
+        const unselectedIcon: google.maps.Symbol = {
+          path: "M-1.547 12l6.563-6.609-1.406-1.406-5.156 5.203-2.063-2.109-1.406 1.406zM0 0q2.906 0 4.945 2.039t2.039 4.945q0 1.453-0.727 3.328t-1.758 3.516-2.039 3.070-1.711 2.273l-0.75 0.797q-0.281-0.328-0.75-0.867t-1.688-2.156-2.133-3.141-1.664-3.445-0.75-3.375q0-2.906 2.039-4.945t4.945-2.039z",
+          fillColor: "white",
+          fillOpacity: 1,
+          strokeWeight: 1,
+          strokeColor: "#38B2AC",
+          scale: 2,
+          anchor: new google.maps.Point(0, 20),
+        };
+        marker.setIcon(unselectedIcon);
+        marker.setZIndex(1);
       }
     }
   }, [marker, selected]);

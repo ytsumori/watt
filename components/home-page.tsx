@@ -74,11 +74,14 @@ export default function HomePage({
           >
             <Card
               width="full"
+              borderRadius="16px"
+              boxShadow="2xl"
               onClick={() => setSelectedRestaurantID(restaurant.id)}
             >
               <CardHeader padding={0}>
                 <Image
                   alt="商品"
+                  borderTopRadius="16px"
                   src="https://tblg.k-img.com/resize/660x370c/restaurant/images/Rvw/108066/108066112.jpg?token=3e19a56&api=v2"
                 />
               </CardHeader>
@@ -95,44 +98,6 @@ export default function HomePage({
           </InView>
         ))}
       </HStack>
-      {/* <Slide direction="bottom" in={!!focusedRestaurantId}>
-        <VStack px={6} py={4} borderTopRadius={16} bgColor="white" spacing={4}>
-          <HStack width="full">
-            <Heading size="md">
-              {
-                restaurants.find(
-                  (restaurant) => restaurant.id === focusedRestaurantId
-                )?.name
-              }
-            </Heading>
-            <Spacer />
-            <CloseButton onClick={() => setFocusedRestaurantId(undefined)} />
-          </HStack>
-          <VStack width="full" spacing={2} alignItems="baseline">
-            <Image
-              alt="商品"
-              src="https://tblg.k-img.com/resize/660x370c/restaurant/images/Rvw/108066/108066112.jpg?token=3e19a56&api=v2"
-              width="full"
-            />
-            <Text as="b" fontSize="lg">
-              黄金のTKG
-              <br />
-              <Text as="span" fontSize="2xl">
-                <Text as="span" fontSize="xl">
-                  ¥{" "}
-                </Text>
-                1,000
-              </Text>
-            </Text>
-          </VStack>
-          <Button
-            colorScheme="teal"
-            onClick={() => setSelectedRestaurantID(focusedRestaurantId)}
-          >
-            詳細を見る
-          </Button>
-        </VStack>
-      </Slide> */}
       <Drawer
         isOpen={!!selectedRestaurantID}
         placement="bottom"
