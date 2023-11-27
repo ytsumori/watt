@@ -15,18 +15,25 @@ import {
   DrawerHeader,
   DrawerOverlay,
   HStack,
+  IconButton,
   Image,
+  Input,
+  InputGroup,
+  InputLeftElement,
   Text,
+  VStack,
 } from "@chakra-ui/react";
 import RestaurantDetail from "./restaurant-detail";
 import { InView } from "react-intersection-observer";
+import { Search2Icon } from "@chakra-ui/icons";
+import { FaLocationCrosshairs, FaMap, FaQrcode, FaUser } from "react-icons/fa6";
 
 export default function HomePage({
   restaurants,
 }: {
   restaurants: Restaurant[];
 }) {
-  const [selectedRestaurantID, setSelectedRestaurantID] = useState<number>();
+  const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [focusedRestaurantId, setFocusedRestaurantId] = useState<number>(
     restaurants[0].id
   );
@@ -45,14 +52,39 @@ export default function HomePage({
           lng: 135.4989381822759,
         }}
       />
+      <InputGroup position="fixed" top={0} left={0} zIndex={10}>
+        <InputLeftElement pointerEvents="none" marginLeft={4} marginTop={4}>
+          <Search2Icon color="cyan.400" />
+        </InputLeftElement>
+        <Input
+          _placeholder={{ color: "cyan.400" }}
+          borderWidth={0}
+          placeholder="場所やキーワードで検索"
+          backgroundColor="white"
+          marginX={4}
+          marginTop={4}
+        />
+      </InputGroup>
+      <IconButton
+        aria-label="current-location"
+        icon={<FaLocationCrosshairs />}
+        textColor="cyan.400"
+        variant="ghost"
+        zIndex={10}
+        position="fixed"
+        boxShadow="md"
+        bottom="20rem"
+        right={4}
+        backgroundColor="white"
+      />
       <HStack
         zIndex={10}
         position="fixed"
         left={0}
-        bottom={0}
+        bottom="3.5rem"
         overflowX="auto"
         scrollSnapType="x mandatory"
-        marginBottom={6}
+        marginBottom={4}
         spacing={4}
         className="hidden-scrollbar"
       >
@@ -68,15 +100,16 @@ export default function HomePage({
               scrollSnapAlign: "center",
               scrollSnapStop: "always",
               minWidth: "70%",
-              marginLeft: index === 0 ? "16px" : 0,
-              marginRight: index === restaurants.length - 1 ? "16px" : 0,
+              marginLeft: index === 0 ? "1.5rem" : 0,
+              marginRight: index === restaurants.length - 1 ? "1.5rem" : 0,
             }}
           >
             <Card
+              marginY={2}
               width="full"
               borderRadius="16px"
-              boxShadow="2xl"
-              onClick={() => setSelectedRestaurantID(restaurant.id)}
+              boxShadow="md"
+              onClick={() => setIsDetailOpen(true)}
             >
               <CardHeader padding={0}>
                 <Image
@@ -98,10 +131,41 @@ export default function HomePage({
           </InView>
         ))}
       </HStack>
+      <HStack
+        backgroundColor="white"
+        height="3.5rem"
+        width="full"
+        position="fixed"
+        bottom={0}
+        justifyContent="space-evenly"
+      >
+        <VStack spacing={0}>
+          <IconButton
+            aria-label="map"
+            textColor="cyan.400"
+            variant="ghost"
+            icon={<FaMap />}
+          />
+        </VStack>
+        <IconButton
+          aria-label="check-in"
+          textColor="cyan.400"
+          colorScheme="cyan"
+          variant="ghost"
+          icon={<FaQrcode />}
+        />
+        <IconButton
+          aria-label="home"
+          textColor="cyan.400"
+          colorScheme="cyan"
+          variant="ghost"
+          icon={<FaUser />}
+        />
+      </HStack>
       <Drawer
-        isOpen={!!selectedRestaurantID}
+        isOpen={isDetailOpen}
         placement="bottom"
-        onClose={() => setSelectedRestaurantID(undefined)}
+        onClose={() => setIsDetailOpen(false)}
       >
         <DrawerOverlay />
         <DrawerContent pb={3} borderTopRadius={16}>

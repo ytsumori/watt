@@ -11,7 +11,6 @@ import {
   useRef,
   useState,
 } from "react";
-import { FaBowlFood } from "react-icons/fa6";
 
 const render = (status: Status) => {
   return <h1>{status}</h1>;
@@ -189,7 +188,7 @@ function Marker({ selected, onClick, ...options }: MarkerProps) {
       if (selected) {
         const selectedIcon: google.maps.Symbol = {
           path: "M-1.547 12l6.563-6.609-1.406-1.406-5.156 5.203-2.063-2.109-1.406 1.406zM0 0q2.906 0 4.945 2.039t2.039 4.945q0 1.453-0.727 3.328t-1.758 3.516-2.039 3.070-1.711 2.273l-0.75 0.797q-0.281-0.328-0.75-0.867t-1.688-2.156-2.133-3.141-1.664-3.445-0.75-3.375q0-2.906 2.039-4.945t4.945-2.039z",
-          fillColor: "#38B2AC",
+          fillColor: "#0BC5EA",
           fillOpacity: 1,
           strokeWeight: 1,
           strokeColor: "#ffffff",
@@ -204,7 +203,7 @@ function Marker({ selected, onClick, ...options }: MarkerProps) {
           fillColor: "white",
           fillOpacity: 1,
           strokeWeight: 1,
-          strokeColor: "#38B2AC",
+          strokeColor: "#0BC5EA",
           scale: 2,
           anchor: new google.maps.Point(0, 20),
         };

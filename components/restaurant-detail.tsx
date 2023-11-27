@@ -26,18 +26,19 @@ import {
   Text,
   VStack,
   useSteps,
+  Center,
 } from "@chakra-ui/react";
 import Map from "@/components/map";
 import { RESTAURANTS } from "@/constants/restaurants";
-import { useState } from "react";
-import { QrReader } from "react-qr-reader";
-import ViewFinder from "@/components/view-finder";
+import { useEffect, useState } from "react";
 import { FaInstagram } from "react-icons/fa";
 import { TabelogIcon } from "./tabelog-icon";
 
 export default function RestaurantDetail() {
+  const [qrImagePath, setQrImagePath] = useState<string>();
   const reservedRestaurant = RESTAURANTS[0];
   const [isCheckingIn, setIsCheckingIn] = useState(false);
+
   const steps: {
     title: string;
     description?: string;
@@ -65,6 +66,19 @@ export default function RestaurantDetail() {
     count: steps.length,
   });
 
+  useEffect(() => {
+    if (isCheckingIn) {
+      setTimeout(() => {
+        setQrImagePath("/dummy-qrcode.png");
+        setTimeout(() => {
+          window.open("/paypay", "_blank");
+          setActiveStep(3);
+          setIsCheckingIn(false);
+        }, 1000);
+      }, 3000);
+    }
+  }, [setActiveStep, isCheckingIn]);
+
   return (
     <VStack px={6} alignItems="baseline" spacing={4}>
       <VStack h="fit-content" spacing={2}>
@@ -88,7 +102,8 @@ export default function RestaurantDetail() {
                 as="a"
                 href="https://tabelog.com/osaka/A2701/A270106/27090650/"
                 target="_blank"
-                colorScheme="teal"
+                colorScheme="cyan"
+                textColor="white"
                 aria-label="tabelog"
                 fontSize="30px"
                 icon={<TabelogIcon />}
@@ -97,7 +112,8 @@ export default function RestaurantDetail() {
                 as="a"
                 href="https://www.instagram.com/menyayu0303/"
                 target="_blank"
-                colorScheme="teal"
+                colorScheme="cyan"
+                textColor="white"
                 aria-label="instagram"
                 fontSize="30px"
                 icon={<FaInstagram />}
@@ -117,14 +133,14 @@ export default function RestaurantDetail() {
         </Box>
       </VStack>
       <Heading as="h2" size="md">
-        食事までの流れ
+        お食事の流れ
       </Heading>
       <Stepper
         index={activeStep}
         orientation="vertical"
         w="full"
         minH="25vh"
-        colorScheme="teal"
+        colorScheme="cyan"
       >
         {steps.map((step, index) => (
           <Step key={index}>
@@ -147,7 +163,8 @@ export default function RestaurantDetail() {
               {index >= activeStep && step.button && (
                 <Button
                   size="sm"
-                  colorScheme="teal"
+                  colorScheme="cyan"
+                  textColor="white"
                   onClick={step.button.onClick}
                 >
                   {step.button.label}
@@ -170,10 +187,7 @@ export default function RestaurantDetail() {
           <ModalHeader>チェックイン</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <Text>
-              店に到着でき次第、店員の指示に従いチェックインQRコードを読み取ってください
-            </Text>
-            <QrReader
+            {/* <QrReader
               ViewFinder={ViewFinder}
               constraints={{
                 facingMode: "environment",
@@ -186,7 +200,28 @@ export default function RestaurantDetail() {
               }}
               containerStyle={{ width: "100%" }}
               videoStyle={{ width: "100%" }}
-            />
+            /> */}
+            <Center
+              width="full"
+              backgroundColor="blackAlpha.700"
+              aspectRatio={1}
+            >
+              <Box
+                borderWidth={2}
+                borderColor="cyan.400"
+                width="80%"
+                height="80%"
+              >
+                {qrImagePath ? (
+                  <Image alt="dummy QR Code" src="/dummy-qrcode.png" />
+                ) : (
+                  <></>
+                )}
+              </Box>
+            </Center>
+            <Text textColor="cyan.400" fontSize="small">
+              *店に到着でき次第、店員の指示に従いチェックインQRコードを読み取ってください
+            </Text>
           </ModalBody>
         </ModalContent>
       </Modal>
