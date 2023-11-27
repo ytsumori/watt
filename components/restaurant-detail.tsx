@@ -27,6 +27,7 @@ import {
   VStack,
   useSteps,
   Center,
+  useToast,
 } from "@chakra-ui/react";
 import Map from "@/components/map";
 import { RESTAURANTS } from "@/constants/restaurants";
@@ -34,16 +35,26 @@ import { useEffect, useState } from "react";
 import { FaInstagram } from "react-icons/fa";
 import { TabelogIcon } from "./tabelog-icon";
 
-export default function RestaurantDetail() {
+export default function RestaurantDetail({
+  isPurchased,
+  onPurchase,
+  onClickComment,
+}: {
+  isPurchased: boolean;
+  onPurchase: () => void;
+  onClickComment: () => void;
+}) {
   const [qrImagePath, setQrImagePath] = useState<string>();
   const reservedRestaurant = RESTAURANTS[0];
   const [isCheckingIn, setIsCheckingIn] = useState(false);
+  const toast = useToast();
 
   const steps: {
     title: string;
     description?: string;
     completeDescription?: string;
     button?: { label: string; onClick: () => void };
+    activeButton?: { label: string; onClick: () => void };
   }[] = [
     {
       title: "お店に移動",
@@ -58,11 +69,22 @@ export default function RestaurantDetail() {
         },
       },
     },
-    { title: "食事を楽しむ" },
-    { title: "退店" },
+    {
+      title: "食事を楽しむ",
+      activeButton: {
+        label: "コメントを見る",
+        onClick: () => {
+          onClickComment();
+        },
+      },
+    },
+    {
+      title: "退店",
+      description: "30分以上滞在する場合は、追加でご注文ください",
+    },
   ];
   const { activeStep, setActiveStep } = useSteps({
-    index: 0,
+    index: isPurchased ? 2 : 0,
     count: steps.length,
   });
 
@@ -71,13 +93,19 @@ export default function RestaurantDetail() {
       setTimeout(() => {
         setQrImagePath("/dummy-qrcode.png");
         setTimeout(() => {
-          window.open("/paypay", "_blank");
-          setActiveStep(3);
+          toast({
+            title: "決済が完了しました",
+            status: "success",
+            duration: 5000,
+            isClosable: true,
+          });
+          onPurchase();
+          setActiveStep(2);
           setIsCheckingIn(false);
         }, 1000);
       }, 3000);
     }
-  }, [setActiveStep, isCheckingIn]);
+  }, [setActiveStep, isCheckingIn, onPurchase, toast]);
 
   return (
     <VStack px={6} alignItems="baseline" spacing={4}>
@@ -168,6 +196,16 @@ export default function RestaurantDetail() {
                   onClick={step.button.onClick}
                 >
                   {step.button.label}
+                </Button>
+              )}
+              {index === activeStep && step.activeButton && (
+                <Button
+                  size="sm"
+                  colorScheme="cyan"
+                  textColor="white"
+                  onClick={step.activeButton.onClick}
+                >
+                  {step.activeButton.label}
                 </Button>
               )}
             </VStack>

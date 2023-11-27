@@ -27,6 +27,7 @@ import RestaurantDetail from "./restaurant-detail";
 import { InView } from "react-intersection-observer";
 import { Search2Icon } from "@chakra-ui/icons";
 import { FaLocationCrosshairs, FaMap, FaQrcode, FaUser } from "react-icons/fa6";
+import Comments from "./comments";
 
 export default function HomePage({
   restaurants,
@@ -40,6 +41,8 @@ export default function HomePage({
   const handleRestaurantSelect = (id: number) => {
     setFocusedRestaurantId(id);
   };
+  const [isPurchased, setIsPurchased] = useState(false);
+  const [isCommentOpen, setIsCommentOpen] = useState(false);
 
   return (
     <Box height="100vh" width="100vw">
@@ -165,15 +168,26 @@ export default function HomePage({
       <Drawer
         isOpen={isDetailOpen}
         placement="bottom"
-        onClose={() => setIsDetailOpen(false)}
+        onClose={() =>
+          isCommentOpen ? setIsCommentOpen(false) : setIsDetailOpen(false)
+        }
+        isFullHeight
       >
         <DrawerOverlay />
         <DrawerContent pb={3} borderTopRadius={16}>
           <DrawerCloseButton />
-          <DrawerHeader>お店詳細</DrawerHeader>
+          <DrawerHeader>{isCommentOpen ? "コメント" : "お店詳細"}</DrawerHeader>
 
           <DrawerBody p={0}>
-            <RestaurantDetail />
+            {isCommentOpen ? (
+              <Comments />
+            ) : (
+              <RestaurantDetail
+                isPurchased={isPurchased}
+                onPurchase={() => setIsPurchased(true)}
+                onClickComment={() => setIsCommentOpen(true)}
+              />
+            )}
           </DrawerBody>
         </DrawerContent>
       </Drawer>
