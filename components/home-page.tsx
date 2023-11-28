@@ -1,6 +1,6 @@
 "use client";
 
-import { Restaurant } from "@prisma/client";
+import { RESTAURANTS, Restaurant } from "@/constants/restaurants";
 import Map from "@/components/map";
 import { useState } from "react";
 import {
@@ -35,6 +35,7 @@ export default function HomePage({
   restaurants: Restaurant[];
 }) {
   const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const [selectedRestaurantId, setSelectedRestaurantId] = useState<number>();
   const [focusedRestaurantId, setFocusedRestaurantId] = useState<number>(
     restaurants[0].id
   );
@@ -112,22 +113,18 @@ export default function HomePage({
               width="full"
               borderRadius="16px"
               boxShadow="md"
-              onClick={() => setIsDetailOpen(true)}
+              onClick={() => setSelectedRestaurantId(restaurant.id)}
             >
               <CardHeader padding={0}>
                 <Image
                   alt="商品"
                   borderTopRadius="16px"
-                  src="https://tblg.k-img.com/resize/660x370c/restaurant/images/Rvw/108066/108066112.jpg?token=3e19a56&api=v2"
+                  src={restaurant.foodImagePath}
                 />
               </CardHeader>
               <CardBody padding={3}>
-                <Text as="b" fontSize="sm">
+                <Text as="b" fontSize="mb">
                   {restaurant.name}
-                  <br />
-                  <Text as="span" fontSize="md">
-                    黄金のTKG
-                  </Text>
                 </Text>
               </CardBody>
             </Card>
@@ -166,10 +163,12 @@ export default function HomePage({
         />
       </HStack>
       <Drawer
-        isOpen={isDetailOpen}
+        isOpen={!!selectedRestaurantId}
         placement="bottom"
         onClose={() =>
-          isCommentOpen ? setIsCommentOpen(false) : setIsDetailOpen(false)
+          isCommentOpen
+            ? setIsCommentOpen(false)
+            : setSelectedRestaurantId(undefined)
         }
       >
         <DrawerOverlay />
@@ -183,6 +182,7 @@ export default function HomePage({
             ) : (
               <RestaurantDetail
                 isPurchased={isPurchased}
+                selectedRestaurantId={selectedRestaurantId!}
                 onPurchase={() => setIsPurchased(true)}
                 onClickComment={() => setIsCommentOpen(true)}
               />

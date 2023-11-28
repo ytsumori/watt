@@ -30,7 +30,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import Map from "@/components/map";
-import { RESTAURANTS } from "@/constants/restaurants";
+import { RESTAURANTS, Restaurant } from "@/constants/restaurants";
 import { useEffect, useState } from "react";
 import { FaInstagram } from "react-icons/fa";
 import { TabelogIcon } from "./tabelog-icon";
@@ -39,14 +39,18 @@ export default function RestaurantDetail({
   isPurchased,
   onPurchase,
   onClickComment,
+  selectedRestaurantId,
 }: {
   isPurchased: boolean;
   onPurchase: () => void;
   onClickComment: () => void;
+  selectedRestaurantId: number;
 }) {
   const [qrImagePath, setQrImagePath] = useState<string>();
-  const reservedRestaurant = RESTAURANTS[0];
   const [isCheckingIn, setIsCheckingIn] = useState(false);
+  const selectedRestaurant = RESTAURANTS.find(
+    (restaurant) => restaurant.id === selectedRestaurantId
+  )!;
   const toast = useToast();
 
   const steps: {
@@ -103,7 +107,7 @@ export default function RestaurantDetail({
           setActiveStep(2);
           setIsCheckingIn(false);
         }, 1000);
-      }, 3000);
+      }, 2000);
     }
   }, [setActiveStep, isCheckingIn, onPurchase, toast]);
 
@@ -114,36 +118,34 @@ export default function RestaurantDetail({
           <Image
             objectFit="contain"
             alt="商品"
-            src="https://tblg.k-img.com/resize/660x370c/restaurant/images/Rvw/108066/108066112.jpg?token=3e19a56&api=v2"
+            src={selectedRestaurant.foodImagePath}
             width="40%"
           />
           <VStack p={4}>
             <Text as="b" fontSize="md" w="full">
-              {reservedRestaurant.name}
-              <br />
-              <Text as="span" fontSize="sm">
-                黄金のTKG
-              </Text>
+              {selectedRestaurant.name}
             </Text>
             <HStack w="full">
               <IconButton
+                size="sm"
                 as="a"
                 href="https://tabelog.com/osaka/A2701/A270106/27090650/"
                 target="_blank"
                 colorScheme="cyan"
                 textColor="white"
                 aria-label="tabelog"
-                fontSize="30px"
+                fontSize="24px"
                 icon={<TabelogIcon />}
               />
               <IconButton
+                size="sm"
                 as="a"
                 href="https://www.instagram.com/menyayu0303/"
                 target="_blank"
                 colorScheme="cyan"
                 textColor="white"
                 aria-label="instagram"
-                fontSize="30px"
+                fontSize="24px"
                 icon={<FaInstagram />}
               />
             </HStack>
@@ -151,11 +153,11 @@ export default function RestaurantDetail({
         </Card>
         <Box h="25vh" w="full">
           <Map
-            restaurants={[reservedRestaurant]}
-            selectedRestaurantID={reservedRestaurant.id}
+            restaurants={[selectedRestaurant]}
+            selectedRestaurantID={selectedRestaurant.id}
             defaultCenter={{
-              lat: reservedRestaurant.latitude,
-              lng: reservedRestaurant.longitude,
+              lat: selectedRestaurant.latitude,
+              lng: selectedRestaurant.longitude,
             }}
           />
         </Box>

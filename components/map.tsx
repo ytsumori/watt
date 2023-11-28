@@ -1,7 +1,7 @@
 "use client";
 
 import { Wrapper, Status } from "@googlemaps/react-wrapper";
-import { Restaurant } from "@prisma/client";
+import { Restaurant } from "@/constants/restaurants";
 import {
   Children,
   cloneElement,
@@ -29,7 +29,7 @@ export default function Map({
   onRestaurantSelect,
   defaultCenter,
 }: Props) {
-  const [zoom, setZoom] = useState(15);
+  const [zoom, setZoom] = useState(17);
   const [center, setCenter] =
     useState<google.maps.LatLngLiteral>(defaultCenter);
 
