@@ -171,10 +171,9 @@ export default function HomePage({
         onClose={() =>
           isCommentOpen ? setIsCommentOpen(false) : setIsDetailOpen(false)
         }
-        isFullHeight
       >
         <DrawerOverlay />
-        <DrawerContent pb={3} borderTopRadius={16}>
+        <DrawerContent pb={3} borderTopRadius={16} height="full">
           <DrawerCloseButton />
           <DrawerHeader>{isCommentOpen ? "コメント" : "お店詳細"}</DrawerHeader>
 
