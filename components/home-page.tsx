@@ -123,8 +123,12 @@ export default function HomePage({
                 />
               </CardHeader>
               <CardBody padding={3}>
-                <Text as="b" fontSize="mb">
+                <Text as="b" fontSize="lg">
                   {restaurant.name}
+                </Text>
+                <br />
+                <Text as="b" fontSize="md">
+                  {restaurant.price}円(税込)
                 </Text>
               </CardBody>
             </Card>

@@ -124,6 +124,10 @@ export default function RestaurantDetail({
           <VStack p={4}>
             <Text as="b" fontSize="md" w="full">
               {selectedRestaurant.name}
+              <br />
+              <Text as="span" fontSize="sm">
+                {selectedRestaurant.price}円(税込)
+              </Text>
             </Text>
             <HStack w="full">
               <IconButton
