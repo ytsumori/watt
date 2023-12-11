@@ -1,6 +1,6 @@
 "use client";
 
-import { RESTAURANTS, Restaurant } from "@/constants/restaurants";
+import { Restaurant } from "@/constants/restaurants";
 import Map from "@/components/map";
 import { useState } from "react";
 import {
@@ -34,7 +34,6 @@ export default function HomePage({
 }: {
   restaurants: Restaurant[];
 }) {
-  const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [selectedRestaurantId, setSelectedRestaurantId] = useState<number>();
   const [focusedRestaurantId, setFocusedRestaurantId] = useState<number>(
     restaurants[0].id

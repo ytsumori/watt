@@ -30,10 +30,11 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import Map from "@/components/map";
-import { RESTAURANTS, Restaurant } from "@/constants/restaurants";
+import { RESTAURANTS } from "@/constants/restaurants";
 import { useEffect, useState } from "react";
 import { FaInstagram } from "react-icons/fa";
 import { TabelogIcon } from "./tabelog-icon";
+import StripeForm from "./stripe-form";
 
 export default function RestaurantDetail({
   isPurchased,
@@ -48,6 +49,7 @@ export default function RestaurantDetail({
 }) {
   const [qrImagePath, setQrImagePath] = useState<string>();
   const [isCheckingIn, setIsCheckingIn] = useState(false);
+  const [isPaying, setIsPaying] = useState(false);
   const selectedRestaurant = RESTAURANTS.find(
     (restaurant) => restaurant.id === selectedRestaurantId
   )!;
@@ -97,15 +99,16 @@ export default function RestaurantDetail({
       setTimeout(() => {
         setQrImagePath("/dummy-qrcode.png");
         setTimeout(() => {
-          toast({
-            title: "決済が完了しました",
-            status: "success",
-            duration: 5000,
-            isClosable: true,
-          });
-          onPurchase();
-          setActiveStep(2);
-          setIsCheckingIn(false);
+          setIsPaying(true);
+          // toast({
+          //   title: "決済が完了しました",
+          //   status: "success",
+          //   duration: 5000,
+          //   isClosable: true,
+          // });
+          // onPurchase();
+          // setActiveStep(2);
+          // setIsCheckingIn(false);
         }, 1000);
       }, 2000);
     }
@@ -222,7 +225,10 @@ export default function RestaurantDetail({
       </Stepper>
       <Modal
         isOpen={isCheckingIn}
-        onClose={() => setIsCheckingIn(false)}
+        onClose={() => {
+          setIsCheckingIn(false);
+          setIsPaying(false);
+        }}
         closeOnOverlayClick={false}
         isCentered
       >
@@ -230,8 +236,12 @@ export default function RestaurantDetail({
         <ModalContent>
           <ModalHeader>チェックイン</ModalHeader>
           <ModalCloseButton />
-          <ModalBody>
-            {/* <QrReader
+          <ModalBody></ModalBody>
+          {isPaying ? (
+            <StripeForm />
+          ) : (
+            <>
+              {/* <QrReader
               ViewFinder={ViewFinder}
               constraints={{
                 facingMode: "environment",
@@ -245,28 +255,29 @@ export default function RestaurantDetail({
               containerStyle={{ width: "100%" }}
               videoStyle={{ width: "100%" }}
             /> */}
-            <Center
-              width="full"
-              backgroundColor="blackAlpha.700"
-              aspectRatio={1}
-            >
-              <Box
-                borderWidth={2}
-                borderColor="cyan.400"
-                width="80%"
-                height="80%"
+              <Center
+                width="full"
+                backgroundColor="blackAlpha.700"
+                aspectRatio={1}
               >
-                {qrImagePath ? (
-                  <Image alt="dummy QR Code" src="/dummy-qrcode.png" />
-                ) : (
-                  <></>
-                )}
-              </Box>
-            </Center>
-            <Text textColor="cyan.400" fontSize="small">
-              *店に到着でき次第、店員の指示に従いチェックインQRコードを読み取ってください
-            </Text>
-          </ModalBody>
+                <Box
+                  borderWidth={2}
+                  borderColor="cyan.400"
+                  width="80%"
+                  height="80%"
+                >
+                  {qrImagePath ? (
+                    <Image alt="dummy QR Code" src="/dummy-qrcode.png" />
+                  ) : (
+                    <></>
+                  )}
+                </Box>
+              </Center>
+              <Text textColor="cyan.400" fontSize="small">
+                *店に到着でき次第、店員の指示に従いチェックインQRコードを読み取ってください
+              </Text>
+            </>
+          )}
         </ModalContent>
       </Modal>
     </VStack>
