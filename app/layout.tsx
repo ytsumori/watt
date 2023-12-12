@@ -1,3 +1,4 @@
+import BaseLayout from "@/components/base-layout";
 import { Providers } from "./provider";
 
 export const metadata = {
@@ -17,8 +18,10 @@ export default function RootLayout({
     <html lang="jp">
       <body>
         <Providers>
-          {children}
-          {modal}
+          <BaseLayout>
+            {children}
+            {modal}
+          </BaseLayout>
         </Providers>
       </body>
     </html>

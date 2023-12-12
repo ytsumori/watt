@@ -154,6 +154,7 @@ export default function HomePage({
           colorScheme="cyan"
           variant="ghost"
           icon={<FaUser />}
+          onClick={() => router.push("/login")}
         />
       </HStack>
     </Box>

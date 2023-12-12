@@ -34,7 +34,9 @@ import { RESTAURANTS } from "@/constants/restaurants";
 import { useEffect, useState } from "react";
 import { FaInstagram } from "react-icons/fa";
 import { TabelogIcon } from "./tabelog-icon";
-import StripeForm from "./stripe-form";
+import StripeForm from "./stripe/stripe-form";
+import { useSession } from "next-auth/react";
+import { LoginButton } from "./buttons";
 
 export default function RestaurantDetail({
   isPurchased,
@@ -47,6 +49,8 @@ export default function RestaurantDetail({
   onClickComment: () => void;
   selectedRestaurantId: number;
 }) {
+  const { data: session } = useSession();
+  const user = session?.user;
   const [qrImagePath, setQrImagePath] = useState<string>();
   const [isCheckingIn, setIsCheckingIn] = useState(false);
   const [isPaying, setIsPaying] = useState(false);
@@ -172,57 +176,51 @@ export default function RestaurantDetail({
       <Heading as="h2" size="md">
         お食事の流れ
       </Heading>
-      <Stepper
-        index={activeStep}
-        orientation="vertical"
-        w="full"
-        minH="25vh"
-        colorScheme="cyan"
-      >
-        {steps.map((step, index) => (
-          <Step key={index}>
-            <StepIndicator>
-              <StepStatus
-                complete={<StepIcon />}
-                incomplete={<StepNumber />}
-                active={<StepNumber />}
-              />
-            </StepIndicator>
+      {user ? (
+        <Stepper
+          index={activeStep}
+          orientation="vertical"
+          w="full"
+          minH="25vh"
+          colorScheme="cyan"
+        >
+          {steps.map((step, index) => (
+            <Step key={index}>
+              <StepIndicator>
+                <StepStatus
+                  complete={<StepIcon />}
+                  incomplete={<StepNumber />}
+                  active={<StepNumber />}
+                />
+              </StepIndicator>
 
-            <VStack alignItems="baseline">
-              <StepTitle>{step.title}</StepTitle>
-              {index >= activeStep && step.description && (
-                <StepDescription>{step.description}</StepDescription>
-              )}
-              {index < activeStep && step.completeDescription && (
-                <StepDescription>{step.completeDescription}</StepDescription>
-              )}
-              {index >= activeStep && step.button && (
-                <Button
-                  size="sm"
-                  colorScheme="cyan"
-                  textColor="white"
-                  onClick={step.button.onClick}
-                >
-                  {step.button.label}
-                </Button>
-              )}
-              {index === activeStep && step.activeButton && (
-                <Button
-                  size="sm"
-                  colorScheme="cyan"
-                  textColor="white"
-                  onClick={step.activeButton.onClick}
-                >
-                  {step.activeButton.label}
-                </Button>
-              )}
-            </VStack>
+              <VStack alignItems="baseline">
+                <StepTitle>{step.title}</StepTitle>
+                {index >= activeStep && step.description && (
+                  <StepDescription>{step.description}</StepDescription>
+                )}
+                {index < activeStep && step.completeDescription && (
+                  <StepDescription>{step.completeDescription}</StepDescription>
+                )}
+                {index >= activeStep && step.button && (
+                  <Button textColor="white" onClick={step.button.onClick}>
+                    {step.button.label}
+                  </Button>
+                )}
+                {index === activeStep && step.activeButton && (
+                  <Button textColor="white" onClick={step.activeButton.onClick}>
+                    {step.activeButton.label}
+                  </Button>
+                )}
+              </VStack>
 
-            <StepSeparator />
-          </Step>
-        ))}
-      </Stepper>
+              <StepSeparator />
+            </Step>
+          ))}
+        </Stepper>
+      ) : (
+        <LoginButton />
+      )}
       <Modal
         isOpen={isCheckingIn}
         onClose={() => {

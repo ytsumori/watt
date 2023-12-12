@@ -3,7 +3,7 @@
 import React, { useEffect } from "react";
 import { StripeElementsOptions, loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
-import CheckoutForm from "./CheckoutForm";
+import CheckoutForm from "./checkout-form";
 import { Box } from "@chakra-ui/react";
 
 // Make sure to call loadStripe outside of a component’s render to avoid
