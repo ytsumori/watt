@@ -8,12 +8,6 @@ import {
   Card,
   CardBody,
   CardHeader,
-  Drawer,
-  DrawerBody,
-  DrawerCloseButton,
-  DrawerContent,
-  DrawerHeader,
-  DrawerOverlay,
   HStack,
   IconButton,
   Image,
@@ -23,26 +17,23 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import RestaurantDetail from "./restaurant-detail";
 import { InView } from "react-intersection-observer";
 import { Search2Icon } from "@chakra-ui/icons";
 import { FaLocationCrosshairs, FaMap, FaQrcode, FaUser } from "react-icons/fa6";
-import Comments from "./comments";
+import { useRouter } from "next/navigation";
 
 export default function HomePage({
   restaurants,
 }: {
   restaurants: Restaurant[];
 }) {
-  const [selectedRestaurantId, setSelectedRestaurantId] = useState<number>();
+  const router = useRouter();
   const [focusedRestaurantId, setFocusedRestaurantId] = useState<number>(
     restaurants[0].id
   );
   const handleRestaurantSelect = (id: number) => {
     setFocusedRestaurantId(id);
   };
-  const [isPurchased, setIsPurchased] = useState(false);
-  const [isCommentOpen, setIsCommentOpen] = useState(false);
 
   return (
     <Box height="100vh" width="100vw">
@@ -112,7 +103,7 @@ export default function HomePage({
               width="full"
               borderRadius="16px"
               boxShadow="md"
-              onClick={() => setSelectedRestaurantId(restaurant.id)}
+              onClick={() => router.push(`/restaurants/${restaurant.id}`)}
             >
               <CardHeader padding={0}>
                 <Image
@@ -165,34 +156,6 @@ export default function HomePage({
           icon={<FaUser />}
         />
       </HStack>
-      <Drawer
-        isOpen={!!selectedRestaurantId}
-        placement="bottom"
-        onClose={() =>
-          isCommentOpen
-            ? setIsCommentOpen(false)
-            : setSelectedRestaurantId(undefined)
-        }
-      >
-        <DrawerOverlay />
-        <DrawerContent pb={3} borderTopRadius={16} height="full">
-          <DrawerCloseButton />
-          <DrawerHeader>{isCommentOpen ? "コメント" : "お店詳細"}</DrawerHeader>
-
-          <DrawerBody p={0}>
-            {isCommentOpen ? (
-              <Comments />
-            ) : (
-              <RestaurantDetail
-                isPurchased={isPurchased}
-                selectedRestaurantId={selectedRestaurantId!}
-                onPurchase={() => setIsPurchased(true)}
-                onClickComment={() => setIsCommentOpen(true)}
-              />
-            )}
-          </DrawerBody>
-        </DrawerContent>
-      </Drawer>
     </Box>
   );
 }
