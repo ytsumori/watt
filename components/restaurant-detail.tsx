@@ -37,6 +37,8 @@ import { TabelogIcon } from "./tabelog-icon";
 import StripeForm from "./stripe/stripe-form";
 import { useSession } from "next-auth/react";
 import { LoginButton } from "./buttons";
+import { createQRCode } from "@/lib/paypay";
+import { useRouter } from "next/navigation";
 
 export default function RestaurantDetail({
   isPurchased,
@@ -49,6 +51,7 @@ export default function RestaurantDetail({
   onClickComment: () => void;
   selectedRestaurantId: number;
 }) {
+  const router = useRouter();
   const { data: session } = useSession();
   const user = session?.user;
   const [qrImagePath, setQrImagePath] = useState<string>();
@@ -236,7 +239,18 @@ export default function RestaurantDetail({
           <ModalCloseButton />
           <ModalBody></ModalBody>
           {isPaying ? (
-            <StripeForm />
+            <VStack>
+              <Button
+                onClick={() =>
+                  createQRCode(
+                    Math.floor(100000 + Math.random() * 900000).toString()
+                  ).then((url) => router.push(url))
+                }
+              >
+                PayPayで支払い
+              </Button>
+              <StripeForm />
+            </VStack>
           ) : (
             <>
               {/* <QrReader
