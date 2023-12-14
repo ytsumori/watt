@@ -1,6 +1,8 @@
 import NextAuth, { AuthOptions } from "next-auth";
 import LineProvider from "next-auth/providers/line";
 import GoogleProvider from "next-auth/providers/google";
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
+import prisma from "@/lib/prisma";
 
 const authOptions: AuthOptions = {
   providers: [
@@ -14,6 +16,7 @@ const authOptions: AuthOptions = {
     }),
   ],
   theme: { colorScheme: "light", brandColor: "#0BC5EA" },
+  adapter: PrismaAdapter(prisma),
 };
 
 const handler = NextAuth(authOptions);
