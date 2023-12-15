@@ -1,4 +1,3 @@
-import prisma from "@/lib/prisma";
 import HomePage from "@/components/home-page";
 import { RESTAURANTS } from "@/constants/restaurants";
 import "./global.css";

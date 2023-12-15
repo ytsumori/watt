@@ -180,80 +180,86 @@ export default function RestaurantDetail({
         お食事の流れ
       </Heading>
       {user ? (
-        <Stepper
-          index={activeStep}
-          orientation="vertical"
-          w="full"
-          minH="25vh"
-          colorScheme="cyan"
-        >
-          {steps.map((step, index) => (
-            <Step key={index}>
-              <StepIndicator>
-                <StepStatus
-                  complete={<StepIcon />}
-                  incomplete={<StepNumber />}
-                  active={<StepNumber />}
-                />
-              </StepIndicator>
+        <>
+          <Stepper
+            index={activeStep}
+            orientation="vertical"
+            w="full"
+            minH="25vh"
+            colorScheme="cyan"
+          >
+            {steps.map((step, index) => (
+              <Step key={index}>
+                <StepIndicator>
+                  <StepStatus
+                    complete={<StepIcon />}
+                    incomplete={<StepNumber />}
+                    active={<StepNumber />}
+                  />
+                </StepIndicator>
 
-              <VStack alignItems="baseline">
-                <StepTitle>{step.title}</StepTitle>
-                {index >= activeStep && step.description && (
-                  <StepDescription>{step.description}</StepDescription>
-                )}
-                {index < activeStep && step.completeDescription && (
-                  <StepDescription>{step.completeDescription}</StepDescription>
-                )}
-                {index >= activeStep && step.button && (
-                  <Button textColor="white" onClick={step.button.onClick}>
-                    {step.button.label}
-                  </Button>
-                )}
-                {index === activeStep && step.activeButton && (
-                  <Button textColor="white" onClick={step.activeButton.onClick}>
-                    {step.activeButton.label}
-                  </Button>
-                )}
-              </VStack>
+                <VStack alignItems="baseline">
+                  <StepTitle>{step.title}</StepTitle>
+                  {index >= activeStep && step.description && (
+                    <StepDescription>{step.description}</StepDescription>
+                  )}
+                  {index < activeStep && step.completeDescription && (
+                    <StepDescription>
+                      {step.completeDescription}
+                    </StepDescription>
+                  )}
+                  {index >= activeStep && step.button && (
+                    <Button textColor="white" onClick={step.button.onClick}>
+                      {step.button.label}
+                    </Button>
+                  )}
+                  {index === activeStep && step.activeButton && (
+                    <Button
+                      textColor="white"
+                      onClick={step.activeButton.onClick}
+                    >
+                      {step.activeButton.label}
+                    </Button>
+                  )}
+                </VStack>
 
-              <StepSeparator />
-            </Step>
-          ))}
-        </Stepper>
-      ) : (
-        <LoginButton />
-      )}
-      <Modal
-        isOpen={isCheckingIn}
-        onClose={() => {
-          setIsCheckingIn(false);
-          setIsPaying(false);
-        }}
-        closeOnOverlayClick={false}
-        isCentered
-      >
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>チェックイン</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody></ModalBody>
-          {isPaying ? (
-            <VStack>
-              <Button
-                onClick={() =>
-                  createQRCode(
-                    Math.floor(100000 + Math.random() * 900000).toString()
-                  ).then((url) => router.push(url))
-                }
-              >
-                PayPayで支払い
-              </Button>
-              <StripeForm />
-            </VStack>
-          ) : (
-            <>
-              {/* <QrReader
+                <StepSeparator />
+              </Step>
+            ))}
+          </Stepper>
+          <Modal
+            isOpen={isCheckingIn}
+            onClose={() => {
+              setIsCheckingIn(false);
+              setIsPaying(false);
+            }}
+            closeOnOverlayClick={false}
+            isCentered
+          >
+            <ModalOverlay />
+            <ModalContent>
+              <ModalHeader>チェックイン</ModalHeader>
+              <ModalCloseButton />
+              <ModalBody></ModalBody>
+              {isPaying ? (
+                <VStack>
+                  <Button
+                    onClick={() =>
+                      createQRCode(
+                        Math.floor(100000 + Math.random() * 900000).toString()
+                      ).then((url) => router.push(url))
+                    }
+                  >
+                    PayPayで支払い
+                  </Button>
+                  <StripeForm
+                    userId={user.id}
+                    amount={selectedRestaurant.price}
+                  />
+                </VStack>
+              ) : (
+                <>
+                  {/* <QrReader
               ViewFinder={ViewFinder}
               constraints={{
                 facingMode: "environment",
@@ -267,31 +273,35 @@ export default function RestaurantDetail({
               containerStyle={{ width: "100%" }}
               videoStyle={{ width: "100%" }}
             /> */}
-              <Center
-                width="full"
-                backgroundColor="blackAlpha.700"
-                aspectRatio={1}
-              >
-                <Box
-                  borderWidth={2}
-                  borderColor="cyan.400"
-                  width="80%"
-                  height="80%"
-                >
-                  {qrImagePath ? (
-                    <Image alt="dummy QR Code" src="/dummy-qrcode.png" />
-                  ) : (
-                    <></>
-                  )}
-                </Box>
-              </Center>
-              <Text textColor="cyan.400" fontSize="small">
-                *店に到着でき次第、店員の指示に従いチェックインQRコードを読み取ってください
-              </Text>
-            </>
-          )}
-        </ModalContent>
-      </Modal>
+                  <Center
+                    width="full"
+                    backgroundColor="blackAlpha.700"
+                    aspectRatio={1}
+                  >
+                    <Box
+                      borderWidth={2}
+                      borderColor="cyan.400"
+                      width="80%"
+                      height="80%"
+                    >
+                      {qrImagePath ? (
+                        <Image alt="dummy QR Code" src="/dummy-qrcode.png" />
+                      ) : (
+                        <></>
+                      )}
+                    </Box>
+                  </Center>
+                  <Text textColor="cyan.400" fontSize="small">
+                    *店に到着でき次第、店員の指示に従いチェックインQRコードを読み取ってください
+                  </Text>
+                </>
+              )}
+            </ModalContent>
+          </Modal>
+        </>
+      ) : (
+        <LoginButton />
+      )}
     </VStack>
   );
 }

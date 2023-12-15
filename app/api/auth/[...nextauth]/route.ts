@@ -17,6 +17,30 @@ const authOptions: AuthOptions = {
   ],
   theme: { colorScheme: "light", brandColor: "#0BC5EA" },
   adapter: PrismaAdapter(prisma),
+  debug: true,
+  session: {
+    strategy: "jwt",
+  },
+  callbacks: {
+    async jwt({ token, account, user }) {
+      if (user) {
+        token.id = user.id;
+      }
+      if (account) {
+        token.accessToken = account.access_token;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      return {
+        ...session,
+        user: {
+          ...session.user,
+          id: token.id,
+        },
+      };
+    },
+  },
 };
 
 const handler = NextAuth(authOptions);

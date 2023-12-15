@@ -5,6 +5,7 @@ import { StripeElementsOptions, loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
 import CheckoutForm from "./checkout-form";
 import { Box } from "@chakra-ui/react";
+import { useSession } from "next-auth/react";
 
 // Make sure to call loadStripe outside of a component’s render to avoid
 // recreating the Stripe object on every render.
@@ -13,7 +14,12 @@ const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
 );
 
-export default function StripeForm() {
+type Props = {
+  userId: string;
+  amount: number;
+};
+
+export default function StripeForm({ userId, amount }: Props) {
   const [clientSecret, setClientSecret] = React.useState("");
 
   useEffect(() => {
@@ -21,11 +27,11 @@ export default function StripeForm() {
     fetch("/api/create-payment-intent", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ amount: 1200 }),
+      body: JSON.stringify({ amount: amount, id: userId }),
     })
       .then((res) => res.json())
       .then((data) => setClientSecret(data.clientSecret));
-  }, []);
+  }, [userId, amount]);
 
   const options: StripeElementsOptions = {
     clientSecret,
