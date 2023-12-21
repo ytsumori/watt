@@ -1,4 +1,6 @@
+import { options } from "@/lib/next-auth/options";
 import prisma from "@/lib/prisma";
+import { getServerSession } from "next-auth/next";
 
 // This is your test secret API key.
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
@@ -6,10 +8,16 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 export async function POST(request: Request) {
   const body = await request.json();
   const amount = body.amount;
-  const userId = body.id;
-  if (typeof amount !== "number" || typeof userId !== "string") {
+  if (typeof amount !== "number") {
     return Response.json({}, { status: 400, statusText: "Invalid amount" });
   }
+
+  const session = await getServerSession(options);
+  if (!session) {
+    return Response.json({}, { status: 401, statusText: "Unauthorized" });
+  }
+
+  const userId = session.user.id;
   const user = await prisma.stripeCustomer.findUnique({ where: { userId } });
 
   const customer = user
@@ -25,11 +33,8 @@ export async function POST(request: Request) {
 
   const paymentMethods = await stripe.customers.listPaymentMethods(
     customer.id,
-    {
-      limit: 1,
-    }
+    { limit: 1 }
   );
-  console.log(paymentMethods);
 
   // Create a PaymentIntent with the order amount and currency
   const paymentIntent = await stripe.paymentIntents.create({

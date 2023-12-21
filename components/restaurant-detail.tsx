@@ -252,10 +252,7 @@ export default function RestaurantDetail({
                   >
                     PayPayで支払い
                   </Button>
-                  <StripeForm
-                    userId={user.id}
-                    amount={selectedRestaurant.price}
-                  />
+                  <StripeForm amount={selectedRestaurant.price} />
                 </VStack>
               ) : (
                 <>
