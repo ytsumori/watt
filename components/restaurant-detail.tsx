@@ -39,28 +39,26 @@ import { useSession } from "next-auth/react";
 import { LoginButton } from "./buttons";
 import { createQRCode } from "@/lib/paypay";
 import { useRouter } from "next/navigation";
+import Stripe from "stripe";
 
 export default function RestaurantDetail({
-  isPurchased,
-  onPurchase,
-  onClickComment,
   selectedRestaurantId,
+  paymentMethods,
 }: {
-  isPurchased: boolean;
-  onPurchase: () => void;
-  onClickComment: () => void;
   selectedRestaurantId: number;
+  paymentMethods: Stripe.PaymentMethod[];
 }) {
   const router = useRouter();
+
   const { data: session } = useSession();
   const user = session?.user;
+
   const [qrImagePath, setQrImagePath] = useState<string>();
   const [isCheckingIn, setIsCheckingIn] = useState(false);
   const [isPaying, setIsPaying] = useState(false);
   const selectedRestaurant = RESTAURANTS.find(
     (restaurant) => restaurant.id === selectedRestaurantId
   )!;
-  const toast = useToast();
 
   const steps: {
     title: string;
@@ -84,12 +82,6 @@ export default function RestaurantDetail({
     },
     {
       title: "食事を楽しむ",
-      activeButton: {
-        label: "コメントを見る",
-        onClick: () => {
-          onClickComment();
-        },
-      },
     },
     {
       title: "退店",
@@ -97,7 +89,7 @@ export default function RestaurantDetail({
     },
   ];
   const { activeStep, setActiveStep } = useSteps({
-    index: isPurchased ? 2 : 0,
+    index: 0,
     count: steps.length,
   });
 
@@ -107,19 +99,10 @@ export default function RestaurantDetail({
         setQrImagePath("/dummy-qrcode.png");
         setTimeout(() => {
           setIsPaying(true);
-          // toast({
-          //   title: "決済が完了しました",
-          //   status: "success",
-          //   duration: 5000,
-          //   isClosable: true,
-          // });
-          // onPurchase();
-          // setActiveStep(2);
-          // setIsCheckingIn(false);
         }, 1000);
       }, 2000);
     }
-  }, [setActiveStep, isCheckingIn, onPurchase, toast]);
+  }, [setActiveStep, isCheckingIn]);
 
   return (
     <VStack px={6} alignItems="baseline" spacing={4}>
@@ -252,6 +235,17 @@ export default function RestaurantDetail({
                   >
                     PayPayで支払い
                   </Button>
+                  {paymentMethods.map((paymentMethod) => (
+                    <Button
+                      key={paymentMethod.id}
+                      onClick={() => console.log("pay with card")}
+                    >
+                      {paymentMethod.card?.exp_month}/
+                      {paymentMethod.card?.exp_year}
+                      <br />
+                      **** **** **** {paymentMethod.card?.last4}
+                    </Button>
+                  ))}
                   <StripeForm amount={selectedRestaurant.price} />
                 </VStack>
               ) : (

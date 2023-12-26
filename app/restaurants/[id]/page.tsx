@@ -1,30 +1,29 @@
-"use client";
-
-import Comments from "@/components/comments";
+import stripe from "@/lib/stripe";
 import RestaurantDetail from "@/components/restaurant-detail";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { getStripeCustomer } from "@/actions/stripeCustomer";
 
 type Params = {
   id: string;
 };
 
-export default function RestaurantModal({ params }: { params: Params }) {
-  const [isCommentOpen, setIsCommentOpen] = useState(false);
-  const [isPurchased, setIsPurchased] = useState(false);
-  const router = useRouter();
+export default async function RestaurantPage({ params }: { params: Params }) {
   const restaurantId = Number(params.id);
   if (isNaN(restaurantId)) {
-    router.push("/");
+    throw new Error("Invalid restaurant id");
   }
-  return isCommentOpen ? (
-    <Comments />
-  ) : (
+
+  const stripeCustomer = await getStripeCustomer();
+  if (!stripeCustomer) {
+    throw new Error("Invalid stripe customer");
+  }
+  const paymentMethods = await stripe.customers.listPaymentMethods(
+    stripeCustomer.stripeCustomerId
+  );
+
+  return (
     <RestaurantDetail
-      isPurchased={isPurchased}
-      selectedRestaurantId={restaurantId!}
-      onPurchase={() => setIsPurchased(true)}
-      onClickComment={() => setIsCommentOpen(true)}
+      selectedRestaurantId={restaurantId}
+      paymentMethods={paymentMethods.data}
     />
   );
 }
