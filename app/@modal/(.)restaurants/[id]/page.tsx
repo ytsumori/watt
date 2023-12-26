@@ -1,6 +1,5 @@
 import stripe from "@/lib/stripe";
 import RestaurantModal from "./_components/client-component";
-import { getMyId } from "@/actions/me";
 import { getStripeCustomer } from "@/actions/stripeCustomer";
 
 type Params = {
