@@ -58,7 +58,8 @@ model StripeCustomer {
   id               String @id @default(cuid())
   userId           String @unique
   stripeCustomerId String @unique
-  user             User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Restaurant {
@@ -68,6 +69,16 @@ model Restaurant {
   longitude Float
   imageUrl  String
   price     Int
+  meals     Meal[]
 
   @@unique([latitude, longitude])
+}
+
+model Meal {
+  id           String @id @default(cuid())
+  restaurantId String @unique
+  imageUrl     String
+  price        Int
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
 }

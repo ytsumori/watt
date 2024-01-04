@@ -12,6 +12,8 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
       </TabList>
       <TabPanels>
         <TabPanel>{children}</TabPanel>
+        <TabPanel>{children}</TabPanel>
+        <TabPanel>{children}</TabPanel>
       </TabPanels>
     </Tabs>
   );
