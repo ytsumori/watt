@@ -1,6 +1,5 @@
 "use client";
 
-import { Restaurant } from "@/constants/restaurants";
 import Map from "@/components/map";
 import { useState } from "react";
 import {
@@ -21,6 +20,7 @@ import { InView } from "react-intersection-observer";
 import { Search2Icon } from "@chakra-ui/icons";
 import { FaLocationCrosshairs, FaMap, FaQrcode, FaUser } from "react-icons/fa6";
 import { useRouter } from "next/navigation";
+import { Restaurant } from "@prisma/client";
 
 export default function HomePage({
   restaurants,
@@ -28,10 +28,10 @@ export default function HomePage({
   restaurants: Restaurant[];
 }) {
   const router = useRouter();
-  const [focusedRestaurantId, setFocusedRestaurantId] = useState<number>(
+  const [focusedRestaurantId, setFocusedRestaurantId] = useState<string>(
     restaurants[0].id
   );
-  const handleRestaurantSelect = (id: number) => {
+  const handleRestaurantSelect = (id: string) => {
     setFocusedRestaurantId(id);
   };
 
@@ -39,7 +39,7 @@ export default function HomePage({
     <Box height="100vh" width="100vw">
       <Map
         restaurants={restaurants}
-        selectedRestaurantID={focusedRestaurantId}
+        selectedRestaurantId={focusedRestaurantId}
         onRestaurantSelect={handleRestaurantSelect}
         defaultCenter={{
           lat: 34.67938711932558,
@@ -109,7 +109,7 @@ export default function HomePage({
                 <Image
                   alt="商品"
                   borderTopRadius="16px"
-                  src={restaurant.foodImagePath}
+                  src={restaurant.imageUrl}
                 />
               </CardHeader>
               <CardBody padding={3}>

@@ -9,16 +9,17 @@ import {
   DrawerHeader,
   DrawerOverlay,
 } from "@chakra-ui/react";
+import { Restaurant } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import Stripe from "stripe";
 
 type Props = {
-  restaurantId: number;
+  selectedRestaurant: Restaurant;
   paymentMethods: Stripe.PaymentMethod[];
 };
 
 export default function RestaurantModal({
-  restaurantId,
+  selectedRestaurant,
   paymentMethods,
 }: Props) {
   const router = useRouter();
@@ -31,7 +32,7 @@ export default function RestaurantModal({
 
         <DrawerBody p={0}>
           <RestaurantDetail
-            selectedRestaurantId={restaurantId}
+            selectedRestaurant={selectedRestaurant}
             paymentMethods={paymentMethods}
           />
         </DrawerBody>

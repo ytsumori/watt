@@ -60,3 +60,14 @@ model StripeCustomer {
   stripeCustomerId String @unique
   user             User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
+
+model Restaurant {
+  id        String @id @default(cuid())
+  name      String
+  latitude  Float
+  longitude Float
+  imageUrl  String
+  price     Int
+
+  @@unique([latitude, longitude])
+}

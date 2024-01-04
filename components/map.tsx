@@ -1,7 +1,7 @@
 "use client";
 
 import { Wrapper, Status } from "@googlemaps/react-wrapper";
-import { Restaurant } from "@/constants/restaurants";
+import { Restaurant } from "@prisma/client";
 import {
   Children,
   cloneElement,
@@ -18,14 +18,14 @@ const render = (status: Status) => {
 
 type Props = {
   restaurants: Restaurant[];
-  selectedRestaurantID?: number;
-  onRestaurantSelect?: (id: number) => void;
+  selectedRestaurantId?: string;
+  onRestaurantSelect?: (id: string) => void;
   defaultCenter: google.maps.LatLngLiteral;
 };
 
 export default function Map({
   restaurants,
-  selectedRestaurantID,
+  selectedRestaurantId,
   onRestaurantSelect,
   defaultCenter,
 }: Props) {
@@ -35,7 +35,7 @@ export default function Map({
 
   useEffect(() => {
     const selectedRestaurant = restaurants.find(
-      (restaurant) => restaurant.id === selectedRestaurantID
+      (restaurant) => restaurant.id === selectedRestaurantId
     );
     if (selectedRestaurant) {
       setCenter({
@@ -43,7 +43,7 @@ export default function Map({
         lng: selectedRestaurant.longitude,
       });
     }
-  }, [selectedRestaurantID, restaurants]);
+  }, [selectedRestaurantId, restaurants]);
 
   const handleIdle = useCallback(
     (map: google.maps.Map) => {
@@ -60,7 +60,7 @@ export default function Map({
   );
 
   const handleRestaurantSelect = useCallback(
-    (restaurantID: number) => {
+    (restaurantID: string) => {
       if (onRestaurantSelect) onRestaurantSelect(restaurantID);
     },
     [onRestaurantSelect]
@@ -103,7 +103,7 @@ export default function Map({
             key={restaurant.id}
             position={{ lat: restaurant.latitude, lng: restaurant.longitude }}
             title={restaurant.name}
-            selected={restaurant.id === selectedRestaurantID}
+            selected={restaurant.id === selectedRestaurantId}
             onClick={() => {
               setCenter({
                 lat: restaurant.latitude,

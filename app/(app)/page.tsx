@@ -1,8 +1,7 @@
 import HomePage from "@/components/home-page";
-import { RESTAURANTS } from "@/constants/restaurants";
-import "../global.css";
+import prisma from "@/lib/prisma";
 
 export default async function Home() {
-  const restaurants = RESTAURANTS;
+  const restaurants = await prisma.restaurant.findMany();
   return <HomePage restaurants={restaurants} />;
 }

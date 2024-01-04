@@ -30,7 +30,6 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import Map from "@/components/map";
-import { RESTAURANTS } from "@/constants/restaurants";
 import { useEffect, useState } from "react";
 import { FaInstagram } from "react-icons/fa";
 import { TabelogIcon } from "./tabelog-icon";
@@ -40,12 +39,13 @@ import { LoginButton } from "./buttons";
 import { createQRCode } from "@/lib/paypay";
 import { useRouter } from "next/navigation";
 import Stripe from "stripe";
+import { Restaurant } from "@prisma/client";
 
 export default function RestaurantDetail({
-  selectedRestaurantId,
+  selectedRestaurant,
   paymentMethods,
 }: {
-  selectedRestaurantId: number;
+  selectedRestaurant: Restaurant;
   paymentMethods: Stripe.PaymentMethod[];
 }) {
   const router = useRouter();
@@ -56,9 +56,6 @@ export default function RestaurantDetail({
   const [qrImagePath, setQrImagePath] = useState<string>();
   const [isCheckingIn, setIsCheckingIn] = useState(false);
   const [isPaying, setIsPaying] = useState(false);
-  const selectedRestaurant = RESTAURANTS.find(
-    (restaurant) => restaurant.id === selectedRestaurantId
-  )!;
 
   const steps: {
     title: string;
@@ -111,7 +108,7 @@ export default function RestaurantDetail({
           <Image
             objectFit="contain"
             alt="商品"
-            src={selectedRestaurant.foodImagePath}
+            src={selectedRestaurant.imageUrl}
             width="40%"
           />
           <VStack p={4}>
@@ -151,7 +148,7 @@ export default function RestaurantDetail({
         <Box h="25vh" w="full">
           <Map
             restaurants={[selectedRestaurant]}
-            selectedRestaurantID={selectedRestaurant.id}
+            selectedRestaurantId={selectedRestaurant.id}
             defaultCenter={{
               lat: selectedRestaurant.latitude,
               lng: selectedRestaurant.longitude,

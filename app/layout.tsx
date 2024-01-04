@@ -1,4 +1,5 @@
-import BaseLayout from "@/components/base-layout";
+import { Providers } from "./provider";
+import "./global.css";
 
 export const metadata = {
   metadataBase: new URL("https://https://senbero.vercel.app"),
@@ -8,15 +9,15 @@ export const metadata = {
 
 export default function RootLayout({
   children,
-  modal,
 }: {
   children: React.ReactNode;
   modal: React.ReactNode;
 }) {
   return (
-    <BaseLayout>
-      {children}
-      {modal}
-    </BaseLayout>
+    <html lang="jp">
+      <body>
+        <Providers>{children}</Providers>
+      </body>
+    </html>
   );
 }
