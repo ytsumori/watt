@@ -1,5 +1,5 @@
 import BaseLayout from "@/components/base-layout";
-import { Providers } from "./provider";
+import { Providers } from "../provider";
 
 export const metadata = {
   metadataBase: new URL("https://postgres-prisma.vercel.app"),
