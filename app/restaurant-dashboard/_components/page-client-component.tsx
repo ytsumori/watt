@@ -1,11 +1,20 @@
 "use client";
 
-import { createMeal } from "@/actions/meal";
+import {
+  activateMeal,
+  createMeal,
+  discardMeal,
+  getMeals,
+} from "@/actions/meal";
 import {
   Button,
+  Card,
+  CardBody,
+  CardFooter,
   FormControl,
   FormHelperText,
   FormLabel,
+  Heading,
   Image,
   Modal,
   ModalBody,
@@ -16,13 +25,26 @@ import {
   ModalOverlay,
   NumberInput,
   NumberInputField,
+  Spacer,
+  VStack,
   useDisclosure,
 } from "@chakra-ui/react";
+import { Meal } from "@prisma/client";
 import { PutBlobResult } from "@vercel/blob";
 import { upload } from "@vercel/blob/client";
 import { useRef, useState } from "react";
 
-export function DashboardClientComponent() {
+type Props = {
+  restaurantId: string;
+  defaultMeals: Meal[];
+  defaultDiscardedMeals: Meal[];
+};
+
+export function DashboardClientComponent({
+  restaurantId,
+  defaultMeals,
+  defaultDiscardedMeals,
+}: Props) {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const [price, setPrice] = useState<number>();
@@ -30,6 +52,18 @@ export function DashboardClientComponent() {
   const inputFileRef = useRef<HTMLInputElement>(null);
   const [blob, setBlob] = useState<PutBlobResult>();
   const [isUploading, setIsUploading] = useState(false);
+
+  const [meals, setMeals] = useState<Meal[]>(defaultMeals);
+  const [discardedMeals, setDiscardedMeals] = useState<Meal[]>(
+    defaultDiscardedMeals
+  );
+
+  const revalidateMeals = () => {
+    getMeals({ restaurantId }).then((meals) => setMeals(meals));
+    getMeals({ restaurantId, isDiscarded: true }).then((discardedMeals) =>
+      setDiscardedMeals(discardedMeals)
+    );
+  };
 
   const handlePriceChange = (value: string) => {
     const numberValue = Number(value);
@@ -60,12 +94,73 @@ export function DashboardClientComponent() {
   const handleClickSubmit = async () => {
     if (!blob || !price) return;
 
-    createMeal(price, blob.url).then(() => onClose());
+    createMeal({ restaurantId, price, imageUrl: blob.url }).then(() => {
+      revalidateMeals();
+      onClose();
+    });
+  };
+
+  const handleClickDiscard = async (mealId: string) => {
+    discardMeal({ id: mealId }).then(() => {
+      revalidateMeals();
+    });
+  };
+
+  const handleClickReopen = async (mealId: string) => {
+    activateMeal({ id: mealId }).then(() => {
+      revalidateMeals();
+    });
   };
 
   return (
     <>
-      <Button onClick={onOpen}>推しメシを登録</Button>
+      <VStack width="full" alignItems="baseline" spacing={6}>
+        <Button onClick={onOpen} textColor="white">
+          推しメシを登録
+        </Button>
+        <Heading size="md">推しメシ(提供中)</Heading>
+        {meals.map((meal) => (
+          <Card key={meal.id} variant="outline" direction="row">
+            <Image src={meal.imageUrl} alt={meal.id} maxW="200px" />
+            <VStack spacing={0}>
+              <CardBody>
+                <Heading size="md">{meal.price}円</Heading>
+              </CardBody>
+              <CardFooter>
+                <Button
+                  variant="ghost"
+                  colorScheme="red"
+                  onClick={() => handleClickDiscard(meal.id)}
+                >
+                  取り消す
+                </Button>
+              </CardFooter>
+            </VStack>
+          </Card>
+        ))}
+        <Heading size="md" textColor="gray">
+          取り消し済み
+        </Heading>
+        {discardedMeals.map((meal) => (
+          <Card key={meal.id} variant="filled" direction="row">
+            <Image src={meal.imageUrl} alt={meal.id} maxW="200px" />
+            <VStack spacing={0}>
+              <CardBody>
+                <Heading size="md">{meal.price}円</Heading>
+              </CardBody>
+              <CardFooter>
+                <Button
+                  variant="ghost"
+                  colorScheme="cyan"
+                  onClick={() => handleClickReopen(meal.id)}
+                >
+                  提供再開
+                </Button>
+              </CardFooter>
+            </VStack>
+          </Card>
+        ))}
+      </VStack>
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
@@ -104,6 +199,7 @@ export function DashboardClientComponent() {
               mr={3}
               onClick={handleClickSubmit}
               isDisabled={!(blob && price)}
+              textColor="white"
             >
               保存
             </Button>

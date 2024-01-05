@@ -75,10 +75,11 @@ model Restaurant {
 }
 
 model Meal {
-  id           String @id @default(cuid())
-  restaurantId String @unique
+  id           String  @id @default(cuid())
+  restaurantId String
   imageUrl     String
   price        Int
+  isDiscarded  Boolean @default(false)
 
   restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
 }
