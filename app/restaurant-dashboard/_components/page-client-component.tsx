@@ -25,7 +25,6 @@ import {
   ModalOverlay,
   NumberInput,
   NumberInputField,
-  Spacer,
   VStack,
   useDisclosure,
 } from "@chakra-ui/react";
@@ -40,7 +39,7 @@ type Props = {
   defaultDiscardedMeals: Meal[];
 };
 
-export function DashboardClientComponent({
+export function DashboardPage({
   restaurantId,
   defaultMeals,
   defaultDiscardedMeals,
