@@ -12,8 +12,6 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
         return 0;
       case "/restaurant-dashboard/schedule":
         return 1;
-      case "/restaurant-dashboard/profile":
-        return 2;
       default:
         return 0;
     }
@@ -25,12 +23,8 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
         <Tab onClick={() => router.push("/restaurant-dashboard/schedule")}>
           営業時間設定
         </Tab>
-        <Tab onClick={() => router.push("/restaurant-dashboard/profile")}>
-          店情報編集
-        </Tab>
       </TabList>
       <TabPanels>
-        <TabPanel>{children}</TabPanel>
         <TabPanel>{children}</TabPanel>
         <TabPanel>{children}</TabPanel>
       </TabPanels>
