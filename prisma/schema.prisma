@@ -8,6 +8,8 @@ datasource db {
   directUrl = env("POSTGRES_URL_NON_POOLING")
 }
 
+// NextAuth auto generated models
+
 model Account {
   id                String  @id @default(cuid())
   userId            String
@@ -54,6 +56,8 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
+// NextAuth auto generated models end
+
 model StripeCustomer {
   id               String @id @default(cuid())
   userId           String @unique
@@ -63,13 +67,14 @@ model StripeCustomer {
 }
 
 model Restaurant {
-  id        String @id @default(cuid())
+  id        String              @id @default(cuid())
   name      String
   latitude  Float
   longitude Float
   imageUrl  String
   price     Int
   meals     Meal[]
+  openDays  RestaurantOpenDay[]
 
   @@unique([latitude, longitude])
 }
@@ -82,4 +87,32 @@ model Meal {
   isDiscarded  Boolean @default(false)
 
   restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+}
+
+enum DayOfWeek {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+}
+
+model RestaurantOpenDay {
+  id           String               @id @default(cuid())
+  restaurantId String
+  day          DayOfWeek
+  openHour     RestaurantOpenHour[]
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+}
+
+model RestaurantOpenHour {
+  id                  String   @id @default(cuid())
+  restaurantOpenDayId String
+  start               DateTime
+  end                 DateTime
+
+  targetDay RestaurantOpenDay @relation(fields: [restaurantOpenDayId], references: [id], onDelete: Cascade)
 }
