@@ -6,6 +6,7 @@ import {
   discardMeal,
   getMeals,
 } from "@/actions/meal";
+import { mealImageRef } from "@/lib/firebase";
 import {
   Button,
   Card,
@@ -29,8 +30,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { Meal } from "@prisma/client";
-import { PutBlobResult } from "@vercel/blob";
-import { upload } from "@vercel/blob/client";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useRef, useState } from "react";
 
 type Props = {
@@ -44,12 +44,17 @@ export function DashboardPage({
   defaultMeals,
   defaultDiscardedMeals,
 }: Props) {
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen, onOpen, onClose } = useDisclosure({
+    onClose: () => {
+      setImageUrl(undefined);
+      setPrice(undefined);
+    },
+  });
 
   const [price, setPrice] = useState<number>();
 
   const inputFileRef = useRef<HTMLInputElement>(null);
-  const [blob, setBlob] = useState<PutBlobResult>();
+  const [imageUrl, setImageUrl] = useState<string>();
   const [isUploading, setIsUploading] = useState(false);
 
   const [meals, setMeals] = useState<Meal[]>(defaultMeals);
@@ -74,26 +79,34 @@ export function DashboardPage({
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     setIsUploading(true);
-    event.preventDefault();
-    if (!inputFileRef.current?.files) {
-      throw new Error("No file selected");
+    try {
+      event.preventDefault();
+      if (!inputFileRef.current?.files) {
+        throw new Error("No file selected");
+      }
+
+      const file = inputFileRef.current.files[0];
+      if (!(file && file.type.match("image.*"))) {
+        throw new Error("Not an image");
+      }
+
+      const filename = window.crypto.randomUUID();
+      const imageRef = ref(mealImageRef, filename);
+      const snapshot = await uploadBytes(imageRef, file);
+      const imageUrl = await getDownloadURL(snapshot.ref);
+      setIsUploading(false);
+      setImageUrl(imageUrl);
+    } catch (error) {
+      console.error(error);
+      setIsUploading(false);
+      setImageUrl(undefined);
     }
-
-    const file = inputFileRef.current.files[0];
-
-    const newBlob = await upload(file.name, file, {
-      access: "public",
-      handleUploadUrl: "/api/meal/upload",
-    });
-
-    setIsUploading(false);
-    setBlob(newBlob);
   };
 
   const handleClickSubmit = async () => {
-    if (!blob || !price) return;
+    if (!imageUrl || !price) return;
 
-    createMeal({ restaurantId, price, imageUrl: blob.url }).then(() => {
+    createMeal({ restaurantId, price, imageUrl: imageUrl }).then(() => {
       revalidateMeals();
       onClose();
     });
@@ -189,7 +202,7 @@ export function DashboardPage({
               {isUploading ? (
                 <FormHelperText>アップロード中...</FormHelperText>
               ) : (
-                blob && <Image src={blob.url} alt="料理画像" />
+                imageUrl && <Image src={imageUrl} alt="料理画像" />
               )}
             </FormControl>
           </ModalBody>
@@ -197,7 +210,7 @@ export function DashboardPage({
             <Button
               mr={3}
               onClick={handleClickSubmit}
-              isDisabled={!(blob && price)}
+              isDisabled={!(imageUrl && price)}
               textColor="white"
             >
               保存
