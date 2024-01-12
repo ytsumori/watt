@@ -4,6 +4,10 @@
 migrate-db:
 	dotenv -e .env.local -- pnpx prisma migrate dev
 
+# push db
+push-db:
+	dotenv -e .env.local -- pnpx prisma db push
+
 # format schema
 format-schema:
 	dotenv -e .env.local -- pnpx prisma validate

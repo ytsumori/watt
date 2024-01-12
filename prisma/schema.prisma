@@ -3,8 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("POSTGRES_URL")
+  provider = "postgresql"
+  url      = env("POSTGRES_URL")
 }
 
 // NextAuth auto generated models
@@ -72,6 +72,7 @@ model Restaurant {
   longitude Float
   imageUrl  String
   price     Int
+  isOpen    Boolean             @default(false)
   meals     Meal[]
   openDays  RestaurantOpenDay[]
 

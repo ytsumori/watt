@@ -5,9 +5,14 @@ import FullCalendar from "@fullcalendar/react";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import {
+  Alert,
+  AlertIcon,
   Button,
   FormControl,
+  FormHelperText,
   FormLabel,
+  HStack,
+  Heading,
   Input,
   Modal,
   ModalBody,
@@ -17,11 +22,13 @@ import {
   ModalHeader,
   ModalOverlay,
   Select,
+  Switch,
   useDisclosure,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { ChangeEvent, useState } from "react";
 import { createOpenHour } from "@/actions/restaurantOpenHour";
 import { DayOfWeek } from "@prisma/client";
+import { updateIsOpen } from "@/actions/restaurant";
 
 type OpenHour = {
   id: string;
@@ -32,14 +39,24 @@ type OpenHour = {
 
 type Props = {
   restaurantId: string;
+  defaultIsOpen: boolean;
   defaultOpenHours: OpenHour[];
 };
 
-export function DashboardSchedule({ restaurantId, defaultOpenHours }: Props) {
+export function DashboardSchedule({
+  restaurantId,
+  defaultIsOpen,
+  defaultOpenHours,
+}: Props) {
   const [dayOfWeek, setDayOfWeek] = useState<DayOfWeek>();
   const [startTime, setStartTime] = useState<string>();
   const [endTime, setEndTime] = useState<string>();
-  const { isOpen, onOpen, onClose } = useDisclosure({
+  const [isRestaurantOpen, setIsRestaurantOpen] = useState(defaultIsOpen);
+  const {
+    isOpen: isModalOpen,
+    onOpen: onModalOpen,
+    onClose,
+  } = useDisclosure({
     onClose: () => {
       setDayOfWeek(undefined);
       setStartTime(undefined);
@@ -50,6 +67,13 @@ export function DashboardSchedule({ restaurantId, defaultOpenHours }: Props) {
   const formattedEvents = defaultOpenHours.map((openHour) =>
     toEventInput(openHour)
   );
+
+  const handleOpenStatusChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const isOpen = event.target.checked;
+    updateIsOpen({ id: restaurantId, isOpen }).then(() => {
+      setIsRestaurantOpen(isOpen);
+    });
+  };
 
   const handleSubmit = () => {
     if (dayOfWeek && startTime && endTime) {
@@ -64,6 +88,23 @@ export function DashboardSchedule({ restaurantId, defaultOpenHours }: Props) {
 
   return (
     <>
+      <FormControl>
+        <HStack>
+          <FormLabel mb={0}>営業中</FormLabel>
+          <Switch
+            onChange={handleOpenStatusChange}
+            isChecked={isRestaurantOpen}
+          />
+        </HStack>
+        <FormHelperText>
+          お客さんを案内できない場合はオフにしてください
+        </FormHelperText>
+      </FormControl>
+      <Heading mt={6}>営業時間</Heading>
+      <Alert status="info" size="">
+        <AlertIcon />
+        営業時間を登録することで、自動で営業中ステータスに変更されます
+      </Alert>
       <FullCalendar
         plugins={[timeGridPlugin, interactionPlugin]}
         initialView="timeGridWeek"
@@ -87,10 +128,10 @@ export function DashboardSchedule({ restaurantId, defaultOpenHours }: Props) {
           setDayOfWeek(toDayOfWeek(info.date.getDay()));
           setStartTime(info.date.toLocaleTimeString("ja-JP").padStart(8, "0"));
           setEndTime(endDate.toLocaleTimeString("ja-JP").padStart(8, "0"));
-          onOpen();
+          onModalOpen();
         }}
       />
-      <Modal isOpen={isOpen} onClose={onClose}>
+      <Modal isOpen={isModalOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>営業時間を追加</ModalHeader>
