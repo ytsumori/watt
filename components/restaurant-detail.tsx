@@ -247,20 +247,6 @@ export default function RestaurantDetail({
                 </VStack>
               ) : (
                 <>
-                  {/* <QrReader
-              ViewFinder={ViewFinder}
-              constraints={{
-                facingMode: "environment",
-              }}
-              onResult={(result) => {
-                if (!!result) {
-                  setActiveStep(3);
-                  setIsCheckingIn(false);
-                }
-              }}
-              containerStyle={{ width: "100%" }}
-              videoStyle={{ width: "100%" }}
-            /> */}
                   <Center
                     width="full"
                     backgroundColor="blackAlpha.700"

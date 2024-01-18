@@ -2,6 +2,8 @@ import stripe from "@/lib/stripe";
 import RestaurantDetail from "@/components/restaurant-detail";
 import { getStripeCustomer } from "@/actions/stripeCustomer";
 import prisma from "@/lib/prisma";
+import { options } from "@/lib/next-auth/options";
+import { getServerSession } from "next-auth";
 
 type Params = {
   id: string;
@@ -16,18 +18,29 @@ export default async function RestaurantPage({ params }: { params: Params }) {
     throw new Error("Invalid restaurant id");
   }
 
-  const stripeCustomer = await getStripeCustomer();
-  if (!stripeCustomer) {
-    throw new Error("Invalid stripe customer");
+  const session = await getServerSession(options);
+
+  if (session) {
+    // logged in
+    const stripeCustomer = await getStripeCustomer();
+    const paymentMethods = stripeCustomer
+      ? await stripe.customers.listPaymentMethods(
+          stripeCustomer.stripeCustomerId
+        )
+      : undefined;
+
+    return (
+      <RestaurantDetail
+        selectedRestaurant={selectedRestaurant}
+        paymentMethods={paymentMethods?.data ?? []}
+      />
+    );
   }
-  const paymentMethods = await stripe.customers.listPaymentMethods(
-    stripeCustomer.stripeCustomerId
-  );
 
   return (
     <RestaurantDetail
       selectedRestaurant={selectedRestaurant}
-      paymentMethods={paymentMethods.data}
+      paymentMethods={[]}
     />
   );
 }
