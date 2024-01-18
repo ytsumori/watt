@@ -1,6 +1,6 @@
 "use client";
 
-import { getStaffsByLineId } from "@/actions/staff";
+import { getStaffs } from "@/actions/staff";
 import { verifyIdToken } from "@/lib/line-login";
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react";
 import liff from "@line/liff";
@@ -22,7 +22,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
         const idToken = liff.getIDToken();
         if (!idToken) throw new Error("No id token");
         verifyIdToken({ idToken }).then((res) => {
-          getStaffsByLineId({ lineId: res.sub }).then((staffs) => {
+          getStaffs({ lineId: res.sub }).then((staffs) => {
             if (staffs.length > 0) {
               setRestaurantId(staffs[0].restaurantId);
               setIsLoggedIn(true);
