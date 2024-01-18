@@ -3,6 +3,7 @@
 import { createStaff } from "@/actions/staff";
 import {
   Button,
+  Center,
   FormControl,
   FormLabel,
   Input,
@@ -11,7 +12,7 @@ import {
 } from "@chakra-ui/react";
 import { useContext, useState } from "react";
 import { LineIdTokenContext } from "../../_components/layout-client-component";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 
 export function SignUpPage() {
   const idToken = useContext(LineIdTokenContext);
@@ -38,14 +39,24 @@ export function SignUpPage() {
   };
 
   return (
-    <VStack>
-      <FormControl isRequired>
-        <FormLabel>レストランID</FormLabel>
-        <Input min={0} onChange={handlePriceChange} value={restaurantId} />
-      </FormControl>
-      <Button textColor="white" disabled={!restaurantId} onClick={handleSubmit}>
-        登録する
-      </Button>
-    </VStack>
+    <Center height="100vh">
+      <VStack spacing={4}>
+        <FormControl isRequired>
+          <FormLabel>レストランID</FormLabel>
+          <Input
+            min={0}
+            onChange={handlePriceChange}
+            value={restaurantId ?? ""}
+          />
+        </FormControl>
+        <Button
+          textColor="white"
+          isDisabled={!restaurantId}
+          onClick={handleSubmit}
+        >
+          登録する
+        </Button>
+      </VStack>
+    </Center>
   );
 }
