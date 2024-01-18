@@ -1,12 +1,11 @@
 import { DashboardLayout } from "./_components/dashboard-layout";
 
 export const metadata = {
-  metadataBase: new URL("https://https://senbero.vercel.app"),
-  title: "Senbero",
-  description: "My very first senbero app",
+  title: "Watt(飲食店向けページ)",
+  description: "Watt(飲食店向けページ)",
 };
 
-export default function RootLayout({
+export default async function Layout({
   children,
 }: {
   children: React.ReactNode;
