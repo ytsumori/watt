@@ -75,6 +75,7 @@ model Restaurant {
   isOpen    Boolean              @default(false)
   meals     Meal[]
   openHours RestaurantOpenHour[]
+  staffs    Staff[]
 
   @@unique([latitude, longitude])
 }
@@ -107,6 +108,14 @@ model RestaurantOpenHour {
   startMinute  Int
   endHour      Int
   endMinute    Int
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+}
+
+model Staff {
+  id           String @id @default(cuid())
+  restaurantId String
+  lineId       String
 
   restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
 }

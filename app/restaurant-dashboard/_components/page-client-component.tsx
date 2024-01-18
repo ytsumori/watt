@@ -5,7 +5,7 @@ import {
   createMeal,
   discardMeal,
   getMeals,
-} from "@/actions/meal";
+} from "@/actions/Meal";
 import { mealImageRef } from "@/lib/firebase";
 import {
   Button,
@@ -31,19 +31,11 @@ import {
 } from "@chakra-ui/react";
 import { Meal } from "@prisma/client";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
+import { RestaurantIdContext } from "./dashboard-layout";
 
-type Props = {
-  restaurantId: string;
-  defaultMeals: Meal[];
-  defaultDiscardedMeals: Meal[];
-};
-
-export function DashboardPage({
-  restaurantId,
-  defaultMeals,
-  defaultDiscardedMeals,
-}: Props) {
+export function DashboardPage() {
+  const restaurantId = useContext(RestaurantIdContext);
   const { isOpen, onOpen, onClose } = useDisclosure({
     onClose: () => {
       setImageUrl(undefined);
@@ -57,10 +49,15 @@ export function DashboardPage({
   const [imageUrl, setImageUrl] = useState<string>();
   const [isUploading, setIsUploading] = useState(false);
 
-  const [meals, setMeals] = useState<Meal[]>(defaultMeals);
-  const [discardedMeals, setDiscardedMeals] = useState<Meal[]>(
-    defaultDiscardedMeals
-  );
+  const [meals, setMeals] = useState<Meal[]>([]);
+  const [discardedMeals, setDiscardedMeals] = useState<Meal[]>([]);
+
+  useEffect(() => {
+    getMeals({ restaurantId }).then((meals) => setMeals(meals));
+    getMeals({ restaurantId, isDiscarded: true }).then((discardedMeals) =>
+      setDiscardedMeals(discardedMeals)
+    );
+  }, [restaurantId]);
 
   const revalidateMeals = () => {
     getMeals({ restaurantId }).then((meals) => setMeals(meals));

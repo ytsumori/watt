@@ -25,32 +25,24 @@ import {
   Switch,
   useDisclosure,
 } from "@chakra-ui/react";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useContext, useEffect, useState } from "react";
 import {
   createOpenHour,
   deleteOpenHour,
+  getOpenHours,
   updateOpenHour,
-} from "@/actions/restaurantOpenHour";
+} from "@/actions/RestaurantOpenHour";
 import { DayOfWeek, RestaurantOpenHour } from "@prisma/client";
-import { updateIsOpen } from "@/actions/restaurant";
+import { findRestaurant, updateIsOpen } from "@/actions/Restaurant";
+import { RestaurantIdContext } from "../../_components/dashboard-layout";
 
-type Props = {
-  restaurantId: string;
-  defaultIsOpen: boolean;
-  defaultOpenHours: RestaurantOpenHour[];
-};
-
-export function DashboardSchedule({
-  restaurantId,
-  defaultIsOpen,
-  defaultOpenHours,
-}: Props) {
+export function DashboardSchedule() {
+  const restaurantId = useContext(RestaurantIdContext);
   const [dayOfWeek, setDayOfWeek] = useState<DayOfWeek>();
   const [startTime, setStartTime] = useState<string>();
   const [endTime, setEndTime] = useState<string>();
-  const [isRestaurantOpen, setIsRestaurantOpen] = useState(defaultIsOpen);
-  const [openHours, setOpenHours] =
-    useState<RestaurantOpenHour[]>(defaultOpenHours);
+  const [isRestaurantOpen, setIsRestaurantOpen] = useState(false);
+  const [openHours, setOpenHours] = useState<RestaurantOpenHour[]>([]);
   const [editingOpenHourId, setEditingOpenHourId] = useState<string>();
   const {
     isOpen: isModalOpen,
@@ -64,6 +56,13 @@ export function DashboardSchedule({
       setEndTime(undefined);
     },
   });
+  useEffect(() => {
+    findRestaurant(restaurantId).then((restaurant) => {
+      if (!restaurant) throw new Error("Restaurant not found");
+      setIsRestaurantOpen(restaurant.isOpen);
+    });
+    getOpenHours({ restaurantId }).then((openHours) => setOpenHours(openHours));
+  }, [restaurantId]);
 
   const formattedEvents = openHours.map((openHour) => toEventInput(openHour));
 

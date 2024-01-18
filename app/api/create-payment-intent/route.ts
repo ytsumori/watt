@@ -1,5 +1,5 @@
-import { getMyId } from "@/actions/me";
-import { createStripeCustomer } from "@/actions/stripeCustomer";
+import { getMyId } from "@/actions/Me";
+import { createStripeCustomer } from "@/actions/StripeCustomer";
 import { options } from "@/lib/next-auth/options";
 import prisma from "@/lib/prisma";
 import { getServerSession } from "next-auth/next";

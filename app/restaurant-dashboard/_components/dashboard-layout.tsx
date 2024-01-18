@@ -1,12 +1,16 @@
 "use client";
 
-import { setCookie } from "@/actions/lineIdTokenCookies";
+import { getStaffsByLineId } from "@/actions/Staff";
+import { verifyIdToken } from "@/lib/line-login";
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react";
 import liff from "@line/liff";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { createContext, useEffect, useState } from "react";
+
+export const RestaurantIdContext = createContext("");
 
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const [restaurantId, setRestaurantId] = useState<string>();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   useEffect(() => {
     liff
@@ -16,16 +20,24 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
       })
       .then(() => {
         const idToken = liff.getIDToken();
-        if (!idToken) throw new Error("No id token"); // TODO: redirect to other page
-        setCookie({ idToken }).then(() => {
-          setIsLoggedIn(true);
+        if (!idToken) throw new Error("No id token");
+        verifyIdToken({ idToken }).then((res) => {
+          getStaffsByLineId({ lineId: res.sub }).then((staffs) => {
+            if (staffs.length > 0) {
+              setRestaurantId(staffs[0].restaurantId);
+              setIsLoggedIn(true);
+            }
+          });
         });
       });
+
+    setRestaurantId("clqyruucj0000zcz3w2yhk6oa");
+    setIsLoggedIn(true);
   }, []);
   const router = useRouter();
   const pathname = usePathname();
 
-  if (!isLoggedIn) return <></>;
+  if (!(isLoggedIn && restaurantId)) return <></>;
   const currentIndex = () => {
     switch (pathname) {
       case "/restaurant-dashboard":
@@ -37,17 +49,21 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
     }
   };
   return (
-    <Tabs isFitted index={currentIndex()}>
-      <TabList>
-        <Tab onClick={() => router.push("/restaurant-dashboard")}>推しメシ</Tab>
-        <Tab onClick={() => router.push("/restaurant-dashboard/schedule")}>
-          営業時間設定
-        </Tab>
-      </TabList>
-      <TabPanels>
-        <TabPanel>{children}</TabPanel>
-        <TabPanel>{children}</TabPanel>
-      </TabPanels>
-    </Tabs>
+    <RestaurantIdContext.Provider value={restaurantId}>
+      <Tabs isFitted index={currentIndex()}>
+        <TabList>
+          <Tab onClick={() => router.push("/restaurant-dashboard")}>
+            推しメシ
+          </Tab>
+          <Tab onClick={() => router.push("/restaurant-dashboard/schedule")}>
+            営業時間設定
+          </Tab>
+        </TabList>
+        <TabPanels>
+          <TabPanel>{children}</TabPanel>
+          <TabPanel>{children}</TabPanel>
+        </TabPanels>
+      </Tabs>
+    </RestaurantIdContext.Provider>
   );
 }
