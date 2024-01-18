@@ -1,5 +1,3 @@
-.PHONY: migrate-db format-schema prisma-studio
-
 # migrate db
 migrate-db:
 	dotenv -e .env.local -- pnpx prisma migrate dev
