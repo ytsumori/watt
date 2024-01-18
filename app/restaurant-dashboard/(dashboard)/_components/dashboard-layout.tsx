@@ -10,6 +10,8 @@ import { createContext, useEffect, useState } from "react";
 export const RestaurantIdContext = createContext("");
 
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
+  const pathname = usePathname();
   const [restaurantId, setRestaurantId] = useState<string>();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   useEffect(() => {
@@ -26,15 +28,14 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
             if (staffs.length > 0) {
               setRestaurantId(staffs[0].restaurantId);
               setIsLoggedIn(true);
+            } else {
+              router.push("/restaurant-dashboard/sign-up");
             }
           });
         });
       });
-  }, []);
-  const router = useRouter();
-  const pathname = usePathname();
+  }, [router]);
 
-  if (!(isLoggedIn && restaurantId)) return <></>;
   const currentIndex = () => {
     switch (pathname) {
       case "/restaurant-dashboard":
@@ -46,21 +47,24 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
     }
   };
   return (
-    <RestaurantIdContext.Provider value={restaurantId}>
-      <Tabs isFitted index={currentIndex()}>
-        <TabList>
-          <Tab onClick={() => router.push("/restaurant-dashboard")}>
-            推しメシ
-          </Tab>
-          <Tab onClick={() => router.push("/restaurant-dashboard/schedule")}>
-            営業時間設定
-          </Tab>
-        </TabList>
-        <TabPanels>
-          <TabPanel>{children}</TabPanel>
-          <TabPanel>{children}</TabPanel>
-        </TabPanels>
-      </Tabs>
-    </RestaurantIdContext.Provider>
+    <Tabs isFitted index={currentIndex()}>
+      <TabList>
+        <Tab onClick={() => router.push("/restaurant-dashboard")}>推しメシ</Tab>
+        <Tab onClick={() => router.push("/restaurant-dashboard/schedule")}>
+          営業時間設定
+        </Tab>
+      </TabList>
+      <TabPanels>
+        <TabPanel>{children}</TabPanel>
+        <TabPanel>{children}</TabPanel>
+      </TabPanels>
+    </Tabs>
   );
+}
+function setRestaurantId(restaurantId: string) {
+  throw new Error("Function not implemented.");
+}
+
+function setIsLoggedIn(arg0: boolean) {
+  throw new Error("Function not implemented.");
 }

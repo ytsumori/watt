@@ -1,8 +1,8 @@
-import { DashboardLayout } from "./_components/dashboard-layout";
+import { LineLoginLayout } from "./_components/layout-client-component";
 
 export const metadata = {
-  title: "Watt(飲食店向けページ)",
-  description: "Watt(飲食店向けページ)",
+  title: "飲食店向け管理画面 | Watt",
+  description: "飲食店向け管理画面 | Watt",
 };
 
 export default async function Layout({
@@ -10,5 +10,5 @@ export default async function Layout({
 }: {
   children: React.ReactNode;
 }) {
-  return <DashboardLayout>{children}</DashboardLayout>;
+  return <LineLoginLayout>{children}</LineLoginLayout>;
 }
