@@ -66,15 +66,15 @@ model StripeCustomer {
 }
 
 model Restaurant {
-  id        String              @id @default(cuid())
+  id        String               @id @default(cuid())
   name      String
   latitude  Float
   longitude Float
   imageUrl  String
   price     Int
-  isOpen    Boolean             @default(false)
+  isOpen    Boolean              @default(false)
   meals     Meal[]
-  openDays  RestaurantOpenDay[]
+  openHours RestaurantOpenHour[]
 
   @@unique([latitude, longitude])
 }
@@ -99,20 +99,14 @@ enum DayOfWeek {
   SUNDAY
 }
 
-model RestaurantOpenDay {
-  id           String               @id @default(cuid())
+model RestaurantOpenHour {
+  id           String    @id @default(cuid())
   restaurantId String
   day          DayOfWeek
-  openHour     RestaurantOpenHour[]
+  startHour    Int
+  startMinute  Int
+  endHour      Int
+  endMinute    Int
 
   restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
-}
-
-model RestaurantOpenHour {
-  id                  String   @id @default(cuid())
-  restaurantOpenDayId String
-  start               DateTime
-  end                 DateTime
-
-  targetDay RestaurantOpenDay @relation(fields: [restaurantOpenDayId], references: [id], onDelete: Cascade)
 }

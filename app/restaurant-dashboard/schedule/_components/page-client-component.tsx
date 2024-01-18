@@ -26,21 +26,18 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { ChangeEvent, useState } from "react";
-import { createOpenHour } from "@/actions/restaurantOpenHour";
-import { DayOfWeek } from "@prisma/client";
+import {
+  createOpenHour,
+  deleteOpenHour,
+  updateOpenHour,
+} from "@/actions/restaurantOpenHour";
+import { DayOfWeek, RestaurantOpenHour } from "@prisma/client";
 import { updateIsOpen } from "@/actions/restaurant";
-
-type OpenHour = {
-  id: string;
-  day: number;
-  start: string;
-  end: string;
-};
 
 type Props = {
   restaurantId: string;
   defaultIsOpen: boolean;
-  defaultOpenHours: OpenHour[];
+  defaultOpenHours: RestaurantOpenHour[];
 };
 
 export function DashboardSchedule({
@@ -52,11 +49,15 @@ export function DashboardSchedule({
   const [startTime, setStartTime] = useState<string>();
   const [endTime, setEndTime] = useState<string>();
   const [isRestaurantOpen, setIsRestaurantOpen] = useState(defaultIsOpen);
+  const [openHours, setOpenHours] =
+    useState<RestaurantOpenHour[]>(defaultOpenHours);
+  const [editingOpenHourId, setEditingOpenHourId] = useState<string>();
   const {
     isOpen: isModalOpen,
     onOpen: onModalOpen,
     onClose,
   } = useDisclosure({
+    defaultIsOpen: editingOpenHourId !== undefined,
     onClose: () => {
       setDayOfWeek(undefined);
       setStartTime(undefined);
@@ -64,9 +65,7 @@ export function DashboardSchedule({
     },
   });
 
-  const formattedEvents = defaultOpenHours.map((openHour) =>
-    toEventInput(openHour)
-  );
+  const formattedEvents = openHours.map((openHour) => toEventInput(openHour));
 
   const handleOpenStatusChange = (event: ChangeEvent<HTMLInputElement>) => {
     const isOpen = event.target.checked;
@@ -76,14 +75,57 @@ export function DashboardSchedule({
   };
 
   const handleSubmit = () => {
-    if (dayOfWeek && startTime && endTime) {
+    if (!(dayOfWeek && startTime && endTime)) return;
+
+    if (editingOpenHourId) {
+      updateOpenHour({
+        id: editingOpenHourId,
+        day: dayOfWeek,
+        startHour: Number(startTime.split(":")[0]),
+        startMinute: Number(startTime.split(":")[1]),
+        endHour: Number(endTime.split(":")[0]),
+        endMinute: Number(endTime.split(":")[1]),
+      }).then((result) => {
+        const newOpenHours = [...openHours];
+        const editingIndex = newOpenHours.findIndex(
+          (openHour) => openHour.id === result.id
+        );
+        newOpenHours[editingIndex] = result;
+        setOpenHours(newOpenHours);
+        setEditingOpenHourId(undefined);
+        onClose();
+      });
+    } else {
       createOpenHour({
         restaurantId,
         day: dayOfWeek,
-        startTime,
-        endTime,
-      }).then(onClose);
+        startHour: Number(startTime.split(":")[0]),
+        startMinute: Number(startTime.split(":")[1]),
+        endHour: Number(endTime.split(":")[0]),
+        endMinute: Number(endTime.split(":")[1]),
+      }).then((result) => {
+        const newOpenHours = [...openHours, result];
+        setOpenHours(newOpenHours);
+        onClose();
+      });
     }
+  };
+
+  const handleDelete = () => {
+    if (!editingOpenHourId) return;
+
+    deleteOpenHour({
+      id: editingOpenHourId,
+    }).then((result) => {
+      const newOpenHours = [...openHours];
+      const removingIndex = newOpenHours.findIndex(
+        (openHour) => openHour.id === result.id
+      );
+      newOpenHours.splice(removingIndex, 1);
+      setOpenHours(newOpenHours);
+      setEditingOpenHourId(undefined);
+      onClose();
+    });
   };
 
   return (
@@ -130,8 +172,26 @@ export function DashboardSchedule({
           setEndTime(endDate.toLocaleTimeString("ja-JP").padStart(8, "0"));
           onModalOpen();
         }}
+        eventClick={(info) => {
+          if (!(info.event.start && info.event.end)) return;
+          setDayOfWeek(toDayOfWeek(info.event.start.getDay()));
+          setStartTime(
+            info.event.start.toLocaleTimeString("ja-JP").padStart(8, "0")
+          );
+          setEndTime(
+            info.event.end.toLocaleTimeString("ja-JP").padStart(8, "0")
+          );
+          setEditingOpenHourId(info.event.id);
+          onModalOpen();
+        }}
       />
-      <Modal isOpen={isModalOpen} onClose={onClose}>
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => {
+          setEditingOpenHourId(undefined);
+          onClose();
+        }}
+      >
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>営業時間を追加</ModalHeader>
@@ -181,8 +241,15 @@ export function DashboardSchedule({
             </FormControl>
           </ModalBody>
           <ModalFooter>
+            {editingOpenHourId && (
+              <Button onClick={handleDelete} colorScheme="red" mr="auto">
+                削除
+              </Button>
+            )}
+            <Button onClick={onClose} variant="outline" mr={3}>
+              キャンセル
+            </Button>
             <Button
-              mr={3}
               onClick={handleSubmit}
               textColor="white"
               isDisabled={
@@ -191,9 +258,6 @@ export function DashboardSchedule({
             >
               保存
             </Button>
-            <Button onClick={onClose} variant="outline">
-              キャンセル
-            </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
@@ -201,21 +265,25 @@ export function DashboardSchedule({
   );
 }
 
-function toEventInput(openHour: OpenHour): EventInput {
+function toEventInput(openHour: RestaurantOpenHour): EventInput {
   const today = new Date();
   const currentDay = today.getDay();
-  const day = openHour.day - 1;
+  const day = toNumber(openHour.day);
   const diff = day - currentDay;
   const date = new Date(today.getTime() + diff * 24 * 60 * 60 * 1000);
   const start = new Date(
-    `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} ${
-      openHour.start
-    }`
+    `${date.getFullYear()}-${
+      date.getMonth() + 1
+    }-${date.getDate()} ${openHour.startHour
+      .toString()
+      .padStart(2, "0")}:${openHour.startMinute.toString().padStart(2, "0")}`
   );
   const end = new Date(
-    `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} ${
-      openHour.end
-    }`
+    `${date.getFullYear()}-${
+      date.getMonth() + 1
+    }-${date.getDate()} ${openHour.endHour
+      .toString()
+      .padStart(2, "0")}: ${openHour.endMinute.toString().padStart(2, "0")}`
   );
   return {
     id: openHour.id,

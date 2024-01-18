@@ -207,16 +207,15 @@ export function DashboardPage({
             </FormControl>
           </ModalBody>
           <ModalFooter>
+            <Button mr={3} onClick={onClose} variant="outline">
+              キャンセル
+            </Button>
             <Button
-              mr={3}
               onClick={handleClickSubmit}
               isDisabled={!(imageUrl && price)}
               textColor="white"
             >
               保存
-            </Button>
-            <Button onClick={onClose} variant="outline">
-              キャンセル
             </Button>
           </ModalFooter>
         </ModalContent>

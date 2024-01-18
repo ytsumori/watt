@@ -4,10 +4,7 @@ import prisma from "@/lib/prisma";
 import { DayOfWeek } from "@prisma/client";
 
 export async function getOpenHours({ restaurantId }: { restaurantId: string }) {
-  return prisma.restaurantOpenDay.findMany({
-    include: {
-      openHour: true,
-    },
+  return prisma.restaurantOpenHour.findMany({
     where: {
       restaurantId,
     },
@@ -17,36 +14,59 @@ export async function getOpenHours({ restaurantId }: { restaurantId: string }) {
 export async function createOpenHour({
   restaurantId,
   day,
-  startTime,
-  endTime,
+  startHour,
+  startMinute,
+  endHour,
+  endMinute,
 }: {
   restaurantId: string;
   day: DayOfWeek;
-  startTime: string;
-  endTime: string;
+  startHour: number;
+  startMinute: number;
+  endHour: number;
+  endMinute: number;
 }) {
-  const start = new Date("1000-01-01");
-  start.setHours(
-    parseInt(startTime.split(":")[0]),
-    parseInt(startTime.split(":")[1])
-  );
-  const end = new Date("1000-01-01");
-  end.setHours(
-    parseInt(endTime.split(":")[0]),
-    parseInt(endTime.split(":")[1])
-  );
-  await prisma.restaurantOpenDay.create({
+  return await prisma.restaurantOpenHour.create({
     data: {
       restaurantId,
       day,
-      openHour: {
-        create: [
-          {
-            start,
-            end,
-          },
-        ],
-      },
+      startHour,
+      startMinute,
+      endHour,
+      endMinute,
     },
+  });
+}
+
+export async function updateOpenHour({
+  id,
+  day,
+  startHour,
+  startMinute,
+  endHour,
+  endMinute,
+}: {
+  id: string;
+  day: DayOfWeek;
+  startHour: number;
+  startMinute: number;
+  endHour: number;
+  endMinute: number;
+}) {
+  return await prisma.restaurantOpenHour.update({
+    where: { id },
+    data: {
+      day,
+      startHour,
+      startMinute,
+      endHour,
+      endMinute,
+    },
+  });
+}
+
+export async function deleteOpenHour({ id }: { id: string }) {
+  return await prisma.restaurantOpenHour.delete({
+    where: { id },
   });
 }

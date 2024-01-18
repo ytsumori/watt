@@ -1,5 +1,6 @@
 import { findRestaurant } from "@/actions/restaurant";
 import { DashboardSchedule } from "./_components/page-client-component";
+import { getOpenHours } from "@/actions/restaurantOpenHour";
 
 export default async function Dashboard() {
   const restaurantId = "clqyruucj0000zcz3w2yhk6oa";
@@ -7,15 +8,13 @@ export default async function Dashboard() {
   if (!restaurant) {
     throw new Error("Restaurant not found");
   }
+  const openHours = await getOpenHours({ restaurantId });
+
   return (
     <DashboardSchedule
       restaurantId={restaurant.id}
       defaultIsOpen={restaurant.isOpen}
-      defaultOpenHours={[
-        { id: "a", day: 1, start: "10:00", end: "15:00" },
-        { id: "b", day: 2, start: "18:00", end: "20:00" },
-        { id: "c", day: 3, start: "10:00", end: "15:00" },
-      ]}
+      defaultOpenHours={openHours}
     />
   );
 }
