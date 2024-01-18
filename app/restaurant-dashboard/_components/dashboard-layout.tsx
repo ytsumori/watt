@@ -1,6 +1,6 @@
 "use client";
 
-import { getStaffsByLineId } from "@/actions/Staff";
+import { getStaffsByLineId } from "@/actions/staff";
 import { verifyIdToken } from "@/lib/line-login";
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react";
 import liff from "@line/liff";
@@ -30,9 +30,6 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
           });
         });
       });
-
-    setRestaurantId("clqyruucj0000zcz3w2yhk6oa");
-    setIsLoggedIn(true);
   }, []);
   const router = useRouter();
   const pathname = usePathname();

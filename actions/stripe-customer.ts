@@ -1,7 +1,7 @@
 "use server";
 
 import prisma from "@/lib/prisma";
-import { getMyId } from "./Me";
+import { getMyId } from "./me";
 
 export async function getStripeCustomer() {
   const userId = await getMyId();

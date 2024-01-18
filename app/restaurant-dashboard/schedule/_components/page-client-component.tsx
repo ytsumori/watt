@@ -31,9 +31,9 @@ import {
   deleteOpenHour,
   getOpenHours,
   updateOpenHour,
-} from "@/actions/RestaurantOpenHour";
+} from "@/actions/restaurant-open-hour";
 import { DayOfWeek, RestaurantOpenHour } from "@prisma/client";
-import { findRestaurant, updateIsOpen } from "@/actions/Restaurant";
+import { findRestaurant, updateIsOpen } from "@/actions/restaurant";
 import { RestaurantIdContext } from "../../_components/dashboard-layout";
 
 export function DashboardSchedule() {
