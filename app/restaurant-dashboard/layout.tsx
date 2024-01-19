@@ -1,4 +1,4 @@
-import { LineLoginLayout } from "./_components/layout-client-component";
+import { LineLoginLayout } from "./_components/layout-client";
 
 export const metadata = {
   title: "飲食店向け管理画面 | Watt",

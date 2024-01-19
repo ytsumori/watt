@@ -34,9 +34,10 @@ import {
 } from "@/actions/restaurant-open-hour";
 import { DayOfWeek, RestaurantOpenHour } from "@prisma/client";
 import { findRestaurant, updateIsOpen } from "@/actions/restaurant";
-import { RestaurantIdContext } from "../../_components/dashboard-layout";
+import { RestaurantIdContext } from "./page-client";
 
-export function DashboardSchedule() {
+export function SchedulePage() {
+  console.log("hello");
   const restaurantId = useContext(RestaurantIdContext);
   const [dayOfWeek, setDayOfWeek] = useState<DayOfWeek>();
   const [startTime, setStartTime] = useState<string>();
@@ -157,6 +158,7 @@ export function DashboardSchedule() {
         dayHeaderFormat={{ weekday: "long" }}
         editable={true}
         locale="ja"
+        eventColor="#00A3C4"
         headerToolbar={{
           left: "",
           center: "",

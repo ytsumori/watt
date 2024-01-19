@@ -11,7 +11,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { useContext, useState } from "react";
-import { LineIdTokenContext } from "../../_components/layout-client-component";
+import { LineIdTokenContext } from "../../_components/layout-client";
 import { useRouter } from "next/navigation";
 
 export function SignUpPage() {

@@ -32,9 +32,9 @@ import {
 import { Meal } from "@prisma/client";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useContext, useEffect, useRef, useState } from "react";
-import { RestaurantIdContext } from "./dashboard-layout";
+import { RestaurantIdContext } from "./page-client";
 
-export function DashboardPage() {
+export function MealPage() {
   const restaurantId = useContext(RestaurantIdContext);
   const { isOpen, onOpen, onClose } = useDisclosure({
     onClose: () => {
