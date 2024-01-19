@@ -34,7 +34,7 @@ export function DashboardPage() {
     });
   }, [idToken, router]);
 
-  if (!restaurantId) return <Progress />;
+  if (!restaurantId) return <Progress isIndeterminate />;
 
   return (
     <RestaurantIdContext.Provider value={restaurantId}>

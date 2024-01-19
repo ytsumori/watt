@@ -21,7 +21,7 @@ export function LineLoginLayout({ children }: { children: React.ReactNode }) {
       });
   }, []);
 
-  if (!idToken) return <Progress />;
+  if (!idToken) return <Progress isIndeterminate />;
 
   return (
     <LineIdTokenContext.Provider value={idToken}>
