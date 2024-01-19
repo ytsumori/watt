@@ -28,5 +28,11 @@ export const theme = extendTheme({
         colorScheme: "cyan",
       },
     }),
+    Progress: defineStyleConfig({
+      defaultProps: {
+        size: "sm",
+        colorScheme: "cyan",
+      },
+    }),
   },
 });
