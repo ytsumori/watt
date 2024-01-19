@@ -1,5 +1,5 @@
 import stripe from "@/lib/stripe";
-import RestaurantModal from "./_components/client-component";
+import RestaurantModal from "./_components/page-client";
 import { getStripeCustomer } from "@/actions/stripe-customer";
 import prisma from "@/lib/prisma";
 import { getServerSession } from "next-auth";
