@@ -66,18 +66,13 @@ model StripeCustomer {
 }
 
 model Restaurant {
-  id        String               @id @default(cuid())
-  name      String
-  latitude  Float
-  longitude Float
-  imageUrl  String
-  price     Int
-  isOpen    Boolean              @default(false)
-  meals     Meal[]
-  openHours RestaurantOpenHour[]
-  staffs    Staff[]
-
-  @@unique([latitude, longitude])
+  id               String               @id @default(cuid())
+  name             String
+  googleMapPlaceId String               @unique
+  isOpen           Boolean              @default(false)
+  meals            Meal[]
+  openHours        RestaurantOpenHour[]
+  staffs           Staff[]
 }
 
 model Meal {

@@ -17,7 +17,7 @@ export const options: AuthOptions = {
   ],
   theme: { colorScheme: "light", brandColor: "#0BC5EA" },
   adapter: PrismaAdapter(prisma),
-  debug: true,
+  debug: process.env.NODE_ENV === "development",
   session: {
     strategy: "jwt",
   },

@@ -1,5 +1,7 @@
 "use client";
 
+import { usePlacesDetail } from "@/hooks/usePlacesDetail";
+import { usePlacesService } from "@/hooks/usePlacesService";
 import { Wrapper, Status } from "@googlemaps/react-wrapper";
 import { Restaurant } from "@prisma/client";
 import {
@@ -33,17 +35,20 @@ export default function Map({
   const [center, setCenter] =
     useState<google.maps.LatLngLiteral>(defaultCenter);
 
-  useEffect(() => {
-    const selectedRestaurant = restaurants.find(
-      (restaurant) => restaurant.id === selectedRestaurantId
-    );
-    if (selectedRestaurant) {
-      setCenter({
-        lat: selectedRestaurant.latitude,
-        lng: selectedRestaurant.longitude,
-      });
-    }
-  }, [selectedRestaurantId, restaurants]);
+  // 選択が変更された場合の変更適用
+  // const { fetchPlaceDetails } = usePlacesService();
+  // useEffect(() => {
+  //   const selectedRestaurant = restaurants.find(
+  //     (restaurant) => restaurant.id === selectedRestaurantId
+  //   );
+  //   if (selectedRestaurant) {
+  //     fetchPlaceDetails(selectedRestaurant.googleMapPlaceId).then((place) => {
+  //       if (place?.geometry?.location) {
+  //         setCenter(place.geometry.location.toJSON());
+  //       }
+  //     });
+  //   }
+  // }, [selectedRestaurantId, restaurants, fetchPlaceDetails]);
 
   const handleIdle = useCallback(
     (map: google.maps.Map) => {
@@ -89,6 +94,7 @@ export default function Map({
     <Wrapper
       apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY ?? ""}
       render={render}
+      libraries={["places"]}
     >
       <MapComponent
         center={center}
@@ -101,14 +107,11 @@ export default function Map({
         {restaurants.map((restaurant) => (
           <Marker
             key={restaurant.id}
-            position={{ lat: restaurant.latitude, lng: restaurant.longitude }}
+            placeId={restaurant.googleMapPlaceId}
             title={restaurant.name}
             selected={restaurant.id === selectedRestaurantId}
-            onClick={() => {
-              setCenter({
-                lat: restaurant.latitude,
-                lng: restaurant.longitude,
-              });
+            onClick={(position) => {
+              setCenter(position.toJSON());
               handleRestaurantSelect(restaurant.id);
             }}
             clickable
@@ -163,12 +166,14 @@ function MapComponent({ onIdle, children, style, ...options }: MapProps) {
 }
 
 interface MarkerProps extends google.maps.MarkerOptions {
+  placeId: string;
   selected: boolean;
-  onClick: () => void;
+  onClick: (position: google.maps.LatLng) => void;
 }
 
-function Marker({ selected, onClick, ...options }: MarkerProps) {
+function Marker({ placeId, selected, onClick, ...options }: MarkerProps) {
   const [marker, setMarker] = useState<google.maps.Marker>();
+  const { placeDetail } = usePlacesDetail(options.map, placeId);
 
   useEffect(() => {
     if (!marker) {
@@ -220,12 +225,20 @@ function Marker({ selected, onClick, ...options }: MarkerProps) {
   }, [marker, options]);
 
   useEffect(() => {
-    if (marker) {
+    if (marker && placeDetail?.geometry?.location) {
       google.maps.event.clearListeners(marker, "click");
       marker.addListener("click", () => {
-        onClick();
+        if (placeDetail?.geometry?.location) {
+          onClick(placeDetail.geometry.location);
+        }
       });
     }
-  }, [marker, onClick]);
+  }, [marker, onClick, placeDetail]);
+
+  useEffect(() => {
+    if (marker && placeDetail) {
+      marker.setPosition(placeDetail?.geometry?.location);
+    }
+  }, [marker, placeDetail]);
   return null;
 }

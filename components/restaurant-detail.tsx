@@ -27,9 +27,7 @@ import {
   VStack,
   useSteps,
   Center,
-  useToast,
 } from "@chakra-ui/react";
-import Map from "@/components/map";
 import { useEffect, useState } from "react";
 import { FaInstagram } from "react-icons/fa";
 import { TabelogIcon } from "./tabelog-icon";
@@ -103,7 +101,7 @@ export default function RestaurantDetail({
 
   return (
     <VStack px={6} alignItems="baseline" spacing={4}>
-      <VStack h="fit-content" spacing={2}>
+      <VStack h="fit-content" spacing={2} w="full">
         <Card variant="unstyled" direction="row">
           <Image
             objectFit="contain"
@@ -146,13 +144,13 @@ export default function RestaurantDetail({
           </VStack>
         </Card>
         <Box h="25vh" w="full">
-          <Map
-            restaurants={[selectedRestaurant]}
-            selectedRestaurantId={selectedRestaurant.id}
-            defaultCenter={{
-              lat: selectedRestaurant.latitude,
-              lng: selectedRestaurant.longitude,
-            }}
+          <iframe
+            width="100%"
+            height="100%"
+            style={{ border: 0 }}
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+            src={`https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY}&q=place_id:${selectedRestaurant.googleMapPlaceId}`}
           />
         </Box>
       </VStack>
