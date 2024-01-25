@@ -2,6 +2,7 @@ import { Providers } from "./provider";
 import "./global.css";
 
 export const metadata = {
+  metadataBase: new URL("https://https://senbero.vercel.app"),
   title: "Senbero",
   description: "My very first senbero app",
 };
