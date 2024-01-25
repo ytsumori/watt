@@ -20,26 +20,30 @@ import { InView } from "react-intersection-observer";
 import { Search2Icon } from "@chakra-ui/icons";
 import { FaLocationCrosshairs, FaMap, FaQrcode, FaUser } from "react-icons/fa6";
 import { useRouter } from "next/navigation";
-import { Restaurant } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 
 export default function HomePage({
-  restaurants,
+  meals,
 }: {
-  restaurants: Restaurant[];
+  meals: Prisma.MealGetPayload<{ include: { restaurant: true } }>[];
 }) {
   const router = useRouter();
-  const [focusedRestaurantId, setFocusedRestaurantId] = useState<string>(
-    restaurants[0].id
-  );
+  const [focusedMealId, setFocusedMealId] = useState<string>(meals[0].id);
   const handleRestaurantSelect = (id: string) => {
-    setFocusedRestaurantId(id);
+    setFocusedMealId(id);
   };
 
   return (
     <Box height="100vh" width="100vw">
       <Map
-        restaurants={restaurants}
-        selectedRestaurantId={focusedRestaurantId}
+        restaurants={meals.flatMap((meal, index, self) =>
+          index === self.findIndex((m) => meal.restaurantId === m.restaurantId)
+            ? meal.restaurant
+            : []
+        )}
+        selectedRestaurantId={
+          meals.find((meal) => meal.id === focusedMealId)?.restaurantId
+        }
         onRestaurantSelect={handleRestaurantSelect}
         defaultCenter={{
           lat: 34.67938711932558,
@@ -82,20 +86,20 @@ export default function HomePage({
         spacing={4}
         className="hidden-scrollbar"
       >
-        {restaurants.map((restaurant, index) => (
+        {meals.map((meal, index) => (
           <InView
-            key={restaurant.id}
+            key={meal.id}
             as="div"
             threshold={1}
             onChange={(inView) => {
-              if (inView) setFocusedRestaurantId(restaurant.id);
+              if (inView) setFocusedMealId(meal.id);
             }}
             style={{
               scrollSnapAlign: "center",
               scrollSnapStop: "always",
               minWidth: "70%",
               marginLeft: index === 0 ? "1.5rem" : 0,
-              marginRight: index === restaurants.length - 1 ? "1.5rem" : 0,
+              marginRight: index === meals.length - 1 ? "1.5rem" : 0,
             }}
           >
             <Card
@@ -103,22 +107,22 @@ export default function HomePage({
               width="full"
               borderRadius="16px"
               boxShadow="md"
-              onClick={() => router.push(`/restaurants/${restaurant.id}`)}
+              onClick={() =>
+                router.push(
+                  `/restaurants/${meal.restaurant.id}?mealId=${meal.id}`
+                )
+              }
             >
               <CardHeader padding={0}>
-                <Image
-                  alt="商品"
-                  borderTopRadius="16px"
-                  src={restaurant.imageUrl}
-                />
+                <Image alt="商品" borderTopRadius="16px" src={meal.imageUrl} />
               </CardHeader>
               <CardBody padding={3}>
                 <Text as="b" fontSize="lg">
-                  {restaurant.name}
+                  {meal.restaurant.name}
                 </Text>
                 <br />
                 <Text as="b" fontSize="md">
-                  {restaurant.price}円(税込)
+                  {meal.price}円(税込)
                 </Text>
               </CardBody>
             </Card>

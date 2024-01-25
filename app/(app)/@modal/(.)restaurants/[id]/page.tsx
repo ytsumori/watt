@@ -9,10 +9,16 @@ type Params = {
   id: string;
 };
 
+type SearchParams = {
+  mealId?: string;
+};
+
 export default async function RestaurantModalPage({
   params,
+  searchParams,
 }: {
   params: Params;
+  searchParams: SearchParams;
 }) {
   const restaurantId = params.id;
   const selectedRestaurant = await prisma.restaurant.findUnique({
@@ -21,9 +27,22 @@ export default async function RestaurantModalPage({
   if (!selectedRestaurant) {
     throw new Error("Invalid restaurant id");
   }
+  const mealId = searchParams.mealId;
+  let meal;
+  if (mealId) {
+    meal =
+      (await prisma.meal.findUnique({
+        where: { id: mealId, restaurantId: restaurantId, isDiscarded: false },
+      })) ?? undefined;
+  }
+  if (meal === undefined) {
+    meal =
+      (await prisma.meal.findFirst({
+        where: { restaurantId: restaurantId, isDiscarded: false },
+      })) ?? undefined;
+  }
 
   const session = await getServerSession(options);
-
   if (session) {
     // logged in
     const stripeCustomer = await getStripeCustomer();
@@ -37,6 +56,7 @@ export default async function RestaurantModalPage({
       <RestaurantModal
         selectedRestaurant={selectedRestaurant}
         paymentMethods={paymentMethods?.data ?? []}
+        meal={meal}
       />
     );
   }
@@ -45,6 +65,7 @@ export default async function RestaurantModalPage({
     <RestaurantModal
       selectedRestaurant={selectedRestaurant}
       paymentMethods={[]}
+      meal={meal}
     />
   );
 }

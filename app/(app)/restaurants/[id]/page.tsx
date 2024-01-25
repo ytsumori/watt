@@ -9,7 +9,17 @@ type Params = {
   id: string;
 };
 
-export default async function RestaurantPage({ params }: { params: Params }) {
+type SearchParams = {
+  mealId?: string;
+};
+
+export default async function RestaurantPage({
+  params,
+  searchParams,
+}: {
+  params: Params;
+  searchParams: SearchParams;
+}) {
   const restaurantId = params.id;
   const selectedRestaurant = await prisma.restaurant.findUnique({
     where: { id: restaurantId },
@@ -17,9 +27,23 @@ export default async function RestaurantPage({ params }: { params: Params }) {
   if (!selectedRestaurant) {
     throw new Error("Invalid restaurant id");
   }
+  const mealId = searchParams.mealId;
+  console.log(searchParams);
+  let meal;
+  if (mealId) {
+    meal =
+      (await prisma.meal.findUnique({
+        where: { id: mealId, restaurantId: restaurantId, isDiscarded: false },
+      })) ?? undefined;
+  }
+  if (meal === undefined) {
+    meal =
+      (await prisma.meal.findFirst({
+        where: { restaurantId: restaurantId, isDiscarded: false },
+      })) ?? undefined;
+  }
 
   const session = await getServerSession(options);
-
   if (session) {
     // logged in
     const stripeCustomer = await getStripeCustomer();
@@ -33,6 +57,7 @@ export default async function RestaurantPage({ params }: { params: Params }) {
       <RestaurantDetail
         selectedRestaurant={selectedRestaurant}
         paymentMethods={paymentMethods?.data ?? []}
+        meal={meal}
       />
     );
   }

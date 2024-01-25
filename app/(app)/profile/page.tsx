@@ -1,7 +1,7 @@
 "use client";
 
 import { LoginButton, LogoutButton } from "@/components/buttons";
-import { Avatar, Center, VStack, Text } from "@chakra-ui/react";
+import { Avatar, Center, VStack, Text, Button } from "@chakra-ui/react";
 import { useSession } from "next-auth/react";
 
 export default function Profile() {

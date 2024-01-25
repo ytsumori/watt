@@ -1,9 +1,7 @@
 "use client";
 
 import { usePlacesDetail } from "@/hooks/usePlacesDetail";
-import { usePlacesService } from "@/hooks/usePlacesService";
 import { Wrapper, Status } from "@googlemaps/react-wrapper";
-import { Restaurant } from "@prisma/client";
 import {
   Children,
   cloneElement,
@@ -19,7 +17,7 @@ const render = (status: Status) => {
 };
 
 type Props = {
-  restaurants: Restaurant[];
+  restaurants: { id: string; name: string; googleMapPlaceId: string }[];
   selectedRestaurantId?: string;
   onRestaurantSelect?: (id: string) => void;
   defaultCenter: google.maps.LatLngLiteral;

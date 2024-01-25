@@ -37,7 +37,6 @@ import { findRestaurant, updateIsOpen } from "@/actions/restaurant";
 import { RestaurantIdContext } from "./page-client";
 
 export function SchedulePage() {
-  console.log("hello");
   const restaurantId = useContext(RestaurantIdContext);
   const [dayOfWeek, setDayOfWeek] = useState<DayOfWeek>();
   const [startTime, setStartTime] = useState<string>();
