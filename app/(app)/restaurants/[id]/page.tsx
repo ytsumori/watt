@@ -28,7 +28,6 @@ export default async function RestaurantPage({
     throw new Error("Invalid restaurant id");
   }
   const mealId = searchParams.mealId;
-  console.log(searchParams);
   let meal;
   if (mealId) {
     meal =
