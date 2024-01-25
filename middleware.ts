@@ -1,4 +1,4 @@
-export { default } from "next-auth";
+export { default } from "next-auth/middleware";
 
 export const config = {
   matcher: ["/[^/]((?!api|login|restaurant-dashboard).*)"],
