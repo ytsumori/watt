@@ -26,3 +26,24 @@ export async function updateIsOpen({
     },
   });
 }
+
+export async function createRestaurant({
+  name,
+  googleMapPlaceId,
+}: {
+  name: string;
+  googleMapPlaceId: string;
+}) {
+  return await prisma.restaurant.create({
+    data: {
+      name,
+      googleMapPlaceId,
+      tokens: {
+        create: {},
+      },
+    },
+    include: {
+      tokens: true,
+    },
+  });
+}

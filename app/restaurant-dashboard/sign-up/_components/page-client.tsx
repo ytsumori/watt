@@ -43,11 +43,7 @@ export function SignUpPage() {
       <VStack spacing={4}>
         <FormControl isRequired>
           <FormLabel>レストランID</FormLabel>
-          <Input
-            min={0}
-            onChange={handlePriceChange}
-            value={restaurantId ?? ""}
-          />
+          <Input onChange={handlePriceChange} value={restaurantId ?? ""} />
         </FormControl>
         <Button
           textColor="white"
