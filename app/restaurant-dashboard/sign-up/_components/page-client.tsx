@@ -2,6 +2,8 @@
 
 import { createStaff } from "@/actions/staff";
 import {
+  Alert,
+  AlertIcon,
   Button,
   Center,
   FormControl,
@@ -17,16 +19,21 @@ import { useRouter } from "next/navigation";
 export function SignUpPage() {
   const idToken = useContext(LineIdTokenContext);
   const [restaurantId, setRestaurantId] = useState<string>();
+  const [password, setPassword] = useState<string>();
   const router = useRouter();
   const toast = useToast();
 
-  const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPassword(e.target.value);
+  };
+
+  const handleIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setRestaurantId(e.target.value);
   };
 
   const handleSubmit = () => {
-    if (!restaurantId) return;
-    createStaff({ idToken, restaurantId })
+    if (!restaurantId || !password) return;
+    createStaff({ idToken, restaurantId, staffRegistrationToken: password })
       .then(() => {
         router.push("/restaurant-dashboard");
       })
@@ -41,14 +48,27 @@ export function SignUpPage() {
   return (
     <Center height="100vh">
       <VStack spacing={4}>
+        <Alert status="info">
+          <AlertIcon />
+          IDとパスワードは株式会社KiizanKiizanからお渡ししたものを入力してください
+        </Alert>
         <FormControl isRequired>
-          <FormLabel>レストランID</FormLabel>
-          <Input onChange={handlePriceChange} value={restaurantId ?? ""} />
+          <FormLabel>ID</FormLabel>
+          <Input onChange={handleIdChange} value={restaurantId ?? ""} />
+        </FormControl>
+        <FormControl isRequired>
+          <FormLabel>パスワード</FormLabel>
+          <Input
+            type="password"
+            onChange={handlePasswordChange}
+            value={password ?? ""}
+          />
         </FormControl>
         <Button
           textColor="white"
-          isDisabled={!restaurantId}
+          isDisabled={!restaurantId || !password}
           onClick={handleSubmit}
+          mt={4}
         >
           登録する
         </Button>

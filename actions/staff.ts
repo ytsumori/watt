@@ -14,10 +14,21 @@ export async function getStaffs({ lineId }: { lineId: string }) {
 export async function createStaff({
   idToken,
   restaurantId,
+  staffRegistrationToken,
 }: {
   idToken: string;
   restaurantId: string;
+  staffRegistrationToken: string;
 }) {
+  const registrationToken = await prisma.staffRegistrationToken.findUnique({
+    where: {
+      token: staffRegistrationToken,
+      restaurantId,
+    },
+  });
+  if (!registrationToken) {
+    throw new Error("Invalid token");
+  }
   const response = await verifyIdToken({ idToken });
   return await prisma.staff.create({
     data: {

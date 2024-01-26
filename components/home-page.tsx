@@ -84,6 +84,7 @@ export default function HomePage({
         scrollSnapType="x mandatory"
         marginBottom={4}
         spacing={4}
+        width="auto"
         className="hidden-scrollbar"
       >
         {meals.map((meal, index) => (
@@ -114,7 +115,13 @@ export default function HomePage({
               }
             >
               <CardHeader padding={0}>
-                <Image alt="商品" borderTopRadius="16px" src={meal.imageUrl} />
+                <Image
+                  alt="商品"
+                  borderTopRadius="16px"
+                  src={meal.imageUrl}
+                  aspectRatio="16/9"
+                  fit="contain"
+                />
               </CardHeader>
               <CardBody padding={3}>
                 <Text as="b" fontSize="lg">

@@ -193,7 +193,7 @@ export function MealPage() {
                 ref={inputFileRef}
                 type="file"
                 required
-                accept="image/png, image/jpeg"
+                accept="image/*"
                 onChange={handleFileChange}
               />
               {isUploading ? (
