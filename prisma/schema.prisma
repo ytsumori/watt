@@ -74,6 +74,7 @@ model Restaurant {
   openHours        RestaurantOpenHour[]
   staffs           Staff[]
   tokens           StaffRegistrationToken[]
+  bankAccounts     RestaurantBankAccount[]
 }
 
 model Meal {
@@ -122,4 +123,24 @@ model Staff {
   lineId       String
 
   restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+}
+
+enum BankAccountType {
+  SAVINGS
+  CHECKING
+  DEPOSIT
+}
+
+model RestaurantBankAccount {
+  id           String          @id @default(cuid())
+  restaurantId String
+  bankCode     String          @db.VarChar(4)
+  branchCode   String          @db.VarChar(3)
+  accountType  BankAccountType
+  accountNo    String
+  holderName   String
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+
+  @@unique([bankCode, branchCode, accountType, accountNo])
 }
