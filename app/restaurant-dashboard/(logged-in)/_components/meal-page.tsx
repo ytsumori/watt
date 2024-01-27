@@ -32,7 +32,7 @@ import {
 import { Meal } from "@prisma/client";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useContext, useEffect, useRef, useState } from "react";
-import { RestaurantIdContext } from "./page-client";
+import { RestaurantIdContext } from "./layout-client";
 
 export function MealPage() {
   const restaurantId = useContext(RestaurantIdContext);

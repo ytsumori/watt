@@ -12,12 +12,12 @@ import {
   Th,
   Thead,
   Tr,
-  Link as ChakraLink,
+  Link,
   useToast,
   Tooltip,
 } from "@chakra-ui/react";
 import { Prisma } from "@prisma/client";
-import Link from "next/link";
+import NextLink from "next/link";
 import { copyCredentialToClipboard } from "../_util/clipboard-text";
 
 type Props = {
@@ -76,14 +76,12 @@ export function RestaurantsPage({ restaurants }: Props) {
                   </Td>
                   <Td>
                     <Link
+                      as={NextLink}
                       href={`https://www.google.com/maps/place/?q=place_id:${restaurant.googleMapPlaceId}`}
-                      target="_blank"
-                      rel="noreferrer"
+                      isExternal
                     >
-                      <ChakraLink isExternal>
-                        Googleマップ
-                        <ExternalLinkIcon mx="2px" />
-                      </ChakraLink>
+                      Googleマップ
+                      <ExternalLinkIcon mx="2px" />
                     </Link>
                   </Td>
                 </Tr>
