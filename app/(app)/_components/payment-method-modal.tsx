@@ -1,21 +1,47 @@
 "use client";
 
-import StripeForm from "@/components/stripe/stripe-form";
-import { Modal, ModalBody, ModalContent, ModalHeader } from "@chakra-ui/react";
+import { isPaymentMethodRegistered } from "@/actions/me";
+import {
+  Button,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  useDisclosure,
+} from "@chakra-ui/react";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
-type Props = {
-  isOpen: boolean;
-};
+export function PaymentMethodModal() {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const router = useRouter();
 
-export function PaymentMethodModal({ isOpen }: Props) {
+  useEffect(() => {
+    isPaymentMethodRegistered().then((isRegistered) => {
+      if (!isRegistered) {
+        onOpen();
+      }
+    });
+  }, [onOpen]);
+
   return (
-    <Modal isOpen={isOpen} size="full" onClose={() => undefined}>
+    <Modal isOpen={isOpen} onClose={onClose}>
+      <ModalOverlay />
       <ModalContent>
         <ModalHeader>支払い方法の登録</ModalHeader>
         <ModalBody>
           会員登録ありがとうございます！以下から決済方法を登録してください！
-          <StripeForm />
         </ModalBody>
+        <ModalFooter>
+          <Button
+            color="white"
+            onClick={() => router.push("/payment-method/new")}
+          >
+            決済方法を登録
+          </Button>
+        </ModalFooter>
       </ModalContent>
     </Modal>
   );

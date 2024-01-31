@@ -6,16 +6,31 @@ import {
   useStripe,
   useElements,
 } from "@stripe/react-stripe-js";
-import { Button } from "@chakra-ui/react";
-import { useRouter } from "next/navigation";
+import {
+  Button,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  useDisclosure,
+} from "@chakra-ui/react";
+import { usePathname, useRouter } from "next/navigation";
 
 export default function SetupForm() {
   const stripe = useStripe();
   const elements = useElements();
   const router = useRouter();
+  const pathname = usePathname();
 
   const [message, setMessage] = useState<string>();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const {
+    isOpen: isCompleteModalOpen,
+    onOpen: onCompleteModalOpen,
+    onClose: onCompleteModalClose,
+  } = useDisclosure();
 
   const [paymentMethodTypes, setPaymentMethodTypes] = useState<string>();
 
@@ -36,22 +51,17 @@ export default function SetupForm() {
       if (!setupIntent) return setMessage("Something went wrong.");
       switch (setupIntent.status) {
         case "succeeded":
-          setMessage("Payment succeeded!");
+          onCompleteModalOpen();
           break;
         case "processing":
           setMessage("Your payment is processing.");
-          break;
-        case "requires_payment_method":
-          setMessage("Your payment was not successful, please try again.");
           break;
         default:
           setMessage("Something went wrong.");
           break;
       }
-      // @ts-ignore
-      console.log(setupIntent.customer);
     });
-  }, [stripe]);
+  }, [stripe, onCompleteModalOpen]);
 
   const handleSubmit: FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
@@ -66,13 +76,12 @@ export default function SetupForm() {
       router.push("https://developer.paypay.ne.jp/products/docs/nativepayment");
     }
 
-    setIsLoading(true);
+    setIsSubmitting(true);
 
     const { error } = await stripe.confirmSetup({
       elements,
       confirmParams: {
-        // Make sure to change this to your payment completion page
-        return_url: "http://localhost:3000",
+        return_url: `${process.env.NEXT_PUBLIC_HOST_URL}${pathname}`,
       },
     });
 
@@ -87,7 +96,7 @@ export default function SetupForm() {
       }
     }
 
-    setIsLoading(false);
+    setIsSubmitting(false);
   };
 
   return (
@@ -97,14 +106,29 @@ export default function SetupForm() {
         type="submit"
         size="md"
         color="white"
-        disabled={isLoading || !stripe || !elements}
+        disabled={isSubmitting || !stripe || !elements}
         mt={4}
-        isLoading={isLoading}
+        isLoading={isSubmitting}
       >
         登録
       </Button>
-      {/* Show any error or success messages */}
       {message && <div id="payment-message">{message}</div>}
+      <Modal
+        isOpen={isCompleteModalOpen}
+        onClose={onCompleteModalClose}
+        size="sm"
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>支払い方法の登録が完了しました</ModalHeader>
+          <ModalBody textAlign="center">
+            <Button color="white" onClick={() => router.push("/")}>
+              トップページに戻る
+            </Button>
+          </ModalBody>
+          <ModalFooter />
+        </ModalContent>
+      </Modal>
     </form>
   );
 }

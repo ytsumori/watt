@@ -3,6 +3,7 @@
 import prisma from "@/lib/prisma";
 import { options } from "@/lib/next-auth/options";
 import { getServerSession } from "next-auth/next";
+import stripe from "@/lib/stripe/client";
 
 export async function getMyId() {
   const session = await getServerSession(options);
@@ -29,5 +30,17 @@ export async function isPaymentMethodRegistered() {
     },
   });
 
-  return !!(user?.stripeCustomer || user?.paypayCustomer);
+  if (user?.paypayCustomer) {
+    return true;
+  }
+
+  if (user?.stripeCustomer) {
+    const paymentMethods = await stripe.paymentMethods.list({
+      customer: user.stripeCustomer.stripeCustomerId,
+      type: "card",
+    });
+    return paymentMethods.data.length > 0;
+  }
+
+  return false;
 }

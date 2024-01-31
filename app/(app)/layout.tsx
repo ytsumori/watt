@@ -1,4 +1,3 @@
-import { isPaymentMethodRegistered } from "@/actions/me";
 import BaseLayout from "@/app/(app)/_components/layout-client";
 import { PaymentMethodModal } from "./_components/payment-method-modal";
 
@@ -20,7 +19,6 @@ export default async function RootLayout({
         {children}
         {modal}
       </BaseLayout>
-      <PaymentMethodModal isOpen={!(await isPaymentMethodRegistered())} />
     </>
   );
 }

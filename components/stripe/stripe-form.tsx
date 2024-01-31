@@ -4,7 +4,7 @@ import React, { useEffect } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
 import SetupForm from "./setup-form";
-import { Box } from "@chakra-ui/react";
+import { Box, Heading } from "@chakra-ui/react";
 import { createSetupIntent } from "@/lib/stripe/setup-intent";
 
 // Make sure to call loadStripe outside of a component’s render to avoid
@@ -24,7 +24,8 @@ export default function StripeForm() {
   }, []);
 
   return (
-    <Box mt={4}>
+    <Box p={4}>
+      <Heading marginBottom={3}>支払い方法の登録</Heading>
       {clientSecret && (
         <Elements
           stripe={stripePromise}

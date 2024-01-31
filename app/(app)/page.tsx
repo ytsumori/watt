@@ -1,5 +1,6 @@
 import HomePage from "@/app/(app)/_components/page-client";
 import prisma from "@/lib/prisma";
+import { PaymentMethodModal } from "./_components/payment-method-modal";
 
 export default async function Home() {
   const meals = await prisma.meal.findMany({
@@ -10,5 +11,10 @@ export default async function Home() {
       isDiscarded: false,
     },
   });
-  return <HomePage meals={meals} />;
+  return (
+    <>
+      <HomePage meals={meals} />
+      <PaymentMethodModal />
+    </>
+  );
 }
