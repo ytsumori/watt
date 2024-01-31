@@ -1,4 +1,4 @@
-import stripe from "@/lib/stripe";
+import stripe from "@/lib/stripe/client";
 import RestaurantDetail from "@/components/restaurant-detail";
 import { getStripeCustomer } from "@/actions/stripe-customer";
 import prisma from "@/lib/prisma";

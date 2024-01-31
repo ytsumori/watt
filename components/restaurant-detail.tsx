@@ -260,7 +260,7 @@ export default function RestaurantDetail({
                           **** **** **** {paymentMethod.card?.last4}
                         </Button>
                       ))}
-                      <StripeForm amount={meal.price} />
+                      <StripeForm />
                     </VStack>
                   ) : (
                     <>

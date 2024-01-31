@@ -1,4 +1,4 @@
-import HomePage from "@/components/home-page";
+import HomePage from "@/app/(app)/_components/page-client";
 import prisma from "@/lib/prisma";
 
 export default async function Home() {

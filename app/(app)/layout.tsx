@@ -1,11 +1,13 @@
-import BaseLayout from "@/components/base-layout";
+import { isPaymentMethodRegistered } from "@/actions/me";
+import BaseLayout from "@/app/(app)/_components/layout-client";
+import { PaymentMethodModal } from "./_components/payment-method-modal";
 
 export const metadata = {
   title: "Senbero",
   description: "My very first senbero app",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
   modal,
 }: {
@@ -13,9 +15,12 @@ export default function RootLayout({
   modal: React.ReactNode;
 }) {
   return (
-    <BaseLayout>
-      {children}
-      {modal}
-    </BaseLayout>
+    <>
+      <BaseLayout>
+        {children}
+        {modal}
+      </BaseLayout>
+      <PaymentMethodModal isOpen={!(await isPaymentMethodRegistered())} />
+    </>
   );
 }

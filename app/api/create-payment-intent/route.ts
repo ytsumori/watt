@@ -2,11 +2,8 @@ import { getMyId } from "@/actions/me";
 import { createStripeCustomer } from "@/actions/stripe-customer";
 import { options } from "@/lib/next-auth/options";
 import prisma from "@/lib/prisma";
+import stripe from "@/lib/stripe/client";
 import { getServerSession } from "next-auth/next";
-import Stripe from "stripe";
-
-// This is your test secret API key.
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 export async function POST(request: Request) {
   const body = await request.json();

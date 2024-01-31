@@ -1,17 +1,23 @@
+"use client";
+
 import React, { FormEventHandler, useState } from "react";
 import {
   PaymentElement,
   useStripe,
   useElements,
 } from "@stripe/react-stripe-js";
-import { StripePaymentElementOptions } from "@stripe/stripe-js";
+import { Button } from "@chakra-ui/react";
+import { useRouter } from "next/navigation";
 
-export default function CheckoutForm() {
+export default function SetupForm() {
   const stripe = useStripe();
   const elements = useElements();
+  const router = useRouter();
 
   const [message, setMessage] = useState<string>();
   const [isLoading, setIsLoading] = useState(false);
+
+  const [paymentMethodTypes, setPaymentMethodTypes] = useState<string>();
 
   React.useEffect(() => {
     if (!stripe) {
@@ -19,15 +25,16 @@ export default function CheckoutForm() {
     }
 
     const clientSecret = new URLSearchParams(window.location.search).get(
-      "payment_intent_client_secret"
+      "setup_intent_client_secret"
     );
 
     if (!clientSecret) {
       return;
     }
 
-    stripe.retrievePaymentIntent(clientSecret).then(({ paymentIntent }) => {
-      switch (paymentIntent?.status) {
+    stripe.retrieveSetupIntent(clientSecret).then(({ setupIntent }) => {
+      if (!setupIntent) return setMessage("Something went wrong.");
+      switch (setupIntent.status) {
         case "succeeded":
           setMessage("Payment succeeded!");
           break;
@@ -41,6 +48,8 @@ export default function CheckoutForm() {
           setMessage("Something went wrong.");
           break;
       }
+      // @ts-ignore
+      console.log(setupIntent.customer);
     });
   }, [stripe]);
 
@@ -53,11 +62,13 @@ export default function CheckoutForm() {
       return;
     }
 
+    if (paymentMethodTypes === "external_paypay") {
+      router.push("https://developer.paypay.ne.jp/products/docs/nativepayment");
+    }
+
     setIsLoading(true);
 
-    stripe.confirmCardSetup;
-
-    const { error } = await stripe.confirmPayment({
+    const { error } = await stripe.confirmSetup({
       elements,
       confirmParams: {
         // Make sure to change this to your payment completion page
@@ -65,32 +76,33 @@ export default function CheckoutForm() {
       },
     });
 
-    // This point will only be reached if there is an immediate error when
-    // confirming the payment. Otherwise, your customer will be redirected to
-    // your `return_url`. For some payment methods like iDEAL, your customer will
-    // be redirected to an intermediate site first to authorize the payment, then
-    // redirected to the `return_url`.
-    if (error.type === "card_error" || error.type === "validation_error") {
-      setMessage(error.message);
-    } else {
-      setMessage("An unexpected error occurred.");
+    if (error) {
+      // This point will only be reached if there is an immediate error when
+      // confirming the payment. Show error to your customer (for example, payment
+      // details incomplete)
+      if (error.type === "card_error" || error.type === "validation_error") {
+        setMessage(error.message);
+      } else {
+        setMessage("An unexpected error occurred.");
+      }
     }
 
     setIsLoading(false);
   };
 
-  const paymentElementOptions: StripePaymentElementOptions = {
-    layout: "tabs",
-  };
-
   return (
-    <form id="payment-form" onSubmit={handleSubmit}>
-      <PaymentElement id="payment-element" options={paymentElementOptions} />
-      <button disabled={isLoading || !stripe || !elements} id="submit">
-        <span id="button-text">
-          {isLoading ? <div className="spinner" id="spinner"></div> : "Pay now"}
-        </span>
-      </button>
+    <form onSubmit={handleSubmit} style={{ textAlign: "center" }}>
+      <PaymentElement onChange={(e) => setPaymentMethodTypes(e.value.type)} />
+      <Button
+        type="submit"
+        size="md"
+        color="white"
+        disabled={isLoading || !stripe || !elements}
+        mt={4}
+        isLoading={isLoading}
+      >
+        登録
+      </Button>
       {/* Show any error or success messages */}
       {message && <div id="payment-message">{message}</div>}
     </form>
