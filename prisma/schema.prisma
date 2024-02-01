@@ -44,6 +44,7 @@ model User {
   paypayCustomer PaypayCustomer?
   sessions       Session[]
   stripeCustomer StripeCustomer?
+  orders         Order[]
 }
 
 model VerificationToken {
@@ -86,7 +87,36 @@ model Meal {
   imageUrl     String
   price        Int
   isDiscarded  Boolean    @default(false)
+  orders       Order[]
   restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+}
+
+model Order {
+  id       String    @id @default(cuid())
+  userId   String
+  mealId   String
+  payments Payment[]
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  meal     Meal      @relation(fields: [mealId], references: [id], onDelete: Cascade)
+}
+
+model Payment {
+  id                String                @id @default(cuid())
+  orderId           String
+  paymentProvider   PaymentProvider
+  providerPaymentId String
+  status            PaymentStatus         @default(PREAUTHORIZED)
+  amount            Int
+  paymentCapture    PaypayPaymentCapture?
+  order             Order                 @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@unique([paymentProvider, providerPaymentId])
+}
+
+model PaypayPaymentCapture {
+  id        String  @id @default(cuid())
+  paymentId String  @unique
+  payment   Payment @relation(fields: [paymentId], references: [id], onDelete: Cascade)
 }
 
 model RestaurantOpenHour {
@@ -141,4 +171,15 @@ enum BankAccountType {
   SAVINGS
   CHECKING
   DEPOSIT
+}
+
+enum PaymentProvider {
+  STRIPE
+  PAYPAY
+}
+
+enum PaymentStatus {
+  PREAUTHORIZED
+  COMPLETE
+  CANCELED
 }
