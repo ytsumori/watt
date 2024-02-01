@@ -15,7 +15,6 @@ import {
   ModalHeader,
   ModalOverlay,
   Step,
-  StepDescription,
   StepIcon,
   StepIndicator,
   StepNumber,
@@ -27,8 +26,14 @@ import {
   VStack,
   useSteps,
   useDisclosure,
+  AlertDialog,
+  AlertDialogOverlay,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogBody,
+  AlertDialogFooter,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useRef } from "react";
 import { FaInstagram } from "react-icons/fa";
 import { TabelogIcon } from "./tabelog-icon";
 import { useSession } from "next-auth/react";
@@ -56,42 +61,26 @@ export default function RestaurantDetail({
     onOpen: onVisitingModalOpen,
     onClose: onVisitingModalClose,
   } = useDisclosure();
-  const [isCheckingIn, setIsCheckingIn] = useState(false);
-  const [isPaying, setIsPaying] = useState(false);
+  const {
+    isOpen: isPaymentConfirmOpen,
+    onOpen: onPaymentConfirmOpen,
+    onClose: onPaymentConfirmClose,
+  } = useDisclosure();
 
+  const ref = useRef<HTMLDivElement>(null);
   const steps: {
     title: string;
-    description?: string;
-    completeDescription?: string;
-    button?: { label: string; onClick: () => void };
     activeButton?: { label: string; onClick: () => void };
   }[] = [
     {
       title: "お店に移動",
-      button: {
-        label: "お店に向かう",
-        onClick: () => {
-          onVisitingModalOpen();
-        },
-      },
+      activeButton: { label: "お店に向かう", onClick: onVisitingModalOpen },
     },
     {
-      title: "チェックイン",
-      completeDescription: "チェックイン済みです",
-      button: {
-        label: "チェックインに進む",
-        onClick: () => {
-          setIsCheckingIn(true);
-        },
-      },
+      title: "店に到着",
+      activeButton: { label: "支払いをする", onClick: onPaymentConfirmOpen },
     },
-    {
-      title: "食事を楽しむ",
-    },
-    {
-      title: "退店",
-      description: "30分以上滞在する場合は、追加でご注文ください",
-    },
+    { title: "食事を楽しむ" },
   ];
   const { activeStep, setActiveStep } = useSteps({
     index: 0,
@@ -187,23 +176,9 @@ export default function RestaurantDetail({
                         active={<StepNumber />}
                       />
                     </StepIndicator>
-
                     <VStack alignItems="baseline">
                       <StepTitle>{step.title}</StepTitle>
-                      {index >= activeStep && step.description && (
-                        <StepDescription>{step.description}</StepDescription>
-                      )}
-                      {index < activeStep && step.completeDescription && (
-                        <StepDescription>
-                          {step.completeDescription}
-                        </StepDescription>
-                      )}
-                      {index >= activeStep && step.button && (
-                        <Button textColor="white" onClick={step.button.onClick}>
-                          {step.button.label}
-                        </Button>
-                      )}
-                      {index === activeStep && step.activeButton && (
+                      {activeStep === index && step.activeButton && (
                         <Button
                           textColor="white"
                           onClick={step.activeButton.onClick}
@@ -212,17 +187,13 @@ export default function RestaurantDetail({
                         </Button>
                       )}
                     </VStack>
-
                     <StepSeparator />
                   </Step>
                 ))}
               </Stepper>
               <Modal
                 isOpen={isVisitingModalOpen}
-                onClose={() => {
-                  setIsCheckingIn(false);
-                  setIsPaying(false);
-                }}
+                onClose={onVisitingModalClose}
                 closeOnOverlayClick={false}
                 isCentered
               >
@@ -245,6 +216,7 @@ export default function RestaurantDetail({
                               paymentMethodId: paymentMethod.id,
                             }).then((status) => {
                               console.log(status);
+                              setActiveStep(1);
                               onVisitingModalClose();
                             })
                           }
@@ -259,6 +231,38 @@ export default function RestaurantDetail({
                   </ModalBody>
                 </ModalContent>
               </Modal>
+              <AlertDialog
+                isOpen={isPaymentConfirmOpen}
+                onClose={onPaymentConfirmClose}
+                leastDestructiveRef={ref}
+              >
+                <AlertDialogOverlay>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>決済を確定します</AlertDialogHeader>
+                    <AlertDialogBody>
+                      お支払いを確定しますがよろしいですか？
+                    </AlertDialogBody>
+                    <AlertDialogFooter>
+                      <Button
+                        colorScheme="gray"
+                        onClick={onPaymentConfirmClose}
+                      >
+                        キャンセル
+                      </Button>
+                      <Button
+                        textColor="white"
+                        onClick={() => {
+                          console.log("TODO: confirm payment");
+                          setActiveStep(2);
+                          onPaymentConfirmClose();
+                        }}
+                      >
+                        確定する
+                      </Button>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialogOverlay>
+              </AlertDialog>
             </>
           ) : (
             <LoginButton />
