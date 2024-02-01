@@ -2,16 +2,10 @@
 
 import stripe from "./client";
 import prisma from "@/lib/prisma";
-import { options } from "@/lib/next-auth/options";
-import { getServerSession } from "next-auth/next";
-import { StripeCustomer } from "@prisma/client";
+import { getMe } from "@/actions/me";
 
 export async function createSetupIntent() {
-  const session = await getServerSession(options);
-  if (!session) {
-    throw new Error("Unauthorized");
-  }
-  const user = session.user;
+  const user = await getMe();
   const stripeCustomer = await prisma.stripeCustomer.findUnique({
     where: { userId: user.id },
   });

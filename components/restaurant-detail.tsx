@@ -26,18 +26,16 @@ import {
   Text,
   VStack,
   useSteps,
-  Center,
+  useDisclosure,
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { FaInstagram } from "react-icons/fa";
 import { TabelogIcon } from "./tabelog-icon";
-import StripeForm from "./stripe/stripe-form";
 import { useSession } from "next-auth/react";
 import { LoginButton } from "./buttons";
-import { createQRCode } from "@/lib/paypay";
-import { useRouter } from "next/navigation";
 import Stripe from "stripe";
 import { Meal, Restaurant } from "@prisma/client";
+import { createPaymentIntent } from "@/lib/stripe/payment-intent";
 
 type Props = {
   selectedRestaurant: Restaurant;
@@ -50,12 +48,14 @@ export default function RestaurantDetail({
   meal,
   paymentMethods,
 }: Props) {
-  const router = useRouter();
-
   const { data: session } = useSession();
   const user = session?.user;
 
-  const [qrImagePath, setQrImagePath] = useState<string>();
+  const {
+    isOpen: isVisitingModalOpen,
+    onOpen: onVisitingModalOpen,
+    onClose: onVisitingModalClose,
+  } = useDisclosure();
   const [isCheckingIn, setIsCheckingIn] = useState(false);
   const [isPaying, setIsPaying] = useState(false);
 
@@ -68,6 +68,12 @@ export default function RestaurantDetail({
   }[] = [
     {
       title: "お店に移動",
+      button: {
+        label: "お店に向かう",
+        onClick: () => {
+          onVisitingModalOpen();
+        },
+      },
     },
     {
       title: "チェックイン",
@@ -91,17 +97,6 @@ export default function RestaurantDetail({
     index: 0,
     count: steps.length,
   });
-
-  useEffect(() => {
-    if (isCheckingIn) {
-      setTimeout(() => {
-        setQrImagePath("/dummy-qrcode.png");
-        setTimeout(() => {
-          setIsPaying(true);
-        }, 1000);
-      }, 2000);
-    }
-  }, [setActiveStep, isCheckingIn]);
 
   return (
     <VStack px={6} alignItems="baseline" spacing={4}>
@@ -223,7 +218,7 @@ export default function RestaurantDetail({
                 ))}
               </Stepper>
               <Modal
-                isOpen={isCheckingIn}
+                isOpen={isVisitingModalOpen}
                 onClose={() => {
                   setIsCheckingIn(false);
                   setIsPaying(false);
@@ -233,26 +228,26 @@ export default function RestaurantDetail({
               >
                 <ModalOverlay />
                 <ModalContent>
-                  <ModalHeader>チェックイン</ModalHeader>
+                  <ModalHeader>決済方法を選ぶ</ModalHeader>
                   <ModalCloseButton />
-                  <ModalBody></ModalBody>
-                  {isPaying ? (
+                  <ModalBody>
                     <VStack>
-                      <Button
-                        onClick={() =>
-                          createQRCode(
-                            Math.floor(
-                              100000 + Math.random() * 900000
-                            ).toString()
-                          ).then((url) => router.push(url))
-                        }
-                      >
+                      <Button onClick={() => console.log("pay with paypay")}>
                         PayPayで支払い
                       </Button>
                       {paymentMethods.map((paymentMethod) => (
                         <Button
                           key={paymentMethod.id}
-                          onClick={() => console.log("pay with card")}
+                          onClick={() =>
+                            createPaymentIntent({
+                              mealId: meal.id,
+                              userId: user.id,
+                              paymentMethodId: paymentMethod.id,
+                            }).then((status) => {
+                              console.log(status);
+                              onVisitingModalClose();
+                            })
+                          }
                         >
                           {paymentMethod.card?.exp_month}/
                           {paymentMethod.card?.exp_year}
@@ -260,36 +255,8 @@ export default function RestaurantDetail({
                           **** **** **** {paymentMethod.card?.last4}
                         </Button>
                       ))}
-                      <StripeForm />
                     </VStack>
-                  ) : (
-                    <>
-                      <Center
-                        width="full"
-                        backgroundColor="blackAlpha.700"
-                        aspectRatio={1}
-                      >
-                        <Box
-                          borderWidth={2}
-                          borderColor="cyan.400"
-                          width="80%"
-                          height="80%"
-                        >
-                          {qrImagePath ? (
-                            <Image
-                              alt="dummy QR Code"
-                              src="/dummy-qrcode.png"
-                            />
-                          ) : (
-                            <></>
-                          )}
-                        </Box>
-                      </Center>
-                      <Text textColor="cyan.400" fontSize="small">
-                        *店に到着でき次第、店員の指示に従いチェックインQRコードを読み取ってください
-                      </Text>
-                    </>
-                  )}
+                  </ModalBody>
                 </ModalContent>
               </Modal>
             </>
