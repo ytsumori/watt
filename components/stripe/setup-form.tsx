@@ -1,6 +1,6 @@
 "use client";
 
-import React, { FormEventHandler, useState } from "react";
+import React, { FormEventHandler, useEffect, useState } from "react";
 import {
   PaymentElement,
   useStripe,
@@ -17,6 +17,13 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { usePathname, useRouter } from "next/navigation";
+import {
+  decodeJWTToken,
+  getAuthorizationUrl,
+  validateAuthorization,
+} from "@/lib/paypay";
+import { getMyId } from "@/actions/me";
+import { createPaypayCustomer } from "@/actions/paypay-customer";
 
 export default function SetupForm() {
   const stripe = useStripe();
@@ -34,7 +41,31 @@ export default function SetupForm() {
 
   const [paymentMethodTypes, setPaymentMethodTypes] = useState<string>();
 
-  React.useEffect(() => {
+  useEffect(() => {
+    const responseToken = new URLSearchParams(window.location.search).get(
+      "responseToken"
+    );
+
+    if (!responseToken) return;
+
+    decodeJWTToken(responseToken).then((response) => {
+      switch (response.result) {
+        case "succeeded":
+          createPaypayCustomer(response.userAuthorizationId).then(() => {
+            onCompleteModalOpen();
+          });
+          break;
+        case "declined":
+          setMessage("paypayでの支払い設定に失敗しました。");
+          break;
+        default:
+          setMessage("予期せぬエラーが発生しました。");
+          break;
+      }
+    });
+  }, [onCompleteModalOpen]);
+
+  useEffect(() => {
     if (!stripe) {
       return;
     }
@@ -54,10 +85,17 @@ export default function SetupForm() {
           onCompleteModalOpen();
           break;
         case "processing":
-          setMessage("Your payment is processing.");
+          setMessage("決済情報を設定中");
+          break;
+        case "requires_payment_method":
+          // Redirect your user back to your payment page to attempt collecting
+          // payment again
+          setMessage(
+            "決済方法の登録に失敗しました。別の決済方法での登録を試してみてください。"
+          );
           break;
         default:
-          setMessage("Something went wrong.");
+          setMessage("予期せぬエラーが発生しました。");
           break;
       }
     });
@@ -72,11 +110,16 @@ export default function SetupForm() {
       return;
     }
 
-    if (paymentMethodTypes === "external_paypay") {
-      router.push("https://developer.paypay.ne.jp/products/docs/nativepayment");
-    }
-
     setIsSubmitting(true);
+
+    if (paymentMethodTypes === "external_paypay") {
+      const userId = await getMyId();
+      const authorizationUrl = await getAuthorizationUrl({
+        userId: userId,
+        redirectUrl: `${process.env.NEXT_PUBLIC_HOST_URL}${pathname}`,
+      });
+      router.push(authorizationUrl);
+    }
 
     const { error } = await stripe.confirmSetup({
       elements,

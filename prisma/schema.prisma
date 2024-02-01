@@ -3,36 +3,34 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("POSTGRES_URL")
+  provider  = "postgresql"
+  url       = env("SUPABASE_POSTGRES_URL")
+  directUrl = env("SUPABASE_DIRECT_URL")
 }
-
-// NextAuth auto generated models
 
 model Account {
   id                String  @id @default(cuid())
   userId            String
-  type              String
-  provider          String
   providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
+  access_token      String?
   expires_at        Int?
-  token_type        String?
+  id_token          String?
+  provider          String
+  refresh_token     String?
   scope             String?
-  id_token          String? @db.Text
   session_state     String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token_type        String?
+  type              String
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
 
 model Session {
   id           String   @id @default(cuid())
-  sessionToken String   @unique
   userId       String
   expires      DateTime
+  sessionToken String   @unique
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
@@ -43,9 +41,9 @@ model User {
   emailVerified  DateTime?
   image          String?
   accounts       Account[]
+  paypayCustomer PaypayCustomer?
   sessions       Session[]
   stripeCustomer StripeCustomer?
-  paypayCustomer PaypayCustomer?
 }
 
 model VerificationToken {
@@ -56,44 +54,77 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-// NextAuth auto generated models end
-
 model StripeCustomer {
   id               String @id @default(cuid())
   userId           String @unique
   stripeCustomerId String @unique
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user             User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model PaypayCustomer {
   id                        String @id @default(cuid())
   userId                    String @unique
   paypayUserAuthorizationId String
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user                      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Restaurant {
   id               String                   @id @default(cuid())
   name             String
-  googleMapPlaceId String                   @unique
   isOpen           Boolean                  @default(false)
+  googleMapPlaceId String                   @unique
   meals            Meal[]
+  bankAccounts     RestaurantBankAccount[]
   openHours        RestaurantOpenHour[]
   staffs           Staff[]
   tokens           StaffRegistrationToken[]
-  bankAccounts     RestaurantBankAccount[]
 }
 
 model Meal {
-  id           String  @id @default(cuid())
+  id           String     @id @default(cuid())
   restaurantId String
   imageUrl     String
   price        Int
-  isDiscarded  Boolean @default(false)
+  isDiscarded  Boolean    @default(false)
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+}
 
-  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+model RestaurantOpenHour {
+  id           String     @id @default(cuid())
+  day          DayOfWeek
+  endHour      Int
+  endMinute    Int
+  restaurantId String
+  startHour    Int
+  startMinute  Int
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+}
+
+model StaffRegistrationToken {
+  id           String     @id @default(cuid())
+  restaurantId String
+  token        String     @unique @default(uuid())
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+}
+
+model Staff {
+  id           String     @id @default(cuid())
+  restaurantId String
+  lineId       String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+}
+
+model RestaurantBankAccount {
+  id           String          @id @default(cuid())
+  restaurantId String
+  bankCode     String          @db.VarChar(4)
+  branchCode   String          @db.VarChar(3)
+  accountType  BankAccountType
+  accountNo    String
+  holderName   String
+  restaurant   Restaurant      @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+
+  @@unique([bankCode, branchCode, accountType, accountNo])
 }
 
 enum DayOfWeek {
@@ -106,50 +137,8 @@ enum DayOfWeek {
   SUNDAY
 }
 
-model RestaurantOpenHour {
-  id           String    @id @default(cuid())
-  restaurantId String
-  day          DayOfWeek
-  startHour    Int
-  startMinute  Int
-  endHour      Int
-  endMinute    Int
-
-  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
-}
-
-model StaffRegistrationToken {
-  id           String @id @default(cuid())
-  restaurantId String
-  token        String @unique @default(uuid())
-
-  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
-}
-
-model Staff {
-  id           String @id @default(cuid())
-  restaurantId String
-  lineId       String
-
-  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
-}
-
 enum BankAccountType {
   SAVINGS
   CHECKING
   DEPOSIT
-}
-
-model RestaurantBankAccount {
-  id           String          @id @default(cuid())
-  restaurantId String
-  bankCode     String          @db.VarChar(4)
-  branchCode   String          @db.VarChar(3)
-  accountType  BankAccountType
-  accountNo    String
-  holderName   String
-
-  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
-
-  @@unique([bankCode, branchCode, accountType, accountNo])
 }

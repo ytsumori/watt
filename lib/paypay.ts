@@ -13,6 +13,47 @@ PAYPAY.Configure({
   productionMode: false,
 });
 
+export async function getAuthorizationUrl({
+  userId,
+  redirectUrl,
+}: {
+  userId: string;
+  redirectUrl: string;
+}): Promise<string> {
+  let payload = {
+    scopes: ["preauth_capture_native"],
+    nonce: crypto.randomUUID(),
+    redirectUrl: redirectUrl,
+    referenceId: userId,
+  };
+  return new Promise((resolve, _reject) => {
+    PAYPAY.AccountLinkQRCodeCreate(payload, (response: any) => {
+      if (response.BODY.resultInfo.code === "SUCCESS") {
+        return resolve(response.BODY.data.linkQRCodeURL);
+      }
+    });
+  });
+}
+
+export async function decodeJWTToken(token: string): Promise<{
+  aud: string;
+  result: "succeeded" | "declined";
+  userAuthorizationId: string;
+}> {
+  const jwt = require("jsonwebtoken");
+  return jwt.decode(token, { complete: true }).payload;
+}
+
+export async function validateAuthorization(
+  userAuthorizationId: string
+): Promise<string> {
+  return new Promise((resolve, _reject) => {
+    PAYPAY.getUserAuthorizationStatus(userAuthorizationId, (response: any) => {
+      return resolve(response.BODY.resultInfo.code);
+    });
+  });
+}
+
 export async function createQRCode(merchantPaymentId: string): Promise<string> {
   // Creating the payload to create a QR Code, additional parameters can be added basis the API Documentation
   let payload = {
