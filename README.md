@@ -1,5 +1,21 @@
 # Senbero
 
+## Prerequisites
+
+```bash
+node -v
+v20.11.0
+```
+
+## How to Setup
+
+### Install packages
+
+```bash
+pnpm install
+pnpm install -g dotenv-cli
+```
+
 ## How to Use
 
 ### Run in development mode
@@ -11,5 +27,6 @@ pnpm dev
 ### After schema change, create migration file using
 
 ```bash
-dotenv -e .env.local -- pnpx prisma migrate dev
+make format-schema
+make migrate-db
 ```
