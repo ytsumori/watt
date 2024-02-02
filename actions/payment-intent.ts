@@ -3,6 +3,7 @@
 import { getMyId } from "@/actions/me";
 import stripe from "@/lib/stripe";
 import prisma from "@/lib/prisma/client";
+import { createOrder } from "./order";
 
 export async function createPaymentIntent({
   mealId,
@@ -22,6 +23,7 @@ export async function createPaymentIntent({
       id: mealId,
     },
     select: {
+      id: true,
       isDiscarded: true,
       price: true,
     },
@@ -54,18 +56,11 @@ export async function createPaymentIntent({
     confirm: true,
   });
 
-  await prisma.order.create({
-    data: {
-      userId,
-      mealId,
-      payments: {
-        create: {
-          paymentProvider: "STRIPE",
-          providerPaymentId: paymentIntent.id,
-          amount: meal.price,
-        },
-      },
-    },
+  await createOrder({
+    mealId: meal.id,
+    userId: user.id,
+    providerPaymentId: paymentIntent.id,
+    paymentProvider: "STRIPE",
   });
 
   return paymentIntent.status;

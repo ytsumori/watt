@@ -45,7 +45,6 @@ export async function isPaymentMethodRegistered() {
   if (user?.stripeCustomer) {
     const paymentMethods = await stripe.paymentMethods.list({
       customer: user.stripeCustomer.stripeCustomerId,
-      type: "card",
     });
     return paymentMethods.data.length > 0;
   }

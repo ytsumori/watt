@@ -5,6 +5,7 @@ import prisma from "@/lib/prisma/client";
 import { options } from "@/lib/next-auth/options";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
+import { findPreauthorizedPayment } from "@/actions/payment";
 
 type Params = {
   restaurantId: string;
@@ -23,7 +24,12 @@ export default async function RestaurantPage({ params }: { params: Params }) {
   const session = await getServerSession(options);
   if (session) {
     // logged in
-    const stripeCustomer = await getStripeCustomer();
+    const user = session.user;
+    const payment = await findPreauthorizedPayment(user.id);
+    const orderedMeal = await prisma.meal.findUnique({
+      where: { id: payment?.order.mealId },
+    });
+    const stripeCustomer = await getStripeCustomer({ userId: user.id });
     const paymentMethods = stripeCustomer
       ? await stripe.customers.listPaymentMethods(
           stripeCustomer.stripeCustomerId
@@ -34,6 +40,12 @@ export default async function RestaurantPage({ params }: { params: Params }) {
       <RestaurantDetail
         paymentMethods={paymentMethods?.data ?? []}
         meal={meal}
+        defaultPreauthorizedPayment={
+          payment && orderedMeal
+            ? { ...payment, order: { ...payment.order, meal: orderedMeal } }
+            : undefined
+        }
+        user={user}
       />
     );
   }

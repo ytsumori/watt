@@ -32,23 +32,37 @@ import {
   AlertDialogHeader,
   AlertDialogBody,
   AlertDialogFooter,
+  Link,
 } from "@chakra-ui/react";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { FaInstagram } from "react-icons/fa";
-import { useSession } from "next-auth/react";
 import Stripe from "stripe";
 import { Prisma } from "@prisma/client";
 import { createPaymentIntent } from "@/actions/payment-intent";
 import { LoginButton } from "@/components/buttons";
+import { Session } from "next-auth";
+import { findPreauthorizedPayment } from "@/actions/payment";
+import NextLink from "next/link";
 
 type Props = {
   meal: Prisma.MealGetPayload<{ include: { restaurant: true } }>;
   paymentMethods: Stripe.PaymentMethod[];
+  defaultPreauthorizedPayment?: Prisma.PaymentGetPayload<{
+    include: { order: { include: { meal: true } } };
+  }>;
+  user?: Session["user"];
 };
 
-export default function MealPage({ meal, paymentMethods }: Props) {
-  const { data: session } = useSession();
-  const user = session?.user;
+export default function MealPage({
+  meal,
+  paymentMethods,
+  defaultPreauthorizedPayment,
+  user,
+}: Props) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [preauthorizedPayment, setPreauthorizedPayment] = useState(
+    defaultPreauthorizedPayment
+  );
 
   const {
     isOpen: isVisitingModalOpen,
@@ -61,7 +75,6 @@ export default function MealPage({ meal, paymentMethods }: Props) {
     onClose: onPaymentConfirmClose,
   } = useDisclosure();
 
-  const ref = useRef<HTMLDivElement>(null);
   const steps: {
     title: string;
     activeButton?: { label: string; onClick: () => void };
@@ -77,9 +90,40 @@ export default function MealPage({ meal, paymentMethods }: Props) {
     { title: "食事を楽しむ" },
   ];
   const { activeStep, setActiveStep } = useSteps({
-    index: 0,
+    index: preauthorizedPayment ? 1 : 0,
     count: steps.length,
   });
+  const isDifferentMealOrdered = !!(
+    preauthorizedPayment && preauthorizedPayment.order.mealId !== meal.id
+  );
+
+  const handleStripePayment = async (paymentMethodId: string) => {
+    if (!user) {
+      return;
+    }
+    createPaymentIntent({
+      mealId: meal.id,
+      userId: user.id,
+      paymentMethodId,
+    }).then((status) => {
+      if (status === "succeeded") {
+        findPreauthorizedPayment(user.id).then((payment) => {
+          if (payment) {
+            setPreauthorizedPayment({
+              ...payment,
+              order: {
+                ...payment.order,
+                meal,
+              },
+            });
+          }
+        });
+        onVisitingModalClose();
+      } else {
+        console.error("Failed to create payment intent");
+      }
+    });
+  };
 
   return (
     <VStack px={6} alignItems="baseline" spacing={4}>
@@ -125,7 +169,18 @@ export default function MealPage({ meal, paymentMethods }: Props) {
           />
         </Box>
       </VStack>
-      {meal ? (
+      {isDifferentMealOrdered ? (
+        <Text>
+          <Link
+            as={NextLink}
+            href={`/restaurants/${preauthorizedPayment.order.meal.restaurantId}/meals/${preauthorizedPayment.order.mealId}`}
+            color="teal.500"
+          >
+            <b>他の推しメシ</b>
+          </Link>
+          を選択中です
+        </Text>
+      ) : (
         <>
           <Heading as="h2" size="md">
             お食事の流れ
@@ -181,17 +236,7 @@ export default function MealPage({ meal, paymentMethods }: Props) {
                       {paymentMethods.map((paymentMethod) => (
                         <Button
                           key={paymentMethod.id}
-                          onClick={() =>
-                            createPaymentIntent({
-                              mealId: meal.id,
-                              userId: user.id,
-                              paymentMethodId: paymentMethod.id,
-                            }).then((status) => {
-                              console.log(status);
-                              setActiveStep(1);
-                              onVisitingModalClose();
-                            })
-                          }
+                          onClick={() => handleStripePayment(paymentMethod.id)}
                         >
                           {paymentMethod.card?.exp_month}/
                           {paymentMethod.card?.exp_year}
@@ -239,10 +284,6 @@ export default function MealPage({ meal, paymentMethods }: Props) {
           ) : (
             <LoginButton />
           )}
-        </>
-      ) : (
-        <>
-          <Text>推しメシが登録されていれば食事ができません</Text>
         </>
       )}
     </VStack>

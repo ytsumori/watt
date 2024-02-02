@@ -3,6 +3,7 @@
 import stripe from "@/lib/stripe";
 import prisma from "@/lib/prisma/client";
 import { getMe } from "@/actions/me";
+import { createStripeCustomer } from "./stripe-customer";
 
 export async function createSetupIntent() {
   const user = await getMe();
@@ -35,11 +36,6 @@ async function createNewStripeCustomer({
   name?: string;
 }) {
   const customer = await stripe.customers.create({ name });
-  await prisma.stripeCustomer.create({
-    data: {
-      userId,
-      stripeCustomerId: customer.id,
-    },
-  });
+  await createStripeCustomer({ userId, stripeCustomerId: customer.id });
   return customer;
 }
