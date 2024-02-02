@@ -6,7 +6,7 @@ import { createContext, useEffect, useState } from "react";
 
 export const LineIdTokenContext = createContext("");
 
-export function LineLoginLayout({ children }: { children: React.ReactNode }) {
+export function LineLoginProvider({ children }: { children: React.ReactNode }) {
   const [idToken, setIdToken] = useState<string>();
   useEffect(() => {
     liff

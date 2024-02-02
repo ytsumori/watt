@@ -13,7 +13,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { useContext, useState } from "react";
-import { LineIdTokenContext } from "../../_components/layout-client";
+import { LineIdTokenContext } from "../../_components/line-login-provider";
 import { useRouter } from "next/navigation";
 
 export function SignUpPage() {

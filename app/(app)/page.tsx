@@ -1,5 +1,5 @@
 import HomePage from "@/app/(app)/_components/page-client";
-import prisma from "@/lib/prisma";
+import prisma from "@/lib/prisma/client";
 import { PaymentMethodModal } from "./_components/payment-method-modal";
 
 export default async function Home() {

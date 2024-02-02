@@ -34,7 +34,7 @@ import {
 } from "@/actions/restaurant-open-hour";
 import { DayOfWeek, RestaurantOpenHour } from "@prisma/client";
 import { findRestaurant, updateIsOpen } from "@/actions/restaurant";
-import { RestaurantIdContext } from "./layout-client";
+import { RestaurantIdContext } from "./restaurant-id-provider";
 
 export function SchedulePage() {
   const restaurantId = useContext(RestaurantIdContext);

@@ -10,7 +10,7 @@ import {
 } from "firebase/auth";
 import { authProvider } from "@/lib/firebase";
 
-export function FirebaseLoginLayout({
+export function FirebaseLoginProvider({
   children,
 }: {
   children: React.ReactNode;

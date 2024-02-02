@@ -1,5 +1,5 @@
-import { LoggedInLayout } from "./_components/layout-client";
+import { RestaurantIdProvider } from "./_components/restaurant-id-provider";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return <LoggedInLayout>{children}</LoggedInLayout>;
+  return <RestaurantIdProvider>{children}</RestaurantIdProvider>;
 }

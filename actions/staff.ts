@@ -1,7 +1,7 @@
 "use server";
 
 import { verifyIdToken } from "@/lib/line-login";
-import prisma from "@/lib/prisma";
+import prisma from "@/lib/prisma/client";
 
 export async function getStaffs({ lineId }: { lineId: string }) {
   return await prisma.staff.findMany({

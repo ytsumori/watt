@@ -35,24 +35,18 @@ import {
 } from "@chakra-ui/react";
 import { useRef } from "react";
 import { FaInstagram } from "react-icons/fa";
-import { TabelogIcon } from "./tabelog-icon";
 import { useSession } from "next-auth/react";
-import { LoginButton } from "./buttons";
 import Stripe from "stripe";
-import { Meal, Restaurant } from "@prisma/client";
-import { createPaymentIntent } from "@/lib/stripe/payment-intent";
+import { Prisma } from "@prisma/client";
+import { createPaymentIntent } from "@/actions/payment-intent";
+import { LoginButton } from "@/components/buttons";
 
 type Props = {
-  selectedRestaurant: Restaurant;
-  meal?: Meal;
+  meal: Prisma.MealGetPayload<{ include: { restaurant: true } }>;
   paymentMethods: Stripe.PaymentMethod[];
 };
 
-export default function RestaurantDetail({
-  selectedRestaurant,
-  meal,
-  paymentMethods,
-}: Props) {
+export default function MealPage({ meal, paymentMethods }: Props) {
   const { data: session } = useSession();
   const user = session?.user;
 
@@ -90,58 +84,36 @@ export default function RestaurantDetail({
   return (
     <VStack px={6} alignItems="baseline" spacing={4}>
       <VStack h="fit-content" spacing={2} w="full">
-        {meal ? (
-          <Card variant="unstyled" direction="row">
-            <Image
-              objectFit="contain"
-              alt="商品"
-              src={meal.imageUrl}
-              width="40%"
-            />
-            <VStack p={4}>
-              <Text as="b" fontSize="md" w="full">
-                {selectedRestaurant.name}
-                <br />
-                <Text as="span" fontSize="sm">
-                  {meal.price}円(税込)
-                </Text>
+        <Card variant="unstyled" direction="row">
+          <Image
+            objectFit="contain"
+            alt="商品"
+            src={meal.imageUrl}
+            width="40%"
+          />
+          <VStack p={4}>
+            <Text as="b" fontSize="md" w="full">
+              {meal.restaurant.name}
+              <br />
+              <Text as="span" fontSize="sm">
+                {meal.price}円(税込)
               </Text>
-              <HStack w="full">
-                <IconButton
-                  size="sm"
-                  as="a"
-                  href="https://tabelog.com/osaka/A2701/A270106/27090650/"
-                  target="_blank"
-                  colorScheme="cyan"
-                  textColor="white"
-                  aria-label="tabelog"
-                  fontSize="24px"
-                  icon={<TabelogIcon />}
-                />
-                <IconButton
-                  size="sm"
-                  as="a"
-                  href="https://www.instagram.com/menyayu0303/"
-                  target="_blank"
-                  colorScheme="cyan"
-                  textColor="white"
-                  aria-label="instagram"
-                  fontSize="24px"
-                  icon={<FaInstagram />}
-                />
-              </HStack>
-            </VStack>
-          </Card>
-        ) : (
-          <Box w="full">
-            <Heading as="h1" size="lg">
-              {selectedRestaurant.name}
-            </Heading>
-            <Heading as="h2" size="md">
-              推しメシが存在しません
-            </Heading>
-          </Box>
-        )}
+            </Text>
+            <HStack w="full">
+              <IconButton
+                size="sm"
+                as="a"
+                href="https://www.instagram.com/menyayu0303/"
+                target="_blank"
+                colorScheme="cyan"
+                textColor="white"
+                aria-label="instagram"
+                fontSize="24px"
+                icon={<FaInstagram />}
+              />
+            </HStack>
+          </VStack>
+        </Card>
         <Box h="25vh" w="full">
           <iframe
             width="100%"
@@ -149,7 +121,7 @@ export default function RestaurantDetail({
             style={{ border: 0 }}
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
-            src={`https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY}&q=place_id:${selectedRestaurant.googleMapPlaceId}`}
+            src={`https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY}&q=place_id:${meal.restaurant.googleMapPlaceId}`}
           />
         </Box>
       </VStack>

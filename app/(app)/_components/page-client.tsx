@@ -110,7 +110,7 @@ export default function HomePage({
               boxShadow="md"
               onClick={() =>
                 router.push(
-                  `/restaurants/${meal.restaurant.id}?mealId=${meal.id}`
+                  `/restaurants/${meal.restaurant.id}/meals/${meal.id}`
                 )
               }
             >

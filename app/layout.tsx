@@ -1,4 +1,4 @@
-import { Providers } from "./provider";
+import { Providers } from "./_components/providers";
 import "./global.css";
 
 export const metadata = {

@@ -6,7 +6,7 @@ import {
   searchBanks,
   searchBranches,
 } from "@/lib/bankcode-jp";
-import { translateBankAccountType } from "@/util/translate-to-ja";
+import { translateBankAccountType } from "@/lib/prisma/translate-enum";
 import { SearchIcon } from "@chakra-ui/icons";
 import {
   Button,
@@ -21,7 +21,7 @@ import {
 } from "@chakra-ui/react";
 import { BankAccountType } from "@prisma/client";
 import { useContext, useState } from "react";
-import { RestaurantIdContext } from "../../_components/layout-client";
+import { RestaurantIdContext } from "../../_components/restaurant-id-provider";
 
 export function BankAccountPage() {
   const restaurantId = useContext(RestaurantIdContext);

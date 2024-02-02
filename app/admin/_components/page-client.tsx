@@ -24,7 +24,7 @@ type Props = {
   restaurants: Prisma.RestaurantGetPayload<{ include: { tokens: true } }>[];
 };
 
-export function RestaurantsPage({ restaurants }: Props) {
+export function RestaurantsPageClient({ restaurants }: Props) {
   const toast = useToast();
   return (
     <Box p={6}>

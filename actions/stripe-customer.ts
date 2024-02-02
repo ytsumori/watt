@@ -1,6 +1,6 @@
 "use server";
 
-import prisma from "@/lib/prisma";
+import prisma from "@/lib/prisma/client";
 import { getMyId } from "./me";
 
 export async function getStripeCustomer() {

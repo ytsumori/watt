@@ -1,11 +1,11 @@
-import { RestaurantsPage } from "./_components/page-client";
-import prisma from "@/lib/prisma";
+import { RestaurantsPageClient } from "./_components/page-client";
+import prisma from "@/lib/prisma/client";
 
-export default async function NewPage() {
+export default async function RestaurantsPage() {
   const restaurants = await prisma.restaurant.findMany({
     include: {
       tokens: true,
     },
   });
-  return <RestaurantsPage restaurants={restaurants} />;
+  return <RestaurantsPageClient restaurants={restaurants} />;
 }

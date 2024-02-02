@@ -28,7 +28,7 @@ import {
 import { useState } from "react";
 import { copyCredentialToClipboard } from "../../_util/clipboard-text";
 
-export function NewRestaurantPage() {
+export function NewRestaurantPageClient() {
   const [selectedPlace, setSelectedPlace] = useState<SearchPlaceResult>();
   const [searchText, setSearchText] = useState<string>();
   const [searchResults, setSearchResults] = useState<SearchPlaceResult[]>();

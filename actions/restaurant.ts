@@ -1,6 +1,6 @@
 "use server";
 
-import prisma from "@/lib/prisma";
+import prisma from "@/lib/prisma/client";
 
 export async function findRestaurant(id: string) {
   return await prisma.restaurant.findUnique({

@@ -1,6 +1,6 @@
 "use server";
 
-import prisma from "@/lib/prisma";
+import prisma from "@/lib/prisma/client";
 import { DayOfWeek } from "@prisma/client";
 
 export async function getOpenHours({ restaurantId }: { restaurantId: string }) {

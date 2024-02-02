@@ -1,4 +1,4 @@
-import { LineLoginLayout } from "./_components/layout-client";
+import { LineLoginProvider } from "./_components/line-login-provider";
 
 export const metadata = {
   title: "飲食店向け管理画面 | Watt",
@@ -10,5 +10,5 @@ export default async function Layout({
 }: {
   children: React.ReactNode;
 }) {
-  return <LineLoginLayout>{children}</LineLoginLayout>;
+  return <LineLoginProvider>{children}</LineLoginProvider>;
 }

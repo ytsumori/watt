@@ -5,7 +5,7 @@ import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
 import SetupForm from "./setup-form";
 import { Box, Heading } from "@chakra-ui/react";
-import { createSetupIntent } from "@/lib/stripe/setup-intent";
+import { createSetupIntent } from "@/actions/setup-intent";
 
 // Make sure to call loadStripe outside of a component’s render to avoid
 // recreating the Stripe object on every render.

@@ -1,7 +1,7 @@
 "use server";
 
-import stripe from "./client";
-import prisma from "@/lib/prisma";
+import stripe from "@/lib/stripe";
+import prisma from "@/lib/prisma/client";
 import { getMe } from "@/actions/me";
 
 export async function createSetupIntent() {

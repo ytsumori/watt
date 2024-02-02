@@ -1,9 +1,9 @@
 "use server";
 
-import prisma from "@/lib/prisma";
+import prisma from "@/lib/prisma/client";
 import { options } from "@/lib/next-auth/options";
 import { getServerSession } from "next-auth/next";
-import stripe from "@/lib/stripe/client";
+import stripe from "@/lib/stripe";
 
 export async function getMe() {
   const session = await getServerSession(options);

@@ -1,8 +1,8 @@
 "use server";
 
 import { getMyId } from "@/actions/me";
-import stripe from "./client";
-import prisma from "@/lib/prisma";
+import stripe from "@/lib/stripe";
+import prisma from "@/lib/prisma/client";
 
 export async function createPaymentIntent({
   mealId,
