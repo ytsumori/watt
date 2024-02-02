@@ -1,4 +1,4 @@
-# Senbero
+# Watt
 
 ## Prerequisites
 

@@ -3,8 +3,8 @@ import "./global.css";
 
 export const metadata = {
   metadataBase: new URL("https://https://senbero.vercel.app"),
-  title: "Senbero",
-  description: "My very first senbero app",
+  title: "Watt",
+  description: "My very first watt app",
 };
 
 export const revalidate = 0;
