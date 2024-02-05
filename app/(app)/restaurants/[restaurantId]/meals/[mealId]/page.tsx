@@ -12,7 +12,7 @@ type Params = {
   mealId: string;
 };
 
-export default async function RestaurantPage({ params }: { params: Params }) {
+export default async function MealPage({ params }: { params: Params }) {
   const meal = await prisma.meal.findUnique({
     where: { id: params.mealId, restaurantId: params.restaurantId },
     include: { restaurant: true },
@@ -26,9 +26,11 @@ export default async function RestaurantPage({ params }: { params: Params }) {
     // logged in
     const user = session.user;
     const payment = await findPreauthorizedPayment(user.id);
-    const orderedMeal = await prisma.meal.findUnique({
-      where: { id: payment?.order.mealId },
-    });
+    const orderedMeal = payment
+      ? await prisma.meal.findUnique({
+          where: { id: payment.order.mealId },
+        })
+      : undefined;
     const stripeCustomer = await getStripeCustomer({ userId: user.id });
     const paymentMethods = stripeCustomer
       ? await stripe.customers.listPaymentMethods(

@@ -4,6 +4,7 @@ import { getMyId } from "@/actions/me";
 import stripe from "@/lib/stripe";
 import prisma from "@/lib/prisma/client";
 import { createOrder } from "./order";
+import { findPayment, updatePaymentStatus } from "./payment";
 
 export async function createPaymentIntent({
   mealId,
@@ -63,5 +64,26 @@ export async function createPaymentIntent({
     paymentProvider: "STRIPE",
   });
 
+  return paymentIntent.status;
+}
+
+export async function capturePaymentIntent(paymentId: string) {
+  const payment = await findPayment(paymentId);
+  if (!payment) {
+    throw new Error("Payment not found");
+  }
+  if (payment.paymentProvider !== "STRIPE") {
+    throw new Error("Invalid payment provider");
+  }
+
+  const paymentIntent = await stripe.paymentIntents.capture(
+    payment.providerPaymentId
+  );
+  if (paymentIntent.status === "succeeded") {
+    await updatePaymentStatus({
+      id: paymentId,
+      status: "COMPLETE",
+    });
+  }
   return paymentIntent.status;
 }

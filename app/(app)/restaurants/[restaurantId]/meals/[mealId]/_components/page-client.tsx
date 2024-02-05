@@ -38,11 +38,15 @@ import { useRef, useState } from "react";
 import { FaInstagram } from "react-icons/fa";
 import Stripe from "stripe";
 import { Prisma } from "@prisma/client";
-import { createPaymentIntent } from "@/actions/payment-intent";
+import {
+  capturePaymentIntent,
+  createPaymentIntent,
+} from "@/actions/payment-intent";
 import { LoginButton } from "@/components/buttons";
 import { Session } from "next-auth";
 import { findPreauthorizedPayment } from "@/actions/payment";
 import NextLink from "next/link";
+import { stat } from "fs";
 
 type Props = {
   meal: Prisma.MealGetPayload<{ include: { restaurant: true } }>;
@@ -98,16 +102,15 @@ export default function MealPage({
   );
 
   const handleStripePayment = async (paymentMethodId: string) => {
-    if (!user) {
-      return;
-    }
+    if (!user) return;
     createPaymentIntent({
       mealId: meal.id,
       userId: user.id,
       paymentMethodId,
     }).then((status) => {
-      if (status === "succeeded") {
+      if (status === "requires_capture") {
         findPreauthorizedPayment(user.id).then((payment) => {
+          console.log("payment", payment);
           if (payment) {
             setPreauthorizedPayment({
               ...payment,
@@ -116,11 +119,26 @@ export default function MealPage({
                 meal,
               },
             });
+            setActiveStep(1);
           }
         });
         onVisitingModalClose();
       } else {
+        console.error("status", status);
         console.error("Failed to create payment intent");
+      }
+    });
+  };
+
+  const handlePaymentConfirm = () => {
+    if (!preauthorizedPayment) return;
+
+    capturePaymentIntent(preauthorizedPayment.id).then((paymentIntent) => {
+      if (paymentIntent === "succeeded") {
+        setActiveStep(2);
+        onPaymentConfirmClose();
+      } else {
+        console.error("Failed to capture payment intent");
       }
     });
   };
@@ -266,14 +284,7 @@ export default function MealPage({
                       >
                         キャンセル
                       </Button>
-                      <Button
-                        textColor="white"
-                        onClick={() => {
-                          console.log("TODO: confirm payment");
-                          setActiveStep(2);
-                          onPaymentConfirmClose();
-                        }}
-                      >
+                      <Button textColor="white" onClick={handlePaymentConfirm}>
                         確定する
                       </Button>
                     </AlertDialogFooter>
