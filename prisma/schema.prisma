@@ -35,11 +35,14 @@ model Session {
 }
 
 model User {
-  id             String          @id @default(cuid())
-  name           String?
-  email          String?         @unique
-  emailVerified  DateTime?
-  image          String?
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @default(now()) @updatedAt
+
   accounts       Account[]
   paypayCustomer PaypayCustomer?
   sessions       Session[]
@@ -56,92 +59,125 @@ model VerificationToken {
 }
 
 model StripeCustomer {
-  id               String @id @default(cuid())
-  userId           String @unique
-  stripeCustomerId String @unique
-  user             User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id               String   @id @default(cuid())
+  userId           String   @unique
+  stripeCustomerId String   @unique
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @default(now()) @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model PaypayCustomer {
-  id                        String @id @default(cuid())
-  userId                    String @unique
+  id                        String   @id @default(cuid())
+  userId                    String   @unique
   paypayUserAuthorizationId String
-  user                      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @default(now()) @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Restaurant {
-  id               String                   @id @default(cuid())
+  id               String   @id @default(cuid())
   name             String
-  isOpen           Boolean                  @default(false)
-  googleMapPlaceId String                   @unique
-  meals            Meal[]
-  bankAccounts     RestaurantBankAccount[]
-  openHours        RestaurantOpenHour[]
-  staffs           Staff[]
-  tokens           StaffRegistrationToken[]
+  isOpen           Boolean  @default(false)
+  googleMapPlaceId String   @unique
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @default(now()) @updatedAt
+
+  meals        Meal[]
+  bankAccounts RestaurantBankAccount[]
+  openHours    RestaurantOpenHour[]
+  staffs       Staff[]
+  tokens       StaffRegistrationToken[]
 }
 
 model Meal {
-  id           String     @id @default(cuid())
+  id           String   @id @default(cuid())
   restaurantId String
   imageUrl     String
   price        Int
-  isDiscarded  Boolean    @default(false)
-  orders       Order[]
-  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  isDiscarded  Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now()) @updatedAt
+
+  orders Order[]
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
 }
 
 model Order {
-  id       String    @id @default(cuid())
-  userId   String
-  mealId   String
+  id        String   @id @default(cuid())
+  userId    String
+  mealId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
   payments Payment[]
-  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  meal     Meal      @relation(fields: [mealId], references: [id], onDelete: Cascade)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  meal Meal @relation(fields: [mealId], references: [id], onDelete: Cascade)
 }
 
 model Payment {
-  id                String                @id @default(cuid())
+  id                String          @id @default(cuid())
   orderId           String
   paymentProvider   PaymentProvider
   providerPaymentId String
-  status            PaymentStatus         @default(PREAUTHORIZED)
+  status            PaymentStatus   @default(PREAUTHORIZED)
   amount            Int
-  paymentCapture    PaypayPaymentCapture?
-  order             Order                 @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @default(now()) @updatedAt
+
+  paymentCapture PaypayPaymentCapture?
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
   @@unique([paymentProvider, providerPaymentId])
 }
 
 model PaypayPaymentCapture {
-  id        String  @id @default(cuid())
-  paymentId String  @unique
-  payment   Payment @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  id        String   @id @default(cuid())
+  paymentId String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  payment Payment @relation(fields: [paymentId], references: [id], onDelete: Cascade)
 }
 
 model RestaurantOpenHour {
-  id           String     @id @default(cuid())
+  id           String    @id @default(cuid())
   day          DayOfWeek
   endHour      Int
   endMinute    Int
   restaurantId String
   startHour    Int
   startMinute  Int
-  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @default(now()) @updatedAt
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
 }
 
 model StaffRegistrationToken {
-  id           String     @id @default(cuid())
+  id           String   @id @default(cuid())
   restaurantId String
-  token        String     @unique @default(uuid())
-  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  token        String   @unique @default(uuid())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now()) @updatedAt
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
 }
 
 model Staff {
-  id           String     @id @default(cuid())
+  id           String   @id @default(cuid())
   restaurantId String
   lineId       String
-  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now()) @updatedAt
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
 }
 
 model RestaurantBankAccount {
@@ -152,7 +188,10 @@ model RestaurantBankAccount {
   accountType  BankAccountType
   accountNo    String
   holderName   String
-  restaurant   Restaurant      @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @default(now()) @updatedAt
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
 
   @@unique([bankCode, branchCode, accountType, accountNo])
 }
