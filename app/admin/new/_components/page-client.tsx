@@ -125,7 +125,10 @@ export function NewRestaurantPageClient() {
       </VStack>
       <Modal
         isOpen={!!selectedPlace}
-        onClose={() => setSelectedPlace(undefined)}
+        onClose={() => {
+          setSelectedPlace(undefined);
+          setSubmitResult(undefined);
+        }}
       >
         <ModalOverlay />
         {selectedPlace && (

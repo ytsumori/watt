@@ -25,6 +25,18 @@ export async function findPreauthorizedPayment(userId: string) {
   });
 }
 
+export async function getPaymentsByRestaurantId(restaurantId: string) {
+  return await prisma.payment.findMany({
+    where: {
+      order: {
+        meal: {
+          restaurantId,
+        },
+      },
+    },
+  });
+}
+
 export async function updatePaymentStatus({
   id,
   status,

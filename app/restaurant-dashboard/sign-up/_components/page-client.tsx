@@ -46,7 +46,7 @@ export function SignUpPage() {
   };
 
   return (
-    <Center height="100vh">
+    <Center h="100vh" px={2}>
       <VStack spacing={4}>
         <Alert status="info">
           <AlertIcon />

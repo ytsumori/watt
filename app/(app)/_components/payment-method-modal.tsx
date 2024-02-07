@@ -1,6 +1,7 @@
 "use client";
 
-import { isPaymentMethodRegistered } from "@/actions/me";
+import { getMyId } from "@/actions/me";
+import { isPaymentMethodRegistered } from "@/actions/user";
 import {
   Button,
   Modal,
@@ -19,10 +20,13 @@ export function PaymentMethodModal() {
   const router = useRouter();
 
   useEffect(() => {
-    isPaymentMethodRegistered().then((isRegistered) => {
-      if (!isRegistered) {
-        onOpen();
-      }
+    getMyId().then((myId) => {
+      if (!myId) return;
+      isPaymentMethodRegistered(myId).then((isRegistered) => {
+        if (!isRegistered) {
+          onOpen();
+        }
+      });
     });
   }, [onOpen]);
 

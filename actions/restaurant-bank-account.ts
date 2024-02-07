@@ -3,6 +3,17 @@
 import prisma from "@/lib/prisma/client";
 import { BankAccountType } from "@prisma/client";
 
+export async function findBankAccountByRestaurantId(restaurantId: string) {
+  return await prisma.restaurantBankAccount.findFirst({
+    where: {
+      restaurantId,
+    },
+    include: {
+      restaurant: true,
+    },
+  });
+}
+
 export async function createRestaurantBankAccount({
   restaurantId,
   bankCode,

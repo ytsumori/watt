@@ -28,7 +28,9 @@ export default function HomePage({
   meals: Prisma.MealGetPayload<{ include: { restaurant: true } }>[];
 }) {
   const router = useRouter();
-  const [focusedMealId, setFocusedMealId] = useState<string>(meals[0].id);
+  const [focusedMealId, setFocusedMealId] = useState(
+    meals.length > 0 ? meals[0].id : undefined
+  );
   const handleRestaurantSelect = (id: string) => {
     setFocusedMealId(id);
   };

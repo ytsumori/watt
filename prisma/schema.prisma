@@ -86,11 +86,11 @@ model Restaurant {
   createdAt        DateTime @default(now())
   updatedAt        DateTime @default(now()) @updatedAt
 
-  meals        Meal[]
-  bankAccounts RestaurantBankAccount[]
-  openHours    RestaurantOpenHour[]
-  staffs       Staff[]
-  tokens       StaffRegistrationToken[]
+  bankAccount RestaurantBankAccount?
+  meals       Meal[]
+  openHours   RestaurantOpenHour[]
+  staffs      Staff[]
+  tokens      StaffRegistrationToken[]
 }
 
 model Meal {
@@ -182,7 +182,7 @@ model Staff {
 
 model RestaurantBankAccount {
   id           String          @id @default(cuid())
-  restaurantId String
+  restaurantId String          @unique
   bankCode     String          @db.VarChar(4)
   branchCode   String          @db.VarChar(3)
   accountType  BankAccountType
