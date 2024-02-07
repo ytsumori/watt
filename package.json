@@ -50,5 +50,6 @@
     "@prisma/client": "^5.9.1",
     "@types/google.maps": "^3.55.1",
     "prisma": "^5.9.1"
-  }
+  },
+  "packageManager": "pnpm@8.15.1"
 }
