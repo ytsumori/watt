@@ -40,3 +40,32 @@ export async function createRestaurantBankAccount({
     },
   });
 }
+
+export async function updateRestaurantBankAccount({
+  restaurantId,
+  bankCode,
+  branchCode,
+  accountType,
+  accountNo,
+  holderName,
+}: {
+  restaurantId: string;
+  bankCode: string;
+  branchCode: string;
+  accountType: BankAccountType;
+  accountNo: string;
+  holderName: string;
+}) {
+  return await prisma.restaurantBankAccount.update({
+    where: {
+      restaurantId,
+    },
+    data: {
+      bankCode,
+      branchCode,
+      accountType,
+      accountNo,
+      holderName,
+    },
+  });
+}

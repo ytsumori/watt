@@ -1,15 +1,13 @@
 "use client";
 
-import { createRestaurantBankAccount } from "@/actions/restaurant-bank-account";
 import {
-  BackcodeSearchResult,
+  BankcodeSearchResult,
   searchBanks,
   searchBranches,
 } from "@/lib/bankcode-jp";
 import { translateBankAccountType } from "@/lib/prisma/translate-enum";
 import { SearchIcon } from "@chakra-ui/icons";
 import {
-  Box,
   Button,
   Center,
   FormControl,
@@ -20,28 +18,34 @@ import {
   InputLeftElement,
   Select,
   VStack,
-  useToast,
 } from "@chakra-ui/react";
 import { BankAccountType } from "@prisma/client";
-import { useContext, useState } from "react";
-import { RestaurantIdContext } from "../../_components/restaurant-id-provider";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 
-export function BankAccountPage() {
-  const router = useRouter();
-  const toast = useToast();
-  const restaurantId = useContext(RestaurantIdContext);
+export type BankAccountFormData = {
+  bankCode: string;
+  branchCode: string;
+  accountType: BankAccountType;
+  accountNo: string;
+  holderName: string;
+};
+
+type Props = {
+  isSubmitting: boolean;
+  onSubmit: (data: BankAccountFormData) => void;
+};
+
+export function BankAccountForm({ isSubmitting, onSubmit }: Props) {
   const [bankSearchText, setBankSearchText] = useState<string>();
-  const [bankOptions, setBankOptions] = useState<BackcodeSearchResult[]>([]);
+  const [bankOptions, setBankOptions] = useState<BankcodeSearchResult[]>([]);
   const [bankCode, setBankCode] = useState<string>();
-  const [branchOptions, setBranchOptions] = useState<BackcodeSearchResult[]>(
+  const [branchOptions, setBranchOptions] = useState<BankcodeSearchResult[]>(
     []
   );
   const [branchCode, setBranchCode] = useState<string>();
   const [accountType, setAccountType] = useState<BankAccountType>();
   const [accountNo, setAccountNo] = useState<string>();
   const [holderName, setHolderName] = useState<string>();
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const isAccountTypeValid = !!accountType;
   const isAccountNoValid = !!accountNo && !!accountNo?.match(/^\d{1,7}$/);
@@ -77,9 +81,10 @@ export function BankAccountPage() {
     setBranchOptions([]);
     setBankCode(undefined);
     setBankOptions([]);
-    searchBanks({ text: bankSearchText }).then((result) =>
-      setBankOptions(result.banks)
-    );
+    searchBanks({ text: bankSearchText }).then((result) => {
+      if (result.banks === undefined) return;
+      setBankOptions(result.banks);
+    });
   };
 
   const handleBankChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -88,9 +93,10 @@ export function BankAccountPage() {
     const newBankCode = e.target.value === "" ? undefined : e.target.value;
     setBankCode(newBankCode);
     if (newBankCode) {
-      searchBranches({ bankCode: newBankCode }).then((result) =>
-        setBranchOptions(result.branches)
-      );
+      searchBranches({ bankCode: newBankCode }).then((result) => {
+        if (result.branches === undefined) return;
+        setBranchOptions(result.branches);
+      });
     } else {
       setBranchOptions([]);
     }
@@ -103,30 +109,13 @@ export function BankAccountPage() {
 
   const handleSubmit = () => {
     if (!isValid) return;
-    setIsSubmitting(true);
-    createRestaurantBankAccount({
-      restaurantId,
-      bankCode,
-      branchCode,
-      accountType,
-      accountNo,
-      holderName,
-    })
-      .then(() => {
-        router.push("/restaurant-dashboard");
-      })
-      .catch(() => {
-        setIsSubmitting(false);
-        toast({
-          title: "エラーが発生しました",
-          status: "error",
-        });
-      });
+
+    onSubmit({ bankCode, branchCode, accountType, accountNo, holderName });
   };
 
   return (
-    <Center w="100vw" h="100vh">
-      <VStack>
+    <Center w="full" h="full">
+      <VStack p={2}>
         <Heading>振込先銀行口座を登録</Heading>
         <FormControl textAlign="center">
           <FormLabel>金融機関を検索</FormLabel>
