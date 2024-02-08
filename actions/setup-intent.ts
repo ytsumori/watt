@@ -7,6 +7,8 @@ import { createStripeCustomer } from "./stripe-customer";
 
 export async function createSetupIntent() {
   const user = await getMe();
+  if (!user) throw new Error("User not found");
+
   const stripeCustomer = await prisma.stripeCustomer.findUnique({
     where: { userId: user.id },
   });
