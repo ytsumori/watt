@@ -1,52 +1,58 @@
 "use client";
 
 import React from "react";
-import { Box, HStack, IconButton, VStack } from "@chakra-ui/react";
-import { FaMap, FaQrcode, FaUser } from "react-icons/fa6";
-import { useRouter } from "next/navigation";
+import {
+  Avatar,
+  Box,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
+} from "@chakra-ui/react";
+import { useSession } from "next-auth/react";
+import { signIn, signOut } from "next-auth/react";
 
 export default function BaseLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const router = useRouter();
+  const { data: session } = useSession();
+  const user = session?.user;
+
+  const handleSignOutClick = () => {
+    if (confirm("ログアウトしますか？")) {
+      signOut();
+    }
+  };
   return (
-    <Box height="100vh" width="100vw">
+    <Box h="100vh" w="100vw">
+      <Menu>
+        <MenuButton
+          as={Avatar}
+          name={user?.name ?? undefined}
+          src={user?.image ?? undefined}
+          boxShadow="0px 0px 2px black"
+          position="fixed"
+          margin={4}
+          top={0}
+          right={0}
+          zIndex={1}
+        />
+        <MenuList>
+          {session ? (
+            <>
+              <MenuItem onClick={() => console.error("TODO: Implement")}>
+                決済一覧
+              </MenuItem>
+              <MenuItem onClick={handleSignOutClick}>ログアウト</MenuItem>
+            </>
+          ) : (
+            <MenuItem onClick={() => signIn()}>ログイン</MenuItem>
+          )}
+        </MenuList>
+      </Menu>
       {children}
-      <HStack
-        backgroundColor="white"
-        height="3.5rem"
-        width="full"
-        position="fixed"
-        bottom={0}
-        justifyContent="space-evenly"
-      >
-        <VStack spacing={0}>
-          <IconButton
-            aria-label="map"
-            textColor="cyan.400"
-            variant="ghost"
-            icon={<FaMap />}
-            onClick={() => router.push("/")}
-          />
-        </VStack>
-        <IconButton
-          aria-label="check-in"
-          textColor="cyan.400"
-          colorScheme="cyan"
-          variant="ghost"
-          icon={<FaQrcode />}
-        />
-        <IconButton
-          aria-label="home"
-          textColor="cyan.400"
-          colorScheme="cyan"
-          variant="ghost"
-          icon={<FaUser />}
-          onClick={() => router.push("/profile")}
-        />
-      </HStack>
     </Box>
   );
 }

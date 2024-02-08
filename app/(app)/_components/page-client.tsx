@@ -52,19 +52,6 @@ export default function HomePage({
           lng: 135.4989381822759,
         }}
       />
-      <InputGroup position="fixed" top={0} left={0} zIndex={10}>
-        <InputLeftElement pointerEvents="none" marginLeft={4} marginTop={4}>
-          <Search2Icon color="cyan.400" />
-        </InputLeftElement>
-        <Input
-          _placeholder={{ color: "cyan.400" }}
-          borderWidth={0}
-          placeholder="場所やキーワードで検索"
-          backgroundColor="white"
-          marginX={4}
-          marginTop={4}
-        />
-      </InputGroup>
       <IconButton
         aria-label="current-location"
         icon={<FaLocationCrosshairs />}
@@ -137,38 +124,6 @@ export default function HomePage({
             </Card>
           </InView>
         ))}
-      </HStack>
-      <HStack
-        backgroundColor="white"
-        height="3.5rem"
-        width="full"
-        position="fixed"
-        bottom={0}
-        justifyContent="space-evenly"
-      >
-        <VStack spacing={0}>
-          <IconButton
-            aria-label="map"
-            textColor="cyan.400"
-            variant="ghost"
-            icon={<FaMap />}
-          />
-        </VStack>
-        <IconButton
-          aria-label="check-in"
-          textColor="cyan.400"
-          colorScheme="cyan"
-          variant="ghost"
-          icon={<FaQrcode />}
-        />
-        <IconButton
-          aria-label="home"
-          textColor="cyan.400"
-          colorScheme="cyan"
-          variant="ghost"
-          icon={<FaUser />}
-          onClick={() => router.push("/login")}
-        />
       </HStack>
     </Box>
   );
