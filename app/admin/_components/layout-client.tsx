@@ -11,7 +11,7 @@ import {
   MenuList,
 } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
-import { CiShop } from "react-icons/ci";
+import { CiShop, CiMoneyCheck1 } from "react-icons/ci";
 
 export function AdminDashboardLayout({
   children,
@@ -32,8 +32,17 @@ export function AdminDashboardLayout({
           top={4}
         />
         <MenuList>
-          <MenuItem icon={<CiShop />} onClick={() => router.push("/admin")}>
+          <MenuItem
+            icon={<CiShop />}
+            onClick={() => router.push("/admin/restaurants")}
+          >
             レストラン一覧
+          </MenuItem>
+          <MenuItem
+            icon={<CiMoneyCheck1 />}
+            onClick={() => router.push("/admin/payments")}
+          >
+            決済一覧
           </MenuItem>
         </MenuList>
       </Menu>

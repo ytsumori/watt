@@ -28,7 +28,7 @@ export function RestaurantsPageClient({ restaurants }: Props) {
   const toast = useToast();
   return (
     <Box p={6}>
-      <Link href="/admin/new">
+      <Link href="/admin/restaurants/new">
         <Button size="md" color="white">
           新規登録
         </Button>
