@@ -114,6 +114,8 @@ export default function SetupForm() {
 
     if (paymentMethodTypes === "external_paypay") {
       const userId = await getMyId();
+      if (!userId) throw new Error("User not found");
+
       const authorizationUrl = await getAuthorizationUrl({
         userId: userId,
         redirectUrl: `${process.env.NEXT_PUBLIC_HOST_URL}${pathname}`,
