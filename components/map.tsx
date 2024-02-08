@@ -19,7 +19,7 @@ const render = (status: Status) => {
 type Props = {
   restaurants: { id: string; name: string; googleMapPlaceId: string }[];
   selectedRestaurantId?: string;
-  onRestaurantSelect?: (id: string) => void;
+  onRestaurantSelect?: (restaurantId: string) => void;
   defaultCenter: google.maps.LatLngLiteral;
 };
 

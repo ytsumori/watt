@@ -1,130 +1,120 @@
 "use client";
 
 import Map from "@/components/map";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import {
   Box,
-  Card,
-  CardBody,
-  CardHeader,
   HStack,
-  IconButton,
+  Heading,
   Image,
-  Input,
-  InputGroup,
-  InputLeftElement,
   Text,
-  VStack,
+  Flex,
+  Spacer,
+  Badge,
 } from "@chakra-ui/react";
 import { InView } from "react-intersection-observer";
-import { Search2Icon } from "@chakra-ui/icons";
-import { FaLocationCrosshairs, FaMap, FaQrcode, FaUser } from "react-icons/fa6";
+import { FaLocationCrosshairs } from "react-icons/fa6";
 import { useRouter } from "next/navigation";
 import { Prisma } from "@prisma/client";
 
 export default function HomePage({
-  meals,
-}: {
-  meals: Prisma.MealGetPayload<{ include: { restaurant: true } }>[];
+  restaurants,
+}: // meals,
+{
+  // meals: Prisma.MealGetPayload<{ include: { restaurant: true } }>[];
+  restaurants: Prisma.RestaurantGetPayload<{ include: { meals: true } }>[];
 }) {
   const router = useRouter();
-  const [focusedMealId, setFocusedMealId] = useState(
-    meals.length > 0 ? meals[0].id : undefined
-  );
-  const handleRestaurantSelect = (id: string) => {
-    setFocusedMealId(id);
+  const [selectedRestaurantId, setSelectedRestaurantId] = useState<string>();
+
+  const handleRestaurantSelect = (restaurantId: string) => {
+    setSelectedRestaurantId(restaurantId);
+    const element = document.getElementById(restaurantId);
+    if (element) element.scrollIntoView();
   };
 
   return (
-    <Box height="100vh" width="100vw">
-      <Map
-        restaurants={meals.flatMap((meal, index, self) =>
-          index === self.findIndex((m) => meal.restaurantId === m.restaurantId)
-            ? meal.restaurant
-            : []
-        )}
-        selectedRestaurantId={
-          meals.find((meal) => meal.id === focusedMealId)?.restaurantId
-        }
-        onRestaurantSelect={handleRestaurantSelect}
-        defaultCenter={{
-          lat: 34.67938711932558,
-          lng: 135.4989381822759,
-        }}
-      />
-      <IconButton
-        aria-label="current-location"
-        icon={<FaLocationCrosshairs />}
-        textColor="cyan.400"
-        variant="ghost"
-        zIndex={10}
-        position="fixed"
-        boxShadow="md"
-        bottom="20rem"
-        right={4}
-        backgroundColor="white"
-      />
-      <HStack
-        zIndex={10}
-        position="fixed"
-        left={0}
-        bottom="3.5rem"
-        overflowX="auto"
-        scrollSnapType="x mandatory"
-        marginBottom={4}
-        spacing={4}
-        width="auto"
-        className="hidden-scrollbar"
-      >
-        {meals.map((meal, index) => (
-          <InView
-            key={meal.id}
-            as="div"
-            threshold={1}
-            onChange={(inView) => {
-              if (inView) setFocusedMealId(meal.id);
-            }}
-            style={{
-              scrollSnapAlign: "center",
-              scrollSnapStop: "always",
-              minWidth: "70%",
-              marginLeft: index === 0 ? "1.5rem" : 0,
-              marginRight: index === meals.length - 1 ? "1.5rem" : 0,
-            }}
-          >
-            <Card
-              marginY={2}
-              width="full"
-              borderRadius="16px"
-              boxShadow="md"
-              onClick={() =>
-                router.push(
-                  `/restaurants/${meal.restaurant.id}/meals/${meal.id}`
-                )
-              }
+    <Flex h="full" width="full" direction="column" overflowY="hidden">
+      <Box flex="1">
+        <Map
+          restaurants={restaurants}
+          selectedRestaurantId={selectedRestaurantId}
+          onRestaurantSelect={handleRestaurantSelect}
+          defaultCenter={{
+            lat: 34.67938711932558,
+            lng: 135.4989381822759,
+          }}
+        />
+      </Box>
+      <Box maxHeight="50%" overflowY="auto" py={4} className="hidden-scrollbar">
+        {restaurants.map((restaurant, index) => (
+          <Box key={restaurant.id} id={restaurant.id}>
+            <InView
+              threshold={0.8}
+              onChange={(inView) => {
+                if (inView) {
+                  setSelectedRestaurantId(restaurant.id);
+                }
+              }}
+              style={{ marginBottom: "12px", marginTop: "12px" }}
             >
-              <CardHeader padding={0}>
-                <Image
-                  alt="商品"
-                  borderTopRadius="16px"
-                  src={meal.imageUrl}
-                  aspectRatio="16/9"
-                  fit="contain"
-                />
-              </CardHeader>
-              <CardBody padding={3}>
-                <Text as="b" fontSize="lg">
-                  {meal.restaurant.name}
-                </Text>
-                <br />
-                <Text as="b" fontSize="md">
-                  {meal.price}円(税込)
-                </Text>
-              </CardBody>
-            </Card>
-          </InView>
+              <Flex mx={4} alignItems="center">
+                <Heading size="md">{restaurant.name}</Heading>
+                <Spacer />
+                {restaurant.isOpen ? (
+                  <Badge colorScheme="green">営業中</Badge>
+                ) : (
+                  <Badge color="gray">準備中</Badge>
+                )}
+              </Flex>
+              <HStack
+                px={4}
+                overflowX="auto"
+                className="hidden-scrollbar"
+                mt={3}
+              >
+                {restaurant.meals.map((meal) => (
+                  <Box
+                    maxW="200px"
+                    minW="200px"
+                    key={meal.id}
+                    borderRadius={8}
+                    position="relative"
+                    onClick={() =>
+                      router.push(
+                        `restaurants/${restaurant.id}/meals/${meal.id}`
+                      )
+                    }
+                  >
+                    <Image
+                      src={meal.imageUrl}
+                      alt={`meal-${meal.id}`}
+                      objectFit="cover"
+                      aspectRatio={1 / 1}
+                      borderRadius={8}
+                    />
+                    <Box
+                      position="absolute"
+                      bottom={2}
+                      right={2}
+                      borderRadius={4}
+                      backgroundColor="blackAlpha.700"
+                      px={2}
+                    >
+                      <Text color="white">
+                        ¥{meal.price.toLocaleString("ja-JP")}
+                      </Text>
+                    </Box>
+                  </Box>
+                ))}
+              </HStack>
+            </InView>
+            {index !== restaurants.length - 1 && (
+              <Box w="full" h="8px" backgroundColor="blackAlpha.100" />
+            )}
+          </Box>
         ))}
-      </HStack>
-    </Box>
+      </Box>
+    </Flex>
   );
 }

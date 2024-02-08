@@ -3,6 +3,25 @@ import prisma from "@/lib/prisma/client";
 import { PaymentMethodModal } from "./_components/payment-method-modal";
 
 export default async function Home() {
+  const restaurants = await prisma.restaurant.findMany({
+    include: {
+      meals: {
+        where: {
+          isDiscarded: false,
+        },
+      },
+    },
+    where: {
+      meals: {
+        some: {
+          isDiscarded: false,
+        },
+      },
+    },
+    orderBy: {
+      isOpen: "desc",
+    },
+  });
   const meals = await prisma.meal.findMany({
     include: {
       restaurant: true,
@@ -13,7 +32,7 @@ export default async function Home() {
   });
   return (
     <>
-      <HomePage meals={meals} />
+      <HomePage restaurants={restaurants} />
       <PaymentMethodModal />
     </>
   );
