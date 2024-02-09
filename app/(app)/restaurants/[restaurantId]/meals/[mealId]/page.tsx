@@ -15,7 +15,6 @@ type Params = {
 export default async function MealPage({ params }: { params: Params }) {
   const meal = await prisma.meal.findUnique({
     where: { id: params.mealId, restaurantId: params.restaurantId },
-    include: { restaurant: true },
   });
   if (!meal) {
     redirect("/");

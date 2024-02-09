@@ -1,7 +1,7 @@
 "use client";
 
 import Map from "@/components/map";
-import { Fragment, useState } from "react";
+import { useState } from "react";
 import {
   Box,
   HStack,
@@ -13,7 +13,6 @@ import {
   Badge,
 } from "@chakra-ui/react";
 import { InView } from "react-intersection-observer";
-import { FaLocationCrosshairs } from "react-icons/fa6";
 import { useRouter } from "next/navigation";
 import { Prisma } from "@prisma/client";
 
@@ -34,7 +33,7 @@ export default function HomePage({
   };
 
   return (
-    <Flex h="full" width="full" direction="column" overflowY="hidden">
+    <Flex h="full" w="full" direction="column" overflowY="hidden">
       <Box flex="1">
         <Map
           restaurants={restaurants}
@@ -48,7 +47,11 @@ export default function HomePage({
       </Box>
       <Box maxHeight="50%" overflowY="auto" py={4} className="hidden-scrollbar">
         {restaurants.map((restaurant, index) => (
-          <Box key={restaurant.id} id={restaurant.id}>
+          <Box
+            key={restaurant.id}
+            id={restaurant.id}
+            onClick={() => router.push(`/restaurants/${restaurant.id}`)}
+          >
             <InView
               threshold={0.8}
               onChange={(inView) => {
@@ -80,11 +83,12 @@ export default function HomePage({
                     key={meal.id}
                     borderRadius={8}
                     position="relative"
-                    onClick={() =>
+                    onClick={(e) => {
+                      e.stopPropagation();
                       router.push(
                         `restaurants/${restaurant.id}/meals/${meal.id}`
-                      )
-                    }
+                      );
+                    }}
                   >
                     <Image
                       src={meal.imageUrl}
@@ -95,8 +99,9 @@ export default function HomePage({
                     />
                     <Box
                       position="absolute"
-                      bottom={2}
-                      right={2}
+                      bottom={0}
+                      right={0}
+                      m={2}
                       borderRadius={4}
                       backgroundColor="blackAlpha.700"
                       px={2}

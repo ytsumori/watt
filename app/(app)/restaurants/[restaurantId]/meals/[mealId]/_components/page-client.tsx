@@ -1,13 +1,8 @@
 "use client";
 
 import {
-  Box,
   Button,
-  Card,
-  HStack,
   Heading,
-  IconButton,
-  Image,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -33,23 +28,31 @@ import {
   AlertDialogBody,
   AlertDialogFooter,
   Link,
+  Box,
+  Alert,
+  AlertIcon,
+  TableContainer,
+  Table,
+  Thead,
+  Tr,
+  Th,
+  Tbody,
 } from "@chakra-ui/react";
 import { useRef, useState } from "react";
-import { FaInstagram } from "react-icons/fa";
 import Stripe from "stripe";
-import { Prisma } from "@prisma/client";
+import { Meal, Prisma } from "@prisma/client";
 import {
   capturePaymentIntent,
   createPaymentIntent,
 } from "@/actions/payment-intent";
-import { LoginButton } from "@/components/buttons";
 import { Session } from "next-auth";
 import { findPreauthorizedPayment } from "@/actions/payment";
 import NextLink from "next/link";
-import { stat } from "fs";
+import { signIn } from "next-auth/react";
+import { CheckIcon } from "@chakra-ui/icons";
 
 type Props = {
-  meal: Prisma.MealGetPayload<{ include: { restaurant: true } }>;
+  meal: Meal;
   paymentMethods: Stripe.PaymentMethod[];
   defaultPreauthorizedPayment?: Prisma.PaymentGetPayload<{
     include: { order: { include: { meal: true } } };
@@ -67,6 +70,9 @@ export default function MealPage({
   const [preauthorizedPayment, setPreauthorizedPayment] = useState(
     defaultPreauthorizedPayment
   );
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<
+    string | undefined
+  >(paymentMethods.length === 1 ? paymentMethods[0].id : undefined);
 
   const {
     isOpen: isVisitingModalOpen,
@@ -101,12 +107,12 @@ export default function MealPage({
     preauthorizedPayment && preauthorizedPayment.order.mealId !== meal.id
   );
 
-  const handleStripePayment = async (paymentMethodId: string) => {
-    if (!user) return;
+  const handleVisitingClick = async () => {
+    if (!user || !selectedPaymentMethod) return;
     createPaymentIntent({
       mealId: meal.id,
       userId: user.id,
-      paymentMethodId,
+      paymentMethodId: selectedPaymentMethod,
     }).then((status) => {
       if (status === "requires_capture") {
         findPreauthorizedPayment(user.id).then((payment) => {
@@ -144,49 +150,7 @@ export default function MealPage({
   };
 
   return (
-    <VStack px={6} alignItems="baseline" spacing={4}>
-      <VStack h="fit-content" spacing={2} w="full">
-        <Card variant="unstyled" direction="row">
-          <Image
-            objectFit="contain"
-            alt="商品"
-            src={meal.imageUrl}
-            width="40%"
-          />
-          <VStack p={4}>
-            <Text as="b" fontSize="md" w="full">
-              {meal.restaurant.name}
-              <br />
-              <Text as="span" fontSize="sm">
-                {meal.price}円(税込)
-              </Text>
-            </Text>
-            <HStack w="full">
-              <IconButton
-                size="sm"
-                as="a"
-                href="https://www.instagram.com/menyayu0303/"
-                target="_blank"
-                colorScheme="cyan"
-                textColor="white"
-                aria-label="instagram"
-                fontSize="24px"
-                icon={<FaInstagram />}
-              />
-            </HStack>
-          </VStack>
-        </Card>
-        <Box h="25vh" w="full">
-          <iframe
-            width="100%"
-            height="100%"
-            style={{ border: 0 }}
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-            src={`https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY}&q=place_id:${meal.restaurant.googleMapPlaceId}`}
-          />
-        </Box>
-      </VStack>
+    <VStack alignItems="baseline" spacing={4} w="full">
       {isDifferentMealOrdered ? (
         <Text>
           <Link
@@ -200,12 +164,12 @@ export default function MealPage({
         </Text>
       ) : (
         <>
-          <Heading as="h2" size="md">
-            お食事の流れ
+          <Heading size="sm">
+            {user ? "支払い方法" : "ログインして食事に進む"}
           </Heading>
           {user ? (
             <>
-              <Stepper
+              {/* <Stepper
                 index={activeStep}
                 orientation="vertical"
                 w="full"
@@ -290,10 +254,61 @@ export default function MealPage({
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialogOverlay>
-              </AlertDialog>
+              </AlertDialog> */}
+              <TableContainer>
+                <Table variant="simple">
+                  <Thead>
+                    <Tr>
+                      <Th></Th>
+                      <Th>ブランド</Th>
+                      <Th>カード番号</Th>
+                      <Th>有効期限</Th>
+                    </Tr>
+                  </Thead>
+                  <Tbody>
+                    {paymentMethods.map((paymentMethod) => (
+                      <Tr key={paymentMethod.id}>
+                        <Th>
+                          {selectedPaymentMethod === paymentMethod.id && (
+                            <CheckIcon color="cyan.400" />
+                          )}
+                        </Th>
+                        <Th>{paymentMethod.card?.brand}</Th>
+                        <Th>**** **** **** {paymentMethod.card?.last4}</Th>
+                        <Th>
+                          {paymentMethod.card?.exp_month}/
+                          {paymentMethod.card?.exp_year}
+                        </Th>
+                      </Tr>
+                    ))}
+                  </Tbody>
+                </Table>
+              </TableContainer>
+              <Button
+                onClick={handleVisitingClick}
+                color="white"
+                w="full"
+                maxW="full"
+                isDisabled={selectedPaymentMethod === undefined}
+              >
+                お店に向かう
+              </Button>
             </>
           ) : (
-            <LoginButton />
+            <>
+              <Alert borderRadius={4}>
+                <AlertIcon />
+                以下からLINEでログインすることでお食事に進めます
+              </Alert>
+              <Button
+                onClick={() => signIn()}
+                color="white"
+                w="full"
+                maxW="full"
+              >
+                ログインする
+              </Button>
+            </>
           )}
         </>
       )}
