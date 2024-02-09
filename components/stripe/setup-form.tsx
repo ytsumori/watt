@@ -159,6 +159,7 @@ export default function SetupForm() {
       </Button>
       {message && <div id="payment-message">{message}</div>}
       <Modal
+        isCentered
         isOpen={isCompleteModalOpen}
         onClose={onCompleteModalClose}
         size="sm"

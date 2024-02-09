@@ -31,7 +31,7 @@ export default function StripeForm() {
           stripe={stripePromise}
           options={{
             // @ts-ignore
-            externalPaymentMethodTypes: ["external_paypay"],
+            // externalPaymentMethodTypes: ["external_paypay"],
             currency: "jpy",
             clientSecret,
             appearance: {

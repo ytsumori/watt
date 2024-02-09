@@ -31,7 +31,7 @@ export function PaymentMethodModal() {
   }, [onOpen]);
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={onClose} isCentered>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>支払い方法の登録</ModalHeader>

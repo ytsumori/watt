@@ -90,7 +90,12 @@ export default function MealPage({
                   </Thead>
                   <Tbody>
                     {paymentMethods.map((paymentMethod) => (
-                      <Tr key={paymentMethod.id}>
+                      <Tr
+                        key={paymentMethod.id}
+                        onClick={() =>
+                          setSelectedPaymentMethod(paymentMethod.id)
+                        }
+                      >
                         <Th>
                           {selectedPaymentMethod === paymentMethod.id && (
                             <CheckIcon color="cyan.400" />
@@ -108,11 +113,18 @@ export default function MealPage({
                 </Table>
               </TableContainer>
               <Button
+                variant="outline"
+                onClick={() => router.push("/payment-method/new")}
+              >
+                決済方法を登録
+              </Button>
+              <Button
                 onClick={handleVisitingClick}
                 color="white"
                 w="full"
                 maxW="full"
                 isDisabled={selectedPaymentMethod === undefined}
+                size="md"
               >
                 お店に向かう
               </Button>
