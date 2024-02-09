@@ -1,18 +1,18 @@
 import stripe from "@/lib/stripe";
-import RestaurantDetail from "@/app/(app)/restaurants/[restaurantId]/meals/[mealId]/_components/page-client";
 import { getStripeCustomer } from "@/actions/stripe-customer";
 import prisma from "@/lib/prisma/client";
 import { options } from "@/lib/next-auth/options";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { findPreauthorizedPayment } from "@/actions/payment";
+import MealPage from "./_components/page-client";
 
 type Params = {
   restaurantId: string;
   mealId: string;
 };
 
-export default async function MealPage({ params }: { params: Params }) {
+export default async function Meal({ params }: { params: Params }) {
   const meal = await prisma.meal.findUnique({
     where: { id: params.mealId, restaurantId: params.restaurantId },
   });
@@ -23,14 +23,10 @@ export default async function MealPage({ params }: { params: Params }) {
   const session = await getServerSession(options);
   if (session) {
     // logged in
-    const user = session.user;
-    const payment = await findPreauthorizedPayment(user.id);
-    const orderedMeal = payment
-      ? await prisma.meal.findUnique({
-          where: { id: payment.order.mealId },
-        })
-      : undefined;
-    const stripeCustomer = await getStripeCustomer({ userId: user.id });
+    const userId = session.user.id;
+    const payment = await findPreauthorizedPayment(userId);
+
+    const stripeCustomer = await getStripeCustomer({ userId });
     const paymentMethods = stripeCustomer
       ? await stripe.customers.listPaymentMethods(
           stripeCustomer.stripeCustomerId
@@ -38,18 +34,14 @@ export default async function MealPage({ params }: { params: Params }) {
       : undefined;
 
     return (
-      <RestaurantDetail
+      <MealPage
         paymentMethods={paymentMethods?.data ?? []}
         meal={meal}
-        defaultPreauthorizedPayment={
-          payment && orderedMeal
-            ? { ...payment, order: { ...payment.order, meal: orderedMeal } }
-            : undefined
-        }
-        user={user}
+        preauthorizedPayment={payment ?? undefined}
+        userId={userId}
       />
     );
   }
 
-  return <RestaurantDetail meal={meal} paymentMethods={[]} />;
+  return <MealPage meal={meal} paymentMethods={[]} />;
 }

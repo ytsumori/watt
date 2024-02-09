@@ -9,16 +9,24 @@ import {
   MenuItem,
   MenuList,
 } from "@chakra-ui/react";
-import { useSession } from "next-auth/react";
 import { signIn, signOut } from "next-auth/react";
+import { Payment } from "@prisma/client";
+import { Session } from "next-auth";
+import { usePathname, useRouter } from "next/navigation";
+
+type Props = {
+  children: React.ReactNode;
+  preauthorizedPayment?: Payment;
+  user?: Session["user"];
+};
 
 export default function BaseLayout({
   children,
-}: {
-  children: React.ReactNode;
-}) {
-  const { data: session } = useSession();
-  const user = session?.user;
+  preauthorizedPayment,
+  user,
+}: Props) {
+  const router = useRouter();
+  const pathname = usePathname();
 
   const handleSignOutClick = () => {
     if (confirm("ログアウトしますか？")) {
@@ -27,6 +35,23 @@ export default function BaseLayout({
   };
   return (
     <Box h="100vh" w="100vw">
+      {preauthorizedPayment && !pathname.startsWith("/payments") && (
+        <Box
+          bg="red.400"
+          position="fixed"
+          bottom={0}
+          left={0}
+          right={0}
+          p={2}
+          w="full"
+          textAlign="center"
+          zIndex={2}
+          fontWeight={700}
+          onClick={() => router.push(`/payments/${preauthorizedPayment.id}`)}
+        >
+          選択中の推しメシがあります
+        </Box>
+      )}
       <Menu>
         <MenuButton
           as={Avatar}
@@ -40,7 +65,7 @@ export default function BaseLayout({
           zIndex={1}
         />
         <MenuList>
-          {session ? (
+          {user ? (
             <>
               <MenuItem onClick={() => console.error("TODO: Implement")}>
                 決済一覧
