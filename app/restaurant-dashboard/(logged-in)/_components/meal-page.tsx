@@ -17,6 +17,7 @@ import {
   FormLabel,
   Heading,
   Image,
+  Input,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -26,6 +27,7 @@ import {
   ModalOverlay,
   NumberInput,
   NumberInputField,
+  Textarea,
   VStack,
   useDisclosure,
 } from "@chakra-ui/react";
@@ -43,6 +45,7 @@ export function MealPage() {
     },
   });
 
+  const [title, setTitle] = useState<string>();
   const [price, setPrice] = useState<number>();
 
   const inputFileRef = useRef<HTMLInputElement>(null);
@@ -66,6 +69,13 @@ export function MealPage() {
     );
   };
 
+  const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.value === "") {
+      setTitle(undefined);
+    } else {
+      setTitle(event.target.value);
+    }
+  };
   const handlePriceChange = (value: string) => {
     const numberValue = Number(value);
     if (isNaN(numberValue) || numberValue === 0) setPrice(undefined);
@@ -100,10 +110,12 @@ export function MealPage() {
     }
   };
 
-  const handleClickSubmit = async () => {
-    if (!imageUrl || !price) return;
+  const isSubmitDisabled = !imageUrl || !price || !title;
 
-    createMeal({ restaurantId, price, imageUrl: imageUrl }).then(() => {
+  const handleClickSubmit = async () => {
+    if (isSubmitDisabled) return;
+
+    createMeal({ restaurantId, price, imageUrl: imageUrl, title }).then(() => {
       revalidateMeals();
       onClose();
     });
@@ -177,17 +189,25 @@ export function MealPage() {
           <ModalCloseButton />
           <ModalBody>
             <FormControl isRequired>
-              <FormLabel>金額</FormLabel>
+              <FormLabel>メニュー名</FormLabel>
+              <Input onChange={handleTitleChange} value={title ?? ""} />
+            </FormControl>
+            <FormControl isRequired mt={2}>
+              <FormLabel>金額(税込)</FormLabel>
               <NumberInput
                 min={0}
                 onChange={handlePriceChange}
-                value={price ?? ""}
+                value={price ? "¥" + price : ""}
               >
                 <NumberInputField />
               </NumberInput>
             </FormControl>
             <FormControl isRequired mt={2}>
-              <FormLabel>料理画像</FormLabel>
+              <FormLabel>説明</FormLabel>
+              <Textarea size="sm" resize="vertical" />
+            </FormControl>
+            <FormControl isRequired mt={2}>
+              <FormLabel>料理画像(正方形)</FormLabel>
               <input
                 name="file"
                 ref={inputFileRef}
@@ -209,7 +229,7 @@ export function MealPage() {
             </Button>
             <Button
               onClick={handleClickSubmit}
-              isDisabled={!(imageUrl && price)}
+              isDisabled={isSubmitDisabled}
               textColor="white"
             >
               保存

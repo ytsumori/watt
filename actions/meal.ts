@@ -21,16 +21,22 @@ export async function createMeal({
   restaurantId,
   price,
   imageUrl,
+  title,
+  description,
 }: {
   restaurantId: string;
   price: number;
   imageUrl: string;
+  title: string;
+  description?: string;
 }) {
   await prisma.meal.create({
     data: {
       restaurantId,
       price,
       imageUrl,
+      title,
+      description,
     },
   });
 }
