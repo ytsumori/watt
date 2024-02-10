@@ -13,10 +13,14 @@ type Params = {
 };
 
 export default async function Meal({ params }: { params: Params }) {
+  const restaurant = await prisma.restaurant.findUnique({
+    where: { id: params.restaurantId },
+    select: { isOpen: true },
+  });
   const meal = await prisma.meal.findUnique({
     where: { id: params.mealId, restaurantId: params.restaurantId },
   });
-  if (!meal) {
+  if (!restaurant || !meal) {
     redirect("/");
   }
 
@@ -39,9 +43,16 @@ export default async function Meal({ params }: { params: Params }) {
         meal={meal}
         preauthorizedPayment={payment ?? undefined}
         userId={userId}
+        isRestaurantActive={restaurant.isOpen}
       />
     );
   }
 
-  return <MealPage meal={meal} paymentMethods={[]} />;
+  return (
+    <MealPage
+      meal={meal}
+      isRestaurantActive={restaurant.isOpen}
+      paymentMethods={[]}
+    />
+  );
 }

@@ -25,6 +25,7 @@ import { useRouter } from "next/navigation";
 type Props = {
   meal: Meal;
   paymentMethods: Stripe.PaymentMethod[];
+  isRestaurantActive: boolean;
   preauthorizedPayment?: Payment;
   userId?: string;
 };
@@ -32,6 +33,7 @@ type Props = {
 export default function MealPage({
   meal,
   paymentMethods,
+  isRestaurantActive,
   preauthorizedPayment,
   userId,
 }: Props) {
@@ -63,89 +65,96 @@ export default function MealPage({
 
   return (
     <VStack alignItems="baseline" spacing={4} w="full">
-      {preauthorizedPayment ? (
-        <Alert
-          status="warning"
-          onClick={() => router.push(`/payments/${preauthorizedPayment.id}`)}
-        >
-          <AlertIcon />
-          既に選択済みの推しメシがあります
-        </Alert>
-      ) : (
-        <>
-          <Heading size="sm">
-            {userId ? "支払い方法" : "ログインして食事に進む"}
-          </Heading>
-          {userId ? (
-            <>
-              <TableContainer>
-                <Table variant="simple">
-                  <Thead>
-                    <Tr>
-                      <Th></Th>
-                      <Th>ブランド</Th>
-                      <Th>カード番号</Th>
-                      <Th>有効期限</Th>
-                    </Tr>
-                  </Thead>
-                  <Tbody>
-                    {paymentMethods.map((paymentMethod) => (
-                      <Tr
-                        key={paymentMethod.id}
-                        onClick={() =>
-                          setSelectedPaymentMethod(paymentMethod.id)
-                        }
-                      >
-                        <Th>
-                          {selectedPaymentMethod === paymentMethod.id && (
-                            <CheckIcon color="cyan.400" />
-                          )}
-                        </Th>
-                        <Th>{paymentMethod.card?.brand}</Th>
-                        <Th>**** **** **** {paymentMethod.card?.last4}</Th>
-                        <Th>
-                          {paymentMethod.card?.exp_month}/
-                          {paymentMethod.card?.exp_year}
-                        </Th>
+      {isRestaurantActive ? (
+        preauthorizedPayment ? (
+          <Alert
+            status="warning"
+            onClick={() => router.push(`/payments/${preauthorizedPayment.id}`)}
+          >
+            <AlertIcon />
+            既に選択済みの推しメシがあります
+          </Alert>
+        ) : (
+          <>
+            <Heading size="sm">
+              {userId ? "支払い方法" : "ログインして食事に進む"}
+            </Heading>
+            {userId ? (
+              <>
+                <TableContainer>
+                  <Table variant="simple">
+                    <Thead>
+                      <Tr>
+                        <Th></Th>
+                        <Th>ブランド</Th>
+                        <Th>カード番号</Th>
+                        <Th>有効期限</Th>
                       </Tr>
-                    ))}
-                  </Tbody>
-                </Table>
-              </TableContainer>
-              <Button
-                variant="outline"
-                onClick={() => router.push("/payment-method/new")}
-              >
-                決済方法を登録
-              </Button>
-              <Button
-                onClick={handleVisitingClick}
-                color="white"
-                w="full"
-                maxW="full"
-                isDisabled={selectedPaymentMethod === undefined}
-                size="md"
-              >
-                お店に向かう
-              </Button>
-            </>
-          ) : (
-            <>
-              <Alert borderRadius={4}>
-                <AlertIcon />
-                以下からLINEでログインすることでお食事に進めます
-              </Alert>
-              <Button
-                onClick={() => signIn()}
-                color="white"
-                w="full"
-                maxW="full"
-              >
-                ログインする
-              </Button>
-            </>
-          )}
-        </>
+                    </Thead>
+                    <Tbody>
+                      {paymentMethods.map((paymentMethod) => (
+                        <Tr
+                          key={paymentMethod.id}
+                          onClick={() =>
+                            setSelectedPaymentMethod(paymentMethod.id)
+                          }
+                        >
+                          <Th>
+                            {selectedPaymentMethod === paymentMethod.id && (
+                              <CheckIcon color="cyan.400" />
+                            )}
+                          </Th>
+                          <Th>{paymentMethod.card?.brand}</Th>
+                          <Th>**** **** **** {paymentMethod.card?.last4}</Th>
+                          <Th>
+                            {paymentMethod.card?.exp_month}/
+                            {paymentMethod.card?.exp_year}
+                          </Th>
+                        </Tr>
+                      ))}
+                    </Tbody>
+                  </Table>
+                </TableContainer>
+                <Button
+                  variant="outline"
+                  onClick={() => router.push("/payment-method/new")}
+                >
+                  決済方法を登録
+                </Button>
+                <Button
+                  onClick={handleVisitingClick}
+                  color="white"
+                  w="full"
+                  maxW="full"
+                  isDisabled={selectedPaymentMethod === undefined}
+                  size="md"
+                >
+                  お店に向かう
+                </Button>
+              </>
+            ) : (
+              <>
+                <Alert borderRadius={4}>
+                  <AlertIcon />
+                  以下からLINEでログインすることでお食事に進めます
+                </Alert>
+                <Button
+                  onClick={() => signIn()}
+                  color="white"
+                  w="full"
+                  maxW="full"
+                >
+                  ログインする
+                </Button>
+              </>
+            )}
+          </>
+        )
+      ) : (
+        <Alert status="warning" borderRadius={4}>
+          <AlertIcon />
+          現在こちらのお店は準備中です
+        </Alert>
       )}
     </VStack>
   );
