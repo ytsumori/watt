@@ -98,6 +98,8 @@ model Meal {
   restaurantId String
   imageUrl     String
   price        Int
+  title        String
+  description  String?
   isDiscarded  Boolean  @default(false)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @default(now()) @updatedAt

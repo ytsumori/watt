@@ -98,6 +98,8 @@ CREATE TABLE "Meal" (
     "restaurantId" TEXT NOT NULL,
     "imageUrl" TEXT NOT NULL,
     "price" INTEGER NOT NULL,
+    "title" TEXT NOT NULL,
+    "description" TEXT NOT NULL,
     "isDiscarded" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -227,6 +229,9 @@ CREATE UNIQUE INDEX "PaypayPaymentCapture_paymentId_key" ON "PaypayPaymentCaptur
 
 -- CreateIndex
 CREATE UNIQUE INDEX "StaffRegistrationToken_token_key" ON "StaffRegistrationToken"("token");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "RestaurantBankAccount_restaurantId_key" ON "RestaurantBankAccount"("restaurantId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "RestaurantBankAccount_bankCode_branchCode_accountType_accou_key" ON "RestaurantBankAccount"("bankCode", "branchCode", "accountType", "accountNo");
