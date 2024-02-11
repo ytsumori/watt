@@ -6,7 +6,6 @@ import {
   discardMeal,
   getMeals,
 } from "@/actions/meal";
-import { mealImageRef } from "@/lib/firebase";
 import {
   Button,
   Card,
