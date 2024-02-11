@@ -32,9 +32,9 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { Meal } from "@prisma/client";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useContext, useEffect, useRef, useState } from "react";
 import { RestaurantIdContext } from "./restaurant-id-provider";
+import { supabase } from "@/lib/supabase";
 
 export function MealPage() {
   const restaurantId = useContext(RestaurantIdContext);
@@ -98,11 +98,19 @@ export function MealPage() {
       }
 
       const filename = window.crypto.randomUUID();
-      const imageRef = ref(mealImageRef, filename);
-      const snapshot = await uploadBytes(imageRef, file);
-      const imageUrl = await getDownloadURL(snapshot.ref);
+      const { data, error } = await supabase.storage
+        .from("meals")
+        .upload(`${restaurantId}/${filename}`, file);
+
+      if (error) throw error;
+
+      if (data) {
+        const publicUrl = supabase.storage
+          .from("meals")
+          .getPublicUrl(data.path);
+        setImageUrl(publicUrl.data.publicUrl);
+      }
       setIsUploading(false);
-      setImageUrl(imageUrl);
     } catch (error) {
       console.error(error);
       setIsUploading(false);
