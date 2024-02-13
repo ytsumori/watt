@@ -135,7 +135,7 @@ export default function HomePage({
         mealId={selectedMealId ?? ""}
         isOpen={!!selectedMealId}
         completeButton={{
-          label: "注文に進む",
+          label: "この推しメシの詳細を見る",
           onClick: handleMealConfirm,
         }}
         onClose={() => setSelectedMealId(undefined)}

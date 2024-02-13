@@ -1,5 +1,6 @@
 "use client";
 
+import { MealDetailModal } from "@/app/(app)/_components/meal-detail-modal";
 import { ArrowBackIcon, CheckIcon } from "@chakra-ui/icons";
 import {
   Box,
@@ -14,6 +15,7 @@ import {
 } from "@chakra-ui/react";
 import { Prisma } from "@prisma/client";
 import { usePathname, useRouter } from "next/navigation";
+import { useState } from "react";
 
 type Props = {
   restaurant: Prisma.RestaurantGetPayload<{ include: { meals: true } }>;
@@ -24,89 +26,108 @@ export function RestaurantLayout({ restaurant, children }: Props) {
   const router = useRouter();
   const pathname = usePathname();
   const selectedMealId = pathname.split("/meals/")[1] || undefined;
+  const [displayingMealId, setDisplayingMealId] = useState<string>();
+
+  const handleMealSelect = (restaurantId: string) => {
+    if (!displayingMealId) return;
+
+    router.replace(`/restaurants/${restaurantId}/meals/${displayingMealId}`);
+    setDisplayingMealId(undefined);
+  };
   return (
-    <Box>
-      <IconButton
-        icon={<ArrowBackIcon />}
-        onClick={() => router.push("/")}
-        aria-label="back"
-        size="md"
-        variant="outline"
-        m={4}
-        isRound
-      />
-      <VStack w="full" p={4} alignItems="start" spacing={4}>
-        <Heading size="md">{restaurant.name}</Heading>
-        <Box h="20vh" w="full">
-          <iframe
-            width="100%"
-            height="100%"
-            style={{ border: 0 }}
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-            src={`https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY}&q=place_id:${restaurant.googleMapPlaceId}`}
-          />
-        </Box>
-        <Heading size="sm">推しメシ</Heading>
-        {selectedMealId === undefined && (
-          <Alert borderRadius={4}>
-            <AlertIcon />
-            推しメシを選択すると食事に進めます
-          </Alert>
-        )}
-        <HStack overflowX="auto" maxW="full" className="hidden-scrollbar">
-          {restaurant.meals.map((meal) => (
-            <Box
-              maxW="200px"
-              minW="200px"
-              key={meal.id}
-              borderRadius={12}
-              position="relative"
-              onClick={() =>
-                router.replace(`/restaurants/${restaurant.id}/meals/${meal.id}`)
-              }
-              {...(selectedMealId === meal.id && {
-                borderWidth: 4,
-                borderColor: "cyan.400",
-              })}
-            >
-              <Image
-                src={meal.imageUrl}
-                alt={`meal-${meal.id}`}
-                objectFit="cover"
-                aspectRatio={1 / 1}
-                borderRadius={8}
-              />
+    <>
+      <Box>
+        <IconButton
+          icon={<ArrowBackIcon />}
+          onClick={() => router.push("/")}
+          aria-label="back"
+          size="md"
+          variant="outline"
+          m={4}
+          isRound
+        />
+        <VStack w="full" p={4} alignItems="start" spacing={4}>
+          <Heading size="md">{restaurant.name}</Heading>
+          <Box h="20vh" w="full">
+            <iframe
+              width="100%"
+              height="100%"
+              style={{ border: 0 }}
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              src={`https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY}&q=place_id:${restaurant.googleMapPlaceId}`}
+            />
+          </Box>
+          <Heading size="sm">推しメシ</Heading>
+          {selectedMealId === undefined && (
+            <Alert borderRadius={4}>
+              <AlertIcon />
+              推しメシを選択すると食事に進めます
+            </Alert>
+          )}
+          <HStack overflowX="auto" maxW="full" className="hidden-scrollbar">
+            {restaurant.meals.map((meal) => (
               <Box
-                position="absolute"
-                bottom={0}
-                right={0}
-                m={2}
-                borderRadius={4}
-                backgroundColor="blackAlpha.700"
-                px={2}
+                maxW="200px"
+                minW="200px"
+                key={meal.id}
+                borderRadius={12}
+                position="relative"
+                onClick={() => setDisplayingMealId(meal.id)}
+                {...(selectedMealId === meal.id && {
+                  borderWidth: 4,
+                  borderColor: "cyan.400",
+                })}
               >
-                <Text color="white">¥{meal.price.toLocaleString("ja-JP")}</Text>
-              </Box>
-              {selectedMealId === meal.id && (
-                <CheckIcon
-                  position="absolute"
-                  top={0}
-                  right={0}
-                  backgroundColor="cyan.400"
-                  color="white"
-                  boxSize={6}
-                  borderRadius={6}
-                  m={1}
-                  p={1}
-                  aria-label="checked"
+                <Image
+                  src={meal.imageUrl}
+                  alt={`meal-${meal.id}`}
+                  objectFit="cover"
+                  aspectRatio={1 / 1}
+                  borderRadius={8}
                 />
-              )}
-            </Box>
-          ))}
-        </HStack>
-        {children}
-      </VStack>
-    </Box>
+                <Box
+                  position="absolute"
+                  bottom={0}
+                  right={0}
+                  m={2}
+                  borderRadius={4}
+                  backgroundColor="blackAlpha.700"
+                  px={2}
+                >
+                  <Text color="white">
+                    ¥{meal.price.toLocaleString("ja-JP")}
+                  </Text>
+                </Box>
+                {selectedMealId === meal.id && (
+                  <CheckIcon
+                    position="absolute"
+                    top={0}
+                    right={0}
+                    backgroundColor="cyan.400"
+                    color="white"
+                    boxSize={6}
+                    borderRadius={6}
+                    m={1}
+                    p={1}
+                    aria-label="checked"
+                  />
+                )}
+              </Box>
+            ))}
+          </HStack>
+          {children}
+        </VStack>
+      </Box>
+      <MealDetailModal
+        mealId={displayingMealId ?? ""}
+        isOpen={!!displayingMealId}
+        onClose={() => setDisplayingMealId(undefined)}
+        completeButton={{
+          label: "この推しメシを選択する",
+          onClick: handleMealSelect,
+        }}
+      />
+    </>
   );
 }
