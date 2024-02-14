@@ -29,7 +29,7 @@ export default function Map({
   onRestaurantSelect,
   defaultCenter,
 }: Props) {
-  const [zoom, setZoom] = useState(17);
+  const [zoom, setZoom] = useState(16);
   const [center, setCenter] =
     useState<google.maps.LatLngLiteral>(defaultCenter);
 
