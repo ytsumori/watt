@@ -75,6 +75,7 @@ export function MealPage() {
       setTitle(event.target.value);
     }
   };
+
   const handlePriceChange = (value: string) => {
     const numberValue = Number(value);
     if (isNaN(numberValue) || numberValue === 0) setPrice(undefined);

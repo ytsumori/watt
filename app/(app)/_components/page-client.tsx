@@ -48,8 +48,8 @@ export default function HomePage({
             selectedRestaurantId={selectedRestaurantId}
             onRestaurantSelect={handleRestaurantSelect}
             defaultCenter={{
-              lat: 34.67938711932558,
-              lng: 135.4989381822759,
+              lat: 34.70726721576163,
+              lng: 135.51175158248128,
             }}
           />
         </Box>

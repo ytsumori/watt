@@ -29,9 +29,5 @@ export default async function Home() {
       isDiscarded: false,
     },
   });
-  return (
-    <>
-      <HomePage restaurants={restaurants} />
-    </>
-  );
+  return <HomePage restaurants={restaurants} />;
 }

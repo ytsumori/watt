@@ -13,6 +13,7 @@ import {
   ModalOverlay,
   Spinner,
   Text,
+  VStack,
 } from "@chakra-ui/react";
 import { Meal } from "@prisma/client";
 import { useEffect, useState } from "react";
@@ -47,7 +48,14 @@ export function MealDetailModal({
   }, [mealId, onClose]);
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} isCentered>
+    <Modal
+      isOpen={isOpen}
+      onClose={() => {
+        setMeal(undefined);
+        onClose();
+      }}
+      isCentered
+    >
       <ModalOverlay />
       <ModalContent>
         {meal ? (
@@ -55,8 +63,13 @@ export function MealDetailModal({
             <ModalHeader>{meal.title}</ModalHeader>
             <ModalCloseButton />
             <ModalBody>
-              <Image src={meal.imageUrl} alt={meal.title} />
-              <Text>{meal.description}</Text>
+              <VStack w="full" alignItems="start" spacing={2}>
+                <Image src={meal.imageUrl} alt={meal.title} />
+                <Text fontSize="sm">¥{meal.price.toLocaleString("ja-JP")}</Text>
+                <Text fontSize="sm" whiteSpace="pre-wrap">
+                  {meal.description}
+                </Text>
+              </VStack>
             </ModalBody>
             <ModalFooter>
               <Button
