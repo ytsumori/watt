@@ -15,7 +15,6 @@ import {
   FormHelperText,
   FormLabel,
   Heading,
-  Image,
   Input,
   Modal,
   ModalBody,
@@ -34,6 +33,7 @@ import { Meal } from "@prisma/client";
 import { useContext, useEffect, useRef, useState } from "react";
 import { RestaurantIdContext } from "./restaurant-id-provider";
 import { supabase } from "@/lib/supabase";
+import { MealPreviewImage } from "@/components/meal-preview-image";
 
 export function MealPage() {
   const restaurantId = useContext(RestaurantIdContext);
@@ -149,7 +149,7 @@ export function MealPage() {
         <Heading size="md">推しメシ(提供中)</Heading>
         {meals.map((meal) => (
           <Card key={meal.id} variant="outline" direction="row">
-            <Image src={meal.imageUrl} alt={meal.id} maxW="200px" />
+            <MealPreviewImage src={meal.imageUrl} alt={meal.id} />
             <VStack spacing={0}>
               <CardBody>
                 <Heading size="md">{meal.price}円</Heading>
@@ -171,7 +171,7 @@ export function MealPage() {
         </Heading>
         {discardedMeals.map((meal) => (
           <Card key={meal.id} variant="filled" direction="row">
-            <Image src={meal.imageUrl} alt={meal.id} maxW="200px" />
+            <MealPreviewImage src={meal.imageUrl} alt={meal.id} />
             <VStack spacing={0}>
               <CardBody>
                 <Heading size="md">{meal.price}円</Heading>
@@ -226,7 +226,7 @@ export function MealPage() {
               {isUploading ? (
                 <FormHelperText>アップロード中...</FormHelperText>
               ) : (
-                imageUrl && <Image src={imageUrl} alt="料理画像" />
+                imageUrl && <MealPreviewImage src={imageUrl} alt="料理画像" />
               )}
             </FormControl>
           </ModalBody>

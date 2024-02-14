@@ -16,6 +16,7 @@ import { InView } from "react-intersection-observer";
 import { useRouter } from "next/navigation";
 import { Prisma } from "@prisma/client";
 import { MealDetailModal } from "./meal-detail-modal";
+import { MealPreviewImage } from "@/components/meal-preview-image";
 
 export default function HomePage({
   restaurants,
@@ -100,12 +101,9 @@ export default function HomePage({
                         setSelectedMealId(meal.id);
                       }}
                     >
-                      <Image
+                      <MealPreviewImage
                         src={meal.imageUrl}
                         alt={`meal-${meal.id}`}
-                        objectFit="cover"
-                        aspectRatio={1 / 1}
-                        borderRadius={8}
                       />
                       <Box
                         position="absolute"
