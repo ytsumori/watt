@@ -49,11 +49,7 @@ export function BankAccountForm({ isSubmitting, onSubmit }: Props) {
 
   const isAccountTypeValid = !!accountType;
   const isAccountNoValid = !!accountNo && !!accountNo?.match(/^\d{1,7}$/);
-  const isHolderNameValid =
-    !!holderName &&
-    !!holderName?.match(
-      /^[１２３４５６７８９０ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺアイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲンガギグゲゴザジズゼソダヂヅデドバビブベボパピプペポヴ（）．－　]+$/
-    );
+  const isHolderNameValid = !!holderName;
   const isValid = !!(
     bankCode &&
     branchCode &&

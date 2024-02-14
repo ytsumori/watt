@@ -41,11 +41,14 @@ export function MealPage() {
     onClose: () => {
       setImageUrl(undefined);
       setPrice(undefined);
+      setTitle(undefined);
+      setDescription(undefined);
     },
   });
 
   const [title, setTitle] = useState<string>();
   const [price, setPrice] = useState<number>();
+  const [description, setDescription] = useState<string>();
 
   const inputFileRef = useRef<HTMLInputElement>(null);
   const [imageUrl, setImageUrl] = useState<string>();
@@ -80,6 +83,16 @@ export function MealPage() {
     const numberValue = Number(value);
     if (isNaN(numberValue) || numberValue === 0) setPrice(undefined);
     setPrice(numberValue);
+  };
+
+  const handleDescriptionChange = (
+    event: React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
+    if (event.target.value === "") {
+      setDescription(undefined);
+    } else {
+      setDescription(event.target.value);
+    }
   };
 
   const handleFileChange = async (
@@ -118,12 +131,18 @@ export function MealPage() {
     }
   };
 
-  const isSubmitDisabled = !imageUrl || !price || !title;
+  const isSubmitDisabled = !imageUrl || !price || !title || !description;
 
   const handleClickSubmit = async () => {
     if (isSubmitDisabled) return;
 
-    createMeal({ restaurantId, price, imageUrl: imageUrl, title }).then(() => {
+    createMeal({
+      restaurantId,
+      price,
+      imageUrl: imageUrl,
+      title,
+      description,
+    }).then(() => {
       revalidateMeals();
       onClose();
     });
@@ -212,7 +231,12 @@ export function MealPage() {
             </FormControl>
             <FormControl isRequired mt={2}>
               <FormLabel>説明</FormLabel>
-              <Textarea size="sm" resize="vertical" />
+              <Textarea
+                size="sm"
+                resize="vertical"
+                onChange={handleDescriptionChange}
+                value={description ?? ""}
+              />
             </FormControl>
             <FormControl isRequired mt={2}>
               <FormLabel>料理画像(正方形)</FormLabel>
