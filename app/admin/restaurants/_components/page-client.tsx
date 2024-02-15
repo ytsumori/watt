@@ -16,12 +16,12 @@ import {
   useToast,
   Tooltip,
 } from "@chakra-ui/react";
-import { Prisma } from "@prisma/client";
+import { Restaurant } from "@prisma/client";
 import NextLink from "next/link";
-import { copyCredentialToClipboard } from "../_util/clipboard-text";
+import { copySignUpURL } from "../_util/clipboard-text";
 
 type Props = {
-  restaurants: Prisma.RestaurantGetPayload<{ include: { tokens: true } }>[];
+  restaurants: Restaurant[];
 };
 
 export function RestaurantsPageClient({ restaurants }: Props) {
@@ -40,8 +40,8 @@ export function RestaurantsPageClient({ restaurants }: Props) {
               <Th>ID</Th>
               <Th>レストラン名</Th>
               <Th textAlign="center">
-                共有テキスト
-                <Tooltip label="飲食店が管理画面にログインするための情報をコピーします">
+                登録用URL
+                <Tooltip label="飲食店が管理画面にログインするためのURLをコピーします">
                   <InfoOutlineIcon mx="2px" />
                 </Tooltip>
               </Th>
@@ -51,10 +51,9 @@ export function RestaurantsPageClient({ restaurants }: Props) {
           <Tbody>
             {restaurants.map((restaurant) => {
               const handleCopy = () => {
-                if (!restaurant.tokens[0]) return;
-                copyCredentialToClipboard({
+                copySignUpURL({
                   id: restaurant.id,
-                  password: restaurant.tokens[0].token,
+                  password: restaurant.password,
                 });
                 toast({
                   title: "コピーしました",
@@ -68,7 +67,7 @@ export function RestaurantsPageClient({ restaurants }: Props) {
                   <Td>{restaurant.name}</Td>
                   <Td textAlign="center">
                     <IconButton
-                      aria-label="共有テキストコピー"
+                      aria-label="登録用URLコピー"
                       icon={<CopyIcon />}
                       color="white"
                       onClick={handleCopy}

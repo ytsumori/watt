@@ -1,4 +1,4 @@
-import { Providers } from "./_components/providers";
+import { ChakraProviders } from "./_components/providers";
 import "./global.css";
 
 export const metadata = {
@@ -17,7 +17,7 @@ export default function RootLayout({
   return (
     <html lang="jp">
       <body>
-        <Providers>{children}</Providers>
+        <ChakraProviders>{children}</ChakraProviders>
       </body>
     </html>
   );

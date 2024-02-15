@@ -38,12 +38,6 @@ export async function createRestaurant({
     data: {
       name,
       googleMapPlaceId,
-      tokens: {
-        create: {},
-      },
-    },
-    include: {
-      tokens: true,
     },
   });
 }

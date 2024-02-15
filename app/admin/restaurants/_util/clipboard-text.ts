@@ -1,9 +1,14 @@
-export function copyCredentialToClipboard({
+import { encodeSignUpToken } from "@/actions/restaurant-sign-up";
+
+export async function copySignUpURL({
   id,
   password,
 }: {
   id: string;
   password: string;
 }) {
-  navigator.clipboard.writeText(`ID: ${id}\nパスワード: ${password}`);
+  const token = await encodeSignUpToken({ restaurantId: id, password });
+  navigator.clipboard.writeText(
+    `${process.env.NEXT_PUBLIC_LIFF_URL}?signUpToken=${token}`
+  );
 }

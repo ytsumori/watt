@@ -26,7 +26,7 @@ import {
   PopoverHeader,
 } from "@chakra-ui/react";
 import { useState } from "react";
-import { copyCredentialToClipboard } from "../../_util/clipboard-text";
+import { copySignUpURL } from "../../_util/clipboard-text";
 
 export function NewRestaurantPageClient() {
   const [selectedPlace, setSelectedPlace] = useState<SearchPlaceResult>();
@@ -34,7 +34,7 @@ export function NewRestaurantPageClient() {
   const [searchResults, setSearchResults] = useState<SearchPlaceResult[]>();
   const [submitResult, setSubmitResult] = useState<{
     id: string;
-    token: string;
+    password: string;
   }>();
   const {
     isOpen: isCopiedOpen,
@@ -56,7 +56,7 @@ export function NewRestaurantPageClient() {
       googleMapPlaceId: selectedPlace.id,
     })
       .then((result) => {
-        setSubmitResult({ id: result.id, token: result.tokens[0].token });
+        setSubmitResult({ id: result.id, password: result.password });
       })
       .catch((error) => {
         console.error(error);
@@ -65,10 +65,7 @@ export function NewRestaurantPageClient() {
 
   const handleCopy = () => {
     if (!submitResult) return;
-    copyCredentialToClipboard({
-      id: submitResult.id,
-      password: submitResult.token,
-    });
+    copySignUpURL(submitResult);
     onCopiedToggle();
     setTimeout(onCopiedClose, 2000);
   };
@@ -154,22 +151,6 @@ export function NewRestaurantPageClient() {
                       referrerPolicy="no-referrer-when-downgrade"
                       src={`https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY}&q=place_id:${selectedPlace.id}`}
                     />
-                    {submitResult && (
-                      <>
-                        <FormControl>
-                          <FormLabel>ID</FormLabel>
-                          <Input isReadOnly value={submitResult.id} />
-                        </FormControl>
-                        <FormControl>
-                          <FormLabel>パスワード</FormLabel>
-                          <Input
-                            isReadOnly
-                            value={submitResult.token}
-                            type="password"
-                          />
-                        </FormControl>
-                      </>
-                    )}
                   </VStack>
                 </ModalBody>
                 <ModalFooter>
@@ -177,7 +158,7 @@ export function NewRestaurantPageClient() {
                     <Popover isOpen={isCopiedOpen}>
                       <PopoverTrigger>
                         <Button textColor="white" onClick={handleCopy} mr={3}>
-                          共有用テキストをコピー
+                          登録用URLをコピー
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent>
