@@ -170,6 +170,8 @@ model Staff {
   updatedAt    DateTime @default(now()) @updatedAt
 
   restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+
+  @@unique([restaurantId, lineId])
 }
 
 model RestaurantBankAccount {
