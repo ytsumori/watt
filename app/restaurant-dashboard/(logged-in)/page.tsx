@@ -12,6 +12,7 @@ import {
   TabPanel,
   TabPanels,
   Tabs,
+  VStack,
 } from "@chakra-ui/react";
 import { useContext, useEffect, useState } from "react";
 import { Restaurant } from "@prisma/client";
@@ -48,11 +49,10 @@ export default function Dashboard() {
   return (
     <Box>
       <Box p={2}>
-        <Flex>
+        <VStack spacing={1} alignItems="start">
           <Heading mb={4} display="inline-flex">
             {restaurant.name}
           </Heading>
-          <Spacer />
           <Button
             leftIcon={<EditIcon />}
             color="white"
@@ -62,15 +62,13 @@ export default function Dashboard() {
           >
             振込先口座を編集
           </Button>
-        </Flex>
-        <iframe
-          width="100%"
-          height="100%"
-          style={{ border: 0 }}
-          loading="lazy"
-          referrerPolicy="no-referrer-when-downgrade"
-          src={`https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY}&q=place_id:${restaurant.googleMapPlaceId}`}
-        />
+          <iframe
+            style={{ border: 0 }}
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+            src={`https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY}&q=place_id:${restaurant.googleMapPlaceId}`}
+          />
+        </VStack>
       </Box>
       <Tabs isFitted>
         <TabList>

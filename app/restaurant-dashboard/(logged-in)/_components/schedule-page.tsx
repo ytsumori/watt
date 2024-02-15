@@ -38,24 +38,24 @@ import { RestaurantIdContext } from "./restaurant-id-provider";
 
 export function SchedulePage() {
   const restaurantId = useContext(RestaurantIdContext);
-  const [dayOfWeek, setDayOfWeek] = useState<DayOfWeek>();
-  const [startTime, setStartTime] = useState<string>();
-  const [endTime, setEndTime] = useState<string>();
+  // const [dayOfWeek, setDayOfWeek] = useState<DayOfWeek>();
+  // const [startTime, setStartTime] = useState<string>();
+  // const [endTime, setEndTime] = useState<string>();
   const [isRestaurantOpen, setIsRestaurantOpen] = useState(false);
   const [openHours, setOpenHours] = useState<RestaurantOpenHour[]>([]);
-  const [editingOpenHourId, setEditingOpenHourId] = useState<string>();
-  const {
-    isOpen: isModalOpen,
-    onOpen: onModalOpen,
-    onClose,
-  } = useDisclosure({
-    defaultIsOpen: editingOpenHourId !== undefined,
-    onClose: () => {
-      setDayOfWeek(undefined);
-      setStartTime(undefined);
-      setEndTime(undefined);
-    },
-  });
+  // const [editingOpenHourId, setEditingOpenHourId] = useState<string>();
+  // const {
+  //   isOpen: isModalOpen,
+  //   onOpen: onModalOpen,
+  //   onClose,
+  // } = useDisclosure({
+  //   defaultIsOpen: editingOpenHourId !== undefined,
+  //   onClose: () => {
+  //     setDayOfWeek(undefined);
+  //     setStartTime(undefined);
+  //     setEndTime(undefined);
+  //   },
+  // });
   useEffect(() => {
     findRestaurant(restaurantId).then((restaurant) => {
       if (!restaurant) throw new Error("Restaurant not found");
@@ -64,7 +64,7 @@ export function SchedulePage() {
     getOpenHours({ restaurantId }).then((openHours) => setOpenHours(openHours));
   }, [restaurantId]);
 
-  const formattedEvents = openHours.map((openHour) => toEventInput(openHour));
+  // const formattedEvents = openHours.map((openHour) => toEventInput(openHour));
 
   const handleOpenStatusChange = (event: ChangeEvent<HTMLInputElement>) => {
     const isOpen = event.target.checked;
@@ -73,59 +73,59 @@ export function SchedulePage() {
     });
   };
 
-  const handleSubmit = () => {
-    if (!(dayOfWeek && startTime && endTime)) return;
+  // const handleSubmit = () => {
+  //   if (!(dayOfWeek && startTime && endTime)) return;
 
-    if (editingOpenHourId) {
-      updateOpenHour({
-        id: editingOpenHourId,
-        day: dayOfWeek,
-        startHour: Number(startTime.split(":")[0]),
-        startMinute: Number(startTime.split(":")[1]),
-        endHour: Number(endTime.split(":")[0]),
-        endMinute: Number(endTime.split(":")[1]),
-      }).then((result) => {
-        const newOpenHours = [...openHours];
-        const editingIndex = newOpenHours.findIndex(
-          (openHour) => openHour.id === result.id
-        );
-        newOpenHours[editingIndex] = result;
-        setOpenHours(newOpenHours);
-        setEditingOpenHourId(undefined);
-        onClose();
-      });
-    } else {
-      createOpenHour({
-        restaurantId,
-        day: dayOfWeek,
-        startHour: Number(startTime.split(":")[0]),
-        startMinute: Number(startTime.split(":")[1]),
-        endHour: Number(endTime.split(":")[0]),
-        endMinute: Number(endTime.split(":")[1]),
-      }).then((result) => {
-        const newOpenHours = [...openHours, result];
-        setOpenHours(newOpenHours);
-        onClose();
-      });
-    }
-  };
+  //   if (editingOpenHourId) {
+  //     updateOpenHour({
+  //       id: editingOpenHourId,
+  //       day: dayOfWeek,
+  //       startHour: Number(startTime.split(":")[0]),
+  //       startMinute: Number(startTime.split(":")[1]),
+  //       endHour: Number(endTime.split(":")[0]),
+  //       endMinute: Number(endTime.split(":")[1]),
+  //     }).then((result) => {
+  //       const newOpenHours = [...openHours];
+  //       const editingIndex = newOpenHours.findIndex(
+  //         (openHour) => openHour.id === result.id
+  //       );
+  //       newOpenHours[editingIndex] = result;
+  //       setOpenHours(newOpenHours);
+  //       setEditingOpenHourId(undefined);
+  //       onClose();
+  //     });
+  //   } else {
+  //     createOpenHour({
+  //       restaurantId,
+  //       day: dayOfWeek,
+  //       startHour: Number(startTime.split(":")[0]),
+  //       startMinute: Number(startTime.split(":")[1]),
+  //       endHour: Number(endTime.split(":")[0]),
+  //       endMinute: Number(endTime.split(":")[1]),
+  //     }).then((result) => {
+  //       const newOpenHours = [...openHours, result];
+  //       setOpenHours(newOpenHours);
+  //       onClose();
+  //     });
+  //   }
+  // };
 
-  const handleDelete = () => {
-    if (!editingOpenHourId) return;
+  // const handleDelete = () => {
+  //   if (!editingOpenHourId) return;
 
-    deleteOpenHour({
-      id: editingOpenHourId,
-    }).then((result) => {
-      const newOpenHours = [...openHours];
-      const removingIndex = newOpenHours.findIndex(
-        (openHour) => openHour.id === result.id
-      );
-      newOpenHours.splice(removingIndex, 1);
-      setOpenHours(newOpenHours);
-      setEditingOpenHourId(undefined);
-      onClose();
-    });
-  };
+  //   deleteOpenHour({
+  //     id: editingOpenHourId,
+  //   }).then((result) => {
+  //     const newOpenHours = [...openHours];
+  //     const removingIndex = newOpenHours.findIndex(
+  //       (openHour) => openHour.id === result.id
+  //     );
+  //     newOpenHours.splice(removingIndex, 1);
+  //     setOpenHours(newOpenHours);
+  //     setEditingOpenHourId(undefined);
+  //     onClose();
+  //   });
+  // };
 
   return (
     <>
@@ -141,7 +141,7 @@ export function SchedulePage() {
           お客さんを案内できない場合はオフにしてください
         </FormHelperText>
       </FormControl>
-      <Heading mt={6}>営業時間</Heading>
+      {/* <Heading mt={6}>営業時間</Heading>
       <Alert status="info" size="">
         <AlertIcon />
         営業時間を登録することで、自動で営業中ステータスに変更されます
@@ -260,7 +260,7 @@ export function SchedulePage() {
             </Button>
           </ModalFooter>
         </ModalContent>
-      </Modal>
+      </Modal> */}
     </>
   );
 }
