@@ -30,23 +30,10 @@ export default function Map({
   defaultCenter,
 }: Props) {
   const [zoom, setZoom] = useState(16);
+  const [currentLocation, setCurrentLocation] =
+    useState<google.maps.LatLngLiteral>();
   const [center, setCenter] =
     useState<google.maps.LatLngLiteral>(defaultCenter);
-
-  // 選択が変更された場合の変更適用
-  // const { fetchPlaceDetails } = usePlacesService();
-  // useEffect(() => {
-  //   const selectedRestaurant = restaurants.find(
-  //     (restaurant) => restaurant.id === selectedRestaurantId
-  //   );
-  //   if (selectedRestaurant) {
-  //     fetchPlaceDetails(selectedRestaurant.googleMapPlaceId).then((place) => {
-  //       if (place?.geometry?.location) {
-  //         setCenter(place.geometry.location.toJSON());
-  //       }
-  //     });
-  //   }
-  // }, [selectedRestaurantId, restaurants, fetchPlaceDetails]);
 
   const handleIdle = useCallback(
     (map: google.maps.Map) => {
@@ -69,24 +56,24 @@ export default function Map({
     [onRestaurantSelect]
   );
 
-  // 現在地の取得
-  // useEffect(() => {
-  //   if (navigator.geolocation) {
-  //     navigator.geolocation.getCurrentPosition(
-  //       (position: GeolocationPosition) => {
-  //         setCenter({
-  //           lat: position.coords.latitude,
-  //           lng: position.coords.longitude,
-  //         });
-  //       },
-  //       () => {
-  //         window.alert("現在地を取得できませんでした。");
-  //       }
-  //     );
-  //   } else {
-  //     window.alert("現在地を取得できませんでした。");
-  //   }
-  // }, []);
+  // get current location
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position: GeolocationPosition) => {
+          setCurrentLocation({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          });
+        },
+        () => {
+          console.error("Error getting current location");
+        }
+      );
+    } else {
+      console.error("Geolocation is not supported by this browser");
+    }
+  }, []);
 
   return (
     <Wrapper
@@ -103,7 +90,7 @@ export default function Map({
         style={{ height: "100%", width: "100%" }}
       >
         {restaurants.map((restaurant) => (
-          <Marker
+          <RestaurantMarker
             key={restaurant.id}
             placeId={restaurant.googleMapPlaceId}
             title={restaurant.name}
@@ -115,6 +102,9 @@ export default function Map({
             clickable
           />
         ))}
+        {currentLocation && (
+          <CurrentLocationMarker position={currentLocation} />
+        )}
       </MapComponent>
     </Wrapper>
   );
@@ -163,13 +153,65 @@ function MapComponent({ onIdle, children, style, ...options }: MapProps) {
   );
 }
 
+interface CurrentLocationMarkerProps extends google.maps.MarkerOptions {
+  position: google.maps.LatLngLiteral;
+}
+
+function CurrentLocationMarker({
+  position,
+  ...options
+}: CurrentLocationMarkerProps) {
+  const [marker, setMarker] = useState<google.maps.Marker>();
+
+  useEffect(() => {
+    if (!marker) {
+      setMarker(new google.maps.Marker());
+    }
+
+    // remove marker from map on unmount
+    return () => {
+      if (marker) {
+        marker.setMap(null);
+      }
+    };
+  }, [marker]);
+
+  useEffect(() => {
+    if (marker) {
+      marker.setOptions(options);
+      marker.setIcon({
+        path: google.maps.SymbolPath.CIRCLE,
+        scale: 10,
+        fillColor: "#0080FF",
+        fillOpacity: 1,
+        strokeColor: "#0080FF",
+        strokeOpacity: 0.3,
+        strokeWeight: 15,
+      });
+    }
+  }, [marker, options]);
+
+  useEffect(() => {
+    if (marker) {
+      marker.setPosition(new google.maps.LatLng(position));
+    }
+  }, [marker, position]);
+
+  return null;
+}
+
 interface MarkerProps extends google.maps.MarkerOptions {
   placeId: string;
   selected: boolean;
   onClick: (position: google.maps.LatLng) => void;
 }
 
-function Marker({ placeId, selected, onClick, ...options }: MarkerProps) {
+function RestaurantMarker({
+  placeId,
+  selected,
+  onClick,
+  ...options
+}: MarkerProps) {
   const [marker, setMarker] = useState<google.maps.Marker>();
   const { placeDetail } = usePlacesDetail(options.map, placeId);
 
