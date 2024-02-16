@@ -21,6 +21,7 @@ import { findPreauthorizedPayment } from "@/actions/payment";
 import { signIn } from "next-auth/react";
 import { CheckIcon } from "@chakra-ui/icons";
 import { useRouter } from "next/navigation";
+import { notifyStaff } from "../_actions/notify-staff";
 
 type Props = {
   meal: Meal;
@@ -51,6 +52,7 @@ export default function MealPage({
       paymentMethodId: selectedPaymentMethod,
     }).then((status) => {
       if (status === "requires_capture") {
+        notifyStaff({ restaurantId: meal.restaurantId, mealId: meal.id });
         findPreauthorizedPayment(userId).then((payment) => {
           if (payment) {
             router.push(`/payments/${payment.id}`);
