@@ -15,9 +15,12 @@ export const theme = extendTheme(
           size: "sm",
         },
       }),
-      Progress: defineStyleConfig({
+      Spinner: defineStyleConfig({
         defaultProps: {
-          size: "sm",
+          size: "xl",
+        },
+        baseStyle: {
+          color: "cyan.500",
         },
       }),
     },

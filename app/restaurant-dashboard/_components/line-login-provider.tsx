@@ -1,6 +1,6 @@
 "use client";
 
-import { Progress } from "@chakra-ui/react";
+import { Center, Spinner, Text, VStack } from "@chakra-ui/react";
 import liff from "@line/liff";
 import { createContext, useEffect, useState } from "react";
 
@@ -21,7 +21,15 @@ export function LineLoginProvider({ children }: { children: React.ReactNode }) {
       });
   }, []);
 
-  if (!idToken) return <Progress isIndeterminate />;
+  if (!idToken)
+    return (
+      <Center h="100vh" w="100vw">
+        <VStack>
+          <Spinner />
+          <Text>ログイン中</Text>
+        </VStack>
+      </Center>
+    );
 
   return (
     <LineIdTokenContext.Provider value={idToken}>

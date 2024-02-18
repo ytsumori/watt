@@ -1,15 +1,12 @@
 "use client";
 
 import {
-  createRestaurantBankAccount,
   findBankAccountByRestaurantId,
   updateRestaurantBankAccount,
 } from "@/actions/restaurant-bank-account";
 import {
   Box,
-  Card,
   Heading,
-  Progress,
   Spinner,
   Text,
   VStack,

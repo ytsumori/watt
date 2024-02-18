@@ -5,7 +5,7 @@ import { verifyIdToken } from "@/lib/line-login";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createContext, useContext, useEffect, useState } from "react";
 import { LineIdTokenContext } from "../../_components/line-login-provider";
-import { Progress } from "@chakra-ui/react";
+import { Center, Spinner, VStack, Text } from "@chakra-ui/react";
 import { signUpRestaurant } from "@/actions/restaurant-sign-up";
 
 export const RestaurantIdContext = createContext("");
@@ -45,7 +45,15 @@ export function RestaurantIdProvider({
     });
   }, [idToken, router, searchParams]);
 
-  if (!restaurantId) return <Progress isIndeterminate />;
+  if (!restaurantId)
+    return (
+      <Center h="100vh" w="100vw">
+        <VStack>
+          <Spinner size="xl" />
+          <Text>ログイン中</Text>
+        </VStack>
+      </Center>
+    );
   return (
     <RestaurantIdContext.Provider value={restaurantId}>
       {children}

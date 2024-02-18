@@ -3,8 +3,10 @@
 import {
   Box,
   Button,
+  Center,
   Heading,
-  Progress,
+  Text,
+  Spinner,
   Tab,
   TabList,
   TabPanel,
@@ -42,7 +44,15 @@ export default function Dashboard() {
     });
   }, [restaurantId, router]);
 
-  if (!restaurant) return <Progress isIndeterminate />;
+  if (!restaurant)
+    return (
+      <Center h="100vh" w="100vw">
+        <VStack>
+          <Spinner />
+          <Text>お店情報を取得中</Text>
+        </VStack>
+      </Center>
+    );
 
   return (
     <Box>
