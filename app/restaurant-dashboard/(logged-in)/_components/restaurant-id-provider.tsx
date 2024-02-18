@@ -38,7 +38,7 @@ export function RestaurantIdProvider({
                 throw new Error("Registration Failed");
               });
           } else {
-            throw new Error("No staff found");
+            router.push("/restaurant-dashboard/not-found");
           }
         }
       });

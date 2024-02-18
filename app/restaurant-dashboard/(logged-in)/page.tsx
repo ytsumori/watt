@@ -3,10 +3,8 @@
 import {
   Box,
   Button,
-  Flex,
   Heading,
   Progress,
-  Spacer,
   Tab,
   TabList,
   TabPanel,
