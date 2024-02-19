@@ -12,6 +12,11 @@ import {
   Tr,
   Th,
   Tbody,
+  Divider,
+  Text,
+  Flex,
+  Spacer,
+  Box,
 } from "@chakra-ui/react";
 import { useState } from "react";
 import Stripe from "stripe";
@@ -19,7 +24,7 @@ import { Meal, Payment } from "@prisma/client";
 import { createPaymentIntent } from "@/actions/payment-intent";
 import { findPreauthorizedPayment } from "@/actions/payment";
 import { signIn } from "next-auth/react";
-import { CheckIcon } from "@chakra-ui/icons";
+import { CheckCircleIcon } from "@chakra-ui/icons";
 import { useRouter } from "next/navigation";
 import { notifyStaff } from "../_actions/notify-staff";
 
@@ -78,11 +83,13 @@ export default function MealPage({
           </Alert>
         ) : (
           <>
-            <Heading size="sm">
-              {userId ? "支払い方法" : "ログインして食事に進む"}
-            </Heading>
+            <Divider borderColor="black" />
             {userId ? (
               <>
+                <Box>
+                  <Heading size="md">支払い方法</Heading>
+                  <Text fontSize="xs">お支払い方法を選択してください</Text>
+                </Box>
                 <TableContainer>
                   <Table variant="simple">
                     <Thead>
@@ -103,7 +110,7 @@ export default function MealPage({
                         >
                           <Th>
                             {selectedPaymentMethod === paymentMethod.id && (
-                              <CheckIcon color="cyan.400" />
+                              <CheckCircleIcon color="cyan.400" boxSize={5} />
                             )}
                           </Th>
                           <Th>{paymentMethod.card?.brand}</Th>
@@ -123,6 +130,21 @@ export default function MealPage({
                 >
                   決済方法を登録
                 </Button>
+                <Divider borderColor="black" />
+                <Heading size="md">ご注文内容の確認</Heading>
+                <Flex w="full">
+                  <Text>{meal.title}</Text>
+                  <Spacer />
+                  <Text>¥{meal.price.toLocaleString("ja-JP")}</Text>
+                </Flex>
+                <Divider />
+                <Heading size="sm" alignSelf="self-end">
+                  合計 ¥{meal.price.toLocaleString("ja-JP")}
+                </Heading>
+                <Divider borderColor="black" />
+                <Text fontSize="xs">
+                  注文内容を確定します。次の画面でお店に向かい決済を確定するまで、調理は開始されずお支払いも発生しません。
+                </Text>
                 <Button
                   onClick={handleVisitingClick}
                   color="white"
@@ -136,6 +158,7 @@ export default function MealPage({
               </>
             ) : (
               <>
+                <Heading size="md">ログインして食事に進む</Heading>
                 <Alert borderRadius={4}>
                   <AlertIcon />
                   以下からLINEでログインすることでお食事に進めます

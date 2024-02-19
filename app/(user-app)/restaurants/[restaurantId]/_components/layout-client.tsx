@@ -12,6 +12,7 @@ import {
   Text,
   Alert,
   AlertIcon,
+  Divider,
 } from "@chakra-ui/react";
 import { Prisma } from "@prisma/client";
 import { usePathname, useRouter } from "next/navigation";
@@ -47,7 +48,7 @@ export function RestaurantLayout({ restaurant, children }: Props) {
           isRound
         />
         <VStack w="full" p={4} alignItems="start" spacing={4}>
-          <Heading size="md">{restaurant.name}</Heading>
+          <Heading size="lg">{restaurant.name}</Heading>
           <Box h="20vh" w="full">
             <iframe
               width="100%"
@@ -58,7 +59,11 @@ export function RestaurantLayout({ restaurant, children }: Props) {
               src={`https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY}&q=place_id:${restaurant.googleMapPlaceId}`}
             />
           </Box>
-          <Heading size="sm">推しメシ</Heading>
+          <Divider borderColor="black" />
+          <Box>
+            <Heading size="md">推しメシ</Heading>
+            <Text fontSize="xs">食べたい推しメシを選択してください</Text>
+          </Box>
           {selectedMealId === undefined && (
             <Alert borderRadius={4}>
               <AlertIcon />
