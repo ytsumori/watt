@@ -1,16 +1,17 @@
 "use client";
 
-import { Image } from "@chakra-ui/react";
+import { Image, ImageProps } from "@chakra-ui/react";
 
 type Props = {
-  src: string;
-  alt: string;
+  src: ImageProps["src"];
+  alt: ImageProps["alt"];
 };
 
 export function MealPreviewImage({ src, alt }: Props) {
   return (
     <Image
-      width={200}
+      w={{ base: "100%", md: "50%" }}
+      h={{ base: "100%", md: "50%" }}
       src={src}
       alt={alt}
       objectFit="cover"

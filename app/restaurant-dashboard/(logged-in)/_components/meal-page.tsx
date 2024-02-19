@@ -28,6 +28,7 @@ import {
   Textarea,
   VStack,
   useDisclosure,
+  Text,
 } from "@chakra-ui/react";
 import { Meal } from "@prisma/client";
 import { useContext, useEffect, useRef, useState } from "react";
@@ -168,15 +169,19 @@ export function MealPage() {
         </Button>
         <Heading size="md">推しメシ(提供中)</Heading>
         {meals.map((meal) => (
-          <Card key={meal.id} variant="outline" direction="row">
+          <Card key={meal.id} variant="outline">
             <MealPreviewImage src={meal.imageUrl} alt={meal.id} />
             <VStack spacing={0}>
               <CardBody>
-                <Heading size="md">{meal.price}円</Heading>
+                <Heading size="sm">{meal.title}</Heading>
+                <Text size="sm">{meal.price}円</Text>
+                <Text size="sm" noOfLines={3} whiteSpace="pre-wrap">
+                  {meal.description}
+                </Text>
               </CardBody>
               <CardFooter>
                 <Button
-                  variant="ghost"
+                  variant="solid"
                   colorScheme="red"
                   onClick={() => handleClickDiscard(meal.id)}
                 >
@@ -194,7 +199,11 @@ export function MealPage() {
             <MealPreviewImage src={meal.imageUrl} alt={meal.id} />
             <VStack spacing={0}>
               <CardBody>
-                <Heading size="md">{meal.price}円</Heading>
+                <Heading size="sm">{meal.title}</Heading>
+                <Text size="sm">{meal.price}円</Text>
+                <Text size="sm" noOfLines={3}>
+                  {meal.description}
+                </Text>
               </CardBody>
               <CardFooter>
                 <Button
@@ -209,7 +218,7 @@ export function MealPage() {
           </Card>
         ))}
       </VStack>
-      <Modal isOpen={isOpen} onClose={onClose}>
+      <Modal isOpen={isOpen} onClose={onClose} size="full">
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>推しメシを登録</ModalHeader>
@@ -234,6 +243,7 @@ export function MealPage() {
               <Textarea
                 size="sm"
                 resize="vertical"
+                minHeight={200}
                 onChange={handleDescriptionChange}
                 value={description ?? ""}
               />
