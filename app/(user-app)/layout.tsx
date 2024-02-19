@@ -1,5 +1,5 @@
 import { findPreauthorizedPayment } from "@/actions/payment";
-import BaseLayout from "@/app/(app)/_components/layout-client";
+import BaseLayout from "@/app/(user-app)/_components/layout-client";
 import { options } from "@/lib/next-auth/options";
 import { getServerSession } from "next-auth";
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { MealDetailModal } from "@/app/(app)/_components/meal-detail-modal";
+import { MealDetailModal } from "@/app/(user-app)/_components/meal-detail-modal";
 import { ArrowBackIcon, CheckIcon } from "@chakra-ui/icons";
 import {
   Box,
