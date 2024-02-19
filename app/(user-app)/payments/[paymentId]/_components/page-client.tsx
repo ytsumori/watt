@@ -1,6 +1,10 @@
 "use client";
 
-import { capturePaymentIntent } from "@/actions/payment-intent";
+import { updatePaymentStatus } from "@/actions/payment";
+import {
+  cancelPaymentIntent,
+  capturePaymentIntent,
+} from "@/actions/payment-intent";
 import {
   Alert,
   AlertDescription,
@@ -33,11 +37,12 @@ type Props = {
 export function PaymentPage({ payment }: Props) {
   const router = useRouter();
   const [isPaying, setIsPaying] = useState(false);
+  const [isCancelling, setIsCancelling] = useState(false);
 
   const handlePaymentConfirm = () => {
     setIsPaying(true);
-    capturePaymentIntent(payment.id).then((paymentIntent) => {
-      if (paymentIntent === "succeeded") {
+    capturePaymentIntent(payment.id).then((paymentStatus) => {
+      if (paymentStatus === "succeeded") {
         router.refresh();
       } else {
         console.error("Failed to capture payment intent");
@@ -46,7 +51,14 @@ export function PaymentPage({ payment }: Props) {
   };
 
   const handlePaymentCancel = () => {
-    console.error("TODO: Implement");
+    setIsCancelling(true);
+    cancelPaymentIntent(payment.id).then((paymentStatus) => {
+      if (paymentStatus === "canceled") {
+        router.push("/");
+      } else {
+        console.error("Failed to cancel payment intent");
+      }
+    });
   };
 
   switch (payment.status) {
@@ -108,7 +120,7 @@ export function PaymentPage({ payment }: Props) {
                 maxW="full"
                 color="white"
                 onClick={handlePaymentConfirm}
-                isDisabled={isPaying}
+                isDisabled={isPaying || isCancelling}
               >
                 注文を確定する
               </Button>
@@ -118,7 +130,7 @@ export function PaymentPage({ payment }: Props) {
                 w="full"
                 maxW="full"
                 onClick={handlePaymentCancel}
-                isDisabled={isPaying}
+                isDisabled={isPaying || isCancelling}
               >
                 キャンセル
               </Button>
@@ -135,6 +147,20 @@ export function PaymentPage({ payment }: Props) {
               <ModalBody textAlign="center">
                 <Spinner />
                 <Text>決済中...</Text>
+              </ModalBody>
+            </ModalContent>
+          </Modal>
+          <Modal
+            isOpen={isCancelling}
+            onClose={() => undefined}
+            size="xs"
+            isCentered
+          >
+            <ModalOverlay />
+            <ModalContent>
+              <ModalBody textAlign="center">
+                <Spinner />
+                <Text>キャンセル中...</Text>
               </ModalBody>
             </ModalContent>
           </Modal>

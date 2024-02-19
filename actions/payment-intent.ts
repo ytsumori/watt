@@ -87,3 +87,24 @@ export async function capturePaymentIntent(paymentId: string) {
   }
   return paymentIntent.status;
 }
+
+export async function cancelPaymentIntent(paymentId: string) {
+  const payment = await findPayment(paymentId);
+  if (!payment) {
+    throw new Error("Payment not found");
+  }
+  if (payment.paymentProvider !== "STRIPE") {
+    throw new Error("Invalid payment provider");
+  }
+
+  const paymentIntent = await stripe.paymentIntents.cancel(
+    payment.providerPaymentId
+  );
+  if (paymentIntent.status === "canceled") {
+    await updatePaymentStatus({
+      id: paymentId,
+      status: "CANCELED",
+    });
+  }
+  return paymentIntent.status;
+}

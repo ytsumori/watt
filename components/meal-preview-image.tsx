@@ -10,8 +10,6 @@ type Props = {
 export function MealPreviewImage({ src, alt }: Props) {
   return (
     <Image
-      w={{ base: "100%", md: "50%" }}
-      h={{ base: "100%", md: "50%" }}
       src={src}
       alt={alt}
       objectFit="cover"
