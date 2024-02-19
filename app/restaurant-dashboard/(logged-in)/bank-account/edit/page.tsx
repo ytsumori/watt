@@ -1,12 +1,16 @@
 "use client";
 
 import {
+  createRestaurantBankAccount,
   findBankAccountByRestaurantId,
   updateRestaurantBankAccount,
 } from "@/actions/restaurant-bank-account";
 import {
   Box,
+  Card,
+  Center,
   Heading,
+  Progress,
   Spinner,
   Text,
   VStack,
@@ -27,6 +31,7 @@ export default function NewBankAccount() {
   const router = useRouter();
   const toast = useToast();
   const restaurantId = useContext(RestaurantIdContext);
+  const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [defaultBankAccount, setDefaultBankAccount] =
     useState<RestaurantBankAccount>();
@@ -37,16 +42,16 @@ export default function NewBankAccount() {
     findBankAccountByRestaurantId(restaurantId).then((bankAccount) => {
       if (bankAccount) {
         setDefaultBankAccount(bankAccount);
+        setIsLoading(false);
       } else {
-        throw new Error("Bank account not found");
+        router.push("/restaurant-dashboard/bank-account/new");
       }
     });
-  }, [restaurantId]);
+  }, [restaurantId, router]);
 
   useEffect(() => {
     if (defaultBankAccount && defaultBankName === undefined) {
       getBank({ bankCode: defaultBankAccount.bankCode }).then((bank) => {
-        console.log("bank result", bank);
         if (bank.name === undefined) return;
         return setDefaultBankName(bank.name);
       });
@@ -60,7 +65,6 @@ export default function NewBankAccount() {
           bankCode: defaultBankAccount.bankCode,
           branchCode: defaultBankAccount.branchCode,
         }).then((result) => {
-          console.log("branch result", result);
           if (result.branch === undefined) return;
           return setDefaultBranchName(result.branch.name);
         });
@@ -85,6 +89,16 @@ export default function NewBankAccount() {
         });
       });
   };
+
+  if (isLoading)
+    return (
+      <Center h="100vh" w="100vw">
+        <VStack>
+          <Spinner />
+          <Text>口座情報を取得中</Text>
+        </VStack>
+      </Center>
+    );
 
   return (
     <VStack h="100vh" w="100vw">

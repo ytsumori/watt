@@ -17,7 +17,6 @@ import {
 import { useContext, useEffect, useState } from "react";
 import { Restaurant } from "@prisma/client";
 import { findRestaurant } from "@/actions/restaurant";
-import { findBankAccountByRestaurantId } from "@/actions/restaurant-bank-account";
 import { useRouter } from "next/navigation";
 import { EditIcon } from "@chakra-ui/icons";
 import { RestaurantIdContext } from "./_components/restaurant-id-provider";
@@ -33,13 +32,7 @@ export default function Dashboard() {
   useEffect(() => {
     findRestaurant(restaurantId).then((restaurant) => {
       if (restaurant) {
-        findBankAccountByRestaurantId(restaurantId).then((bankAccount) => {
-          if (!bankAccount) {
-            router.push("/restaurant-dashboard/bank-account/new");
-          } else {
-            setRestaurant(restaurant);
-          }
-        });
+        setRestaurant(restaurant);
       }
     });
   }, [restaurantId, router]);
@@ -68,7 +61,7 @@ export default function Dashboard() {
               router.push("/restaurant-dashboard/bank-account/edit")
             }
           >
-            振込先口座を編集
+            振込先口座を登録
           </Button>
           <iframe
             style={{ border: 0 }}
