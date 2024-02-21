@@ -70,6 +70,7 @@ export function PaymentPage({ payment }: Props) {
     cancelPaymentIntent(payment.id).then((paymentStatus) => {
       if (paymentStatus === "canceled") {
         router.push("/");
+        router.refresh();
       } else {
         console.error("Failed to cancel payment intent");
       }
