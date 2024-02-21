@@ -190,6 +190,14 @@ model RestaurantBankAccount {
   @@unique([bankCode, branchCode, accountType, accountNo])
 }
 
+model ConversionTrackingTag {
+  id        String   @id @default(cuid())
+  title     String
+  tag       String   @unique @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
 enum DayOfWeek {
   MONDAY
   TUESDAY
