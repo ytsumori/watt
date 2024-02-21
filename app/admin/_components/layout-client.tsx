@@ -3,22 +3,20 @@
 import { HamburgerIcon } from "@chakra-ui/icons";
 import {
   Box,
-  Flex,
   IconButton,
   Menu,
   MenuButton,
   MenuItem,
   MenuList,
 } from "@chakra-ui/react";
-import { useRouter } from "next/navigation";
-import { CiShop, CiMoneyCheck1 } from "react-icons/ci";
+import Link from "next/link";
+import { FaShop, FaMoneyCheck, FaChartLine } from "react-icons/fa6";
 
 export function AdminDashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const router = useRouter();
   return (
     <Box position="relative">
       <Menu>
@@ -32,17 +30,18 @@ export function AdminDashboardLayout({
           top={4}
         />
         <MenuList>
-          <MenuItem
-            icon={<CiShop />}
-            onClick={() => router.push("/admin/restaurants")}
-          >
+          <MenuItem icon={<FaShop />} as={Link} href={"/admin/restaurants"}>
             レストラン一覧
           </MenuItem>
-          <MenuItem
-            icon={<CiMoneyCheck1 />}
-            onClick={() => router.push("/admin/payments")}
-          >
+          <MenuItem icon={<FaMoneyCheck />} as={Link} href={"/admin/payments"}>
             決済一覧
+          </MenuItem>
+          <MenuItem
+            icon={<FaChartLine />}
+            as={Link}
+            href={"/admin/conversions"}
+          >
+            コンバージョン一覧
           </MenuItem>
         </MenuList>
       </Menu>
