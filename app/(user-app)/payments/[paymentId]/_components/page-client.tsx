@@ -23,10 +23,13 @@ import {
   Spinner,
   Text,
   VStack,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { Prisma } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { ConfirmModal } from "../../../../../components/confirm-modal";
+import { PaymentConfirmModal } from "./payment-confirm-modal";
 
 type Props = {
   payment: Prisma.PaymentGetPayload<{
@@ -38,6 +41,16 @@ type Props = {
 
 export function PaymentPage({ payment }: Props) {
   const router = useRouter();
+  const {
+    isOpen: isConfirmModalOpen,
+    onOpen: onConfirmModalOpen,
+    onClose: onConfirmModalClose,
+  } = useDisclosure();
+  const {
+    isOpen: isCancelModalOpen,
+    onOpen: onCancelModalOpen,
+    onClose: onCancelModalClose,
+  } = useDisclosure();
   const [isPaying, setIsPaying] = useState(false);
   const [isCancelling, setIsCancelling] = useState(false);
 
@@ -89,7 +102,7 @@ export function PaymentPage({ payment }: Props) {
                   w="full"
                   maxW="full"
                   color="white"
-                  onClick={handlePaymentConfirm}
+                  onClick={onConfirmModalOpen}
                   isDisabled={isPaying || isCancelling}
                 >
                   決済を確定する
@@ -99,7 +112,7 @@ export function PaymentPage({ payment }: Props) {
                   colorScheme="gray"
                   w="full"
                   maxW="full"
-                  onClick={handlePaymentCancel}
+                  onClick={onCancelModalOpen}
                   isDisabled={isPaying || isCancelling}
                 >
                   キャンセル
@@ -153,6 +166,26 @@ export function PaymentPage({ payment }: Props) {
               </VStack>
             </VStack>
           </VStack>
+          <PaymentConfirmModal
+            isOpen={isConfirmModalOpen}
+            isConfirming={isPaying}
+            onClose={onConfirmModalClose}
+            onConfirm={handlePaymentConfirm}
+          />
+          <ConfirmModal
+            isOpen={isCancelModalOpen}
+            onClose={onCancelModalClose}
+            title="注文をキャンセルしますか？"
+            confirmButton={{
+              label: "注文をキャンセル",
+              onClick: handlePaymentCancel,
+              isLoading: isCancelling,
+            }}
+            cancelButton={{
+              label: "注文を続ける",
+              isDisabled: isCancelling,
+            }}
+          />
           <Modal
             isOpen={isPaying}
             onClose={() => undefined}
@@ -235,15 +268,6 @@ export function PaymentPage({ payment }: Props) {
             ホーム画面に戻る
           </Button>
         </VStack>
-      );
-    case "CANCELED":
-      return (
-        <div>
-          <h1>Payment</h1>
-          <p>
-            You have cancelled the payment for the meal {payment.order.meal.id}.
-          </p>
-        </div>
       );
     default:
       throw new Error("Invalid payment status");

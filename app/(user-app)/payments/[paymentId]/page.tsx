@@ -26,7 +26,11 @@ export default async function Payment({ params }: { params: Params }) {
     },
   });
 
-  if (!payment || payment.order.userId !== user.id) {
+  if (
+    !payment ||
+    payment.order.userId !== user.id ||
+    payment.status === "CANCELED"
+  ) {
     redirect("/");
   }
 

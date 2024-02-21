@@ -47,9 +47,12 @@ export default function MealPage({
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<
     string | undefined
   >(paymentMethods.length === 1 ? paymentMethods[0].id : undefined);
+  const [isVisitRequesting, setIsVisitRequesting] = useState(false);
 
   const handleVisitingClick = async () => {
     if (!userId || !selectedPaymentMethod) return;
+
+    setIsVisitRequesting(true);
 
     createPaymentIntent({
       mealId: meal.id,
@@ -146,6 +149,7 @@ export default function MealPage({
                   注文内容を確定します。次の画面でお店に向かい決済を確定するまで、調理は開始されずお支払いも発生しません。
                 </Text>
                 <Button
+                  isLoading={isVisitRequesting}
                   onClick={handleVisitingClick}
                   color="white"
                   w="full"

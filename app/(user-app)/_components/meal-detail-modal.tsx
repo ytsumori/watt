@@ -3,6 +3,7 @@
 import { findMeal } from "@/actions/meal";
 import {
   Button,
+  Center,
   Image,
   Modal,
   ModalBody,
@@ -54,7 +55,7 @@ export function MealDetailModal({
         setMeal(undefined);
         onClose();
       }}
-      isCentered
+      size="full"
     >
       <ModalOverlay />
       <ModalContent>
@@ -86,7 +87,9 @@ export function MealDetailModal({
             </ModalFooter>
           </>
         ) : (
-          <Spinner />
+          <Center height="full">
+            <Spinner />
+          </Center>
         )}
       </ModalContent>
     </Modal>

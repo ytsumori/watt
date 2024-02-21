@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Avatar,
   Box,
@@ -8,11 +8,14 @@ import {
   MenuButton,
   MenuItem,
   MenuList,
+  Text,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { signIn, signOut } from "next-auth/react";
 import { Payment } from "@prisma/client";
 import { Session } from "next-auth";
 import { usePathname, useRouter } from "next/navigation";
+import { ConfirmModal } from "@/components/confirm-modal";
 
 type Props = {
   children: React.ReactNode;
@@ -27,31 +30,45 @@ export default function BaseLayout({
 }: Props) {
   const router = useRouter();
   const pathname = usePathname();
+  const {
+    isOpen: isPaymentModalOpen,
+    onOpen: onPaymentModalOpen,
+    onClose: onPaymentModalClose,
+  } = useDisclosure({
+    defaultIsOpen: !!preauthorizedPayment && !pathname.startsWith("/payments"),
+  });
+  useEffect(() => {
+    if (!!preauthorizedPayment && !pathname.startsWith("/payments")) {
+      onPaymentModalOpen();
+    }
+  }, [pathname, preauthorizedPayment, onPaymentModalOpen]);
 
   const handleSignOutClick = () => {
     if (confirm("ログアウトしますか？")) {
       signOut();
     }
   };
+
   return (
     <Box h="100vh" w="100vw">
-      {preauthorizedPayment && !pathname.startsWith("/payments") && (
-        <Box
-          bg="red.400"
-          position="fixed"
-          bottom={0}
-          left={0}
-          right={0}
-          p={2}
-          w="full"
-          textAlign="center"
-          zIndex={2}
-          fontWeight={700}
-          onClick={() => router.push(`/payments/${preauthorizedPayment.id}`)}
-        >
-          選択中の推しメシがあります
-        </Box>
-      )}
+      <ConfirmModal
+        isOpen={isPaymentModalOpen}
+        onClose={onPaymentModalClose}
+        title="選択中の推しメシがあります"
+        confirmButton={{
+          label: "支払いページに移動する",
+          onClick: () => {
+            router.push(`/payments/${preauthorizedPayment?.id}`);
+            onPaymentModalClose();
+          },
+        }}
+      >
+        <Text>
+          現在選択中の推しメシがあります。
+          <br />
+          お店に向かって支払いを完了してください。
+        </Text>
+      </ConfirmModal>
       <Menu>
         <MenuButton
           as={Avatar}

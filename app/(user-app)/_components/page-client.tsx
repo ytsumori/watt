@@ -6,7 +6,6 @@ import {
   Box,
   HStack,
   Heading,
-  Image,
   Text,
   Flex,
   Spacer,
@@ -54,7 +53,7 @@ export default function HomePage({
           />
         </Box>
         <Box
-          maxHeight="50%"
+          maxHeight="70%"
           overflowY="auto"
           py={4}
           className="hidden-scrollbar"
