@@ -8,7 +8,7 @@ export function ResourceFooter() {
   return (
     <Box p={4} backgroundColor="orange.100" color="orange.400">
       <NextLink href="/">
-        <Image src="/watt-logo.png" alt="Watt" width="100" height="100" />
+        <Image src="/watt-logo.png" alt="Watt" width={100} height={40} />
       </NextLink>
       <Grid templateColumns="repeat(2, 1fr)" gap={2} mt={4}>
         <GridItem>

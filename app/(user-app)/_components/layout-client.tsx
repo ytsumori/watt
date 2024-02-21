@@ -88,7 +88,7 @@ export default function BaseLayout({
         />
         <MenuList>
           <Box mx={3} mb={4} mt={2}>
-            <Image src="/watt-logo.png" alt="Watt" width="50" height="50" />
+            <Image src="/watt-logo.png" alt="Watt" width={50} height={20} />
           </Box>
           <MenuDivider />
           <MenuGroup title="メニュー">
