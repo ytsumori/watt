@@ -81,7 +81,7 @@ export function RestaurantLayout({ restaurant, children }: Props) {
                 onClick={() => setDisplayingMealId(meal.id)}
                 {...(selectedMealId === meal.id && {
                   borderWidth: 4,
-                  borderColor: "cyan.400",
+                  borderColor: "orange.400",
                 })}
               >
                 <Image
@@ -109,7 +109,7 @@ export function RestaurantLayout({ restaurant, children }: Props) {
                     position="absolute"
                     top={0}
                     right={0}
-                    backgroundColor="cyan.400"
+                    backgroundColor="orange.400"
                     color="white"
                     boxSize={6}
                     borderRadius={6}

@@ -101,7 +101,6 @@ export function PaymentPage({ payment }: Props) {
                   size="md"
                   w="full"
                   maxW="full"
-                  color="white"
                   onClick={onConfirmModalOpen}
                   isDisabled={isPaying || isCancelling}
                 >

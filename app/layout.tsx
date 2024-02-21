@@ -16,7 +16,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="jp">
-      <body>
+      <body style={{ overscrollBehaviorY: "none" }}>
         <ChakraProviders>{children}</ChakraProviders>
       </body>
     </html>

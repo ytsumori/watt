@@ -125,7 +125,6 @@ export function BankAccountForm({ isSubmitting, onSubmit }: Props) {
             />
           </InputGroup>
           <Button
-            color="white"
             mt={2}
             onClick={handleBankSearch}
             isDisabled={!bankSearchText}
@@ -211,7 +210,6 @@ export function BankAccountForm({ isSubmitting, onSubmit }: Props) {
             </FormControl>
             <Button
               isLoading={isSubmitting}
-              color="white"
               size="lg"
               mt={4}
               isDisabled={!isValid}

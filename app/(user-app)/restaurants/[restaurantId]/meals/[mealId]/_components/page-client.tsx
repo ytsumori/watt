@@ -113,7 +113,7 @@ export default function MealPage({
                         >
                           <Th>
                             {selectedPaymentMethod === paymentMethod.id && (
-                              <CheckCircleIcon color="cyan.400" boxSize={5} />
+                              <CheckCircleIcon color="orange.400" boxSize={5} />
                             )}
                           </Th>
                           <Th>{paymentMethod.card?.brand}</Th>
@@ -151,7 +151,6 @@ export default function MealPage({
                 <Button
                   isLoading={isVisitRequesting}
                   onClick={handleVisitingClick}
-                  color="white"
                   w="full"
                   maxW="full"
                   isDisabled={selectedPaymentMethod === undefined}
@@ -167,12 +166,7 @@ export default function MealPage({
                   <AlertIcon />
                   以下からLINEでログインすることでお食事に進めます
                 </Alert>
-                <Button
-                  onClick={() => signIn()}
-                  color="white"
-                  w="full"
-                  maxW="full"
-                >
+                <Button onClick={() => signIn()} w="full" maxW="full">
                   ログインする
                 </Button>
               </>

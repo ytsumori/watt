@@ -29,9 +29,7 @@ export function RestaurantsPageClient({ restaurants }: Props) {
   return (
     <Box p={6}>
       <Link href="/admin/restaurants/new">
-        <Button size="md" color="white">
-          新規登録
-        </Button>
+        <Button size="md">新規登録</Button>
       </Link>
       <TableContainer>
         <Table>
@@ -69,7 +67,6 @@ export function RestaurantsPageClient({ restaurants }: Props) {
                     <IconButton
                       aria-label="登録用URLコピー"
                       icon={<CopyIcon />}
-                      color="white"
                       onClick={handleCopy}
                     />
                   </Td>

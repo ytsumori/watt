@@ -6,9 +6,12 @@ import {
   Box,
   Menu,
   MenuButton,
+  MenuDivider,
+  MenuGroup,
   MenuItem,
   MenuList,
   Text,
+  Link,
   useDisclosure,
 } from "@chakra-ui/react";
 import { signIn, signOut } from "next-auth/react";
@@ -16,6 +19,8 @@ import { Payment } from "@prisma/client";
 import { Session } from "next-auth";
 import { usePathname, useRouter } from "next/navigation";
 import { ConfirmModal } from "@/components/confirm-modal";
+import NextLink from "next/link";
+import Image from "next/image";
 
 type Props = {
   children: React.ReactNode;
@@ -82,16 +87,41 @@ export default function BaseLayout({
           zIndex={1}
         />
         <MenuList>
-          {user ? (
-            <>
-              <MenuItem onClick={() => console.error("TODO: Implement")}>
-                決済一覧
-              </MenuItem>
-              <MenuItem onClick={handleSignOutClick}>ログアウト</MenuItem>
-            </>
-          ) : (
-            <MenuItem onClick={() => signIn()}>ログイン</MenuItem>
-          )}
+          <Box mx={3} mb={4} mt={2}>
+            <Image src="/watt-logo.png" alt="Watt" width="50" height="50" />
+          </Box>
+          <MenuDivider />
+          <MenuGroup title="メニュー">
+            <MenuItem as={NextLink} href="/">
+              ホーム
+            </MenuItem>
+            {user ? (
+              <>
+                <MenuItem onClick={() => console.error("TODO: Implement")}>
+                  決済一覧
+                </MenuItem>
+                <MenuItem onClick={handleSignOutClick}>ログアウト</MenuItem>
+              </>
+            ) : (
+              <MenuItem onClick={() => signIn()}>ログイン</MenuItem>
+            )}
+          </MenuGroup>
+          <MenuDivider />
+          <MenuGroup title="Wattについて">
+            <MenuItem
+              as="a"
+              href="https://kiizan-kiizan.co.jp/"
+              target="_blank"
+            >
+              運営会社
+            </MenuItem>
+            <MenuItem as={NextLink} href="/terms">
+              利用規約
+            </MenuItem>
+            <MenuItem as={NextLink} href="/transaction-law">
+              特商法表記
+            </MenuItem>
+          </MenuGroup>
         </MenuList>
       </Menu>
       {children}

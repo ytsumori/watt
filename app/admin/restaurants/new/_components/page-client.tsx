@@ -81,11 +81,7 @@ export function NewRestaurantPageClient() {
               value={searchText ?? ""}
             />
           </FormControl>
-          <Button
-            textColor="white"
-            isDisabled={!searchText}
-            onClick={handleSearchClick}
-          >
+          <Button isDisabled={!searchText} onClick={handleSearchClick}>
             検索する
           </Button>
         </VStack>
@@ -109,10 +105,7 @@ export function NewRestaurantPageClient() {
                 />
               </CardBody>
               <CardFooter>
-                <Button
-                  textColor="white"
-                  onClick={() => setSelectedPlace(result)}
-                >
+                <Button onClick={() => setSelectedPlace(result)}>
                   この店を登録する
                 </Button>
               </CardFooter>
@@ -157,7 +150,7 @@ export function NewRestaurantPageClient() {
                   {submitResult ? (
                     <Popover isOpen={isCopiedOpen}>
                       <PopoverTrigger>
-                        <Button textColor="white" onClick={handleCopy} mr={3}>
+                        <Button onClick={handleCopy} mr={3}>
                           登録用URLをコピー
                         </Button>
                       </PopoverTrigger>
@@ -166,7 +159,7 @@ export function NewRestaurantPageClient() {
                       </PopoverContent>
                     </Popover>
                   ) : (
-                    <Button textColor="white" onClick={handleSubmit} mr={3}>
+                    <Button onClick={handleSubmit} mr={3}>
                       登録する
                     </Button>
                   )}

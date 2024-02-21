@@ -74,7 +74,6 @@ export function MealDetailModal({
             </ModalBody>
             <ModalFooter>
               <Button
-                color="white"
                 size="md"
                 isLoading={isCompleteLoading}
                 onClick={() => {

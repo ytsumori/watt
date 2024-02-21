@@ -46,13 +46,7 @@ export function ConfirmModal({
         {children && <ModalBody>{children}</ModalBody>}
         <ModalFooter>
           <VStack w="full">
-            <Button
-              size="md"
-              w="full"
-              maxW="full"
-              color="white"
-              {...confirmButton}
-            >
+            <Button size="md" w="full" maxW="full" {...confirmButton}>
               {confirmButton.label}
             </Button>
             {cancelButton && (

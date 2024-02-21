@@ -56,7 +56,6 @@ export default function Dashboard() {
           </Heading>
           <Button
             leftIcon={<EditIcon />}
-            color="white"
             onClick={() =>
               router.push("/restaurant-dashboard/bank-account/edit")
             }

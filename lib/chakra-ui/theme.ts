@@ -3,10 +3,15 @@ import {
   extendTheme,
   withDefaultColorScheme,
 } from "@chakra-ui/react";
+import { menuAnatomy } from "@chakra-ui/anatomy";
+import { createMultiStyleConfigHelpers } from "@chakra-ui/react";
+
+const { definePartsStyle, defineMultiStyleConfig } =
+  createMultiStyleConfigHelpers(menuAnatomy.keys);
 
 export const theme = extendTheme(
   withDefaultColorScheme({
-    colorScheme: "cyan",
+    colorScheme: "orange",
   }),
   {
     components: {
@@ -20,8 +25,15 @@ export const theme = extendTheme(
           size: "xl",
         },
         baseStyle: {
-          color: "cyan.500",
+          color: "orange.500",
         },
+      }),
+      Menu: defineMultiStyleConfig({
+        baseStyle: definePartsStyle({
+          groupTitle: {
+            mx: 3,
+          },
+        }),
       }),
     },
   }

@@ -164,9 +164,7 @@ export function MealPage() {
   return (
     <>
       <VStack width="full" alignItems="baseline" spacing={6}>
-        <Button onClick={onOpen} textColor="white">
-          推しメシを登録
-        </Button>
+        <Button onClick={onOpen}>推しメシを登録</Button>
         <Heading size="md">推しメシ(提供中)</Heading>
         {meals.map((meal) => (
           <Card key={meal.id} variant="outline">
@@ -208,7 +206,7 @@ export function MealPage() {
               <CardFooter>
                 <Button
                   variant="ghost"
-                  colorScheme="cyan"
+                  colorScheme="orange"
                   onClick={() => handleClickReopen(meal.id)}
                 >
                   提供再開
@@ -269,11 +267,7 @@ export function MealPage() {
             <Button mr={3} onClick={onClose} variant="outline">
               キャンセル
             </Button>
-            <Button
-              onClick={handleClickSubmit}
-              isDisabled={isSubmitDisabled}
-              textColor="white"
-            >
+            <Button onClick={handleClickSubmit} isDisabled={isSubmitDisabled}>
               保存
             </Button>
           </ModalFooter>

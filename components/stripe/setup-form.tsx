@@ -150,7 +150,6 @@ export default function SetupForm() {
       <Button
         type="submit"
         size="md"
-        color="white"
         disabled={isSubmitting || !stripe || !elements}
         mt={4}
         isLoading={isSubmitting}
@@ -168,9 +167,7 @@ export default function SetupForm() {
         <ModalContent>
           <ModalHeader>支払い方法の登録が完了しました</ModalHeader>
           <ModalBody textAlign="center">
-            <Button color="white" onClick={() => router.push("/")}>
-              トップページに戻る
-            </Button>
+            <Button onClick={() => router.push("/")}>トップページに戻る</Button>
           </ModalBody>
           <ModalFooter />
         </ModalContent>
