@@ -193,9 +193,18 @@ model RestaurantBankAccount {
 model ConversionTrackingTag {
   id        String   @id @default(cuid())
   title     String
-  tag       String   @unique @default(uuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
+
+  conversionEvents ConversionEvent[]
+}
+
+model ConversionEvent {
+  id                      String   @id @default(cuid())
+  conversionTrackingTagId String
+  createdAt               DateTime @default(now())
+
+  tag ConversionTrackingTag @relation(fields: [conversionTrackingTagId], references: [id], onDelete: Cascade)
 }
 
 enum DayOfWeek {

@@ -46,7 +46,7 @@ export function ConversionsPage({ conversionTags }: Props) {
           </Thead>
           <Tbody>
             {conversionTags.map((tag) => {
-              const registrationUrl = `${process.env.NEXT_PUBLIC_HOST_URL}?ctt=${tag.tag}`;
+              const registrationUrl = `${process.env.NEXT_PUBLIC_HOST_URL}?ctt=${tag.id}`;
               const handleCopy = () => {
                 navigator.clipboard.writeText(registrationUrl);
                 toast({
@@ -58,7 +58,7 @@ export function ConversionsPage({ conversionTags }: Props) {
               return (
                 <Tr key={tag.id}>
                   <Td>{tag.title}</Td>
-                  <Td>{tag.tag}</Td>
+                  <Td>{tag.id}</Td>
                   <Td>
                     <Input
                       value={registrationUrl}

@@ -22,7 +22,7 @@ export function NewConversionPage() {
     if (!title) return;
     setIsCreating(true);
     createConversionTrackingTag(title).then((result) => {
-      const registrationUrl = `${process.env.NEXT_PUBLIC_HOST_URL}?ctt=${result.tag}`;
+      const registrationUrl = `${process.env.NEXT_PUBLIC_HOST_URL}?ctt=${result.id}`;
       navigator.clipboard.writeText(registrationUrl);
       toast({
         title: "コピーしました",
