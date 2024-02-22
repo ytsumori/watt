@@ -1,3 +1,4 @@
+import { GoogleAnalytics } from "@next/third-parties/google";
 import { ChakraProviders } from "./_components/providers";
 import "./global.css";
 
@@ -19,6 +20,9 @@ export default function RootLayout({
       <body style={{ overscrollBehavior: "none" }}>
         <ChakraProviders>{children}</ChakraProviders>
       </body>
+      {process.env.GOOGLE_ANALYTICS_MEASUREMENT_ID && (
+        <GoogleAnalytics gaId={process.env.GOOGLE_ANALYTICS_MEASUREMENT_ID} />
+      )}
     </html>
   );
 }

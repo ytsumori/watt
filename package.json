@@ -16,23 +16,24 @@
     "@chakra-ui/react": "^2.8.2",
     "@emotion/react": "^11.11.3",
     "@emotion/styled": "^11.11.0",
-    "@fullcalendar/core": "^6.1.10",
-    "@fullcalendar/interaction": "^6.1.10",
-    "@fullcalendar/react": "^6.1.10",
-    "@fullcalendar/timegrid": "^6.1.10",
+    "@fullcalendar/core": "^6.1.11",
+    "@fullcalendar/interaction": "^6.1.11",
+    "@fullcalendar/react": "^6.1.11",
+    "@fullcalendar/timegrid": "^6.1.11",
     "@googlemaps/react-wrapper": "^1.1.35",
     "@line/bot-sdk": "^8.4.0",
     "@line/liff": "^2.23.2",
     "@next-auth/prisma-adapter": "^1.0.7",
+    "@next/third-parties": "^14.1.0",
     "@paypayopa/paypayopa-sdk-node": "^2.1.0",
     "@stripe/react-stripe-js": "^2.5.0",
     "@stripe/stripe-js": "^2.4.0",
-    "@supabase/supabase-js": "^2.39.6",
+    "@supabase/supabase-js": "^2.39.7",
     "@types/ms": "^0.7.34",
     "@types/node": "20.11.13",
     "@types/react": "18.2.48",
     "@types/react-dom": "18.2.18",
-    "dotenv": "^16.4.4",
+    "dotenv": "^16.4.5",
     "eslint": "8.56.0",
     "eslint-config-next": "14.1.0",
     "firebase": "^10.8.0",
@@ -50,9 +51,9 @@
     "typescript": "5.3.3"
   },
   "devDependencies": {
-    "@prisma/client": "^5.9.1",
+    "@prisma/client": "^5.10.2",
     "@types/google.maps": "^3.55.3",
-    "prisma": "^5.9.1"
+    "prisma": "^5.10.2"
   },
-  "packageManager": "pnpm@8.15.1"
+  "packageManager": "pnpm@8.15.3"
 }
