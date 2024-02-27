@@ -110,42 +110,20 @@ model Meal {
 }
 
 model Order {
-  id        String   @id @default(cuid())
-  userId    String
-  mealId    String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
-
-  payments Payment[]
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  meal Meal @relation(fields: [mealId], references: [id], onDelete: Cascade)
-}
-
-model Payment {
   id                String          @id @default(cuid())
-  orderId           String
+  userId            String
+  mealId            String
   paymentProvider   PaymentProvider
   providerPaymentId String
-  status            PaymentStatus   @default(PREAUTHORIZED)
-  amount            Int
+  status            OrderStatus     @default(PREAUTHORIZED)
+  price             Int
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @default(now()) @updatedAt
 
-  paymentCapture PaypayPaymentCapture?
-
-  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  meal Meal @relation(fields: [mealId], references: [id], onDelete: Cascade)
 
   @@unique([paymentProvider, providerPaymentId])
-}
-
-model PaypayPaymentCapture {
-  id        String   @id @default(cuid())
-  paymentId String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
-
-  payment Payment @relation(fields: [paymentId], references: [id], onDelete: Cascade)
 }
 
 model RestaurantOpenHour {
@@ -211,8 +189,8 @@ enum PaymentProvider {
   PAYPAY
 }
 
-enum PaymentStatus {
+enum OrderStatus {
   PREAUTHORIZED
   COMPLETE
-  CANCELED
+  CANCELLED
 }
