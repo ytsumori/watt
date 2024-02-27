@@ -1,4 +1,4 @@
-import { findPreauthorizedPayment } from "@/actions/payment";
+import { findPreauthorizedOrder } from "@/actions/order";
 import BaseLayout from "@/app/(user-app)/_components/layout-client";
 import { options } from "@/lib/next-auth/options";
 import { getServerSession } from "next-auth";
@@ -10,10 +10,10 @@ export default async function App({ children }: { children: React.ReactNode }) {
   }
 
   const user = session.user;
-  const preauthorizedPayment = await findPreauthorizedPayment(user.id);
+  const preauthorizedOrder = await findPreauthorizedOrder(user.id);
   return (
     <BaseLayout
-      preauthorizedPayment={preauthorizedPayment ?? undefined}
+      preauthorizedOrder={preauthorizedOrder ?? undefined}
       user={user}
     >
       {children}

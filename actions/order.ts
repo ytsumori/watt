@@ -1,8 +1,24 @@
 "use server";
 
-import { PaymentProvider } from "@prisma/client";
+import { OrderStatus, PaymentProvider, Prisma } from "@prisma/client";
 import prisma from "@/lib/prisma/client";
-import { findPreauthorizedPayment } from "./payment";
+
+export async function findOrder(args: Prisma.OrderFindUniqueArgs) {
+  return await prisma.order.findUnique(args);
+}
+
+export async function findPreauthorizedOrder(userId: string) {
+  return await prisma.order.findFirst({
+    where: {
+      userId,
+      status: "PREAUTHORIZED",
+    },
+  });
+}
+
+export async function getOrders(args: Prisma.OrderFindManyArgs) {
+  return await prisma.order.findMany(args);
+}
 
 export async function createOrder({
   mealId,
@@ -24,7 +40,7 @@ export async function createOrder({
   } else if (meal.isDiscarded) {
     throw new Error("Meal is discarded");
   }
-  const existingPayment = await findPreauthorizedPayment(userId);
+  const existingPayment = await findPreauthorizedOrder(userId);
   if (existingPayment) {
     throw new Error("Active payment already exists");
   }
@@ -33,13 +49,22 @@ export async function createOrder({
     data: {
       userId,
       mealId: meal.id,
-      payments: {
-        create: {
-          paymentProvider,
-          providerPaymentId,
-          amount: meal.price,
-        },
-      },
+      paymentProvider,
+      providerPaymentId,
+      price: meal.price,
     },
+  });
+}
+
+export async function updateOrderStatus({
+  id,
+  status,
+}: {
+  id: string;
+  status: OrderStatus;
+}) {
+  return await prisma.order.update({
+    where: { id },
+    data: { status },
   });
 }

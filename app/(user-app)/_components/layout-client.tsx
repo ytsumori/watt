@@ -11,11 +11,10 @@ import {
   MenuItem,
   MenuList,
   Text,
-  Link,
   useDisclosure,
 } from "@chakra-ui/react";
 import { signIn, signOut } from "next-auth/react";
-import { Payment } from "@prisma/client";
+import { Order } from "@prisma/client";
 import { Session } from "next-auth";
 import { usePathname, useRouter } from "next/navigation";
 import { ConfirmModal } from "@/components/confirm-modal";
@@ -24,29 +23,29 @@ import Image from "next/image";
 
 type Props = {
   children: React.ReactNode;
-  preauthorizedPayment?: Payment;
+  preauthorizedOrder?: Order;
   user?: Session["user"];
 };
 
 export default function BaseLayout({
   children,
-  preauthorizedPayment,
+  preauthorizedOrder,
   user,
 }: Props) {
   const router = useRouter();
   const pathname = usePathname();
   const {
-    isOpen: isPaymentModalOpen,
-    onOpen: onPaymentModalOpen,
-    onClose: onPaymentModalClose,
+    isOpen: isOrderModalOpen,
+    onOpen: onOrderModalOpen,
+    onClose: onOrderModalClose,
   } = useDisclosure({
-    defaultIsOpen: !!preauthorizedPayment && !pathname.startsWith("/payments"),
+    defaultIsOpen: !!preauthorizedOrder && !pathname.startsWith("/orders"),
   });
   useEffect(() => {
-    if (!!preauthorizedPayment && !pathname.startsWith("/payments")) {
-      onPaymentModalOpen();
+    if (!!preauthorizedOrder && !pathname.startsWith("/orders")) {
+      onOrderModalOpen();
     }
-  }, [pathname, preauthorizedPayment, onPaymentModalOpen]);
+  }, [pathname, preauthorizedOrder, onOrderModalOpen]);
 
   const handleSignOutClick = () => {
     if (confirm("ログアウトしますか？")) {
@@ -57,14 +56,14 @@ export default function BaseLayout({
   return (
     <Box h="100vh" w="100vw">
       <ConfirmModal
-        isOpen={isPaymentModalOpen}
-        onClose={onPaymentModalClose}
+        isOpen={isOrderModalOpen}
+        onClose={onOrderModalClose}
         title="選択中の推しメシがあります"
         confirmButton={{
           label: "支払いページに移動する",
           onClick: () => {
-            router.push(`/payments/${preauthorizedPayment?.id}`);
-            onPaymentModalClose();
+            router.push(`/orders/${preauthorizedOrder?.id}`);
+            onOrderModalClose();
           },
         }}
       >

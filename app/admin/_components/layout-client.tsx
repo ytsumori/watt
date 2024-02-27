@@ -10,7 +10,7 @@ import {
   MenuList,
 } from "@chakra-ui/react";
 import Link from "next/link";
-import { FaShop, FaMoneyCheck, FaChartLine } from "react-icons/fa6";
+import { FaShop, FaMoneyCheck } from "react-icons/fa6";
 
 export function AdminDashboardLayout({
   children,
@@ -33,7 +33,7 @@ export function AdminDashboardLayout({
           <MenuItem icon={<FaShop />} as={Link} href={"/admin/restaurants"}>
             レストラン一覧
           </MenuItem>
-          <MenuItem icon={<FaMoneyCheck />} as={Link} href={"/admin/payments"}>
+          <MenuItem icon={<FaMoneyCheck />} as={Link} href={"/admin/orders"}>
             決済一覧
           </MenuItem>
         </MenuList>

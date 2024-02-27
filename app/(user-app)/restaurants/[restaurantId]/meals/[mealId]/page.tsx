@@ -4,8 +4,8 @@ import prisma from "@/lib/prisma/client";
 import { options } from "@/lib/next-auth/options";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
-import { findPreauthorizedPayment } from "@/actions/payment";
 import MealPage from "./_components/page-client";
+import { findPreauthorizedOrder } from "@/actions/order";
 
 type Params = {
   restaurantId: string;
@@ -28,7 +28,7 @@ export default async function Meal({ params }: { params: Params }) {
   if (session) {
     // logged in
     const userId = session.user.id;
-    const payment = await findPreauthorizedPayment(userId);
+    const order = await findPreauthorizedOrder(userId);
 
     const stripeCustomer = await getStripeCustomer({ userId });
     const paymentMethods = stripeCustomer
@@ -41,7 +41,7 @@ export default async function Meal({ params }: { params: Params }) {
       <MealPage
         paymentMethods={paymentMethods?.data ?? []}
         meal={meal}
-        preauthorizedPayment={payment ?? undefined}
+        preauthorizedOrder={order ?? undefined}
         userId={userId}
         isRestaurantActive={restaurant.isOpen}
       />

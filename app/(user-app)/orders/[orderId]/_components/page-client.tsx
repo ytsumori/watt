@@ -32,14 +32,12 @@ import { ConfirmModal } from "../../../../../components/confirm-modal";
 import { PaymentConfirmModal } from "./payment-confirm-modal";
 
 type Props = {
-  payment: Prisma.PaymentGetPayload<{
-    include: {
-      order: { include: { meal: { include: { restaurant: true } } } };
-    };
+  order: Prisma.OrderGetPayload<{
+    include: { meal: { include: { restaurant: true } } };
   }>;
 };
 
-export function PaymentPage({ payment }: Props) {
+export function OrderPage({ order }: Props) {
   const router = useRouter();
   const {
     isOpen: isConfirmModalOpen,
@@ -56,7 +54,7 @@ export function PaymentPage({ payment }: Props) {
 
   const handlePaymentConfirm = () => {
     setIsPaying(true);
-    capturePaymentIntent(payment.id).then((paymentStatus) => {
+    capturePaymentIntent(order.id).then((paymentStatus) => {
       if (paymentStatus === "succeeded") {
         router.refresh();
       } else {
@@ -67,7 +65,7 @@ export function PaymentPage({ payment }: Props) {
 
   const handlePaymentCancel = () => {
     setIsCancelling(true);
-    cancelPaymentIntent(payment.id).then((paymentStatus) => {
+    cancelPaymentIntent(order.id).then((paymentStatus) => {
       if (paymentStatus === "canceled") {
         router.push("/");
         router.refresh();
@@ -77,7 +75,7 @@ export function PaymentPage({ payment }: Props) {
     });
   };
 
-  switch (payment.status) {
+  switch (order.status) {
     case "PREAUTHORIZED":
       return (
         <>
@@ -123,9 +121,7 @@ export function PaymentPage({ payment }: Props) {
               <Heading>注文情報</Heading>
               <VStack alignItems="start">
                 <Heading size="md">店舗</Heading>
-                <Heading size="sm">
-                  {payment.order.meal.restaurant.name}
-                </Heading>
+                <Heading size="sm">{order.meal.restaurant.name}</Heading>
                 <Box h="15vh" w="full">
                   <iframe
                     width="100%"
@@ -133,18 +129,18 @@ export function PaymentPage({ payment }: Props) {
                     style={{ border: 0 }}
                     loading="lazy"
                     referrerPolicy="no-referrer-when-downgrade"
-                    src={`https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY}&q=place_id:${payment.order.meal.restaurant.googleMapPlaceId}`}
+                    src={`https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY}&q=place_id:${order.meal.restaurant.googleMapPlaceId}`}
                   />
                 </Box>
               </VStack>
               <Divider borderColor="black" />
               <VStack alignItems="start">
                 <Heading size="md">注文商品</Heading>
-                <Heading size="sm">{payment.order.meal.title}</Heading>
+                <Heading size="sm">{order.meal.title}</Heading>
                 <Image
                   w="50vw"
-                  src={payment.order.meal.imageUrl}
-                  alt={`meal-${payment.order.meal.id}`}
+                  src={order.meal.imageUrl}
+                  alt={`meal-${order.meal.id}`}
                   objectFit="cover"
                   aspectRatio={1 / 1}
                 />
@@ -153,15 +149,13 @@ export function PaymentPage({ payment }: Props) {
               <VStack alignItems="start" w="full">
                 <Heading size="md">金額</Heading>
                 <Flex w="full">
-                  <Text>{payment.order.meal.title}</Text>
+                  <Text>{order.meal.title}</Text>
                   <Spacer />
-                  <Text>
-                    ¥{payment.order.meal.price.toLocaleString("ja-JP")}
-                  </Text>
+                  <Text>¥{order.meal.price.toLocaleString("ja-JP")}</Text>
                 </Flex>
                 <Divider />
                 <Heading size="sm" alignSelf="self-end">
-                  合計 ¥{payment.order.meal.price.toLocaleString("ja-JP")}
+                  合計 ¥{order.meal.price.toLocaleString("ja-JP")}
                 </Heading>
               </VStack>
             </VStack>
@@ -216,6 +210,54 @@ export function PaymentPage({ payment }: Props) {
           </Modal>
         </>
       );
+    case "CANCELED":
+      return (
+        <VStack alignItems="start" p={4} spacing={4}>
+          <Heading>キャンセル済み</Heading>
+          <Alert
+            status="error"
+            flexDirection="column"
+            alignItems="center"
+            justifyContent="center"
+            textAlign="center"
+            borderRadius={4}
+          >
+            <AlertIcon />
+            <AlertTitle>こちらの注文はすでにキャンセルされています</AlertTitle>
+          </Alert>
+          <Heading>注文情報</Heading>
+          <VStack alignItems="start">
+            <Heading size="md">店舗</Heading>
+            <Heading size="sm">{order.meal.restaurant.name}</Heading>
+          </VStack>
+          <VStack alignItems="start">
+            <Heading size="md">注文商品</Heading>
+            <Image
+              w="50vw"
+              src={order.meal.imageUrl}
+              alt={`meal-${order.meal.id}`}
+              objectFit="cover"
+              aspectRatio={1 / 1}
+            />
+          </VStack>
+          <VStack alignItems="start">
+            <Heading size="md">金額</Heading>
+            <Heading size="sm">
+              {order.meal.price.toLocaleString("ja-JP")}円
+            </Heading>
+          </VStack>
+          <Button
+            variant="outline"
+            size="md"
+            colorScheme="gray"
+            w="full"
+            maxW="full"
+            onClick={() => router.push("/")}
+          >
+            ホーム画面に戻る
+          </Button>
+        </VStack>
+      );
     case "COMPLETE":
       return (
         <VStack alignItems="start" p={4} spacing={4}>
@@ -239,14 +281,14 @@ export function PaymentPage({ payment }: Props) {
           <Heading>注文情報</Heading>
           <VStack alignItems="start">
             <Heading size="md">店舗</Heading>
-            <Heading size="sm">{payment.order.meal.restaurant.name}</Heading>
+            <Heading size="sm">{order.meal.restaurant.name}</Heading>
           </VStack>
           <VStack alignItems="start">
             <Heading size="md">注文商品</Heading>
             <Image
               w="50vw"
-              src={payment.order.meal.imageUrl}
-              alt={`meal-${payment.order.meal.id}`}
+              src={order.meal.imageUrl}
+              alt={`meal-${order.meal.id}`}
               objectFit="cover"
               aspectRatio={1 / 1}
             />
@@ -254,7 +296,7 @@ export function PaymentPage({ payment }: Props) {
           <VStack alignItems="start">
             <Heading size="md">金額</Heading>
             <Heading size="sm">
-              {payment.order.meal.price.toLocaleString("ja-JP")}円
+              {order.meal.price.toLocaleString("ja-JP")}円
             </Heading>
           </VStack>
           <Button

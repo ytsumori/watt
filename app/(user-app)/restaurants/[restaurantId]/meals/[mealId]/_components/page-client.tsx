@@ -20,19 +20,19 @@ import {
 } from "@chakra-ui/react";
 import { useState } from "react";
 import Stripe from "stripe";
-import { Meal, Payment } from "@prisma/client";
+import { Meal, Order } from "@prisma/client";
 import { createPaymentIntent } from "@/actions/payment-intent";
-import { findPreauthorizedPayment } from "@/actions/payment";
 import { signIn } from "next-auth/react";
 import { CheckCircleIcon } from "@chakra-ui/icons";
 import { useRouter } from "next/navigation";
 import { notifyStaff } from "../_actions/notify-staff";
+import { findPreauthorizedOrder } from "@/actions/order";
 
 type Props = {
   meal: Meal;
   paymentMethods: Stripe.PaymentMethod[];
   isRestaurantActive: boolean;
-  preauthorizedPayment?: Payment;
+  preauthorizedOrder?: Order;
   userId?: string;
 };
 
@@ -40,7 +40,7 @@ export default function MealPage({
   meal,
   paymentMethods,
   isRestaurantActive,
-  preauthorizedPayment,
+  preauthorizedOrder,
   userId,
 }: Props) {
   const router = useRouter();
@@ -61,9 +61,9 @@ export default function MealPage({
     }).then((status) => {
       if (status === "requires_capture") {
         notifyStaff({ restaurantId: meal.restaurantId, mealId: meal.id });
-        findPreauthorizedPayment(userId).then((payment) => {
-          if (payment) {
-            router.push(`/payments/${payment.id}`);
+        findPreauthorizedOrder(userId).then((order) => {
+          if (order) {
+            router.push(`/orders/${order.id}`);
           }
         });
       } else {
@@ -76,10 +76,10 @@ export default function MealPage({
   return (
     <VStack alignItems="baseline" spacing={4} w="full">
       {isRestaurantActive ? (
-        preauthorizedPayment ? (
+        preauthorizedOrder ? (
           <Alert
             status="warning"
-            onClick={() => router.push(`/payments/${preauthorizedPayment.id}`)}
+            onClick={() => router.push(`/orders/${preauthorizedOrder.id}`)}
           >
             <AlertIcon />
             既に選択済みの推しメシがあります

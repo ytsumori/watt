@@ -2,8 +2,7 @@
 
 import { useContext, useEffect, useState } from "react";
 import { RestaurantIdContext } from "./restaurant-id-provider";
-import { getPaymentsByRestaurantId } from "@/actions/payment";
-import { Payment } from "@prisma/client";
+import { Order } from "@prisma/client";
 import {
   Menu,
   MenuButton,
@@ -16,15 +15,18 @@ import {
   Thead,
   Tr,
 } from "@chakra-ui/react";
+import { getOrders } from "@/actions/order";
 
 export function PaymentsPage() {
   const restaurantId = useContext(RestaurantIdContext);
-  const [payments, setPayments] = useState<Payment[]>([]);
+  const [orders, setOrders] = useState<Order[]>([]);
 
   useEffect(() => {
-    getPaymentsByRestaurantId(restaurantId).then((result) => {
-      setPayments(result);
-    });
+    getOrders({ where: { meal: { restaurantId: restaurantId } } }).then(
+      (result) => {
+        setOrders(result);
+      }
+    );
   }, [restaurantId]);
   return (
     <TableContainer>
@@ -37,10 +39,10 @@ export function PaymentsPage() {
           </Tr>
         </Thead>
         <Tbody>
-          {payments.map((payment) => (
-            <Tr key={payment.id}>
-              <Th>{payment.createdAt.toLocaleString("ja-JP")}</Th>
-              <Th>{payment.amount.toLocaleString("ja-JP")}円</Th>
+          {orders.map((order) => (
+            <Tr key={order.id}>
+              <Th>{order.createdAt.toLocaleString("ja-JP")}</Th>
+              <Th>{order.price.toLocaleString("ja-JP")}円</Th>
               <Th>
                 <Menu>
                   <MenuButton>操作</MenuButton>

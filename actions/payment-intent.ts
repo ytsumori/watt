@@ -3,8 +3,7 @@
 import { getMyId } from "@/actions/me";
 import stripe from "@/lib/stripe";
 import prisma from "@/lib/prisma/client";
-import { createOrder } from "./order";
-import { findPayment, updatePaymentStatus } from "./payment";
+import { createOrder, findOrder, updateOrderStatus } from "./order";
 
 export async function createPaymentIntent({
   mealId,
@@ -67,42 +66,42 @@ export async function createPaymentIntent({
   return paymentIntent.status;
 }
 
-export async function capturePaymentIntent(paymentId: string) {
-  const payment = await findPayment(paymentId);
-  if (!payment) {
-    throw new Error("Payment not found");
+export async function capturePaymentIntent(orderId: string) {
+  const order = await findOrder({ where: { id: orderId } });
+  if (!order) {
+    throw new Error("Order not found");
   }
-  if (payment.paymentProvider !== "STRIPE") {
+  if (order.paymentProvider !== "STRIPE") {
     throw new Error("Invalid payment provider");
   }
 
   const paymentIntent = await stripe.paymentIntents.capture(
-    payment.providerPaymentId
+    order.providerPaymentId
   );
   if (paymentIntent.status === "succeeded") {
-    await updatePaymentStatus({
-      id: paymentId,
+    await updateOrderStatus({
+      id: orderId,
       status: "COMPLETE",
     });
   }
   return paymentIntent.status;
 }
 
-export async function cancelPaymentIntent(paymentId: string) {
-  const payment = await findPayment(paymentId);
-  if (!payment) {
-    throw new Error("Payment not found");
+export async function cancelPaymentIntent(orderId: string) {
+  const order = await findOrder({ where: { id: orderId } });
+  if (!order) {
+    throw new Error("Order not found");
   }
-  if (payment.paymentProvider !== "STRIPE") {
+  if (order.paymentProvider !== "STRIPE") {
     throw new Error("Invalid payment provider");
   }
 
   const paymentIntent = await stripe.paymentIntents.cancel(
-    payment.providerPaymentId
+    order.providerPaymentId
   );
   if (paymentIntent.status === "canceled") {
-    await updatePaymentStatus({
-      id: paymentId,
+    await updateOrderStatus({
+      id: orderId,
       status: "CANCELED",
     });
   }
