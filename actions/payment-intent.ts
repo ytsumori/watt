@@ -102,7 +102,7 @@ export async function cancelPaymentIntent(orderId: string) {
   if (paymentIntent.status === "canceled") {
     await updateOrderStatus({
       id: orderId,
-      status: "CANCELED",
+      status: "CANCELLED",
     });
   }
   return paymentIntent.status;

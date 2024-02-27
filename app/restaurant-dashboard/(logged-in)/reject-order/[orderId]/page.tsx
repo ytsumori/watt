@@ -74,7 +74,7 @@ export default function RejectOrder({
     });
   };
 
-  if (order.status === "CANCELED") {
+  if (order.status === "CANCELLED") {
     return (
       <Alert status="error">こちらの注文はすでにキャンセルされています</Alert>
     );

@@ -210,7 +210,7 @@ export function OrderPage({ order }: Props) {
           </Modal>
         </>
       );
-    case "CANCELED":
+    case "CANCELLED":
       return (
         <VStack alignItems="start" p={4} spacing={4}>
           <Heading>キャンセル済み</Heading>
