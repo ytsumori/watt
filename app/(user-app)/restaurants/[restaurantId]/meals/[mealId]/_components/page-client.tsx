@@ -60,9 +60,9 @@ export default function MealPage({
       paymentMethodId: selectedPaymentMethod,
     }).then((status) => {
       if (status === "requires_capture") {
-        notifyStaff({ restaurantId: meal.restaurantId, mealId: meal.id });
         findPreauthorizedOrder(userId).then((order) => {
           if (order) {
+            notifyStaff({ restaurantId: meal.restaurantId, orderId: order.id });
             router.push(`/orders/${order.id}`);
           }
         });
