@@ -10,6 +10,7 @@ import {
   Flex,
   Spacer,
   Badge,
+  Center,
 } from "@chakra-ui/react";
 import { InView } from "react-intersection-observer";
 import { useRouter } from "next/navigation";
@@ -55,14 +56,17 @@ export default function HomePage({
         <Box
           maxHeight="70%"
           overflowY="auto"
-          py={4}
+          pb={4}
           className="hidden-scrollbar"
+          backgroundColor="blackAlpha.100"
         >
           {restaurants.map((restaurant, index) => (
             <Box
               key={restaurant.id}
               id={restaurant.id}
-              onClick={() => router.push(`/restaurants/${restaurant.id}`)}
+              backgroundColor={restaurant.isOpen ? "white" : "transparent"}
+              my={3}
+              py={3}
             >
               <InView
                 threshold={0.8}
@@ -71,7 +75,6 @@ export default function HomePage({
                     setSelectedRestaurantId(restaurant.id);
                   }
                 }}
-                style={{ marginBottom: "12px", marginTop: "12px" }}
               >
                 <Flex mx={4} alignItems="center">
                   <Heading size="md">{restaurant.name}</Heading>
@@ -95,8 +98,7 @@ export default function HomePage({
                       key={meal.id}
                       borderRadius={8}
                       position="relative"
-                      onClick={(e) => {
-                        e.stopPropagation();
+                      onClick={() => {
                         setSelectedMealId(meal.id);
                       }}
                     >
@@ -104,6 +106,19 @@ export default function HomePage({
                         src={meal.imageUrl}
                         alt={`meal-${meal.id}`}
                       />
+                      <Box
+                        position="absolute"
+                        top={0}
+                        left={0}
+                        m={2}
+                        borderRadius={4}
+                        backgroundColor="blackAlpha.700"
+                        px={2}
+                      >
+                        <Text color="white" noOfLines={1}>
+                          {meal.title}
+                        </Text>
+                      </Box>
                       <Box
                         position="absolute"
                         bottom={0}
@@ -119,10 +134,25 @@ export default function HomePage({
                       </Box>
                     </Box>
                   ))}
+                  {restaurant.isOpen && (
+                    <Center
+                      maxW="200px"
+                      minW="200px"
+                      h="200px"
+                      borderRadius={8}
+                      borderWidth={2}
+                      borderColor="orange.400"
+                      onClick={() => {
+                        router.push(`/restaurants/${restaurant.id}`);
+                      }}
+                    >
+                      <Text color="orange.400">お店の詳細を見る</Text>
+                    </Center>
+                  )}
                 </HStack>
               </InView>
               {index !== restaurants.length - 1 && (
-                <Box w="full" h="8px" backgroundColor="blackAlpha.100" />
+                <Box w="full" h="0" backgroundColor="blackAlpha.100" />
               )}
             </Box>
           ))}

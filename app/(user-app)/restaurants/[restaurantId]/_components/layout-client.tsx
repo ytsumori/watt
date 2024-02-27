@@ -1,6 +1,7 @@
 "use client";
 
 import { MealDetailModal } from "@/app/(user-app)/_components/meal-detail-modal";
+import { MealPreviewImage } from "@/components/meal-preview-image";
 import { ArrowBackIcon, CheckIcon } from "@chakra-ui/icons";
 import {
   Box,
@@ -8,7 +9,6 @@ import {
   Heading,
   IconButton,
   VStack,
-  Image,
   Text,
   Alert,
   AlertIcon,
@@ -84,13 +84,20 @@ export function RestaurantLayout({ restaurant, children }: Props) {
                   borderColor: "orange.400",
                 })}
               >
-                <Image
-                  src={meal.imageUrl}
-                  alt={`meal-${meal.id}`}
-                  objectFit="cover"
-                  aspectRatio={1 / 1}
-                  borderRadius={8}
-                />
+                <MealPreviewImage src={meal.imageUrl} alt={`meal-${meal.id}`} />
+                <Box
+                  position="absolute"
+                  top={0}
+                  left={0}
+                  m={2}
+                  borderRadius={4}
+                  backgroundColor="blackAlpha.700"
+                  px={2}
+                >
+                  <Text color="white" noOfLines={1}>
+                    {meal.title}
+                  </Text>
+                </Box>
                 <Box
                   position="absolute"
                   bottom={0}
