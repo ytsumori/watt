@@ -36,13 +36,6 @@ export function AdminDashboardLayout({
           <MenuItem icon={<FaMoneyCheck />} as={Link} href={"/admin/payments"}>
             決済一覧
           </MenuItem>
-          <MenuItem
-            icon={<FaChartLine />}
-            as={Link}
-            href={"/admin/conversions"}
-          >
-            コンバージョン一覧
-          </MenuItem>
         </MenuList>
       </Menu>
       {children}
