@@ -3,7 +3,7 @@ import { ChakraProviders } from "./_components/providers";
 import "./global.css";
 
 export const metadata = {
-  metadataBase: new URL("https://https://senbero.vercel.app"),
+  metadataBase: new URL("https://watt-kiizan-kiizan.vercel.app/"),
   title: "Watt",
   description: "一人飲みできるお店を今すぐ探せる！",
 };
