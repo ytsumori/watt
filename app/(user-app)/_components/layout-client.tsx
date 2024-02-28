@@ -96,8 +96,8 @@ export default function BaseLayout({
             </MenuItem>
             {user ? (
               <>
-                <MenuItem onClick={() => console.error("TODO: Implement")}>
-                  決済一覧
+                <MenuItem as={NextLink} href="/orders">
+                  注文履歴
                 </MenuItem>
                 <MenuItem onClick={handleSignOutClick}>ログアウト</MenuItem>
               </>

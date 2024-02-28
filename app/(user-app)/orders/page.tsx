@@ -1,0 +1,23 @@
+import { getServerSession } from "next-auth/next";
+import { redirect } from "next/navigation";
+import prisma from "@/lib/prisma/client";
+import { options } from "@/lib/next-auth/options";
+import { OrdersPage } from "./_components/page-client";
+
+export default async function Orders() {
+  const session = await getServerSession(options);
+  if (!session || !session.user) {
+    redirect("/");
+  }
+  const user = session.user;
+
+  const orders = await prisma.order.findMany({
+    where: { userId: user.id },
+    include: {
+      meal: { include: { restaurant: true } },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+
+  return <OrdersPage orders={orders}></OrdersPage>;
+}
