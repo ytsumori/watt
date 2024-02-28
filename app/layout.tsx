@@ -5,7 +5,7 @@ import "./global.css";
 export const metadata = {
   metadataBase: new URL("https://https://senbero.vercel.app"),
   title: "Watt",
-  description: "My very first watt app",
+  description: "一人飲みできるお店を今すぐ探せる！",
 };
 
 export const revalidate = 0;
