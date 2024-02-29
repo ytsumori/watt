@@ -131,7 +131,7 @@ export default function MealPage({
                   variant="outline"
                   onClick={() =>
                     router.push(
-                      `/payment-method/new?restaurant_id=${meal.restaurantId}`
+                      `/payment-method/new?restaurant_id=${meal.restaurantId}&meal_id=${meal.id}`
                     )
                   }
                 >

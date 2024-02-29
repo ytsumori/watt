@@ -28,6 +28,7 @@ export default function SetupForm() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const restaurantId = searchParams.get("restaurant_id");
+  const mealId = searchParams.get("meal_id");
 
   const [message, setMessage] = useState<string>();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -112,7 +113,7 @@ export default function SetupForm() {
 
       const authorizationUrl = await getAuthorizationUrl({
         userId: userId,
-        redirectUrl: `${process.env.NEXT_PUBLIC_HOST_URL}${pathname}?restaurant_id=${restaurantId}`,
+        redirectUrl: `${process.env.NEXT_PUBLIC_HOST_URL}${pathname}?restaurant_id=${restaurantId}&meal_id=${mealId}`,
       });
       router.push(authorizationUrl);
     }
@@ -122,7 +123,7 @@ export default function SetupForm() {
       confirmParams: {
         return_url:
           `${process.env.NEXT_PUBLIC_HOST_URL}${pathname}` +
-          `?restaurant_id=${restaurantId}`,
+          `?restaurant_id=${restaurantId}&meal_id=${mealId}`,
       },
     });
 
@@ -163,7 +164,11 @@ export default function SetupForm() {
         <ModalContent>
           <ModalHeader>支払い方法の登録が完了しました</ModalHeader>
           <ModalBody textAlign="center">
-            <Button onClick={() => router.push(`/restaurants/${restaurantId}`)}>
+            <Button
+              onClick={() =>
+                router.push(`/restaurants/${restaurantId}/meals/${mealId}`)
+              }
+            >
               詳細ページに戻る
             </Button>
           </ModalBody>
