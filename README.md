@@ -5,6 +5,9 @@
 ```bash
 node -v
 v20.11.0
+
+corepack -v
+0.23.0
 ```
 
 ## How to Setup
@@ -16,13 +19,31 @@ pnpm install
 pnpm install -g dotenv-cli
 ```
 
-## How to Use
+### Start docker container
+
+```bash
+make start-docker
+```
+
+You can access dashboard at http://localhost:54323/
+
+Check [here](https://github.com/KiizanKiizan/watt/wiki/Supabase-Storage-%E3%82%BB%E3%83%83%E3%83%88%E3%82%A2%E3%83%83%E3%83%97) for bucket setup.
+
+### Migrate database
+
+```bash
+make migrate-db
+```
 
 ### Run in development mode
 
 ```bash
 pnpm dev
 ```
+
+You can access the app at http://localhost:3000/
+
+## How to Develop
 
 ### After schema change, create migration file using
 
