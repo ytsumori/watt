@@ -5,6 +5,9 @@
 ```bash
 node -v
 v20.11.0
+
+corepack -v
+0.23.0
 ```
 
 ## How to Setup
@@ -16,13 +19,25 @@ pnpm install
 pnpm install -g dotenv-cli
 ```
 
-## How to Use
+### Start docker container
+
+```bash
+make start-docker
+```
+
+### migrate database
+
+```bash
+make migrate-db
+```
 
 ### Run in development mode
 
 ```bash
 pnpm dev
 ```
+
+## How to Develop
 
 ### After schema change, create migration file using
 
