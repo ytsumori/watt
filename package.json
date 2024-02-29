@@ -6,6 +6,7 @@
     "build": "prisma generate && prisma db push && next build",
     "start": "next start",
     "test": "vitest",
+    "e2e": "playwright test",
     "lint": "next lint",
     "postinstall": "prisma generate"
   },
@@ -52,6 +53,7 @@
     "typescript": "5.3.3"
   },
   "devDependencies": {
+    "@playwright/test": "^1.42.0",
     "@prisma/client": "^5.10.2",
     "@testing-library/react": "^14.2.1",
     "@types/google.maps": "^3.55.3",
