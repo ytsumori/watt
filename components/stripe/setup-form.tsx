@@ -64,17 +64,13 @@ export default function SetupForm() {
   }, [onCompleteModalOpen]);
 
   useEffect(() => {
-    if (!stripe) {
-      return;
-    }
+    if (!stripe) return;
 
     const clientSecret = new URLSearchParams(window.location.search).get(
       "setup_intent_client_secret"
     );
 
-    if (!clientSecret) {
-      return;
-    }
+    if (!clientSecret) return;
 
     stripe.retrieveSetupIntent(clientSecret).then(({ setupIntent }) => {
       if (!setupIntent) return setMessage("Something went wrong.");
