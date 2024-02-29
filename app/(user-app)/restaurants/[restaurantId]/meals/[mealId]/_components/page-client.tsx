@@ -129,7 +129,11 @@ export default function MealPage({
                 </TableContainer>
                 <Button
                   variant="outline"
-                  onClick={() => router.push("/payment-method/new")}
+                  onClick={() =>
+                    router.push(
+                      `/payment-method/new?restaurant_id=${meal.restaurantId}`
+                    )
+                  }
                 >
                   決済方法を登録
                 </Button>
