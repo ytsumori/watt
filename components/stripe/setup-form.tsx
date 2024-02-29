@@ -16,12 +16,8 @@ import {
   ModalOverlay,
   useDisclosure,
 } from "@chakra-ui/react";
-import { usePathname, useRouter } from "next/navigation";
-import {
-  decodeJWTToken,
-  getAuthorizationUrl,
-  validateAuthorization,
-} from "@/lib/paypay";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { decodeJWTToken, getAuthorizationUrl } from "@/lib/paypay";
 import { getMyId } from "@/actions/me";
 import { createPaypayCustomer } from "@/actions/paypay-customer";
 
@@ -30,6 +26,8 @@ export default function SetupForm() {
   const elements = useElements();
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const redirectUrl = searchParams.get("redirect_url");
 
   const [message, setMessage] = useState<string>();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -66,17 +64,13 @@ export default function SetupForm() {
   }, [onCompleteModalOpen]);
 
   useEffect(() => {
-    if (!stripe) {
-      return;
-    }
+    if (!stripe) return;
 
     const clientSecret = new URLSearchParams(window.location.search).get(
       "setup_intent_client_secret"
     );
 
-    if (!clientSecret) {
-      return;
-    }
+    if (!clientSecret) return;
 
     stripe.retrieveSetupIntent(clientSecret).then(({ setupIntent }) => {
       if (!setupIntent) return setMessage("Something went wrong.");
@@ -118,7 +112,7 @@ export default function SetupForm() {
 
       const authorizationUrl = await getAuthorizationUrl({
         userId: userId,
-        redirectUrl: `${process.env.NEXT_PUBLIC_HOST_URL}${pathname}`,
+        redirectUrl: `${process.env.NEXT_PUBLIC_HOST_URL}${pathname}?redirect_url=${redirectUrl}`,
       });
       router.push(authorizationUrl);
     }
@@ -126,7 +120,9 @@ export default function SetupForm() {
     const { error } = await stripe.confirmSetup({
       elements,
       confirmParams: {
-        return_url: `${process.env.NEXT_PUBLIC_HOST_URL}${pathname}`,
+        return_url:
+          `${process.env.NEXT_PUBLIC_HOST_URL}${pathname}` +
+          `?redirect_url=${redirectUrl}`,
       },
     });
 
@@ -167,7 +163,9 @@ export default function SetupForm() {
         <ModalContent>
           <ModalHeader>支払い方法の登録が完了しました</ModalHeader>
           <ModalBody textAlign="center">
-            <Button onClick={() => router.push("/")}>トップページに戻る</Button>
+            <Button onClick={() => router.push(redirectUrl ?? "/")}>
+              詳細ページに戻る
+            </Button>
           </ModalBody>
           <ModalFooter />
         </ModalContent>

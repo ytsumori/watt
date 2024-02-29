@@ -24,7 +24,7 @@ import { Meal, Order } from "@prisma/client";
 import { createPaymentIntent } from "@/actions/payment-intent";
 import { signIn } from "next-auth/react";
 import { CheckCircleIcon } from "@chakra-ui/icons";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { notifyStaff } from "../_actions/notify-staff";
 import { findPreauthorizedOrder } from "@/actions/order";
 
@@ -48,6 +48,7 @@ export default function MealPage({
     string | undefined
   >(paymentMethods.length === 1 ? paymentMethods[0].id : undefined);
   const [isVisitRequesting, setIsVisitRequesting] = useState(false);
+  const pathname = usePathname();
 
   const handleVisitingClick = async () => {
     if (!userId || !selectedPaymentMethod) return;
@@ -129,7 +130,13 @@ export default function MealPage({
                 </TableContainer>
                 <Button
                   variant="outline"
-                  onClick={() => router.push("/payment-method/new")}
+                  onClick={() =>
+                    router.push(
+                      `/payment-method/new?redirect_url=${
+                        process.env.NEXT_PUBLIC_HOST_URL + pathname
+                      }`
+                    )
+                  }
                 >
                   決済方法を登録
                 </Button>
