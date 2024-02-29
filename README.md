@@ -25,7 +25,11 @@ pnpm install -g dotenv-cli
 make start-docker
 ```
 
-### migrate database
+You can access dashboard at http://localhost:54323/
+
+Check [here](https://github.com/KiizanKiizan/watt/wiki/Supabase-Storage-%E3%82%BB%E3%83%83%E3%83%88%E3%82%A2%E3%83%83%E3%83%97) for bucket setup.
+
+### Migrate database
 
 ```bash
 make migrate-db
@@ -36,6 +40,8 @@ make migrate-db
 ```bash
 pnpm dev
 ```
+
+You can access the app at http://localhost:3000/
 
 ## How to Develop
 
