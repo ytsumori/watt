@@ -1,4 +1,5 @@
-import { FirebaseLoginProvider } from "./_components/firebase-login-provider";
+import { SupabaseAuthProvider } from "./_components/SupabaseAuthProvider";
+
 import { AdminDashboardLayout } from "./_components/layout-client";
 
 export const metadata = {
@@ -6,14 +7,10 @@ export const metadata = {
   description: "管理画面 | Watt",
 };
 
-export default function AdminLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
-    <FirebaseLoginProvider>
+    <SupabaseAuthProvider>
       <AdminDashboardLayout>{children}</AdminDashboardLayout>
-    </FirebaseLoginProvider>
+    </SupabaseAuthProvider>
   );
 }
