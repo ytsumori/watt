@@ -1,7 +1,7 @@
 "use client";
 
 import { MealDetailModal } from "@/app/(user-app)/_components/meal-detail-modal";
-import { MealPreviewImage } from "@/components/meal-preview-image";
+import { MealPreviewBox } from "@/components/meal-preview";
 import { ArrowBackIcon, CheckIcon } from "@chakra-ui/icons";
 import {
   Box,
@@ -72,45 +72,15 @@ export function RestaurantLayout({ restaurant, children }: Props) {
           )}
           <HStack overflowX="auto" maxW="full" className="hidden-scrollbar">
             {restaurant.meals.map((meal) => (
-              <Box
-                maxW="200px"
-                minW="200px"
+              <MealPreviewBox
                 key={meal.id}
-                borderRadius={12}
-                position="relative"
+                meal={meal}
                 onClick={() => setDisplayingMealId(meal.id)}
                 {...(selectedMealId === meal.id && {
                   borderWidth: 4,
                   borderColor: "orange.400",
                 })}
               >
-                <MealPreviewImage src={meal.imageUrl} alt={`meal-${meal.id}`} />
-                <Box
-                  position="absolute"
-                  top={0}
-                  left={0}
-                  m={2}
-                  borderRadius={4}
-                  backgroundColor="blackAlpha.700"
-                  px={2}
-                >
-                  <Text color="white" noOfLines={1}>
-                    {meal.title}
-                  </Text>
-                </Box>
-                <Box
-                  position="absolute"
-                  bottom={0}
-                  right={0}
-                  m={2}
-                  borderRadius={4}
-                  backgroundColor="blackAlpha.700"
-                  px={2}
-                >
-                  <Text color="white">
-                    ¥{meal.price.toLocaleString("ja-JP")}
-                  </Text>
-                </Box>
                 {selectedMealId === meal.id && (
                   <CheckIcon
                     position="absolute"
@@ -125,7 +95,7 @@ export function RestaurantLayout({ restaurant, children }: Props) {
                     aria-label="checked"
                   />
                 )}
-              </Box>
+              </MealPreviewBox>
             ))}
           </HStack>
           {children}
