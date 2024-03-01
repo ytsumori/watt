@@ -27,6 +27,7 @@ import { CheckCircleIcon } from "@chakra-ui/icons";
 import { useRouter, usePathname } from "next/navigation";
 import { notifyStaff } from "../_actions/notify-staff";
 import { findPreauthorizedOrder } from "@/actions/order";
+import { applyEarlyDiscount } from "@/utils/discount-price";
 
 type Props = {
   meal: Meal;
@@ -145,11 +146,37 @@ export default function MealPage({
                 <Flex w="full">
                   <Text>{meal.title}</Text>
                   <Spacer />
-                  <Text>¥{meal.price.toLocaleString("ja-JP")}</Text>
+                  <Text>
+                    <Text
+                      as="span"
+                      fontSize="sm"
+                      textDecoration="line-through"
+                      textDecorationColor="red.400"
+                      textDecorationThickness="2px"
+                      mr={1}
+                    >
+                      ¥{meal.price.toLocaleString("ja-JP")}
+                    </Text>
+                    <Text as="b">
+                      ¥{applyEarlyDiscount(meal.price).toLocaleString("ja-JP")}
+                    </Text>
+                  </Text>
                 </Flex>
                 <Divider />
                 <Heading size="sm" alignSelf="self-end">
-                  合計 ¥{meal.price.toLocaleString("ja-JP")}
+                  合計{" "}
+                  <Text
+                    as="span"
+                    fontSize="sm"
+                    fontWeight="normal"
+                    textDecoration="line-through"
+                    textDecorationColor="red.400"
+                    textDecorationThickness="2px"
+                    mr={1}
+                  >
+                    ¥{meal.price.toLocaleString("ja-JP")}
+                  </Text>
+                  ¥{applyEarlyDiscount(meal.price).toLocaleString("ja-JP")}
                 </Heading>
                 <Divider borderColor="black" />
                 <Text fontSize="xs">

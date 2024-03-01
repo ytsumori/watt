@@ -16,7 +16,7 @@ import { InView } from "react-intersection-observer";
 import { useRouter } from "next/navigation";
 import { Prisma } from "@prisma/client";
 import { MealDetailModal } from "./meal-detail-modal";
-import { MealPreviewImage } from "@/components/meal-preview-image";
+import { MealPreviewBox } from "@/components/meal-preview";
 
 export default function HomePage({
   restaurants,
@@ -92,47 +92,13 @@ export default function HomePage({
                   mt={3}
                 >
                   {restaurant.meals.map((meal) => (
-                    <Box
-                      maxW="200px"
-                      minW="200px"
+                    <MealPreviewBox
                       key={meal.id}
-                      borderRadius={8}
-                      position="relative"
+                      meal={meal}
                       onClick={() => {
                         setSelectedMealId(meal.id);
                       }}
-                    >
-                      <MealPreviewImage
-                        src={meal.imageUrl}
-                        alt={`meal-${meal.id}`}
-                      />
-                      <Box
-                        position="absolute"
-                        top={0}
-                        left={0}
-                        m={2}
-                        borderRadius={4}
-                        backgroundColor="blackAlpha.700"
-                        px={2}
-                      >
-                        <Text color="white" noOfLines={1}>
-                          {meal.title}
-                        </Text>
-                      </Box>
-                      <Box
-                        position="absolute"
-                        bottom={0}
-                        right={0}
-                        m={2}
-                        borderRadius={4}
-                        backgroundColor="blackAlpha.700"
-                        px={2}
-                      >
-                        <Text color="white">
-                          ¥{meal.price.toLocaleString("ja-JP")}
-                        </Text>
-                      </Box>
-                    </Box>
+                    />
                   ))}
                   {restaurant.isOpen && (
                     <Center
