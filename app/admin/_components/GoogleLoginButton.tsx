@@ -3,6 +3,7 @@
 import { FC } from "react";
 import { useRouter } from "next/navigation";
 import { createClientSupabase } from "@/lib/supabase/client";
+import { Button } from "@chakra-ui/react";
 
 export const GoogleLoginButton: FC = () => {
   const router = useRouter();
@@ -15,8 +16,8 @@ export const GoogleLoginButton: FC = () => {
     if (data.url) router.push(data.url);
   };
   return (
-    <button type="button" onClick={signInWithGoogle}>
+    <Button fontWeight="bold" onClick={signInWithGoogle}>
       Google Login
-    </button>
+    </Button>
   );
 };
