@@ -28,6 +28,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { notifyStaff } from "../_actions/notify-staff";
 import { findPreauthorizedOrder } from "@/actions/order";
 import { applyEarlyDiscount } from "@/utils/discount-price";
+import Link from "next/link";
 
 type Props = {
   meal: Meal;
@@ -81,7 +82,8 @@ export default function MealPage({
         preauthorizedOrder ? (
           <Alert
             status="warning"
-            onClick={() => router.push(`/orders/${preauthorizedOrder.id}`)}
+            as={Link}
+            href={`/orders/${preauthorizedOrder.id}`}
           >
             <AlertIcon />
             既に選択済みの推しメシがあります
@@ -131,13 +133,8 @@ export default function MealPage({
                 </TableContainer>
                 <Button
                   variant="outline"
-                  onClick={() =>
-                    router.push(
-                      `/payment-method/new?redirect_url=${
-                        process.env.NEXT_PUBLIC_HOST_URL + pathname
-                      }`
-                    )
-                  }
+                  as={Link}
+                  href={`/payment-method/new?redirect_pathname=${pathname}`}
                 >
                   決済方法を登録
                 </Button>

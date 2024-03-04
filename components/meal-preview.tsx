@@ -5,27 +5,24 @@ import { Meal } from "@prisma/client";
 import { MealPreviewImage } from "./meal-preview-image";
 import { ReactNode } from "react";
 import { applyEarlyDiscount } from "@/utils/discount-price";
+import Link from "next/link";
 
 type Props = {
   meal: Meal;
-  onClick: () => void;
+  href: string;
   children?: ReactNode;
 } & BoxProps;
 
-export function MealPreviewBox({
-  meal,
-  onClick,
-  children,
-  ...boxProps
-}: Props) {
+export function MealPreviewBox({ meal, href, children, ...boxProps }: Props) {
   return (
     <Box
+      as={Link}
+      href={href}
       maxW="200px"
       minW="200px"
       key={meal.id}
       borderRadius={8}
       position="relative"
-      onClick={onClick}
       {...boxProps}
     >
       <MealPreviewImage src={meal.imageUrl} alt={`meal-${meal.id}`} />

@@ -30,6 +30,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { ConfirmModal } from "../../../../../components/confirm-modal";
 import { PaymentConfirmModal } from "./payment-confirm-modal";
+import Link from "next/link";
 
 type Props = {
   order: Prisma.OrderGetPayload<{
@@ -276,7 +277,8 @@ export function OrderPage({ order }: Props) {
             colorScheme="gray"
             w="full"
             maxW="full"
-            onClick={() => router.push("/")}
+            as={Link}
+            href="/"
           >
             ホーム画面に戻る
           </Button>
@@ -341,7 +343,8 @@ export function OrderPage({ order }: Props) {
             colorScheme="gray"
             w="full"
             maxW="full"
-            onClick={() => router.push("/")}
+            as={Link}
+            href="/"
           >
             ホーム画面に戻る
           </Button>
