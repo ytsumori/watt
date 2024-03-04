@@ -11,6 +11,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { Meal } from "@prisma/client";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 type Props = {
@@ -58,9 +59,8 @@ export function MealPage({ meal }: Props) {
         </VStack>
       </VStack>
       <Button
-        onClick={() =>
-          router.push(`/restaurants/${meal.restaurantId}/meals/${meal.id}`)
-        }
+        as={Link}
+        href={`/restaurants/${meal.restaurantId}/meals/${meal.id}`}
         w="full"
         maxW="full"
         size="md"

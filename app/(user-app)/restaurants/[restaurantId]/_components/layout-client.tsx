@@ -14,7 +14,8 @@ import {
   Divider,
 } from "@chakra-ui/react";
 import { Prisma } from "@prisma/client";
-import { usePathname, useRouter } from "next/navigation";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 type Props = {
   restaurant: Prisma.RestaurantGetPayload<{ include: { meals: true } }>;
@@ -22,7 +23,6 @@ type Props = {
 };
 
 export function RestaurantLayout({ restaurant, children }: Props) {
-  const router = useRouter();
   const pathname = usePathname();
   const selectedMealId = pathname.split("/meals/")[1] || undefined;
 
@@ -30,7 +30,8 @@ export function RestaurantLayout({ restaurant, children }: Props) {
     <Box>
       <IconButton
         icon={<ArrowBackIcon />}
-        onClick={() => router.push("/")}
+        as={Link}
+        href="/"
         aria-label="back"
         size="md"
         variant="outline"
@@ -65,7 +66,7 @@ export function RestaurantLayout({ restaurant, children }: Props) {
             <MealPreviewBox
               key={meal.id}
               meal={meal}
-              onClick={() => router.push(`/meals/${meal.id}`)}
+              href={`/meals/${meal.id}`}
               {...(selectedMealId === meal.id && {
                 borderWidth: 4,
                 borderColor: "orange.400",

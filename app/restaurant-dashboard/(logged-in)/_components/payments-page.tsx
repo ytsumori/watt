@@ -3,18 +3,7 @@
 import { useContext, useEffect, useState } from "react";
 import { RestaurantIdContext } from "./restaurant-id-provider";
 import { Order } from "@prisma/client";
-import {
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
-  Table,
-  TableContainer,
-  Tbody,
-  Th,
-  Thead,
-  Tr,
-} from "@chakra-ui/react";
+import { Table, TableContainer, Tbody, Th, Thead, Tr } from "@chakra-ui/react";
 import { getOrders } from "@/actions/order";
 import { translateOrderStatus } from "@/lib/prisma/translate-enum";
 

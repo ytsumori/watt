@@ -13,16 +13,15 @@ import {
   Center,
 } from "@chakra-ui/react";
 import { InView } from "react-intersection-observer";
-import { useRouter } from "next/navigation";
 import { Prisma } from "@prisma/client";
 import { MealPreviewBox } from "@/components/meal-preview";
+import Link from "next/link";
 
 export default function HomePage({
   restaurants,
 }: {
   restaurants: Prisma.RestaurantGetPayload<{ include: { meals: true } }>[];
 }) {
-  const router = useRouter();
   const [selectedRestaurantId, setSelectedRestaurantId] = useState<string>();
 
   const handleRestaurantSelect = (restaurantId: string) => {
@@ -86,7 +85,7 @@ export default function HomePage({
                   <MealPreviewBox
                     key={meal.id}
                     meal={meal}
-                    onClick={() => router.push(`/meals/${meal.id}`)}
+                    href={`/meals/${meal.id}`}
                   />
                 ))}
                 {restaurant.isOpen && (
@@ -97,9 +96,8 @@ export default function HomePage({
                     borderRadius={8}
                     borderWidth={2}
                     borderColor="orange.400"
-                    onClick={() => {
-                      router.push(`/restaurants/${restaurant.id}`);
-                    }}
+                    as={Link}
+                    href={`/restaurants/${restaurant.id}`}
                   >
                     <Text color="orange.400">お店の詳細を見る</Text>
                   </Center>
