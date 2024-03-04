@@ -55,10 +55,15 @@ export default function HomePage({
             py={3}
           >
             <InView
-              threshold={0.8}
+              initialInView={index < 2}
+              threshold={1}
               onChange={(inView) => {
                 if (inView) {
                   setSelectedRestaurantId(restaurant.id);
+                } else if (!inView && index === 0) {
+                  setSelectedRestaurantId(restaurants[1]?.id);
+                } else if (!inView && index === restaurants.length - 1) {
+                  setSelectedRestaurantId(restaurants[index - 1]?.id);
                 }
               }}
             >
