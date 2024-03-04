@@ -1,6 +1,7 @@
 "use client";
 
 import { usePlacesDetail } from "@/hooks/usePlacesDetail";
+import { getPlaceDetail } from "@/lib/places-api";
 import { Wrapper, Status } from "@googlemaps/react-wrapper";
 import {
   Children,
@@ -20,20 +21,35 @@ type Props = {
   restaurants: { id: string; name: string; googleMapPlaceId: string }[];
   selectedRestaurantId?: string;
   onRestaurantSelect?: (restaurantId: string) => void;
-  defaultCenter: google.maps.LatLngLiteral;
 };
 
 export default function Map({
   restaurants,
   selectedRestaurantId,
   onRestaurantSelect,
-  defaultCenter,
 }: Props) {
   const [zoom, setZoom] = useState(16);
   const [currentLocation, setCurrentLocation] =
     useState<google.maps.LatLngLiteral>();
-  const [center, setCenter] =
-    useState<google.maps.LatLngLiteral>(defaultCenter);
+  const [center, setCenter] = useState<google.maps.LatLngLiteral>({
+    lat: 34.70726721576163,
+    lng: 135.51175158248128,
+  });
+
+  useEffect(() => {
+    const selectedRestaurant = restaurants.find(
+      (restaurant) => restaurant.id === selectedRestaurantId
+    );
+    if (selectedRestaurant) {
+      getPlaceDetail({ placeId: selectedRestaurant.googleMapPlaceId }).then(
+        (placeDetail) =>
+          setCenter({
+            lat: placeDetail.location.latitude,
+            lng: placeDetail.location.longitude,
+          })
+      );
+    }
+  }, [selectedRestaurantId, restaurants]);
 
   const handleIdle = useCallback(
     (map: google.maps.Map) => {
@@ -114,9 +130,16 @@ interface MapProps extends google.maps.MapOptions {
   style?: { [key: string]: string };
   onIdle: (map: google.maps.Map) => void;
   children?: React.ReactNode;
+  currentPlaceId?: string;
 }
 
-function MapComponent({ onIdle, children, style, ...options }: MapProps) {
+function MapComponent({
+  onIdle,
+  children,
+  style,
+  currentPlaceId,
+  ...options
+}: MapProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [map, setMap] = useState<google.maps.Map>();
 
