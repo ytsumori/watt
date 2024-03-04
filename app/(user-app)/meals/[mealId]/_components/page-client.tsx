@@ -1,0 +1,72 @@
+"use client";
+
+import { applyEarlyDiscount } from "@/utils/discount-price";
+import { ArrowBackIcon } from "@chakra-ui/icons";
+import {
+  Button,
+  Heading,
+  IconButton,
+  Image,
+  Text,
+  VStack,
+} from "@chakra-ui/react";
+import { Meal } from "@prisma/client";
+import { useRouter } from "next/navigation";
+
+type Props = {
+  meal: Meal;
+};
+
+export function MealPage({ meal }: Props) {
+  const router = useRouter();
+  return (
+    <VStack p={4} spacing={4} alignItems="start">
+      <IconButton
+        icon={<ArrowBackIcon />}
+        onClick={() => router.back()}
+        aria-label="back"
+        size="md"
+        variant="outline"
+        isRound
+      />
+      <VStack alignItems="start" spacing={4}>
+        <Heading size="lg">{meal.title}</Heading>
+        <VStack alignItems="start" spacing={4}>
+          <VStack w="full" alignItems="start" spacing={2}>
+            <Image src={meal.imageUrl} alt={meal.title} />
+            <Text fontSize="sm" whiteSpace="pre-wrap">
+              {meal.description}
+            </Text>
+          </VStack>
+          <VStack spacing={2} alignItems="start">
+            <Heading size="md">金額</Heading>
+            <Heading size="sm">
+              <Text
+                as="span"
+                fontSize="sm"
+                fontWeight="normal"
+                textDecoration="line-through"
+                textDecorationColor="red.400"
+                textDecorationThickness="2px"
+                mr={1}
+              >
+                ¥{meal.price.toLocaleString("ja-JP")}
+              </Text>
+              ¥{applyEarlyDiscount(meal.price).toLocaleString("ja-JP")}
+            </Heading>
+          </VStack>
+        </VStack>
+      </VStack>
+      <Button
+        onClick={() =>
+          router.push(`/restaurants/${meal.restaurantId}/meals/${meal.id}`)
+        }
+        w="full"
+        maxW="full"
+        size="md"
+      >
+        この推しメシを選択する
+      </Button>
+    </VStack>
+  );
+}
