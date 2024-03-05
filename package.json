@@ -2,7 +2,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "dev": "prisma generate && next dev",
+    "dev": "pnpx supabase start && prisma generate && next dev",
+    "dev/down": "pnpx supabase stop",
     "build": "prisma generate && prisma db push && next build",
     "start": "next start",
     "test": "vitest",
