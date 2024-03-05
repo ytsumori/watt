@@ -1,5 +1,5 @@
 import { GoogleAnalytics } from "@next/third-parties/google";
-import { ChakraProviders } from "./_components/providers";
+import { Providers } from "./_components/providers";
 import "./global.css";
 
 export const metadata = {
@@ -18,7 +18,7 @@ export default function RootLayout({
   return (
     <html lang="jp">
       <body style={{ overscrollBehavior: "none" }}>
-        <ChakraProviders>{children}</ChakraProviders>
+        <Providers>{children}</Providers>
       </body>
       {process.env.GOOGLE_ANALYTICS_MEASUREMENT_ID && (
         <GoogleAnalytics gaId={process.env.GOOGLE_ANALYTICS_MEASUREMENT_ID} />
