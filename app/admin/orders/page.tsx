@@ -9,6 +9,7 @@ export default async function OrdersPage() {
       },
       user: true,
     },
+    orderBy: { createdAt: "desc" },
   });
   return <OrdersPageClient orders={orders} />;
 }
