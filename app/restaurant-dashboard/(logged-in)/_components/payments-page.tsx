@@ -12,11 +12,12 @@ export function PaymentsPage() {
   const [orders, setOrders] = useState<Order[]>([]);
 
   useEffect(() => {
-    getOrders({ where: { meal: { restaurantId: restaurantId } } }).then(
-      (result) => {
-        setOrders(result);
-      }
-    );
+    getOrders({
+      where: { meal: { restaurantId: restaurantId } },
+      orderBy: { createdAt: "desc" },
+    }).then((result) => {
+      setOrders(result);
+    });
   }, [restaurantId]);
   return (
     <TableContainer>
