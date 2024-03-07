@@ -20,6 +20,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { decodeJWTToken, getAuthorizationUrl } from "@/lib/paypay";
 import { getMyId } from "@/actions/me";
 import { createPaypayCustomer } from "@/actions/paypay-customer";
+import Link from "next/link";
 
 export default function SetupForm() {
   const stripe = useStripe();
@@ -27,7 +28,7 @@ export default function SetupForm() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const redirectUrl = searchParams.get("redirect_url");
+  const redirectPathname = searchParams.get("redirect_pathname");
 
   const [message, setMessage] = useState<string>();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -112,7 +113,7 @@ export default function SetupForm() {
 
       const authorizationUrl = await getAuthorizationUrl({
         userId: userId,
-        redirectUrl: `${process.env.NEXT_PUBLIC_HOST_URL}${pathname}?redirect_url=${redirectUrl}`,
+        redirectUrl: `${process.env.NEXT_PUBLIC_HOST_URL}${pathname}?redirect_url=${redirectPathname}`,
       });
       router.push(authorizationUrl);
     }
@@ -122,7 +123,7 @@ export default function SetupForm() {
       confirmParams: {
         return_url:
           `${process.env.NEXT_PUBLIC_HOST_URL}${pathname}` +
-          `?redirect_url=${redirectUrl}`,
+          `?redirect_pathname=${redirectPathname}`,
       },
     });
 
@@ -163,7 +164,7 @@ export default function SetupForm() {
         <ModalContent>
           <ModalHeader>支払い方法の登録が完了しました</ModalHeader>
           <ModalBody textAlign="center">
-            <Button onClick={() => router.push(redirectUrl ?? "/")}>
+            <Button as={Link} href={redirectPathname ?? "/"}>
               詳細ページに戻る
             </Button>
           </ModalBody>

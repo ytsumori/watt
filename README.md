@@ -22,7 +22,7 @@ pnpm install -g dotenv-cli
 ### Start docker container
 
 ```bash
-make start-docker
+pnpx supabase start
 ```
 
 You can access dashboard at http://localhost:54323/

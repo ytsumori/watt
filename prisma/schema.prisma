@@ -89,7 +89,6 @@ model Restaurant {
 
   bankAccount RestaurantBankAccount?
   meals       Meal[]
-  openHours   RestaurantOpenHour[]
   staffs      Staff[]
 }
 
@@ -110,34 +109,21 @@ model Meal {
 }
 
 model Order {
-  id                String          @id @default(cuid())
-  userId            String
-  mealId            String
-  paymentProvider   PaymentProvider
-  providerPaymentId String
-  status            OrderStatus     @default(PREAUTHORIZED)
-  price             Int
-  createdAt         DateTime        @default(now())
-  updatedAt         DateTime        @default(now()) @updatedAt
+  id                    String          @id @default(cuid())
+  userId                String
+  mealId                String
+  paymentProvider       PaymentProvider
+  providerPaymentId     String
+  status                OrderStatus     @default(PREAUTHORIZED)
+  price                 Int
+  restaurantProfitPrice Int
+  createdAt             DateTime        @default(now())
+  updatedAt             DateTime        @default(now()) @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   meal Meal @relation(fields: [mealId], references: [id], onDelete: Cascade)
 
   @@unique([paymentProvider, providerPaymentId])
-}
-
-model RestaurantOpenHour {
-  id           String    @id @default(cuid())
-  day          DayOfWeek
-  endHour      Int
-  endMinute    Int
-  restaurantId String
-  startHour    Int
-  startMinute  Int
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @default(now()) @updatedAt
-
-  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
 }
 
 model Staff {

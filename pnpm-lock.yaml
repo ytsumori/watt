@@ -23,18 +23,6 @@ dependencies:
   '@emotion/styled':
     specifier: ^11.11.0
     version: 11.11.0(@emotion/react@11.11.3)(@types/react@18.2.48)(react@18.2.0)
-  '@fullcalendar/core':
-    specifier: ^6.1.11
-    version: 6.1.11
-  '@fullcalendar/interaction':
-    specifier: ^6.1.11
-    version: 6.1.11(@fullcalendar/core@6.1.11)
-  '@fullcalendar/react':
-    specifier: ^6.1.11
-    version: 6.1.11(@fullcalendar/core@6.1.11)(react-dom@18.2.0)(react@18.2.0)
-  '@fullcalendar/timegrid':
-    specifier: ^6.1.11
-    version: 6.1.11(@fullcalendar/core@6.1.11)
   '@googlemaps/react-wrapper':
     specifier: ^1.1.35
     version: 1.1.35(react@18.2.0)
@@ -98,6 +86,9 @@ dependencies:
   next-auth:
     specifier: ^4.24.6
     version: 4.24.6(next@14.1.0)(react-dom@18.2.0)(react@18.2.0)
+  next-nprogress-bar:
+    specifier: ^2.3.2
+    version: 2.3.4
   react:
     specifier: 18.2.0
     version: 18.2.0
@@ -1864,49 +1855,6 @@ packages:
   /@eslint/js@8.56.0:
     resolution: {integrity: sha512-gMsVel9D7f2HLkBma9VbtzZRehRogVRfbr++f06nL2vnCGCNlzOD+/MUov/F4p8myyAHspEhVobgjpX64q5m6A==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
-    dev: false
-
-  /@fullcalendar/core@6.1.11:
-    resolution: {integrity: sha512-TjG7c8sUz+Vkui2FyCNJ+xqyu0nq653Ibe99A66LoW95oBo6tVhhKIaG1Wh0GVKymYiqAQN/OEdYTuj4ay27kA==}
-    dependencies:
-      preact: 10.12.1
-    dev: false
-
-  /@fullcalendar/daygrid@6.1.11(@fullcalendar/core@6.1.11):
-    resolution: {integrity: sha512-hF5jJB7cgUIxWD5MVjj8IU407HISyLu7BWXcEIuTytkfr8oolOXeCazqnnjmRbnFOncoJQVstTtq6SIhaT32Xg==}
-    peerDependencies:
-      '@fullcalendar/core': ~6.1.11
-    dependencies:
-      '@fullcalendar/core': 6.1.11
-    dev: false
-
-  /@fullcalendar/interaction@6.1.11(@fullcalendar/core@6.1.11):
-    resolution: {integrity: sha512-ynOKjzuPwEAMgTQ6R/Z2zvzIIqG4p8/Qmnhi1q0vzPZZxSIYx3rlZuvpEK2WGBZZ1XEafDOP/LGfbWoNZe+qdg==}
-    peerDependencies:
-      '@fullcalendar/core': ~6.1.11
-    dependencies:
-      '@fullcalendar/core': 6.1.11
-    dev: false
-
-  /@fullcalendar/react@6.1.11(@fullcalendar/core@6.1.11)(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-Og0Tv0OiglTFp+b++yRyEhAeWnAmKkMLQ3iS0eJE1KDEov6QqGkoO+dUG4x8zp2w55IJqzik/a9iHi0s3oQDbA==}
-    peerDependencies:
-      '@fullcalendar/core': ~6.1.11
-      react: ^16.7.0 || ^17 || ^18
-      react-dom: ^16.7.0 || ^17 || ^18
-    dependencies:
-      '@fullcalendar/core': 6.1.11
-      react: 18.2.0
-      react-dom: 18.2.0(react@18.2.0)
-    dev: false
-
-  /@fullcalendar/timegrid@6.1.11(@fullcalendar/core@6.1.11):
-    resolution: {integrity: sha512-0seUHK/ferH89IeuCvV4Bib0zWjgK0nsptNdmAc9wDBxD/d9hm5Mdti0URJX6bDoRtsSfRDu5XsRcrzwoc+AUQ==}
-    peerDependencies:
-      '@fullcalendar/core': ~6.1.11
-    dependencies:
-      '@fullcalendar/core': 6.1.11
-      '@fullcalendar/daygrid': 6.1.11(@fullcalendar/core@6.1.11)
     dev: false
 
   /@googlemaps/js-api-loader@1.16.6:
@@ -5524,6 +5472,12 @@ packages:
       uuid: 8.3.2
     dev: false
 
+  /next-nprogress-bar@2.3.4:
+    resolution: {integrity: sha512-R4okQiaMIw5yFIq9SjBkQ0TPv7UVSkR5fWt7tauO2gQYW+62Wyq3kK8M40VtrwO42xJ1anEevDBxM88wb9ZE7g==}
+    dependencies:
+      nprogress: 0.2.0
+    dev: false
+
   /next@14.1.0(@babel/core@7.24.0)(react-dom@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-wlzrsbfeSU48YQBjZhDzOwhWhGsy+uQycR8bHAOt1LY1bn3zZEcDyHQOEoN3aWzQ8LHCAJ1nqrWCc9XF2+O45Q==}
     engines: {node: '>=18.17.0'}
@@ -5572,6 +5526,10 @@ packages:
     dependencies:
       path-key: 4.0.0
     dev: true
+
+  /nprogress@0.2.0:
+    resolution: {integrity: sha512-I19aIingLgR1fmhftnbWWO3dXc0hSxqHQHQb3H8m+K3TnEn/iSeTZZOyvKXWqQESMwuUVnatlCnZdLBZZt2VSA==}
+    dev: false
 
   /nwsapi@2.2.7:
     resolution: {integrity: sha512-ub5E4+FBPKwAZx0UwIQOjYWGHTEq5sPqHQNRN8Z9e4A7u3Tj1weLJsL59yH9vmvqEtBHaOmT6cYQKIZOxp35FQ==}
@@ -5859,10 +5817,6 @@ packages:
     dependencies:
       preact: 10.19.5
       pretty-format: 3.8.0
-    dev: false
-
-  /preact@10.12.1:
-    resolution: {integrity: sha512-l8386ixSsBdbreOAkqtrwqHwdvR35ID8c3rKPa8lCWuO86dBi32QWHV4vfsZK1utLLFMvw+Z5Ad4XLkZzchscg==}
     dev: false
 
   /preact@10.19.5:

@@ -1,5 +1,6 @@
 "use client";
 
+import { translateOrderStatus } from "@/lib/prisma/translate-enum";
 import {
   Box,
   Table,
@@ -35,7 +36,8 @@ export function OrdersPageClient({ orders }: Props) {
               <Th>決済方法</Th>
               <Th>決済ID</Th>
               <Th>レストラン名</Th>
-              <Th>金額</Th>
+              <Th>決済金額</Th>
+              <Th>振込金額</Th>
               <Th>ステータス</Th>
             </Tr>
           </Thead>
@@ -46,7 +48,8 @@ export function OrdersPageClient({ orders }: Props) {
                 <Td>{order.providerPaymentId}</Td>
                 <Td>{order.meal.restaurant.name}</Td>
                 <Td>{order.price.toLocaleString("ja-JP")}円</Td>
-                <Td>{order.status}</Td>
+                <Td>{order.restaurantProfitPrice.toLocaleString("ja-JP")}円</Td>
+                <Td>{translateOrderStatus(order.status)}</Td>
               </Tr>
             ))}
           </Tbody>

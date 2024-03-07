@@ -4,6 +4,7 @@ import { getMyId } from "@/actions/me";
 import stripe from "@/lib/stripe";
 import prisma from "@/lib/prisma/client";
 import { createOrder, findOrder, updateOrderStatus } from "./order";
+import { applyEarlyDiscount } from "@/utils/discount-price";
 
 export async function createPaymentIntent({
   mealId,
@@ -46,8 +47,10 @@ export async function createPaymentIntent({
     throw new Error("Payment method not found");
   }
 
+  const discountedPrice = applyEarlyDiscount(meal.price);
+
   const paymentIntent = await stripe.paymentIntents.create({
-    amount: meal.price,
+    amount: discountedPrice,
     currency: "jpy",
     customer: user.stripeCustomer.stripeCustomerId,
     payment_method: paymentMethod.id,
@@ -61,6 +64,7 @@ export async function createPaymentIntent({
     userId: user.id,
     providerPaymentId: paymentIntent.id,
     paymentProvider: "STRIPE",
+    price: discountedPrice
   });
 
   return paymentIntent.status;

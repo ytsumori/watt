@@ -25,11 +25,13 @@ export async function createOrder({
   userId,
   providerPaymentId,
   paymentProvider,
+  price
 }: {
   mealId: string;
   userId: string;
   providerPaymentId: string;
   paymentProvider: PaymentProvider;
+  price: number;
 }) {
   const meal = await prisma.meal.findUnique({
     where: { id: mealId },
@@ -51,7 +53,8 @@ export async function createOrder({
       mealId: meal.id,
       paymentProvider,
       providerPaymentId,
-      price: meal.price,
+      price,
+      restaurantProfitPrice: meal.price,
     },
   });
 }
