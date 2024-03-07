@@ -10,7 +10,7 @@
     "e2e": "playwright test",
     "lint": "next lint",
     "postinstall": "prisma generate",
-    "migrate": "prisma migrate dev"
+    "migrate-dev": "prisma migrate dev"
   },
   "prisma": {},
   "dependencies": {
