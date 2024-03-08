@@ -62,13 +62,11 @@ export function RestaurantsPageClient({ restaurants }: Props) {
               return (
                 <Tr key={restaurant.id}>
                   <Td>{restaurant.id}</Td>
-                  <Td>{restaurant.name}</Td>
+                  <Td>
+                    <Link href={"restaurants/" + restaurant.id}>{restaurant.name}</Link>
+                  </Td>
                   <Td textAlign="center">
-                    <IconButton
-                      aria-label="登録用URLコピー"
-                      icon={<CopyIcon />}
-                      onClick={handleCopy}
-                    />
+                    <IconButton aria-label="登録用URLコピー" icon={<CopyIcon />} onClick={handleCopy} />
                   </Td>
                   <Td>
                     <Link
