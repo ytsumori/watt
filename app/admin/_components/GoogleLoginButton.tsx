@@ -11,11 +11,7 @@ export const GoogleLoginButton: FC = () => {
   const signInWithGoogle = async () => {
     const { data } = await clientSupabase.auth.signInWithOAuth({
       provider: "google",
-      options: {
-        redirectTo: `${
-          process.env.NEXT_PUBLIC_VERCEL_URL ? "https://" + process.env.NEXT_PUBLIC_VERCEL_URL : "http://localhost:3000"
-        }/api/auth/callback`,
-      },
+      options: { redirectTo: `${window.location.origin}/api/auth/callback` },
     });
     if (data.url) router.push(data.url);
   };
