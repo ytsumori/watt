@@ -48,17 +48,22 @@ export const RestaurantBankAccount: FC<RestaurantBankAccountProps> = ({ restaura
     });
   }, [restaurantBankAccount]);
 
-  const onClick = () => {
+  const onSave = async () => {
     if (isEditMode) {
-      restaurantBankAccount.holderName !== holderName &&
-        updateRestaurantBankAccount({
-          restaurantId: restaurantBankAccount.restaurantId,
-          bankAccount: { ...restaurantBankAccount, holderName, isAdminConfirmed },
-        }).catch(() => toast({ title: "口座情報の更新に失敗しました", status: "error" }));
-      router.refresh();
+      console.log(isAdminConfirmed);
+      await updateRestaurantBankAccount({
+        restaurantId: restaurantBankAccount.restaurantId,
+        bankAccount: { ...restaurantBankAccount, holderName, isAdminConfirmed },
+      })
+        .then(() => {
+          setIsEditMode(false);
+          router.refresh();
+        })
+        .catch(() => toast({ title: "口座情報の更新に失敗しました", status: "error" }));
     }
-    setIsEditMode((prev) => !prev);
   };
+
+  const onEditMode = () => setIsEditMode(true);
 
   const onClose = () => {
     setHolderName(restaurantBankAccount.holderName);
@@ -77,11 +82,11 @@ export const RestaurantBankAccount: FC<RestaurantBankAccountProps> = ({ restaura
         </Text>
         {isEditMode ? (
           <>
-            <Button onClick={onClick}>保存する</Button>
+            <Button onClick={onSave}>保存する</Button>
             <Button onClick={onClose}>閉じる</Button>
           </>
         ) : (
-          <Button onClick={onClick}>編集する</Button>
+          <Button onClick={onEditMode}>編集する</Button>
         )}
       </Flex>
       <TableContainer border="solid" borderColor="gray" borderWidth={2} borderRadius={10} padding={1}>
@@ -101,8 +106,8 @@ export const RestaurantBankAccount: FC<RestaurantBankAccountProps> = ({ restaura
               <Td>
                 <Checkbox
                   onChange={onChangeAdminCheck}
-                  checked={restaurantBankAccount.isAdminConfirmed}
                   borderColor="gray"
+                  isChecked={isAdminConfirmed}
                   disabled={!isEditMode}
                 />
               </Td>
