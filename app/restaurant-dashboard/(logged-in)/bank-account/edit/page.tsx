@@ -5,24 +5,11 @@ import {
   findBankAccountByRestaurantId,
   updateRestaurantBankAccount,
 } from "@/actions/restaurant-bank-account";
-import {
-  Box,
-  Card,
-  Center,
-  Heading,
-  Progress,
-  Spinner,
-  Text,
-  VStack,
-  useToast,
-} from "@chakra-ui/react";
+import { Box, Card, Center, Heading, Progress, Spinner, Text, VStack, useToast } from "@chakra-ui/react";
 import { useContext, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { RestaurantIdContext } from "../../_components/restaurant-id-provider";
-import {
-  BankAccountForm,
-  BankAccountFormData,
-} from "../_components/bank-account-form";
+import { BankAccountForm, BankAccountFormData } from "../_components/bank-account-form";
 import { RestaurantBankAccount } from "@prisma/client";
 import { translateBankAccountType } from "@/lib/prisma/translate-enum";
 import { getBank, getBranch } from "@/lib/bankcode-jp";
@@ -33,8 +20,7 @@ export default function NewBankAccount() {
   const restaurantId = useContext(RestaurantIdContext);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [defaultBankAccount, setDefaultBankAccount] =
-    useState<RestaurantBankAccount>();
+  const [defaultBankAccount, setDefaultBankAccount] = useState<RestaurantBankAccount>();
   const [defaultBankName, setDefaultBankName] = useState<string>();
   const [defaultBranchName, setDefaultBranchName] = useState<string>();
 
@@ -76,7 +62,7 @@ export default function NewBankAccount() {
     setIsSubmitting(true);
     updateRestaurantBankAccount({
       restaurantId,
-      ...formData,
+      bankAccount: { ...formData },
     })
       .then(() => {
         router.push("/restaurant-dashboard");
@@ -119,9 +105,7 @@ export default function NewBankAccount() {
           </Box>
           <Box>
             <Heading size="sm">口座種別</Heading>
-            <Text>
-              {translateBankAccountType(defaultBankAccount.accountType)}
-            </Text>
+            <Text>{translateBankAccountType(defaultBankAccount.accountType)}</Text>
           </Box>
           <Box>
             <Heading size="sm">口座番号</Heading>
