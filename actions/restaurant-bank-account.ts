@@ -2,6 +2,7 @@
 
 import prisma from "@/lib/prisma/client";
 import { BankAccountType } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 
 export async function findBankAccountByRestaurantId(restaurantId: string) {
   return await prisma.restaurantBankAccount.findFirst({
@@ -41,31 +42,16 @@ export async function createRestaurantBankAccount({
   });
 }
 
+type UpdateProps = {
+  restaurantId: string;
+  bankAccount: Prisma.RestaurantBankAccountUpdateInput;
+};
 export async function updateRestaurantBankAccount({
   restaurantId,
-  bankCode,
-  branchCode,
-  accountType,
-  accountNo,
-  holderName,
-}: {
-  restaurantId: string;
-  bankCode: string;
-  branchCode: string;
-  accountType: BankAccountType;
-  accountNo: string;
-  holderName: string;
-}) {
+  bankAccount,
+}: UpdateProps) {
   return await prisma.restaurantBankAccount.update({
-    where: {
-      restaurantId,
-    },
-    data: {
-      bankCode,
-      branchCode,
-      accountType,
-      accountNo,
-      holderName,
-    },
+    where: { restaurantId },
+    data: { ...bankAccount },
   });
 }
