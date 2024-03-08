@@ -60,6 +60,12 @@ export const RestaurantBankAccount: FC<RestaurantBankAccountProps> = ({ restaura
     setIsEditMode((prev) => !prev);
   };
 
+  const onClose = () => {
+    setHolderName(restaurantBankAccount.holderName);
+    setIsAdminConfirmed(restaurantBankAccount.isAdminConfirmed);
+    setIsEditMode(false);
+  };
+
   const onChangeHolderName = (e: React.ChangeEvent<HTMLInputElement>) => setHolderName(e.target.value);
   const onChangeAdminCheck = (e: React.ChangeEvent<HTMLInputElement>) => setIsAdminConfirmed(e.target.checked);
 
@@ -69,7 +75,14 @@ export const RestaurantBankAccount: FC<RestaurantBankAccountProps> = ({ restaura
         <Text as="h2" fontSize="lg" fontWeight="bold">
           現在の口座情報
         </Text>
-        <Button onClick={onClick}>{isEditMode ? "保存する" : "編集する"}</Button>
+        {isEditMode ? (
+          <>
+            <Button onClick={onClick}>保存する</Button>
+            <Button onClick={onClose}>閉じる</Button>
+          </>
+        ) : (
+          <Button onClick={onClick}>編集する</Button>
+        )}
       </Flex>
       <TableContainer border="solid" borderColor="gray" borderWidth={2} borderRadius={10} padding={1}>
         <Table>
