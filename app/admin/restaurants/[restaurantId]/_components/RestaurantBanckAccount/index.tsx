@@ -1,6 +1,21 @@
 "use client";
 
-import { Text, TableContainer, Table, Thead, Tr, Th, Tbody, Td, Spinner, Button, Input, Flex } from "@chakra-ui/react";
+import {
+  Text,
+  TableContainer,
+  Table,
+  Thead,
+  Tr,
+  Th,
+  Tbody,
+  Td,
+  Spinner,
+  Button,
+  Input,
+  Flex,
+  Checkbox,
+  useToast,
+} from "@chakra-ui/react";
 import { getBank, getBranch } from "@/lib/bankcode-jp";
 import { Prisma } from "@prisma/client";
 import { FC, useEffect, useState } from "react";
@@ -16,7 +31,9 @@ export const RestaurantBankAccount: FC<RestaurantBankAccountProps> = ({ restaura
   const [branchName, setBranchName] = useState<string | null>(null);
   const [isEditMode, setIsEditMode] = useState<boolean>(false);
   const [holderName, setHolderName] = useState<string>(restaurantBankAccount.holderName);
+  const [isAdminConfirmed, setIsAdminConfirmed] = useState<boolean>(restaurantBankAccount.isAdminConfirmed);
   const router = useRouter();
+  const toast = useToast();
 
   useEffect(() => {
     getBank({ bankCode: restaurantBankAccount.bankCode }).then((bank) => {
@@ -33,13 +50,18 @@ export const RestaurantBankAccount: FC<RestaurantBankAccountProps> = ({ restaura
 
   const onClick = () => {
     if (isEditMode) {
-      updateRestaurantBankAccount({ ...restaurantBankAccount, holderName });
+      restaurantBankAccount.holderName !== holderName &&
+        updateRestaurantBankAccount({
+          restaurantId: restaurantBankAccount.restaurantId,
+          bankAccount: { ...restaurantBankAccount, holderName, isAdminConfirmed },
+        }).catch(() => toast({ title: "口座情報の更新に失敗しました", status: "error" }));
       router.refresh();
     }
     setIsEditMode((prev) => !prev);
   };
 
-  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => setHolderName(e.target.value);
+  const onChangeHolderName = (e: React.ChangeEvent<HTMLInputElement>) => setHolderName(e.target.value);
+  const onChangeAdminCheck = (e: React.ChangeEvent<HTMLInputElement>) => setIsAdminConfirmed(e.target.checked);
 
   return (
     <>
@@ -49,10 +71,11 @@ export const RestaurantBankAccount: FC<RestaurantBankAccountProps> = ({ restaura
         </Text>
         <Button onClick={onClick}>{isEditMode ? "保存する" : "編集する"}</Button>
       </Flex>
-      <TableContainer border="solid" borderColor="gray" borderWidth={2} borderRadius={10} padding={1} shadow={100}>
+      <TableContainer border="solid" borderColor="gray" borderWidth={2} borderRadius={10} padding={1}>
         <Table>
           <Thead>
             <Tr>
+              <Th>管理者チェック</Th>
               <Th>金融機関</Th>
               <Th>支店</Th>
               <Th>口座種別</Th>
@@ -62,6 +85,14 @@ export const RestaurantBankAccount: FC<RestaurantBankAccountProps> = ({ restaura
           </Thead>
           <Tbody>
             <Tr>
+              <Td>
+                <Checkbox
+                  onChange={onChangeAdminCheck}
+                  checked={restaurantBankAccount.isAdminConfirmed}
+                  borderColor="gray"
+                  disabled={!isEditMode}
+                />
+              </Td>
               <Td>
                 {bankName ?? <Spinner size="sm" />}
                 {`（${restaurantBankAccount.bankCode}）`}
@@ -74,7 +105,13 @@ export const RestaurantBankAccount: FC<RestaurantBankAccountProps> = ({ restaura
               <Td>{translateBankAccountType(restaurantBankAccount.accountType)}</Td>
               <Td>
                 {isEditMode ? (
-                  <Input onChange={onChange} value={holderName} autoFocus />
+                  <Input
+                    onChange={onChangeHolderName}
+                    value={holderName}
+                    border="solid"
+                    borderColor="gray"
+                    borderWidth={2}
+                  />
                 ) : (
                   restaurantBankAccount.holderName
                 )}
