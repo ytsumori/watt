@@ -42,14 +42,14 @@ export async function createRestaurantBankAccount({
   });
 }
 
-type UpdateProps = {
+type UpdateArgs = {
   restaurantId: string;
   bankAccount: Prisma.RestaurantBankAccountUpdateInput;
 };
 export async function updateRestaurantBankAccount({
   restaurantId,
   bankAccount,
-}: UpdateProps) {
+}: UpdateArgs) {
   return await prisma.restaurantBankAccount.update({
     where: { restaurantId },
     data: { ...bankAccount },

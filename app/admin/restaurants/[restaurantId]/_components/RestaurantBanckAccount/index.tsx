@@ -50,7 +50,6 @@ export const RestaurantBankAccount: FC<RestaurantBankAccountProps> = ({ restaura
 
   const onSave = async () => {
     if (isEditMode) {
-      console.log(isAdminConfirmed);
       await updateRestaurantBankAccount({
         restaurantId: restaurantBankAccount.restaurantId,
         bankAccount: { ...restaurantBankAccount, holderName, isAdminConfirmed },
