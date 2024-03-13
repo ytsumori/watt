@@ -2,7 +2,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "dev": "pnpx supabase start && prisma generate && next dev",
+    "dev": "dotenv -e .env.local -- pnpx supabase start && prisma generate && next dev",
     "dev/down": "pnpx supabase stop",
     "build": "prisma generate && prisma db push && next build",
     "start": "next start",
@@ -10,7 +10,8 @@
     "e2e": "playwright test",
     "lint": "next lint",
     "postinstall": "prisma generate",
-    "migrate-dev": "prisma migrate dev"
+    "migrate-dev": "dotenv -e .env.local -- prisma migrate dev",
+    "format-schema": "dotenv -e .env.local -- prisma validate & prisma format"
   },
   "prisma": {},
   "dependencies": {

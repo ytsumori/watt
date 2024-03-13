@@ -32,7 +32,7 @@ Check [here](https://github.com/KiizanKiizan/watt/wiki/Supabase-Storage-%E3%82%B
 ### Migrate database
 
 ```bash
-make migrate-db
+pnpm migrate-dev
 ```
 
 ### Run in development mode
@@ -48,6 +48,6 @@ You can access the app at http://localhost:3000/
 ### After schema change, create migration file using
 
 ```bash
-make format-schema
-make migrate-db
+pnpm format-schema
+pnpm migrate-dev
 ```
