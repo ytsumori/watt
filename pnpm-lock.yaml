@@ -68,6 +68,9 @@ dependencies:
   dotenv:
     specifier: ^16.4.5
     version: 16.4.5
+  encoding-japanese:
+    specifier: ^2.0.0
+    version: 2.0.0
   eslint:
     specifier: 8.56.0
     version: 8.56.0
@@ -89,6 +92,9 @@ dependencies:
   next-nprogress-bar:
     specifier: ^2.3.2
     version: 2.3.4
+  papaparse:
+    specifier: ^5.4.1
+    version: 5.4.1
   react:
     specifier: 18.2.0
     version: 18.2.0
@@ -124,9 +130,15 @@ devDependencies:
   '@testing-library/react':
     specifier: ^14.2.1
     version: 14.2.1(react-dom@18.2.0)(react@18.2.0)
+  '@types/encoding-japanese':
+    specifier: ^2.0.5
+    version: 2.0.5
   '@types/google.maps':
     specifier: ^3.55.3
     version: 3.55.3
+  '@types/papaparse':
+    specifier: ^5.3.14
+    version: 5.3.14
   '@vitejs/plugin-react':
     specifier: ^4.2.1
     version: 4.2.1(vite@5.1.4)
@@ -3102,6 +3114,10 @@ packages:
       '@types/node': 20.11.13
     dev: false
 
+  /@types/encoding-japanese@2.0.5:
+    resolution: {integrity: sha512-LjOB95Ri43cz+zZluJFFqtZGL/Pg80V/cM8ksIVuFV6INh5Ehc82iLbQyQ6heiSW8vmTzcg0hPKU+0+Em3yc1g==}
+    dev: true
+
   /@types/estree@1.0.5:
     resolution: {integrity: sha512-/kYRxGDLWzHOB7q+wtSUQlFrtcdUccpfy+X+9iMBpHK8QLLhx2wIPYuS5DYtR9Wa/YlZAbIovy7qVdB1Aq6Lyw==}
     dev: true
@@ -3138,6 +3154,12 @@ packages:
     resolution: {integrity: sha512-5G4zQwdiQBSWYTDAH1ctw2eidqdhMJaNsiIDKHFr55ihz5Trl2qqR8fdrT732yPBho5gkNxXm67OxWFBqX9aPg==}
     dependencies:
       undici-types: 5.26.5
+
+  /@types/papaparse@5.3.14:
+    resolution: {integrity: sha512-LxJ4iEFcpqc6METwp9f6BV6VVc43m6MfH0VqFosHvrUgfXiFe6ww7R3itkOQ+TCK6Y+Iv/+RnnvtRZnkc5Kc9g==}
+    dependencies:
+      '@types/node': 20.11.13
+    dev: true
 
   /@types/parse-json@4.0.2:
     resolution: {integrity: sha512-dISoDXWWQwUquiKsyZ4Ng+HX2KsPL7LyHKHQwgGFEA3IaKac4Obd+h2a/a6waisAoepJlBcx9paWqjA8/HVjCw==}
@@ -3986,6 +4008,11 @@ packages:
 
   /emoji-regex@9.2.2:
     resolution: {integrity: sha512-L18DaJsXSUk2+42pv8mLs5jJT2hqFkFE4j21wOmgbUqsZ2hL72NsUU785g9RXgo3s0ZNgVl42TiHp3ZtOv/Vyg==}
+    dev: false
+
+  /encoding-japanese@2.0.0:
+    resolution: {integrity: sha512-++P0RhebUC8MJAwJOsT93dT+5oc5oPImp1HubZpAuCZ5kTLnhuuBhKHj2jJeO/Gj93idPBWmIuQ9QWMe5rX3pQ==}
+    engines: {node: '>=8.10.0'}
     dev: false
 
   /enhanced-resolve@5.15.0:
@@ -5682,6 +5709,10 @@ packages:
     engines: {node: '>=10'}
     dependencies:
       p-limit: 3.1.0
+    dev: false
+
+  /papaparse@5.4.1:
+    resolution: {integrity: sha512-HipMsgJkZu8br23pW15uvo6sib6wne/4woLZPlFf3rpDyMe9ywEXUsuD7+6K9PRkJlVT51j/sCOYDKGGS3ZJrw==}
     dev: false
 
   /parent-module@1.0.1:
