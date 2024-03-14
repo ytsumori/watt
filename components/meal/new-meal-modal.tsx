@@ -109,6 +109,7 @@ export function NewMealModal({ restaurantId, isOpen, onClose, onSubmitComplete }
       title,
       description,
     }).then(() => {
+      handleClose();
       onSubmitComplete();
     });
   };
