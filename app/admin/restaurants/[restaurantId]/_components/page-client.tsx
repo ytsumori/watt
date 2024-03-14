@@ -2,8 +2,9 @@
 
 import { Box, Heading } from "@chakra-ui/react";
 import { Prisma } from "@prisma/client";
-import { RestaurantBankAccount } from "./RestaurantBankAccount";
+
 import { MealList } from "@/components/meal/meal-list";
+import { RestaurantBankAccount } from "./restaurant-bank-account";
 
 type Props = {
   restaurant: Prisma.RestaurantGetPayload<{ select: { id: true; name: true; bankAccount: true; meals: true } }>;
