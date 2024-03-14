@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Heading } from "@chakra-ui/react";
+import { Box, Heading, VStack } from "@chakra-ui/react";
 import { Prisma } from "@prisma/client";
 
 import { MealList } from "@/components/meal/meal-list";
@@ -12,12 +12,12 @@ type Props = {
 
 export function RestaurantDetailPage({ restaurant }: Props) {
   return (
-    <Box p={10}>
+    <VStack p={10} alignItems="start" spacing={5}>
       <Heading as="h1" size="lg">
         {restaurant.name}
       </Heading>
-      <MealList restaurantId={restaurant.id} defaultMeals={restaurant.meals} />
       {restaurant.bankAccount && <RestaurantBankAccount restaurantBankAccount={restaurant.bankAccount} />}
-    </Box>
+      <MealList restaurantId={restaurant.id} defaultMeals={restaurant.meals} />
+    </VStack>
   );
 }
