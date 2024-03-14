@@ -45,7 +45,7 @@ export function MealList({ restaurantId, defaultMeals }: Props) {
           <Button onClick={onNewFormOpen}>登録する</Button>
         </Flex>
         <Heading size="sm">提供中</Heading>
-        <Flex wrap="wrap" justify="space-evenly" w="full">
+        <Flex wrap="wrap" justify="space-evenly" gap={4}>
           {meals.map((meal) => (
             <MealCard
               key={meal.id}
@@ -61,7 +61,7 @@ export function MealList({ restaurantId, defaultMeals }: Props) {
         <Heading size="sm" textColor="gray">
           取り消し済み
         </Heading>
-        <Flex wrap="wrap" justify="space-evenly" w="full">
+        <Flex wrap="wrap" justify="space-evenly" gap={4}>
           {discardedMeals.map((meal) => (
             <MealCard
               key={meal.id}
