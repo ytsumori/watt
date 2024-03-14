@@ -17,19 +17,18 @@ import {
   NumberInputField,
   Textarea,
 } from "@chakra-ui/react";
-import { useContext, useRef, useState } from "react";
-import { RestaurantIdContext } from "./restaurant-id-provider";
+import { useRef, useState } from "react";
 import { MealPreviewImage } from "@/components/meal-preview-image";
 import { createMeal } from "@/actions/meal";
 
 type Props = {
+  restaurantId: string;
   isOpen: boolean;
   onClose: () => void;
   onSubmitComplete: () => void;
 };
 
-export function NewMealModal({ isOpen, onClose, onSubmitComplete }: Props) {
-  const restaurantId = useContext(RestaurantIdContext);
+export function NewMealModal({ restaurantId, isOpen, onClose, onSubmitComplete }: Props) {
   const [title, setTitle] = useState<string>();
   const [price, setPrice] = useState<number>();
   const [description, setDescription] = useState<string>();
@@ -60,9 +59,7 @@ export function NewMealModal({ isOpen, onClose, onSubmitComplete }: Props) {
     setPrice(numberValue);
   };
 
-  const handleDescriptionChange = (
-    event: React.ChangeEvent<HTMLTextAreaElement>
-  ) => {
+  const handleDescriptionChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     if (event.target.value === "") {
       setDescription(undefined);
     } else {
@@ -70,9 +67,7 @@ export function NewMealModal({ isOpen, onClose, onSubmitComplete }: Props) {
     }
   };
 
-  const handleFileChange = async (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     setIsUploading(true);
     try {
       event.preventDefault();
@@ -86,16 +81,12 @@ export function NewMealModal({ isOpen, onClose, onSubmitComplete }: Props) {
       }
 
       const filename = window.crypto.randomUUID();
-      const { data, error } = await supabase.storage
-        .from("meals")
-        .upload(`${restaurantId}/${filename}`, file);
+      const { data, error } = await supabase.storage.from("meals").upload(`${restaurantId}/${filename}`, file);
 
       if (error) throw error;
 
       if (data) {
-        const publicUrl = supabase.storage
-          .from("meals")
-          .getPublicUrl(data.path);
+        const publicUrl = supabase.storage.from("meals").getPublicUrl(data.path);
         setImageUrl(publicUrl.data.publicUrl);
       }
       setIsUploading(false);
@@ -118,6 +109,7 @@ export function NewMealModal({ isOpen, onClose, onSubmitComplete }: Props) {
       title,
       description,
     }).then(() => {
+      handleClose();
       onSubmitComplete();
     });
   };
@@ -134,11 +126,7 @@ export function NewMealModal({ isOpen, onClose, onSubmitComplete }: Props) {
           </FormControl>
           <FormControl isRequired mt={2}>
             <FormLabel>金額(税込)</FormLabel>
-            <NumberInput
-              min={0}
-              onChange={handlePriceChange}
-              value={price ? "¥" + price : ""}
-            >
+            <NumberInput min={0} onChange={handlePriceChange} value={price ? "¥" + price : ""}>
               <NumberInputField />
             </NumberInput>
           </FormControl>
@@ -154,14 +142,7 @@ export function NewMealModal({ isOpen, onClose, onSubmitComplete }: Props) {
           </FormControl>
           <FormControl isRequired mt={2}>
             <FormLabel>料理画像(正方形)</FormLabel>
-            <input
-              name="file"
-              ref={inputFileRef}
-              type="file"
-              required
-              accept="image/*"
-              onChange={handleFileChange}
-            />
+            <input name="file" ref={inputFileRef} type="file" required accept="image/*" onChange={handleFileChange} />
             {isUploading ? (
               <FormHelperText>アップロード中...</FormHelperText>
             ) : (

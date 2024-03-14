@@ -75,7 +75,7 @@ export const RestaurantBankAccount: FC<RestaurantBankAccountProps> = ({ restaura
 
   return (
     <>
-      <Flex gap={3} marginTop={5} marginBottom={2} justifyItems="center">
+      <Flex gap={3} marginBottom={2} justifyItems="center">
         <Text as="h2" fontSize="lg" fontWeight="bold">
           現在の口座情報
         </Text>

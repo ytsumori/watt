@@ -1,23 +1,14 @@
 import prisma from "@/lib/prisma/client";
-import { Heading } from "@chakra-ui/react";
-import { Box } from "@chakra-ui/react";
-import { RestaurantBankAccount } from "./_components/RestaurantBanckAccount";
+import { RestaurantDetailPage } from "./_components/page-client";
 
 type PageProps = { params: { restaurantId: string } };
 
 export default async function RestaurantPage({ params }: PageProps) {
   const restaurant = await prisma.restaurant.findUnique({
     where: { id: params.restaurantId },
-    select: { id: true, name: true, bankAccount: true },
+    select: { id: true, name: true, bankAccount: true, meals: true },
   });
 
   if (!restaurant) return <>データが見つかりません</>;
-  return (
-    <Box p={10}>
-      <Heading as="h1" size="lg">
-        {restaurant.name}
-      </Heading>
-      {restaurant.bankAccount && <RestaurantBankAccount restaurantBankAccount={restaurant.bankAccount} />}
-    </Box>
-  );
+  return <RestaurantDetailPage restaurant={restaurant} />;
 }
