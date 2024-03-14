@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "dev": "dotenv -e .env.local -- pnpx supabase start && prisma generate && next dev",
-    "dev/down": "pnpx supabase stop",
+    "dev/down": "dotenv -e .env.local -- pnpx supabase stop",
     "build": "prisma generate && prisma db push && next build",
     "start": "next start",
     "test": "vitest",
