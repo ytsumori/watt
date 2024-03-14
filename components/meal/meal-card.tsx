@@ -1,14 +1,7 @@
 "use client";
 
 import { MealPreviewImage } from "@/components/meal-preview-image";
-import {
-  Card,
-  CardBody,
-  CardFooter,
-  Heading,
-  Text,
-  VStack,
-} from "@chakra-ui/react";
+import { Card, CardBody, CardFooter, Heading, Text, VStack } from "@chakra-ui/react";
 import { Meal } from "@prisma/client";
 import { ReactNode } from "react";
 
@@ -19,7 +12,7 @@ type Props = {
 
 export function MealCard({ meal, button }: Props) {
   return (
-    <Card variant="outline">
+    <Card variant="outline" maxW="300px">
       <MealPreviewImage src={meal.imageUrl} alt={meal.id} />
       <VStack spacing={0}>
         <CardBody>

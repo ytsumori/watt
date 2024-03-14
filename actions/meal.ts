@@ -1,6 +1,7 @@
 "use server";
 
 import prisma from "@/lib/prisma/client";
+import { Prisma } from "@prisma/client";
 
 export async function findMeal(id: string) {
   return await prisma.meal.findUnique({
@@ -10,19 +11,8 @@ export async function findMeal(id: string) {
   });
 }
 
-export async function getMeals({
-  restaurantId,
-  isDiscarded = false,
-}: {
-  restaurantId: string;
-  isDiscarded?: boolean;
-}) {
-  return await prisma.meal.findMany({
-    where: {
-      restaurantId,
-      isDiscarded,
-    },
-  });
+export async function getMeals(args: Prisma.MealFindManyArgs) {
+  return await prisma.meal.findMany(args);
 }
 
 export async function createMeal({
