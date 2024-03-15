@@ -1,17 +1,8 @@
 "use client";
 
 import { usePlacesDetail } from "@/hooks/usePlacesDetail";
-import { getPlaceDetail } from "@/lib/places-api";
 import { Wrapper, Status } from "@googlemaps/react-wrapper";
-import {
-  Children,
-  cloneElement,
-  isValidElement,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { Children, cloneElement, isValidElement, useCallback, useEffect, useRef, useState } from "react";
 
 const render = (status: Status) => {
   return <h1>{status}</h1>;
@@ -23,46 +14,22 @@ type Props = {
   onRestaurantSelect?: (restaurantId: string) => void;
 };
 
-export default function Map({
-  restaurants,
-  selectedRestaurantId,
-  onRestaurantSelect,
-}: Props) {
-  const [zoom, setZoom] = useState(16);
-  const [currentLocation, setCurrentLocation] =
-    useState<google.maps.LatLngLiteral>();
-  const [center, setCenter] = useState<google.maps.LatLngLiteral>({
-    lat: 34.70726721576163,
-    lng: 135.51175158248128,
-  });
+const CENTER_POSITION = {
+  lat: 34.70726721576163,
+  lng: 135.51175158248128,
+};
 
-  useEffect(() => {
-    const selectedRestaurant = restaurants.find(
-      (restaurant) => restaurant.id === selectedRestaurantId
-    );
-    if (selectedRestaurant) {
-      getPlaceDetail({ placeId: selectedRestaurant.googleMapPlaceId }).then(
-        (placeDetail) =>
-          setCenter({
-            lat: placeDetail.location.latitude,
-            lng: placeDetail.location.longitude,
-          })
-      );
-    }
-  }, [selectedRestaurantId, restaurants]);
+export default function Map({ restaurants, selectedRestaurantId, onRestaurantSelect }: Props) {
+  const [zoom, setZoom] = useState(16);
+  const [currentLocation, setCurrentLocation] = useState<google.maps.LatLngLiteral>();
 
   const handleIdle = useCallback(
     (map: google.maps.Map) => {
       if (zoom !== map.getZoom()) {
         setZoom(map.getZoom()!);
       }
-      if (
-        JSON.stringify(center) !== JSON.stringify(map.getCenter()!.toJSON())
-      ) {
-        setCenter(map.getCenter()!.toJSON());
-      }
     },
-    [center, zoom]
+    [zoom]
   );
 
   const handleRestaurantSelect = useCallback(
@@ -92,13 +59,9 @@ export default function Map({
   }, []);
 
   return (
-    <Wrapper
-      apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY ?? ""}
-      render={render}
-      libraries={["places"]}
-    >
+    <Wrapper apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY ?? ""} render={render} libraries={["places"]}>
       <MapComponent
-        center={center}
+        center={CENTER_POSITION}
         onIdle={handleIdle}
         zoom={zoom}
         disableDefaultUI
@@ -111,16 +74,11 @@ export default function Map({
             placeId={restaurant.googleMapPlaceId}
             title={restaurant.name}
             selected={restaurant.id === selectedRestaurantId}
-            onClick={(position) => {
-              setCenter(position.toJSON());
-              handleRestaurantSelect(restaurant.id);
-            }}
+            onClick={() => handleRestaurantSelect(restaurant.id)}
             clickable
           />
         ))}
-        {currentLocation && (
-          <CurrentLocationMarker position={currentLocation} />
-        )}
+        {currentLocation && <CurrentLocationMarker position={currentLocation} />}
       </MapComponent>
     </Wrapper>
   );
@@ -133,13 +91,7 @@ interface MapProps extends google.maps.MapOptions {
   currentPlaceId?: string;
 }
 
-function MapComponent({
-  onIdle,
-  children,
-  style,
-  currentPlaceId,
-  ...options
-}: MapProps) {
+function MapComponent({ onIdle, children, style, currentPlaceId, ...options }: MapProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [map, setMap] = useState<google.maps.Map>();
 
@@ -180,10 +132,7 @@ interface CurrentLocationMarkerProps extends google.maps.MarkerOptions {
   position: google.maps.LatLngLiteral;
 }
 
-function CurrentLocationMarker({
-  position,
-  ...options
-}: CurrentLocationMarkerProps) {
+function CurrentLocationMarker({ position, ...options }: CurrentLocationMarkerProps) {
   const [marker, setMarker] = useState<google.maps.Marker>();
 
   useEffect(() => {
@@ -226,15 +175,10 @@ function CurrentLocationMarker({
 interface MarkerProps extends google.maps.MarkerOptions {
   placeId: string;
   selected: boolean;
-  onClick: (position: google.maps.LatLng) => void;
+  onClick: () => void;
 }
 
-function RestaurantMarker({
-  placeId,
-  selected,
-  onClick,
-  ...options
-}: MarkerProps) {
+function RestaurantMarker({ placeId, selected, onClick, ...options }: MarkerProps) {
   const [marker, setMarker] = useState<google.maps.Marker>();
   const { placeDetail } = usePlacesDetail(options.map, placeId);
 
@@ -288,15 +232,11 @@ function RestaurantMarker({
   }, [marker, options]);
 
   useEffect(() => {
-    if (marker && placeDetail?.geometry?.location) {
+    if (marker) {
       google.maps.event.clearListeners(marker, "click");
-      marker.addListener("click", () => {
-        if (placeDetail?.geometry?.location) {
-          onClick(placeDetail.geometry.location);
-        }
-      });
+      marker.addListener("click", onClick);
     }
-  }, [marker, onClick, placeDetail]);
+  }, [marker, onClick]);
 
   useEffect(() => {
     if (marker && placeDetail) {
