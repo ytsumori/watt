@@ -2,10 +2,11 @@
 import { BankAccountType } from "@prisma/client";
 import { ConvertedOrderInfo } from "../../_util/convertRequiredOrderInfo";
 import { format } from "date-fns";
+import { isValidHolderName } from "./util";
 
 // 各レコードの値については https://www.rakuten-bank.co.jp/business/howto/pdf/h07_06_10.pdf を参照
 
-type TransferBankRecord = [
+export type TransferBankRecord = [
   string,
   string,
   string,
@@ -65,6 +66,10 @@ export const getTransferBankRecords = (
     ) {
       throw new Error("bank record has not required fields");
     }
+    if (!isValidHolderName(bankAccount.holderName)) {
+      throw new Error("invalid holder name");
+    }
+
     return [
       "2", // データ区分
       bankAccount.bankCode, // 受取人銀行番号
