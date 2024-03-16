@@ -1,12 +1,15 @@
+"use client";
 import { Button } from "@chakra-ui/react";
 import { FC } from "react";
 import { ConvertedOrderInfo } from "../../_util/convertRequiredOrderInfo";
-import { convertToBlob, getCsvBankList } from "./util";
+import { convertToBlob } from "./util";
+import { getCsvBankRecords } from "./action";
 
 type OrdersCsvDownloadButtonProps = { orders: ConvertedOrderInfo[] };
 export const OrdersCsvDownloadButton: FC<OrdersCsvDownloadButtonProps> = ({ orders }) => {
-  const onClick = () => {
-    const blob = convertToBlob(getCsvBankList(orders));
+  const onClick = async () => {
+    const bankRecords = await getCsvBankRecords(orders);
+    const blob = convertToBlob(bankRecords);
     const link = document.createElement("a");
     link.download = "download.csv";
     link.href = URL.createObjectURL(blob);
