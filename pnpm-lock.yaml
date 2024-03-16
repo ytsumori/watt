@@ -65,6 +65,9 @@ dependencies:
   '@types/react-dom':
     specifier: 18.2.18
     version: 18.2.18
+  date-fns:
+    specifier: ^3.5.0
+    version: 3.5.0
   dotenv:
     specifier: ^16.4.5
     version: 16.4.5
@@ -3833,6 +3836,10 @@ packages:
       whatwg-mimetype: 4.0.0
       whatwg-url: 14.0.0
     dev: true
+
+  /date-fns@3.5.0:
+    resolution: {integrity: sha512-a+DwyXn7NOfdJireCzAA0B9p7jIXEu/Q9JKCyMYvH6+0vPUNbQceA0neXrdfJ/xzl3mhOh5vibQQ3936Tssm6A==}
+    dev: false
 
   /debug@2.6.9:
     resolution: {integrity: sha512-bC7ElrdJaJnPbAP+1EotYvqZsb3ecl5wi6Bfi6BJTUcNowp6cvspg0jXznRTKDjm/E7AdgFBVeAPVMNcKGsHMA==}
