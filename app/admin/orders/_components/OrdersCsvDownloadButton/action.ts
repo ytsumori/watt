@@ -23,6 +23,35 @@ type TransferBankRecord = [
   string,
 ];
 
+export const getHeaderRecord = (): string[] => {
+  const current = new Date();
+  const now = format(current, "MMdd");
+  if (
+    process.env.CONSIGNOR_CODE === undefined ||
+    process.env.CONSIGNOR_NAME === undefined ||
+    process.env.CONSIGNOR_BRANCH_CODE === undefined ||
+    process.env.ACCOUNT_NUMBER === undefined ||
+    now === undefined
+  ) {
+    throw new Error("header Record has not required fields");
+  }
+  return [
+    "1", // データ区分
+    "21", // 種別コード
+    "0", // 文字コード区分
+    `${process.env.CONSIGNOR_CODE}`, // 委託者コード
+    `${process.env.CONSIGNOR_NAME}`, // 委託者名
+    `${now}`, // 実行日
+    "0036", // 依頼人銀行番号
+    "", // 依頼人銀行名
+    `${process.env.CONSIGNOR_BRANCH_CODE}`, // 依頼人支店番号
+    "", // 依頼人支店名
+    "1", // 預金種目
+    `${process.env.ACCOUNT_NUMBER}`, // 依頼人口座番号
+    "", // ダミー
+  ];
+};
+
 export const getTransferBankRecords = (
   orders: ConvertedOrderInfo[],
 ): TransferBankRecord[] => {
@@ -34,7 +63,7 @@ export const getTransferBankRecords = (
       bankAccount?.accountNo === undefined ||
       bankAccount?.holderName === undefined || order.price === undefined
     ) {
-      throw new Error("bankAccount has not required fields");
+      throw new Error("bank record has not required fields");
     }
     return [
       "2", // データ区分
@@ -70,24 +99,7 @@ export const getTrailerRecord = (orders: ConvertedOrderInfo[]) => {
 export const getCsvBankRecords = async (
   orders: ConvertedOrderInfo[],
 ): Promise<(string | number)[][]> => {
-  const current = new Date();
-  const now = format(current, "MMdd");
-  const headerRecord = [
-    "1", // データ区分
-    "21", // 種別コード
-    "0", // 文字コード区分
-    `${process.env.CONSIGNOR_CODE}`, // 委託者コード
-    `${process.env.CONSIGNOR_NAME}`, // 委託者名
-    `${now}`, // 実行日
-    "0036", // 依頼人銀行番号
-    "", // 依頼人銀行名
-    `${process.env.CONSIGNOR_BRANCH_CODE}`, // 依頼人支店番号
-    "", // 依頼人支店名
-    "1", // 預金種目
-    `${process.env.ACCOUNT_NUMBER}`, // 依頼人口座番号
-    "", // ダミー
-  ];
-
+  const headerRecord = getHeaderRecord();
   const transferBankRecords = getTransferBankRecords(orders);
   const trailerRecord = getTrailerRecord(orders);
   const endRecord = [
