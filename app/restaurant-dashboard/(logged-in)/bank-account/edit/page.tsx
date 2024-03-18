@@ -1,11 +1,7 @@
 "use client";
 
-import {
-  createRestaurantBankAccount,
-  findBankAccountByRestaurantId,
-  updateRestaurantBankAccount,
-} from "@/actions/restaurant-bank-account";
-import { Box, Card, Center, Heading, Progress, Spinner, Text, VStack, useToast } from "@chakra-ui/react";
+import { findBankAccountByRestaurantId, updateRestaurantBankAccount } from "@/actions/restaurant-bank-account";
+import { Box, Center, Heading, Spinner, Text, VStack, useToast } from "@chakra-ui/react";
 import { useContext, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { RestaurantIdContext } from "../../_components/restaurant-id-provider";

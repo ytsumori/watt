@@ -2,7 +2,7 @@
 
 import { translateOrderStatus } from "@/lib/prisma/translate-enum";
 import { ChevronRightIcon } from "@chakra-ui/icons";
-import { Badge, Box, Heading, Text, VStack } from "@chakra-ui/react";
+import { Badge, Heading, Text, VStack } from "@chakra-ui/react";
 import { OrderStatus, Prisma } from "@prisma/client";
 import Link from "next/link";
 
@@ -29,9 +29,7 @@ export function OrdersPage({ orders }: Props) {
             href={`/orders/${order.id}`}
             position="relative"
           >
-            <Text fontSize="x-small">
-              {order.createdAt.toLocaleString("ja-JP")}
-            </Text>
+            <Text fontSize="x-small">{order.createdAt.toLocaleString("ja-JP")}</Text>
             <Text fontSize="medium">{order.meal.restaurant.name}</Text>
             <Text fontSize="medium">{order.meal.title}</Text>
             <Text fontSize="small">
@@ -40,22 +38,10 @@ export function OrdersPage({ orders }: Props) {
                 {order.price}
               </Text>
             </Text>
-            <Badge
-              position="absolute"
-              top={0}
-              right={0}
-              m={2}
-              colorScheme={getBadgeColor(order.status)}
-            >
+            <Badge position="absolute" top={0} right={0} m={2} colorScheme={getBadgeColor(order.status)}>
               {translateOrderStatus(order.status)}
             </Badge>
-            <ChevronRightIcon
-              position="absolute"
-              right={0}
-              top="50%"
-              transform="translateY(-50%)"
-              boxSize={8}
-            />
+            <ChevronRightIcon position="absolute" right={0} top="50%" transform="translateY(-50%)" boxSize={8} />
           </VStack>
         ))}
       </VStack>

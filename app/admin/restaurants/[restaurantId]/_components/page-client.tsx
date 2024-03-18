@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Heading, VStack } from "@chakra-ui/react";
+import { Heading, VStack } from "@chakra-ui/react";
 import { Prisma } from "@prisma/client";
 
 import { MealList } from "@/components/meal/meal-list";

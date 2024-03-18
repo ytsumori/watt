@@ -10,15 +10,10 @@ export async function isPaymentMethodRegistered(userId: string) {
     },
     include: {
       stripeCustomer: true,
-      paypayCustomer: true,
     },
   });
 
   if (!user) throw new Error("User not found");
-
-  if (user.paypayCustomer) {
-    return true;
-  }
 
   if (user.stripeCustomer) {
     const paymentMethods = await stripe.paymentMethods.list({
