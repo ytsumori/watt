@@ -63,8 +63,7 @@ export async function createPaymentIntent({
     mealId: meal.id,
     userId: user.id,
     providerPaymentId: paymentIntent.id,
-    paymentProvider: "STRIPE",
-    price: discountedPrice
+    price: discountedPrice,
   });
 
   return paymentIntent.status;
@@ -75,13 +74,8 @@ export async function capturePaymentIntent(orderId: string) {
   if (!order) {
     throw new Error("Order not found");
   }
-  if (order.paymentProvider !== "STRIPE") {
-    throw new Error("Invalid payment provider");
-  }
 
-  const paymentIntent = await stripe.paymentIntents.capture(
-    order.providerPaymentId
-  );
+  const paymentIntent = await stripe.paymentIntents.capture(order.providerPaymentId);
   if (paymentIntent.status === "succeeded") {
     await updateOrderStatus({
       id: orderId,
@@ -96,13 +90,8 @@ export async function cancelPaymentIntent(orderId: string) {
   if (!order) {
     throw new Error("Order not found");
   }
-  if (order.paymentProvider !== "STRIPE") {
-    throw new Error("Invalid payment provider");
-  }
 
-  const paymentIntent = await stripe.paymentIntents.cancel(
-    order.providerPaymentId
-  );
+  const paymentIntent = await stripe.paymentIntents.cancel(order.providerPaymentId);
   if (paymentIntent.status === "canceled") {
     await updateOrderStatus({
       id: orderId,

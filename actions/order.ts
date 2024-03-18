@@ -1,6 +1,6 @@
 "use server";
 
-import { OrderStatus, PaymentProvider, Prisma } from "@prisma/client";
+import { OrderStatus, Prisma } from "@prisma/client";
 import prisma from "@/lib/prisma/client";
 
 export async function findOrder(args: Prisma.OrderFindUniqueArgs) {
@@ -24,13 +24,11 @@ export async function createOrder({
   mealId,
   userId,
   providerPaymentId,
-  paymentProvider,
-  price
+  price,
 }: {
   mealId: string;
   userId: string;
   providerPaymentId: string;
-  paymentProvider: PaymentProvider;
   price: number;
 }) {
   const meal = await prisma.meal.findUnique({
@@ -51,7 +49,6 @@ export async function createOrder({
     data: {
       userId,
       mealId: meal.id,
-      paymentProvider,
       providerPaymentId,
       price,
       restaurantProfitPrice: meal.price,
@@ -59,13 +56,7 @@ export async function createOrder({
   });
 }
 
-export async function updateOrderStatus({
-  id,
-  status,
-}: {
-  id: string;
-  status: OrderStatus;
-}) {
+export async function updateOrderStatus({ id, status }: { id: string; status: OrderStatus }) {
   return await prisma.order.update({
     where: { id },
     data: { status },
