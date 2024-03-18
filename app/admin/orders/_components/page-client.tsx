@@ -18,7 +18,6 @@ export function OrdersPageClient({ orders }: Props) {
         <Table>
           <Thead>
             <Tr>
-              <Th>決済方法</Th>
               <Th>決済ID</Th>
               <Th>レストラン名</Th>
               <Th>決済金額</Th>
@@ -29,7 +28,6 @@ export function OrdersPageClient({ orders }: Props) {
           <Tbody>
             {orders.map((order) => (
               <Tr key={order.id}>
-                <Td>{order.paymentProvider}</Td>
                 <Td>{order.providerPaymentId}</Td>
                 <Td>{order.restaurantName}</Td>
                 <Td>{order.price.toLocaleString("ja-JP")}円</Td>

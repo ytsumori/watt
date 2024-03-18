@@ -7,7 +7,7 @@ describe("[OrdersCsvDownloadButton / action]", () => {
     {
       id: "1",
       restaurantName: "testRestaurant",
-      "bankAccount": {
+      bankAccount: {
         id: "1",
         bankCode: "0001",
         branchCode: "001",
@@ -21,7 +21,6 @@ describe("[OrdersCsvDownloadButton / action]", () => {
       },
       userId: "",
       mealId: "",
-      paymentProvider: "STRIPE",
       providerPaymentId: "",
       status: "COMPLETE",
       price: 1000,
@@ -32,7 +31,7 @@ describe("[OrdersCsvDownloadButton / action]", () => {
     {
       id: "2",
       restaurantName: "testRestaurant2",
-      "bankAccount": {
+      bankAccount: {
         id: "1",
         bankCode: "0001",
         branchCode: "001",
@@ -46,7 +45,6 @@ describe("[OrdersCsvDownloadButton / action]", () => {
       },
       userId: "",
       mealId: "",
-      paymentProvider: "STRIPE",
       providerPaymentId: "",
       status: "COMPLETE",
       price: 2000,
@@ -85,12 +83,7 @@ describe("[OrdersCsvDownloadButton / action]", () => {
   describe("getTrailerRecord", () => {
     it("適切な配列に変換されている", () => {
       const sum = mockOrders.reduce((acc, cur) => acc + cur.price, 0);
-      expect(getTrailerRecord(mockOrders)).toStrictEqual([
-        "8",
-        mockOrders.length,
-        sum,
-        "",
-      ]);
+      expect(getTrailerRecord(mockOrders)).toStrictEqual(["8", mockOrders.length, sum, ""]);
     });
   });
 });
