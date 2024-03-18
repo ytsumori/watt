@@ -1,9 +1,6 @@
 "use client";
 
-import {
-  cancelPaymentIntent,
-  capturePaymentIntent,
-} from "@/actions/payment-intent";
+import { cancelPaymentIntent, capturePaymentIntent } from "@/actions/payment-intent";
 import {
   Alert,
   AlertDescription,
@@ -40,16 +37,8 @@ type Props = {
 
 export function OrderPage({ order }: Props) {
   const router = useRouter();
-  const {
-    isOpen: isConfirmModalOpen,
-    onOpen: onConfirmModalOpen,
-    onClose: onConfirmModalClose,
-  } = useDisclosure();
-  const {
-    isOpen: isCancelModalOpen,
-    onOpen: onCancelModalOpen,
-    onClose: onCancelModalClose,
-  } = useDisclosure();
+  const { isOpen: isConfirmModalOpen, onOpen: onConfirmModalOpen, onClose: onConfirmModalClose } = useDisclosure();
+  const { isOpen: isCancelModalOpen, onOpen: onCancelModalOpen, onClose: onCancelModalClose } = useDisclosure();
   const [isPaying, setIsPaying] = useState(false);
   const [isCancelling, setIsCancelling] = useState(false);
 
@@ -83,6 +72,12 @@ export function OrderPage({ order }: Props) {
           <VStack alignItems="start" spacing={8} p={4}>
             <VStack alignItems="start" spacing={4}>
               <Heading>注文を確定</Heading>
+              <Text>
+                注文番号:
+                <Heading as="span" ml={2}>
+                  {order.orderNumber}
+                </Heading>
+              </Text>
               <Alert
                 status="info"
                 flexDirection="column"
@@ -193,12 +188,7 @@ export function OrderPage({ order }: Props) {
               isDisabled: isCancelling,
             }}
           />
-          <Modal
-            isOpen={isPaying}
-            onClose={() => undefined}
-            size="xs"
-            isCentered
-          >
+          <Modal isOpen={isPaying} onClose={() => undefined} size="xs" isCentered>
             <ModalOverlay />
             <ModalContent>
               <ModalBody textAlign="center">
@@ -207,12 +197,7 @@ export function OrderPage({ order }: Props) {
               </ModalBody>
             </ModalContent>
           </Modal>
-          <Modal
-            isOpen={isCancelling}
-            onClose={() => undefined}
-            size="xs"
-            isCentered
-          >
+          <Modal isOpen={isCancelling} onClose={() => undefined} size="xs" isCentered>
             <ModalOverlay />
             <ModalContent>
               <ModalBody textAlign="center">
@@ -271,15 +256,7 @@ export function OrderPage({ order }: Props) {
               ¥{order.price.toLocaleString("ja-JP")}
             </Heading>
           </VStack>
-          <Button
-            variant="outline"
-            size="md"
-            colorScheme="gray"
-            w="full"
-            maxW="full"
-            as={Link}
-            href="/"
-          >
+          <Button variant="outline" size="md" colorScheme="gray" w="full" maxW="full" as={Link} href="/">
             ホーム画面に戻る
           </Button>
         </VStack>
@@ -337,15 +314,7 @@ export function OrderPage({ order }: Props) {
               ¥{order.price.toLocaleString("ja-JP")}
             </Heading>
           </VStack>
-          <Button
-            variant="outline"
-            size="md"
-            colorScheme="gray"
-            w="full"
-            maxW="full"
-            as={Link}
-            href="/"
-          >
+          <Button variant="outline" size="md" colorScheme="gray" w="full" maxW="full" as={Link} href="/">
             ホーム画面に戻る
           </Button>
         </VStack>

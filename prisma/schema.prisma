@@ -100,9 +100,10 @@ model Meal {
 
 model Order {
   id                    String      @id @default(cuid())
+  orderNumber           Int         @unique @default(autoincrement())
   userId                String
   mealId                String
-  providerPaymentId     String
+  providerPaymentId     String      @unique
   status                OrderStatus @default(PREAUTHORIZED)
   price                 Int
   restaurantProfitPrice Int
@@ -111,8 +112,6 @@ model Order {
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   meal Meal @relation(fields: [mealId], references: [id], onDelete: Cascade)
-
-  @@unique([providerPaymentId])
 }
 
 model Staff {
