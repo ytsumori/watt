@@ -1,13 +1,9 @@
 {
   "[typescript]": {
-    "editor.defaultFormatter": "denoland.vscode-deno"
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  "cSpell.words": [
-    "preauthorized, watt"
-  ],
-  "deno.enablePaths": [
-    "supabase/functions"
-  ],
+  "cSpell.words": ["preauthorized, watt"],
+  "deno.enablePaths": ["supabase/functions"],
   "deno.lint": true,
   "deno.unstable": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",

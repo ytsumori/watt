@@ -30,7 +30,7 @@ export default function Dashboard() {
   const router = useRouter();
 
   useEffect(() => {
-    findRestaurant(restaurantId).then((restaurant) => {
+    findRestaurant({ where: { id: restaurantId } }).then((restaurant) => {
       if (restaurant) {
         setRestaurant(restaurant);
       }
@@ -54,12 +54,7 @@ export default function Dashboard() {
           <Heading mb={4} display="inline-flex">
             {restaurant.name}
           </Heading>
-          <Button
-            leftIcon={<EditIcon />}
-            onClick={() =>
-              router.push("/restaurant-dashboard/bank-account/edit")
-            }
-          >
+          <Button leftIcon={<EditIcon />} onClick={() => router.push("/restaurant-dashboard/bank-account/edit")}>
             振込先口座を登録
           </Button>
           <iframe
