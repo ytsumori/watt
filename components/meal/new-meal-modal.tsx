@@ -36,6 +36,7 @@ export function NewMealModal({ restaurantId, isOpen, onClose, onSubmitComplete }
   const inputFileRef = useRef<HTMLInputElement>(null);
   const [imageUrl, setImageUrl] = useState<string>();
   const [isUploading, setIsUploading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleClose = () => {
     setImageUrl(undefined);
@@ -101,6 +102,7 @@ export function NewMealModal({ restaurantId, isOpen, onClose, onSubmitComplete }
 
   const handleClickSubmit = async () => {
     if (isSubmitDisabled) return;
+    setIsSubmitting(true);
 
     createMeal({
       restaurantId,
@@ -111,6 +113,7 @@ export function NewMealModal({ restaurantId, isOpen, onClose, onSubmitComplete }
     }).then(() => {
       handleClose();
       onSubmitComplete();
+      setIsSubmitting(false);
     });
   };
 
@@ -154,7 +157,7 @@ export function NewMealModal({ restaurantId, isOpen, onClose, onSubmitComplete }
           <Button mr={3} onClick={handleClose} variant="outline">
             キャンセル
           </Button>
-          <Button onClick={handleClickSubmit} isDisabled={isSubmitDisabled}>
+          <Button onClick={handleClickSubmit} isDisabled={isSubmitDisabled} isLoading={isSubmitting}>
             保存
           </Button>
         </ModalFooter>
