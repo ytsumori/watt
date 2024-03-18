@@ -58,9 +58,18 @@ export async function notifyStaff({ restaurantId, orderId }: { restaurantId: str
                   contents: [
                     {
                       type: "text",
-                      text: `注文番号：${order.orderNumber}`,
-                      weight: "bold",
-                      size: "lg",
+                      contents: [
+                        {
+                          type: "span",
+                          text: "注文番号：",
+                        },
+                        {
+                          type: "span",
+                          text: order.orderNumber.toString(),
+                          size: "xxl",
+                          weight: "bold",
+                        },
+                      ],
                     },
                     {
                       type: "text",
