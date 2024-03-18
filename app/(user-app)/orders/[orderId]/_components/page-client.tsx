@@ -212,6 +212,12 @@ export function OrderPage({ order }: Props) {
       return (
         <VStack alignItems="start" p={4} spacing={4}>
           <Heading>キャンセル済み</Heading>
+          <Text>
+            注文番号:
+            <Heading as="span" ml={2}>
+              {order.orderNumber}
+            </Heading>
+          </Text>
           <Alert
             status="error"
             flexDirection="column"
@@ -265,6 +271,12 @@ export function OrderPage({ order }: Props) {
       return (
         <VStack alignItems="start" p={4} spacing={4}>
           <Heading>決済完了</Heading>
+          <Text>
+            注文番号:
+            <Heading as="span" ml={2}>
+              {order.orderNumber}
+            </Heading>
+          </Text>
           <Alert
             status="success"
             flexDirection="column"
