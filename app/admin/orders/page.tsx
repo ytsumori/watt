@@ -1,15 +1,12 @@
 import prisma from "@/lib/prisma/client";
 import { OrdersPageClient } from "./_components/page-client";
+import { convertRequiredOrderInfo } from "./_util/convertRequiredOrderInfo";
 
 export default async function OrdersPage() {
-  const orders = await prisma.order.findMany({
-    include: {
-      meal: {
-        include: { restaurant: true },
-      },
-      user: true,
-    },
-    orderBy: { createdAt: "desc" },
+  const restaurants = await prisma.restaurant.findMany({
+    include: { meals: { include: { orders: { orderBy: { createdAt: "desc" } } } }, bankAccount: true },
   });
+
+  const orders = convertRequiredOrderInfo(restaurants);
   return <OrdersPageClient orders={orders} />;
 }
