@@ -27,6 +27,7 @@ describe("[OrdersCsvDownloadButton / action]", () => {
       restaurantProfitPrice: 1100,
       createdAt: new Date(),
       updatedAt: new Date(),
+      orderNumber: 1,
     },
     {
       id: "2",
@@ -51,6 +52,7 @@ describe("[OrdersCsvDownloadButton / action]", () => {
       restaurantProfitPrice: 2100,
       createdAt: new Date(),
       updatedAt: new Date(),
+      orderNumber: 2,
     },
   ];
 
