@@ -3,13 +3,7 @@
 import { pushMessage } from "@/lib/line-messaging-api";
 import prisma from "@/lib/prisma/client";
 
-export async function notifyStaff({
-  restaurantId,
-  orderId,
-}: {
-  restaurantId: string;
-  orderId: string;
-}) {
+export async function notifyStaff({ restaurantId, orderId }: { restaurantId: string; orderId: string }) {
   const staffs = await prisma.staff.findMany({
     where: {
       restaurantId,
@@ -62,6 +56,12 @@ export async function notifyStaff({
                   margin: "xxl",
                   spacing: "sm",
                   contents: [
+                    {
+                      type: "text",
+                      text: `注文番号：${order.orderNumber}`,
+                      weight: "bold",
+                      size: "lg",
+                    },
                     {
                       type: "text",
                       text: "注文予定の推しメシ",
