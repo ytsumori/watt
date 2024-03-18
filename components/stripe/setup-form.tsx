@@ -1,11 +1,7 @@
 "use client";
 
 import React, { FormEventHandler, useEffect, useState } from "react";
-import {
-  PaymentElement,
-  useStripe,
-  useElements,
-} from "@stripe/react-stripe-js";
+import { PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import {
   Button,
   Modal,
@@ -16,60 +12,24 @@ import {
   ModalOverlay,
   useDisclosure,
 } from "@chakra-ui/react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { decodeJWTToken, getAuthorizationUrl } from "@/lib/paypay";
-import { getMyId } from "@/actions/me";
-import { createPaypayCustomer } from "@/actions/paypay-customer";
+import { usePathname, useSearchParams } from "next/navigation";
 import Link from "next/link";
 
 export default function SetupForm() {
   const stripe = useStripe();
   const elements = useElements();
-  const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const redirectPathname = searchParams.get("redirect_pathname");
 
   const [message, setMessage] = useState<string>();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const {
-    isOpen: isCompleteModalOpen,
-    onOpen: onCompleteModalOpen,
-    onClose: onCompleteModalClose,
-  } = useDisclosure();
-
-  const [paymentMethodTypes, setPaymentMethodTypes] = useState<string>();
-
-  useEffect(() => {
-    const responseToken = new URLSearchParams(window.location.search).get(
-      "responseToken"
-    );
-
-    if (!responseToken) return;
-
-    decodeJWTToken(responseToken).then((response) => {
-      switch (response.result) {
-        case "succeeded":
-          createPaypayCustomer(response.userAuthorizationId).then(() => {
-            onCompleteModalOpen();
-          });
-          break;
-        case "declined":
-          setMessage("paypayでの支払い設定に失敗しました。");
-          break;
-        default:
-          setMessage("予期せぬエラーが発生しました。");
-          break;
-      }
-    });
-  }, [onCompleteModalOpen]);
+  const { isOpen: isCompleteModalOpen, onOpen: onCompleteModalOpen, onClose: onCompleteModalClose } = useDisclosure();
 
   useEffect(() => {
     if (!stripe) return;
 
-    const clientSecret = new URLSearchParams(window.location.search).get(
-      "setup_intent_client_secret"
-    );
+    const clientSecret = new URLSearchParams(window.location.search).get("setup_intent_client_secret");
 
     if (!clientSecret) return;
 
@@ -85,9 +45,7 @@ export default function SetupForm() {
         case "requires_payment_method":
           // Redirect your user back to your payment page to attempt collecting
           // payment again
-          setMessage(
-            "決済方法の登録に失敗しました。別の決済方法での登録を試してみてください。"
-          );
+          setMessage("決済方法の登録に失敗しました。別の決済方法での登録を試してみてください。");
           break;
         default:
           setMessage("予期せぬエラーが発生しました。");
@@ -107,23 +65,10 @@ export default function SetupForm() {
 
     setIsSubmitting(true);
 
-    if (paymentMethodTypes === "external_paypay") {
-      const userId = await getMyId();
-      if (!userId) throw new Error("User not found");
-
-      const authorizationUrl = await getAuthorizationUrl({
-        userId: userId,
-        redirectUrl: `${process.env.NEXT_PUBLIC_HOST_URL}${pathname}?redirect_url=${redirectPathname}`,
-      });
-      router.push(authorizationUrl);
-    }
-
     const { error } = await stripe.confirmSetup({
       elements,
       confirmParams: {
-        return_url:
-          `${process.env.NEXT_PUBLIC_HOST_URL}${pathname}` +
-          `?redirect_pathname=${redirectPathname}`,
+        return_url: `${process.env.NEXT_PUBLIC_HOST_URL}${pathname}` + `?redirect_pathname=${redirectPathname}`,
       },
     });
 
@@ -143,23 +88,12 @@ export default function SetupForm() {
 
   return (
     <form onSubmit={handleSubmit} style={{ textAlign: "center" }}>
-      <PaymentElement onChange={(e) => setPaymentMethodTypes(e.value.type)} />
-      <Button
-        type="submit"
-        size="md"
-        disabled={isSubmitting || !stripe || !elements}
-        mt={4}
-        isLoading={isSubmitting}
-      >
+      <PaymentElement />
+      <Button type="submit" size="md" disabled={isSubmitting || !stripe || !elements} mt={4} isLoading={isSubmitting}>
         登録
       </Button>
       {message && <div id="payment-message">{message}</div>}
-      <Modal
-        isCentered
-        isOpen={isCompleteModalOpen}
-        onClose={onCompleteModalClose}
-        size="sm"
-      >
+      <Modal isCentered isOpen={isCompleteModalOpen} onClose={onCompleteModalClose} size="sm">
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>支払い方法の登録が完了しました</ModalHeader>
