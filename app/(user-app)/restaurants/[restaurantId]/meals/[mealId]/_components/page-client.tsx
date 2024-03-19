@@ -185,7 +185,7 @@ export default function MealPage({ meal, paymentMethods, isRestaurantActive, pre
       ) : (
         <Alert status="warning" borderRadius={4}>
           <AlertIcon />
-          現在こちらのお店は準備中です
+          現在こちらのお店は入店できません
         </Alert>
       )}
     </VStack>
