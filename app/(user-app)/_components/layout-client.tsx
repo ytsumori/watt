@@ -66,7 +66,7 @@ export default function BaseLayout({ children, defaultPreauthorizedOrderId, user
       <Flex px={4} py={2}>
         <Box w="full">
           <NextLink href="/">
-            <Image src="/watt-logo.png" alt="Watt" width={80} height={25} />
+            <Image src="/watt-logo.png" alt="Watt" width={80} height={31} />
           </NextLink>
           <Heading size="sm" color="orange" mt={1}>
             今入れるお店が見つかる！
