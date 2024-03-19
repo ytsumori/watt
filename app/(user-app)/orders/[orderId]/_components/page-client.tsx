@@ -28,6 +28,7 @@ import { useState } from "react";
 import { ConfirmModal } from "../../../../../components/confirm-modal";
 import { PaymentConfirmModal } from "./payment-confirm-modal";
 import Link from "next/link";
+import { notifyStaffCancellation } from "../_actions/notify-staff-cancellation";
 
 type Props = {
   order: Prisma.OrderGetPayload<{
@@ -57,6 +58,7 @@ export function OrderPage({ order }: Props) {
     setIsCancelling(true);
     cancelPaymentIntent(order.id).then((paymentStatus) => {
       if (paymentStatus === "canceled") {
+        notifyStaffCancellation({ restaurantId: order.meal.restaurant.id, orderId: order.id });
         router.push("/");
         router.refresh();
       } else {

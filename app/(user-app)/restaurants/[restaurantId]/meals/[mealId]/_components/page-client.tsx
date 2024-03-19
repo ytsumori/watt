@@ -25,7 +25,7 @@ import { createPaymentIntent } from "@/actions/payment-intent";
 import { signIn } from "next-auth/react";
 import { CheckCircleIcon } from "@chakra-ui/icons";
 import { useRouter, usePathname } from "next/navigation";
-import { notifyStaff } from "../_actions/notify-staff";
+import { notifyStaffOrder } from "../_actions/notify-staff-order";
 import { findPreauthorizedOrder } from "@/actions/order";
 import { applyEarlyDiscount } from "@/utils/discount-price";
 import Link from "next/link";
@@ -38,17 +38,11 @@ type Props = {
   userId?: string;
 };
 
-export default function MealPage({
-  meal,
-  paymentMethods,
-  isRestaurantActive,
-  preauthorizedOrder,
-  userId,
-}: Props) {
+export default function MealPage({ meal, paymentMethods, isRestaurantActive, preauthorizedOrder, userId }: Props) {
   const router = useRouter();
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<
-    string | undefined
-  >(paymentMethods.length === 1 ? paymentMethods[0].id : undefined);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string | undefined>(
+    paymentMethods.length === 1 ? paymentMethods[0].id : undefined
+  );
   const [isVisitRequesting, setIsVisitRequesting] = useState(false);
   const pathname = usePathname();
 
@@ -65,7 +59,7 @@ export default function MealPage({
       if (status === "requires_capture") {
         findPreauthorizedOrder(userId).then((order) => {
           if (order) {
-            notifyStaff({ restaurantId: meal.restaurantId, orderId: order.id });
+            notifyStaffOrder({ restaurantId: meal.restaurantId, orderId: order.id });
             router.push(`/orders/${order.id}`);
           }
         });
@@ -80,11 +74,7 @@ export default function MealPage({
     <VStack alignItems="baseline" spacing={4} w="full">
       {isRestaurantActive ? (
         preauthorizedOrder ? (
-          <Alert
-            status="warning"
-            as={Link}
-            href={`/orders/${preauthorizedOrder.id}`}
-          >
+          <Alert status="warning" as={Link} href={`/orders/${preauthorizedOrder.id}`}>
             <AlertIcon />
             既に選択済みの推しメシがあります
           </Alert>
@@ -109,12 +99,7 @@ export default function MealPage({
                     </Thead>
                     <Tbody>
                       {paymentMethods.map((paymentMethod) => (
-                        <Tr
-                          key={paymentMethod.id}
-                          onClick={() =>
-                            setSelectedPaymentMethod(paymentMethod.id)
-                          }
-                        >
+                        <Tr key={paymentMethod.id} onClick={() => setSelectedPaymentMethod(paymentMethod.id)}>
                           <Th>
                             {selectedPaymentMethod === paymentMethod.id && (
                               <CheckCircleIcon color="orange.400" boxSize={5} />
@@ -123,19 +108,14 @@ export default function MealPage({
                           <Th>{paymentMethod.card?.brand}</Th>
                           <Th>**** **** **** {paymentMethod.card?.last4}</Th>
                           <Th>
-                            {paymentMethod.card?.exp_month}/
-                            {paymentMethod.card?.exp_year}
+                            {paymentMethod.card?.exp_month}/{paymentMethod.card?.exp_year}
                           </Th>
                         </Tr>
                       ))}
                     </Tbody>
                   </Table>
                 </TableContainer>
-                <Button
-                  variant="outline"
-                  as={Link}
-                  href={`/payment-method/new?redirect_pathname=${pathname}`}
-                >
+                <Button variant="outline" as={Link} href={`/payment-method/new?redirect_pathname=${pathname}`}>
                   決済方法を登録
                 </Button>
                 <Divider borderColor="black" />
@@ -154,9 +134,7 @@ export default function MealPage({
                     >
                       ¥{meal.price.toLocaleString("ja-JP")}
                     </Text>
-                    <Text as="b">
-                      ¥{applyEarlyDiscount(meal.price).toLocaleString("ja-JP")}
-                    </Text>
+                    <Text as="b">¥{applyEarlyDiscount(meal.price).toLocaleString("ja-JP")}</Text>
                   </Text>
                 </Flex>
                 <Divider />
