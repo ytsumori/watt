@@ -31,7 +31,7 @@ export function SchedulePage() {
     <>
       <FormControl>
         <HStack>
-          <FormLabel mb={0}>営業中</FormLabel>
+          <FormLabel mb={0}>現在入店可能</FormLabel>
           <Switch onChange={handleOpenStatusChange} isChecked={isRestaurantOpen} />
         </HStack>
         <FormHelperText>お客さんを案内できない場合はオフにしてください</FormHelperText>

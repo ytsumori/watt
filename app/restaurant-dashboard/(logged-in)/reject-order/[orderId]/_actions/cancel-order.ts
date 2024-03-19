@@ -17,7 +17,7 @@ export async function cancelOrder(orderId: string) {
 
   await prisma.restaurant.update({
     where: { id: order.meal.restaurantId },
-    data: { isOpen: false },
+    data: { isOpen: false, isOpenManuallyUpdated: true },
   });
 
   return await prisma.order.findUnique({

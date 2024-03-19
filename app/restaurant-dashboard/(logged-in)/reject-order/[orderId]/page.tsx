@@ -4,27 +4,13 @@ import { useContext, useEffect, useState } from "react";
 import { RestaurantIdContext } from "../../_components/restaurant-id-provider";
 import { findOrder } from "@/actions/order";
 import { Meal, Order } from "@prisma/client";
-import {
-  Alert,
-  Button,
-  Center,
-  useDisclosure,
-  Text,
-  VStack,
-  Spinner,
-  Box,
-  Heading,
-} from "@chakra-ui/react";
+import { Alert, Button, Center, useDisclosure, Text, VStack, Spinner, Box, Heading } from "@chakra-ui/react";
 import { ConfirmModal } from "@/components/confirm-modal";
 import { cancelOrder } from "./_actions/cancel-order";
 import { MealPreviewImage } from "@/components/meal-preview-image";
 import { findMeal } from "@/actions/meal";
 
-export default function RejectOrder({
-  params,
-}: {
-  params: { orderId: string };
-}) {
+export default function RejectOrder({ params }: { params: { orderId: string } }) {
   const restaurantId = useContext(RestaurantIdContext);
   const [order, setOrder] = useState<Order>();
   const [meal, setMeal] = useState<Meal>();
@@ -75,9 +61,7 @@ export default function RejectOrder({
   };
 
   if (order.status === "CANCELLED") {
-    return (
-      <Alert status="error">こちらの注文はすでにキャンセルされています</Alert>
-    );
+    return <Alert status="error">こちらの注文はすでにキャンセルされています</Alert>;
   }
 
   return (
@@ -111,9 +95,7 @@ export default function RejectOrder({
         }}
         onClose={onClose}
       >
-        <Text>
-          満席を伝えると自動で注文がキャンセルされ、店舗の営業ステータスが準備中に切り替わります。
-        </Text>
+        <Text>満席を伝えると自動で注文がキャンセルされ、営業ステータスが「入店不可」に切り替わります。</Text>
       </ConfirmModal>
     </>
   );
