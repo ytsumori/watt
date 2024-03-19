@@ -12,6 +12,7 @@ export async function GET(request: NextRequest) {
   }
 
   const restaurants = await prisma.restaurant.findMany();
+  console.log("restaurants", restaurants);
   const updateRestaurantStatus = async (restaurant: Restaurant) => {
     const { currentOpeningHours } = await getRestaurantBusinessStatus({
       placeId: restaurant.googleMapPlaceId,
@@ -37,7 +38,7 @@ export async function GET(request: NextRequest) {
       }
     }
   };
-  Promise.all(restaurants.map(updateRestaurantStatus));
+  await Promise.all(restaurants.map(updateRestaurantStatus));
 
   return NextResponse.json({ status: "ok" });
 }
