@@ -12,7 +12,7 @@ export async function searchPlaces({ text }: { text: string }) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "X-Goog-Api-Key": process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY!,
+      "X-Goog-Api-Key": process.env.GOOGLE_MAP_API_KEY!,
       "X-Goog-FieldMask": "places.id,places.displayName.text",
     },
     body: JSON.stringify({
@@ -35,8 +35,7 @@ export type PlaceDetailResult = {
 
 export async function getPlaceDetail({ placeId }: { placeId: string }) {
   const response = await fetch(
-    `https://places.googleapis.com/v1/places/${placeId}?fields=id,location&key=${process.env
-      .NEXT_PUBLIC_GOOGLE_MAP_API_KEY!}&languageCode=ja`
+    `https://places.googleapis.com/v1/places/${placeId}?fields=id,location&key=${process.env.GOOGLE_MAP_API_KEY}&languageCode=ja`
   );
   return response.json() as Promise<PlaceDetailResult>;
 }
@@ -49,8 +48,7 @@ type RestaurantBusinessStatusResult = {
 
 export async function getRestaurantBusinessStatus({ placeId }: { placeId: string }) {
   const response = await fetch(
-    `https://places.googleapis.com/v1/places/${placeId}?fields=current_opening_hours.open_now&key=${process.env
-      .NEXT_PUBLIC_GOOGLE_MAP_API_KEY!}&languageCode=ja`
+    `https://places.googleapis.com/v1/places/${placeId}?fields=current_opening_hours.open_now&key=${process.env.GOOGLE_MAP_API_KEY}&languageCode=ja`
   );
   return response.json() as Promise<RestaurantBusinessStatusResult>;
 }
