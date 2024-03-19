@@ -12,17 +12,13 @@ export async function GET(request: NextRequest) {
   }
 
   const restaurants = await prisma.restaurant.findMany();
-  console.log("restaurants", restaurants);
   const updateRestaurantStatus = async (restaurant: Restaurant) => {
     const { currentOpeningHours } = await getRestaurantBusinessStatus({
       placeId: restaurant.googleMapPlaceId,
     });
-    console.log("restaurant id", restaurant.id);
-    console.log("currentOpeningHours", currentOpeningHours);
     if (!currentOpeningHours) return;
     if (currentOpeningHours.openNow) {
       if (!restaurant.isOpenManuallyUpdated && !restaurant.isOpen) {
-        console.log("restaurant is closed and should be open now");
         await prisma.restaurant.update({
           where: { id: restaurant.id },
           data: { isOpen: true, isOpenManuallyUpdated: false },
@@ -30,7 +26,6 @@ export async function GET(request: NextRequest) {
       }
     } else {
       if (restaurant.isOpen) {
-        console.log("restaurant is open and should be closed now");
         await prisma.restaurant.update({
           where: { id: restaurant.id },
           data: { isOpen: false, isOpenManuallyUpdated: false },
