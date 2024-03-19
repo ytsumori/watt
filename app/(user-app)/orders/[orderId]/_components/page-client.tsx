@@ -62,7 +62,7 @@ export function OrderPage({ order }: Props) {
         if (isFull) {
           updateIsOpen({ id: order.meal.restaurant.id, isOpen: false });
         }
-        notifyStaffCancellation({ restaurantId: order.meal.restaurant.id, orderId: order.id });
+        notifyStaffCancellation({ orderId: order.id, isFull });
         router.push("/");
         router.refresh();
       } else {

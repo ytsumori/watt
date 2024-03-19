@@ -3,7 +3,7 @@
 import { pushMessage } from "@/lib/line-messaging-api";
 import prisma from "@/lib/prisma/client";
 
-export async function notifyStaffCancellation({ orderId }: { restaurantId: string; orderId: string }) {
+export async function notifyStaffCancellation({ orderId, isFull }: { orderId: string; isFull: boolean }) {
   const order = await prisma.order.findUnique({
     where: {
       id: orderId,
@@ -76,6 +76,21 @@ export async function notifyStaffCancellation({ orderId }: { restaurantId: strin
                     },
                   ],
                 },
+                ...(isFull
+                  ? [
+                      {
+                        type: "separator" as const,
+                      },
+                      {
+                        type: "text" as const,
+                        text: "満席の報告があったため、営業ステータスが「入店不可」に切り替わりました。",
+                        wrap: true,
+                        margin: "lg",
+                        color: "#DC3444",
+                        weight: "regular" as const,
+                      },
+                    ]
+                  : []),
               ],
             },
             styles: {
