@@ -12,17 +12,16 @@ type Props = {
   onConfirm: () => void;
 };
 
-export function PaymentConfirmModal({
-  isOpen,
-  isConfirming,
-  onClose,
-  onConfirm,
-}: Props) {
+export function PaymentConfirmModal({ isOpen, isConfirming, onClose, onConfirm }: Props) {
   const [isChecked, setIsChecked] = useState(false);
+  const handleClose = () => {
+    setIsChecked(false);
+    onClose();
+  };
   return (
     <ConfirmModal
       isOpen={isOpen}
-      onClose={onClose}
+      onClose={handleClose}
       title="決済を確定しますか？"
       confirmButton={{
         label: "決済を確定する",
@@ -37,13 +36,8 @@ export function PaymentConfirmModal({
     >
       <VStack alignItems="start">
         <Text>決済を確定しますか？</Text>
-        <Checkbox
-          isChecked={isChecked}
-          onChange={(e) => setIsChecked(e.target.checked)}
-        >
-          <Text fontSize="sm">
-            お店に到着し、注文ページをお店の人に見せました。
-          </Text>
+        <Checkbox isChecked={isChecked} onChange={(e) => setIsChecked(e.target.checked)}>
+          <Text fontSize="sm">お店に到着し、注文ページをお店の人に見せました。</Text>
         </Checkbox>
       </VStack>
     </ConfirmModal>

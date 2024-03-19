@@ -25,10 +25,11 @@ import {
 import { Prisma } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { ConfirmModal } from "../../../../../components/confirm-modal";
 import { PaymentConfirmModal } from "./payment-confirm-modal";
 import Link from "next/link";
 import { notifyStaffCancellation } from "../_actions/notify-staff-cancellation";
+import { CancelConfirmModal } from "./cancel-confirm-modal";
+import { updateIsOpen } from "@/actions/restaurant";
 
 type Props = {
   order: Prisma.OrderGetPayload<{
@@ -54,10 +55,13 @@ export function OrderPage({ order }: Props) {
     });
   };
 
-  const handlePaymentCancel = () => {
+  const handleCancelConfirm = (isFull: boolean) => {
     setIsCancelling(true);
     cancelPaymentIntent(order.id).then((paymentStatus) => {
       if (paymentStatus === "canceled") {
+        if (isFull) {
+          updateIsOpen({ id: order.meal.restaurant.id, isOpen: false });
+        }
         notifyStaffCancellation({ restaurantId: order.meal.restaurant.id, orderId: order.id });
         router.push("/");
         router.refresh();
@@ -176,19 +180,11 @@ export function OrderPage({ order }: Props) {
             onClose={onConfirmModalClose}
             onConfirm={handlePaymentConfirm}
           />
-          <ConfirmModal
+          <CancelConfirmModal
             isOpen={isCancelModalOpen}
+            isCancelling={isCancelling}
             onClose={onCancelModalClose}
-            title="注文をキャンセルしますか？"
-            confirmButton={{
-              label: "注文をキャンセル",
-              onClick: handlePaymentCancel,
-              isLoading: isCancelling,
-            }}
-            cancelButton={{
-              label: "注文を続ける",
-              isDisabled: isCancelling,
-            }}
+            onConfirm={handleCancelConfirm}
           />
           <Modal isOpen={isPaying} onClose={() => undefined} size="xs" isCentered>
             <ModalOverlay />
