@@ -32,7 +32,7 @@ export async function notifyStaffCancellation({ orderId }: { restaurantId: strin
       messages: [
         {
           type: "flex",
-          altText: "メンバーがお店に向かっています",
+          altText: "来店がキャンセルされました",
           contents: {
             type: "bubble",
             body: {
