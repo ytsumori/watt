@@ -27,7 +27,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { PaymentConfirmModal } from "./payment-confirm-modal";
 import Link from "next/link";
-import { notifyStaffCancellation } from "../_actions/notify-staff-cancellation";
+import { notifyStaffCancellation, notifyStaffFullCancellation } from "../_actions/notify-staff-cancellation";
 import { CancelConfirmModal } from "./cancel-confirm-modal";
 import { updateIsOpen } from "@/actions/restaurant";
 
@@ -61,8 +61,10 @@ export function OrderPage({ order }: Props) {
       if (paymentStatus === "canceled") {
         if (isFull) {
           updateIsOpen({ id: order.meal.restaurant.id, isOpen: false });
+          notifyStaffFullCancellation({ orderId: order.id });
+        } else {
+          notifyStaffCancellation({ orderId: order.id });
         }
-        notifyStaffCancellation({ orderId: order.id, isFull });
         router.push("/");
         router.refresh();
       } else {
