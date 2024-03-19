@@ -1,20 +1,9 @@
 "use client";
 
 import { MealPreviewBox } from "@/components/meal-preview";
-import { ArrowBackIcon, CheckIcon } from "@chakra-ui/icons";
-import {
-  Box,
-  HStack,
-  Heading,
-  IconButton,
-  VStack,
-  Text,
-  Alert,
-  AlertIcon,
-  Divider,
-} from "@chakra-ui/react";
+import { CheckIcon } from "@chakra-ui/icons";
+import { Box, HStack, Heading, VStack, Text, Alert, AlertIcon, Divider } from "@chakra-ui/react";
 import { Prisma } from "@prisma/client";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 type Props = {
@@ -28,16 +17,6 @@ export function RestaurantLayout({ restaurant, children }: Props) {
 
   return (
     <Box>
-      <IconButton
-        icon={<ArrowBackIcon />}
-        as={Link}
-        href="/"
-        aria-label="back"
-        size="md"
-        variant="outline"
-        m={4}
-        isRound
-      />
       <VStack w="full" p={4} alignItems="start" spacing={4}>
         <Heading size="lg">{restaurant.name}</Heading>
         <Box h="20vh" w="full">
