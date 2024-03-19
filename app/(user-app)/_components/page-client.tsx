@@ -2,16 +2,7 @@
 
 import Map from "@/components/map";
 import { useState } from "react";
-import {
-  Box,
-  HStack,
-  Heading,
-  Text,
-  Flex,
-  Spacer,
-  Badge,
-  Center,
-} from "@chakra-ui/react";
+import { Box, HStack, Heading, Text, Flex, Spacer, Badge, Center } from "@chakra-ui/react";
 import { InView } from "react-intersection-observer";
 import { Prisma } from "@prisma/client";
 import { MealPreviewBox } from "@/components/meal-preview";
@@ -39,13 +30,7 @@ export default function HomePage({
           onRestaurantSelect={handleRestaurantSelect}
         />
       </Box>
-      <Box
-        maxHeight="70%"
-        overflowY="auto"
-        pb={4}
-        className="hidden-scrollbar"
-        backgroundColor="blackAlpha.100"
-      >
+      <Box maxHeight="70%" overflowY="auto" pb={4} className="hidden-scrollbar" backgroundColor="blackAlpha.100">
         {restaurants.map((restaurant, index) => (
           <Box
             key={restaurant.id}
@@ -68,26 +53,22 @@ export default function HomePage({
               }}
             >
               <Flex mx={4} alignItems="center">
-                <Heading size="md">{restaurant.name}</Heading>
-                <Spacer />
+                <Heading size="md" color={restaurant.isOpen ? "black" : "gray"}>
+                  {restaurant.name}
+                </Heading>
                 {restaurant.isOpen ? (
-                  <Badge colorScheme="green">営業中</Badge>
+                  <Badge colorScheme="green" variant="solid" ml={2}>
+                    今すぐ入れます！
+                  </Badge>
                 ) : (
-                  <Badge color="gray">準備中</Badge>
+                  <Badge colorScheme="red" variant="solid" ml={2}>
+                    今は入れません
+                  </Badge>
                 )}
               </Flex>
-              <HStack
-                px={4}
-                overflowX="auto"
-                className="hidden-scrollbar"
-                mt={3}
-              >
+              <HStack px={4} overflowX="auto" className="hidden-scrollbar" mt={3}>
                 {restaurant.meals.map((meal) => (
-                  <MealPreviewBox
-                    key={meal.id}
-                    meal={meal}
-                    href={`/meals/${meal.id}`}
-                  />
+                  <MealPreviewBox key={meal.id} meal={meal} href={`/meals/${meal.id}`} />
                 ))}
                 {restaurant.isOpen && (
                   <Center
@@ -105,9 +86,7 @@ export default function HomePage({
                 )}
               </HStack>
             </InView>
-            {index !== restaurants.length - 1 && (
-              <Box w="full" h="0" backgroundColor="blackAlpha.100" />
-            )}
+            {index !== restaurants.length - 1 && <Box w="full" h="0" backgroundColor="blackAlpha.100" />}
           </Box>
         ))}
       </Box>

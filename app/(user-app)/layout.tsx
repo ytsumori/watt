@@ -12,10 +12,7 @@ export default async function App({ children }: { children: React.ReactNode }) {
   const user = session.user;
   const preauthorizedOrder = await findPreauthorizedOrder(user.id);
   return (
-    <BaseLayout
-      preauthorizedOrder={preauthorizedOrder ?? undefined}
-      user={user}
-    >
+    <BaseLayout defaultPreauthorizedOrderId={preauthorizedOrder?.id ?? undefined} user={user}>
       {children}
     </BaseLayout>
   );

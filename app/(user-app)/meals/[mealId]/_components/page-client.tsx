@@ -1,15 +1,7 @@
 "use client";
 
 import { applyEarlyDiscount } from "@/utils/discount-price";
-import { ArrowBackIcon } from "@chakra-ui/icons";
-import {
-  Button,
-  Heading,
-  IconButton,
-  Image,
-  Text,
-  VStack,
-} from "@chakra-ui/react";
+import { Button, Heading, Image, Text, VStack } from "@chakra-ui/react";
 import { Meal } from "@prisma/client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -22,14 +14,6 @@ export function MealPage({ meal }: Props) {
   const router = useRouter();
   return (
     <VStack p={4} spacing={4} alignItems="start">
-      <IconButton
-        icon={<ArrowBackIcon />}
-        onClick={() => router.back()}
-        aria-label="back"
-        size="md"
-        variant="outline"
-        isRound
-      />
       <VStack alignItems="start" spacing={4}>
         <Heading size="lg">{meal.title}</Heading>
         <VStack alignItems="start" spacing={4}>
@@ -58,14 +42,8 @@ export function MealPage({ meal }: Props) {
           </VStack>
         </VStack>
       </VStack>
-      <Button
-        as={Link}
-        href={`/restaurants/${meal.restaurantId}/meals/${meal.id}`}
-        w="full"
-        maxW="full"
-        size="md"
-      >
-        この推しメシを選択する
+      <Button as={Link} href={`/restaurants/${meal.restaurantId}/meals/${meal.id}`} w="full" maxW="full" size="md">
+        お店の詳細を見る
       </Button>
     </VStack>
   );
