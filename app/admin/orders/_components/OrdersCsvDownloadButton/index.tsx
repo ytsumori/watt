@@ -17,5 +17,9 @@ export const OrdersCsvDownloadButton: FC<OrdersCsvDownloadButtonProps> = ({ orde
     URL.revokeObjectURL(link.href);
   };
 
-  return <Button onClick={onClick}>CSVダウンロード</Button>;
+  return (
+    <Button onClick={onClick} marginLeft="auto" minWidth="auto">
+      CSVダウンロード
+    </Button>
+  );
 };
