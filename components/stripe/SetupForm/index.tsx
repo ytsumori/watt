@@ -100,8 +100,8 @@ export default function SetupForm() {
         <ModalContent>
           <ModalHeader>支払い方法の登録が完了しました</ModalHeader>
           <ModalBody textAlign="center">
-            <Button as={Link} href={redirectPathname ?? "/"}>
-              詳細ページに戻る
+            <Button as={Link} href={redirectPathname ?? "/payment-methods"}>
+              元のページに戻る
             </Button>
           </ModalBody>
           <ModalFooter />
