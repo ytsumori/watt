@@ -17,6 +17,7 @@ import {
   Flex,
   Spacer,
   Box,
+  Td,
 } from "@chakra-ui/react";
 import { useState } from "react";
 import Stripe from "stripe";
@@ -25,7 +26,7 @@ import { createPaymentIntent } from "@/actions/payment-intent";
 import { signIn } from "next-auth/react";
 import { CheckCircleIcon } from "@chakra-ui/icons";
 import { useRouter, usePathname } from "next/navigation";
-import { notifyStaffOrder } from "../_actions/notify-staff-order";
+import { notifyStaffOrder } from "../../_actions/notify-staff-order";
 import { findPreauthorizedOrder } from "@/actions/order";
 import { applyEarlyDiscount } from "@/utils/discount-price";
 import Link from "next/link";
@@ -84,11 +85,13 @@ export default function MealPage({ meal, paymentMethods, isRestaurantActive, pre
             {userId ? (
               <>
                 <Box>
-                  <Heading size="md">支払い方法</Heading>
+                  <Heading size="md" minW="full">
+                    支払い方法
+                  </Heading>
                   <Text fontSize="xs">お支払い方法を選択してください</Text>
                 </Box>
-                <TableContainer>
-                  <Table variant="simple">
+                <TableContainer minW="full">
+                  <Table variant="simple" size="sm" __css={{ th: { paddingX: 0 }, td: { paddingX: 0 } }} w="full">
                     <Thead>
                       <Tr>
                         <Th></Th>
@@ -100,16 +103,16 @@ export default function MealPage({ meal, paymentMethods, isRestaurantActive, pre
                     <Tbody>
                       {paymentMethods.map((paymentMethod) => (
                         <Tr key={paymentMethod.id} onClick={() => setSelectedPaymentMethod(paymentMethod.id)}>
-                          <Th>
+                          <Td>
                             {selectedPaymentMethod === paymentMethod.id && (
                               <CheckCircleIcon color="orange.400" boxSize={5} />
                             )}
-                          </Th>
-                          <Th>{paymentMethod.card?.brand}</Th>
-                          <Th>**** **** **** {paymentMethod.card?.last4}</Th>
-                          <Th>
+                          </Td>
+                          <Td>{paymentMethod.card?.brand}</Td>
+                          <Td>**** **** **** {paymentMethod.card?.last4}</Td>
+                          <Td>
                             {paymentMethod.card?.exp_month}/{paymentMethod.card?.exp_year}
-                          </Th>
+                          </Td>
                         </Tr>
                       ))}
                     </Tbody>
