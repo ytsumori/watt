@@ -10,7 +10,9 @@ import {
   Button,
   Divider,
   Flex,
+  HStack,
   Heading,
+  Icon,
   Image,
   Modal,
   ModalBody,
@@ -30,14 +32,17 @@ import Link from "next/link";
 import { notifyStaffCancellation, notifyStaffFullCancellation } from "../_actions/notify-staff-cancellation";
 import { CancelConfirmModal } from "./cancel-confirm-modal";
 import { updateIsOpen } from "@/actions/restaurant";
+import { FaMapMarkedAlt } from "react-icons/fa";
+import NextLink from "next/link";
 
 type Props = {
   order: Prisma.OrderGetPayload<{
     include: { meal: { include: { restaurant: true } } };
   }>;
+  googleMapsUri: string;
 };
 
-export function OrderPage({ order }: Props) {
+export function OrderPage({ order, googleMapsUri }: Props) {
   const router = useRouter();
   const { isOpen: isConfirmModalOpen, onOpen: onConfirmModalOpen, onClose: onConfirmModalClose } = useDisclosure();
   const { isOpen: isCancelModalOpen, onOpen: onCancelModalOpen, onClose: onCancelModalClose } = useDisclosure();
@@ -126,6 +131,15 @@ export function OrderPage({ order }: Props) {
               <VStack alignItems="start">
                 <Heading size="md">店舗</Heading>
                 <Heading size="sm">{order.meal.restaurant.name}</Heading>
+                <Button
+                  w="full"
+                  leftIcon={<Icon as={FaMapMarkedAlt} />}
+                  as={NextLink}
+                  href={googleMapsUri}
+                  target="_blank"
+                >
+                  Googleマップでお店情報を見る
+                </Button>
                 <Box h="15vh" w="full">
                   <iframe
                     width="100%"
@@ -166,7 +180,16 @@ export function OrderPage({ order }: Props) {
                     >
                       ¥{order.restaurantProfitPrice.toLocaleString("ja-JP")}
                     </Text>
-                    <Text as="b">¥{order.price.toLocaleString("ja-JP")}</Text>
+                    <VStack spacing="0" display="inline-flex">
+                      <Text color="red.400" as="b">
+                        ¥{order.price.toLocaleString("ja-JP")}
+                      </Text>
+                      <Box backgroundColor="red.400" borderRadius={4}>
+                        <Text color="white" fontWeight="bold" fontSize="xs" px={2}>
+                          早期割引
+                        </Text>
+                      </Box>
+                    </VStack>
                   </Text>
                 </Flex>
                 <Divider />
@@ -259,7 +282,16 @@ export function OrderPage({ order }: Props) {
               >
                 ¥{order.restaurantProfitPrice.toLocaleString("ja-JP")}
               </Text>
-              ¥{order.price.toLocaleString("ja-JP")}
+              <HStack spacing={1} display="inline-flex">
+                <Text color="red.400" as="b">
+                  ¥{order.price.toLocaleString("ja-JP")}
+                </Text>
+                <Box backgroundColor="red.400" borderRadius={4}>
+                  <Text color="white" fontWeight="bold" fontSize="xs" px={2}>
+                    早期割引
+                  </Text>
+                </Box>
+              </HStack>
             </Heading>
           </VStack>
           <Button variant="outline" size="md" colorScheme="gray" w="full" maxW="full" as={Link} href="/">
@@ -323,7 +355,16 @@ export function OrderPage({ order }: Props) {
               >
                 ¥{order.restaurantProfitPrice.toLocaleString("ja-JP")}
               </Text>
-              ¥{order.price.toLocaleString("ja-JP")}
+              <HStack spacing={1} display="inline-flex">
+                <Text color="red.400" as="b">
+                  ¥{order.price.toLocaleString("ja-JP")}
+                </Text>
+                <Box backgroundColor="red.400" borderRadius={4}>
+                  <Text color="white" fontWeight="bold" fontSize="xs" px={2}>
+                    早期割引
+                  </Text>
+                </Box>
+              </HStack>
             </Heading>
           </VStack>
           <Button variant="outline" size="md" colorScheme="gray" w="full" maxW="full" as={Link} href="/">

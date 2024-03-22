@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import prisma from "@/lib/prisma/client";
 import { OrderPage } from "./_components/page-client";
+import { getGoogleMapUrl } from "@/lib/places-api";
 
 type Params = {
   orderId: string;
@@ -25,6 +26,7 @@ export default async function Order({ params }: { params: Params }) {
   if (!order || order.userId !== user.id) {
     redirect("/");
   }
+  const { googleMapsUri } = await getGoogleMapUrl({ placeId: order.meal.restaurant.googleMapPlaceId });
 
-  return <OrderPage order={order}></OrderPage>;
+  return <OrderPage order={order} googleMapsUri={googleMapsUri}></OrderPage>;
 }
