@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma/client";
-import { MealPage } from "./_components/page-client";
+import { MealPage } from "./_components/MealPage";
 import { redirect } from "next/navigation";
 
 type Params = {
