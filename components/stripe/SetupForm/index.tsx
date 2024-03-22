@@ -68,7 +68,9 @@ export default function SetupForm() {
     const { error } = await stripe.confirmSetup({
       elements,
       confirmParams: {
-        return_url: `${process.env.NEXT_PUBLIC_HOST_URL}${pathname}` + `?redirect_pathname=${redirectPathname}`,
+        return_url: `${process.env.NEXT_PUBLIC_HOST_URL}${pathname}${
+          redirectPathname ? `?redirect_pathname=${redirectPathname}` : ""
+        }`,
       },
     });
 

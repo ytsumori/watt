@@ -115,7 +115,7 @@ export default function MealPage({ meal, paymentMethods, isRestaurantActive, pre
                     </Tbody>
                   </Table>
                 </TableContainer>
-                <Button variant="outline" as={Link} href={`/payment-method/new?redirect_pathname=${pathname}`}>
+                <Button variant="outline" as={Link} href={`/payment-methods/new?redirect_pathname=${pathname}`}>
                   決済方法を登録
                 </Button>
                 <Divider borderColor="black" />
