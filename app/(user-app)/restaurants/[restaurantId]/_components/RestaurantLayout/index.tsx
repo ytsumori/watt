@@ -2,16 +2,19 @@
 
 import { MealPreviewBox } from "@/components/meal-preview";
 import { CheckIcon } from "@chakra-ui/icons";
-import { Box, HStack, Heading, VStack, Text, Alert, AlertIcon, Divider } from "@chakra-ui/react";
+import { Box, HStack, Heading, VStack, Text, Alert, AlertIcon, Divider, Button, Icon } from "@chakra-ui/react";
 import { Prisma } from "@prisma/client";
+import NextLink from "next/link";
 import { usePathname } from "next/navigation";
+import { FaMapMarkedAlt } from "react-icons/fa";
 
 type Props = {
   restaurant: Prisma.RestaurantGetPayload<{ include: { meals: true } }>;
+  googleMapsUri: string;
   children: React.ReactNode;
 };
 
-export function RestaurantLayout({ restaurant, children }: Props) {
+export function RestaurantLayout({ restaurant, children, googleMapsUri }: Props) {
   const pathname = usePathname();
   const selectedMealId = pathname.split("/meals/")[1] || undefined;
 
@@ -19,6 +22,9 @@ export function RestaurantLayout({ restaurant, children }: Props) {
     <Box>
       <VStack w="full" p={4} alignItems="start" spacing={4}>
         <Heading size="lg">{restaurant.name}</Heading>
+        <Button w="full" leftIcon={<Icon as={FaMapMarkedAlt} />} as={NextLink} href={googleMapsUri}>
+          Googleマップでお店情報を見る
+        </Button>
         <Box h="20vh" w="full">
           <iframe
             width="100%"

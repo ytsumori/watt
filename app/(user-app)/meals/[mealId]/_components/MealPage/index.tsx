@@ -4,14 +4,12 @@ import { applyEarlyDiscount } from "@/utils/discount-price";
 import { Button, Heading, Image, Text, VStack } from "@chakra-ui/react";
 import { Meal } from "@prisma/client";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 
 type Props = {
   meal: Meal;
 };
 
 export function MealPage({ meal }: Props) {
-  const router = useRouter();
   return (
     <VStack p={4} spacing={4} alignItems="start">
       <VStack alignItems="start" spacing={4}>
