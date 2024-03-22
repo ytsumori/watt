@@ -1,6 +1,6 @@
 "use client";
 
-import { CopyIcon, ExternalLinkIcon, InfoOutlineIcon } from "@chakra-ui/icons";
+import { CopyIcon, InfoOutlineIcon } from "@chakra-ui/icons";
 import {
   Box,
   Button,
@@ -17,14 +17,14 @@ import {
   Tooltip,
 } from "@chakra-ui/react";
 import { Restaurant } from "@prisma/client";
-import NextLink from "next/link";
-import { copySignUpURL } from "../_util/clipboard-text";
+import { copySignUpURL } from "../../_util/clipboard-text";
+import { GoogleMapLink } from "../GoogleMapLink";
 
 type Props = {
   restaurants: Restaurant[];
 };
 
-export function RestaurantsPageClient({ restaurants }: Props) {
+export function RestaurantsPage({ restaurants }: Props) {
   const toast = useToast();
   return (
     <Box p={6}>
@@ -69,14 +69,7 @@ export function RestaurantsPageClient({ restaurants }: Props) {
                     <IconButton aria-label="登録用URLコピー" icon={<CopyIcon />} onClick={handleCopy} />
                   </Td>
                   <Td>
-                    <Link
-                      as={NextLink}
-                      href={`https://www.google.com/maps/place/?q=place_id:${restaurant.googleMapPlaceId}`}
-                      isExternal
-                    >
-                      Googleマップ
-                      <ExternalLinkIcon mx="2px" />
-                    </Link>
+                    <GoogleMapLink googleMapPlaceId={restaurant.googleMapPlaceId} />
                   </Td>
                 </Tr>
               );
