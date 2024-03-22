@@ -18,6 +18,7 @@ import {
   Spacer,
   Box,
   Td,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { useState } from "react";
 import Stripe from "stripe";
@@ -30,6 +31,7 @@ import { notifyStaffOrder } from "../../_actions/notify-staff-order";
 import { findPreauthorizedOrder } from "@/actions/order";
 import { applyEarlyDiscount } from "@/utils/discount-price";
 import Link from "next/link";
+import { ConfirmModal } from "@/components/confirm-modal";
 
 type Props = {
   meal: Meal;
@@ -45,9 +47,20 @@ export default function MealPage({ meal, paymentMethods, isRestaurantActive, pre
     paymentMethods.length === 1 ? paymentMethods[0].id : undefined
   );
   const [isVisitRequesting, setIsVisitRequesting] = useState(false);
+  const {
+    isOpen: isVisitConfirmModalOpen,
+    onOpen: onVisitConfirmModalOpen,
+    onClose: onVisitConfirmModalClose,
+  } = useDisclosure();
   const pathname = usePathname();
 
   const handleVisitingClick = async () => {
+    if (!userId || !selectedPaymentMethod) return;
+
+    onVisitConfirmModalOpen();
+  };
+
+  const handleVisitingConfirm = async () => {
     if (!userId || !selectedPaymentMethod) return;
 
     setIsVisitRequesting(true);
@@ -158,7 +171,7 @@ export default function MealPage({ meal, paymentMethods, isRestaurantActive, pre
                 </Heading>
                 <Divider borderColor="black" />
                 <Text fontSize="xs">
-                  注文内容を確定します。次の画面でお店に向かい決済を確定するまで、調理は開始されずお支払いも発生しません。
+                  注文内容を確定します。次の画面でお店に到着後に決済を確定するまで、調理は開始されずお支払いも発生しません。
                 </Text>
                 <Button
                   isLoading={isVisitRequesting}
@@ -191,6 +204,24 @@ export default function MealPage({ meal, paymentMethods, isRestaurantActive, pre
           現在こちらのお店は入店できません
         </Alert>
       )}
+      <ConfirmModal
+        isOpen={isVisitConfirmModalOpen}
+        onClose={onVisitConfirmModalClose}
+        title="お店に向かいますか？"
+        confirmButton={{
+          label: "お店に向かう",
+          onClick: handleVisitingConfirm,
+          isLoading: isVisitRequesting,
+        }}
+        cancelButton={{
+          label: "キャンセル",
+        }}
+      >
+        向かっていることをお店に通知します。
+        <br />
+        <br />
+        次の画面でお店に到着後に決済を確定するまで、調理は開始されずお支払いも発生しません。
+      </ConfirmModal>
     </VStack>
   );
 }
