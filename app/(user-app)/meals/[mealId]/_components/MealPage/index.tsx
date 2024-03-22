@@ -1,7 +1,7 @@
 "use client";
 
 import { applyEarlyDiscount } from "@/utils/discount-price";
-import { Button, Heading, Image, Text, VStack } from "@chakra-ui/react";
+import { Box, Button, HStack, Heading, Image, Text, VStack } from "@chakra-ui/react";
 import { Meal } from "@prisma/client";
 import Link from "next/link";
 
@@ -23,7 +23,7 @@ export function MealPage({ meal }: Props) {
           </VStack>
           <VStack spacing={2} alignItems="start">
             <Heading size="md">金額</Heading>
-            <Heading size="sm">
+            <HStack>
               <Text
                 as="span"
                 fontSize="sm"
@@ -31,12 +31,20 @@ export function MealPage({ meal }: Props) {
                 textDecoration="line-through"
                 textDecorationColor="red.400"
                 textDecorationThickness="2px"
-                mr={1}
               >
                 ¥{meal.price.toLocaleString("ja-JP")}
               </Text>
-              ¥{applyEarlyDiscount(meal.price).toLocaleString("ja-JP")}
-            </Heading>
+              <HStack spacing={1}>
+                <Heading color="red.400" size="sm">
+                  ¥{applyEarlyDiscount(meal.price).toLocaleString("ja-JP")}
+                </Heading>
+                <Box backgroundColor="red.400" borderRadius={4}>
+                  <Text color="white" fontWeight="bold" fontSize="xs" px={2}>
+                    早期割引
+                  </Text>
+                </Box>
+              </HStack>
+            </HStack>
           </VStack>
         </VStack>
       </VStack>

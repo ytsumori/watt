@@ -150,24 +150,21 @@ export default function MealPage({ meal, paymentMethods, isRestaurantActive, pre
                     >
                       ¥{meal.price.toLocaleString("ja-JP")}
                     </Text>
-                    <Text as="b">¥{applyEarlyDiscount(meal.price).toLocaleString("ja-JP")}</Text>
+                    <VStack spacing="0" display="inline-flex">
+                      <Text color="red.400" as="b">
+                        ¥{applyEarlyDiscount(meal.price).toLocaleString("ja-JP")}
+                      </Text>
+                      <Box backgroundColor="red.400" borderRadius={4}>
+                        <Text color="white" fontWeight="bold" fontSize="xs" px={2}>
+                          早期割引
+                        </Text>
+                      </Box>
+                    </VStack>
                   </Text>
                 </Flex>
                 <Divider />
                 <Heading size="sm" alignSelf="self-end">
-                  合計{" "}
-                  <Text
-                    as="span"
-                    fontSize="sm"
-                    fontWeight="normal"
-                    textDecoration="line-through"
-                    textDecorationColor="red.400"
-                    textDecorationThickness="2px"
-                    mr={1}
-                  >
-                    ¥{meal.price.toLocaleString("ja-JP")}
-                  </Text>
-                  ¥{applyEarlyDiscount(meal.price).toLocaleString("ja-JP")}
+                  合計 ¥{applyEarlyDiscount(meal.price).toLocaleString("ja-JP")}
                 </Heading>
                 <Divider borderColor="black" />
                 <Text fontSize="xs">
