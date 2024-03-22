@@ -22,7 +22,7 @@ export function RestaurantLayout({ restaurant, children, googleMapsUri }: Props)
     <Box>
       <VStack w="full" p={4} alignItems="start" spacing={4}>
         <Heading size="lg">{restaurant.name}</Heading>
-        <Button w="full" leftIcon={<Icon as={FaMapMarkedAlt} />} as={NextLink} href={googleMapsUri}>
+        <Button w="full" leftIcon={<Icon as={FaMapMarkedAlt} />} as={NextLink} href={googleMapsUri} target="_blank">
           Googleマップでお店情報を見る
         </Button>
         <Box h="20vh" w="full">
