@@ -68,7 +68,9 @@ export default function SetupForm() {
     const { error } = await stripe.confirmSetup({
       elements,
       confirmParams: {
-        return_url: `${process.env.NEXT_PUBLIC_HOST_URL}${pathname}` + `?redirect_pathname=${redirectPathname}`,
+        return_url: `${process.env.NEXT_PUBLIC_HOST_URL}${pathname}${
+          redirectPathname ? `?redirect_pathname=${redirectPathname}` : ""
+        }`,
       },
     });
 
@@ -98,8 +100,8 @@ export default function SetupForm() {
         <ModalContent>
           <ModalHeader>支払い方法の登録が完了しました</ModalHeader>
           <ModalBody textAlign="center">
-            <Button as={Link} href={redirectPathname ?? "/"}>
-              詳細ページに戻る
+            <Button as={Link} href={redirectPathname ?? "/payment-methods"}>
+              元のページに戻る
             </Button>
           </ModalBody>
           <ModalFooter />

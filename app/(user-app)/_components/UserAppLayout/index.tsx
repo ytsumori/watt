@@ -33,7 +33,7 @@ type Props = {
   user?: Session["user"];
 };
 
-export default function BaseLayout({ children, defaultPreauthorizedOrderId, user }: Props) {
+export default function UserAppLayout({ children, defaultPreauthorizedOrderId, user }: Props) {
   const router = useRouter();
   const pathname = usePathname();
   const {
@@ -81,6 +81,9 @@ export default function BaseLayout({ children, defaultPreauthorizedOrderId, user
             </MenuItem>
             {user ? (
               <>
+                <MenuItem as={NextLink} href="/payment-methods">
+                  支払い方法
+                </MenuItem>
                 <MenuItem as={NextLink} href="/orders">
                   注文履歴
                 </MenuItem>

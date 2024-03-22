@@ -4,7 +4,7 @@ import prisma from "@/lib/prisma/client";
 import { options } from "@/lib/next-auth/options";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
-import MealPage from "./_components/page-client";
+import MealPage from "./_components/MealPage";
 import { findPreauthorizedOrder } from "@/actions/order";
 
 type Params = {
@@ -32,9 +32,7 @@ export default async function Meal({ params }: { params: Params }) {
 
     const stripeCustomer = await getStripeCustomer({ userId });
     const paymentMethods = stripeCustomer
-      ? await stripe.customers.listPaymentMethods(
-          stripeCustomer.stripeCustomerId
-        )
+      ? await stripe.customers.listPaymentMethods(stripeCustomer.stripeCustomerId)
       : undefined;
 
     return (
@@ -48,11 +46,5 @@ export default async function Meal({ params }: { params: Params }) {
     );
   }
 
-  return (
-    <MealPage
-      meal={meal}
-      isRestaurantActive={restaurant.isOpen}
-      paymentMethods={[]}
-    />
-  );
+  return <MealPage meal={meal} isRestaurantActive={restaurant.isOpen} paymentMethods={[]} />;
 }
