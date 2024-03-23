@@ -26,6 +26,7 @@ export function OrdersPageClient({ orders, dateRange }: Props) {
               <Th>決済金額</Th>
               <Th>振込金額</Th>
               <Th>ステータス</Th>
+              <Th>CSVダウンロード</Th>
             </Tr>
           </Thead>
           <Tbody>
@@ -37,6 +38,7 @@ export function OrdersPageClient({ orders, dateRange }: Props) {
                 <Td>{order.price.toLocaleString("ja-JP")}円</Td>
                 <Td>{order.restaurantProfitPrice.toLocaleString("ja-JP")}円</Td>
                 <Td>{translateOrderStatus(order.status)}</Td>
+                <Td>{order.isDownloaded ? "済" : "未"}</Td>
               </Tr>
             ))}
           </Tbody>
