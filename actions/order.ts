@@ -62,3 +62,7 @@ export async function updateOrderStatus({ id, status }: { id: string; status: Or
     data: { status },
   });
 }
+
+export async function updateManyOrdersIsDownloaded(ids: string[]) {
+  return await prisma.order.updateMany({ where: { id: { in: ids } }, data: { isDownloaded: true } });
+}
