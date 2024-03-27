@@ -1,5 +1,5 @@
-import HomePage from "@/app/(user-app)/_components/page-client";
 import prisma from "@/lib/prisma/client";
+import HomePage from "./_components/page-client";
 
 export default async function Home() {
   const restaurants = await prisma.restaurant.findMany({

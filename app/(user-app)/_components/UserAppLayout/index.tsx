@@ -45,15 +45,20 @@ export default function UserAppLayout({ children, defaultPreauthorizedOrderId, u
   });
   const [preauthorizedOrderId, setPreauthorizedOrderId] = React.useState(defaultPreauthorizedOrderId);
   useEffect(() => {
-    if (user && !pathname.startsWith("/orders")) {
-      findPreauthorizedOrder(user.id).then((preauthorizedOrder) => {
-        if (!!preauthorizedOrder) {
-          setPreauthorizedOrderId(preauthorizedOrder.id);
-          onOrderModalOpen();
-        }
-      });
+    if (user) {
+      if (!user.email && pathname !== "/profile") {
+        router.replace("/profile");
+      }
+      if (!pathname.startsWith("/orders")) {
+        findPreauthorizedOrder(user.id).then((preauthorizedOrder) => {
+          if (!!preauthorizedOrder) {
+            setPreauthorizedOrderId(preauthorizedOrder.id);
+            onOrderModalOpen();
+          }
+        });
+      }
     }
-  }, [pathname, onOrderModalOpen, user]);
+  }, [pathname, onOrderModalOpen, user, router]);
 
   const handleSignOutClick = () => {
     if (confirm("ログアウトしますか？")) {
