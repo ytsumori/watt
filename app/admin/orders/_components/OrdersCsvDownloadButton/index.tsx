@@ -8,12 +8,13 @@ import { updateManyOrdersIsDownloaded } from "@/actions/order";
 
 type OrdersCsvDownloadButtonProps = { orders: ConvertedOrderInfo[] };
 export const OrdersCsvDownloadButton: FC<OrdersCsvDownloadButtonProps> = ({ orders }) => {
-  const orderIds = orders.filter(isValidOrders).map((order) => order.id);
+  const filteredOrders = orders.filter(isValidOrders);
+  const orderIds = filteredOrders.map((order) => order.id);
   const onClick = async () => {
     if (orderIds.length === 0) return;
     await updateManyOrdersIsDownloaded(orderIds)
       .then(async () => {
-        const bankRecords = await getCsvBankRecords(orders);
+        const bankRecords = await getCsvBankRecords(filteredOrders);
         const blob = convertToBlob(bankRecords);
         const link = document.createElement("a");
         link.download = "download.csv";
