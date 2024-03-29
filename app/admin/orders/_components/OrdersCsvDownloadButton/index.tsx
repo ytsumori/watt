@@ -2,14 +2,15 @@
 import { Button } from "@chakra-ui/react";
 import { FC } from "react";
 import { ConvertedOrderInfo } from "../../_util/convertRequiredOrderInfo";
-import { convertToBlob } from "./util";
+import { convertToBlob, isValidOrders } from "./util";
 import { getCsvBankRecords } from "./action";
 import { updateManyOrdersIsDownloaded } from "@/actions/order";
 
 type OrdersCsvDownloadButtonProps = { orders: ConvertedOrderInfo[] };
 export const OrdersCsvDownloadButton: FC<OrdersCsvDownloadButtonProps> = ({ orders }) => {
+  const orderIds = orders.filter(isValidOrders).map((order) => order.id);
   const onClick = async () => {
-    const orderIds = orders.map((order) => order.id);
+    if (orderIds.length === 0) return;
     await updateManyOrdersIsDownloaded(orderIds)
       .then(async () => {
         const bankRecords = await getCsvBankRecords(orders);
@@ -24,7 +25,7 @@ export const OrdersCsvDownloadButton: FC<OrdersCsvDownloadButtonProps> = ({ orde
   };
 
   return (
-    <Button onClick={onClick} marginLeft="auto" minWidth="auto">
+    <Button onClick={onClick} marginLeft="auto" minWidth="auto" isDisabled={orderIds.length === 0}>
       CSVダウンロード
     </Button>
   );
