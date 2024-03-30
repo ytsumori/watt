@@ -9,6 +9,7 @@ import { ConfirmModal } from "@/components/confirm-modal";
 import { cancelOrder } from "./_actions/cancel-order";
 import { MealPreviewImage } from "@/components/MealPreviewImage";
 import { findMeal } from "@/actions/meal";
+import { createClientSupabase } from "@/lib/supabase/client";
 
 export default function RejectOrder({ params }: { params: { orderId: string } }) {
   const restaurantId = useContext(RestaurantIdContext);
@@ -16,6 +17,7 @@ export default function RejectOrder({ params }: { params: { orderId: string } })
   const [meal, setMeal] = useState<Meal>();
   const [isPosting, setIsPosting] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const supabase = createClientSupabase();
 
   useEffect(() => {
     findOrder({
@@ -72,7 +74,7 @@ export default function RejectOrder({ params }: { params: { orderId: string } })
             <VStack>
               <Heading size="sm">注文予定の推しメシ</Heading>
               <Box w="50%">
-                <MealPreviewImage src={meal?.imageUrl} alt={meal.title} />
+                <MealPreviewImage src={meal?.imageUrl} alt={meal.title} supabase={supabase} />
               </Box>
             </VStack>
           )}
