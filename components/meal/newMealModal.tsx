@@ -20,6 +20,7 @@ import {
 import { useRef, useState } from "react";
 import { MealPreviewImage } from "@/components/MealPreviewImage";
 import { createMeal } from "@/actions/meal";
+import { createClientSupabase } from "@/lib/supabase/client";
 
 type Props = {
   restaurantId: string;
@@ -37,6 +38,8 @@ export function NewMealModal({ restaurantId, isOpen, onClose, onSubmitComplete }
   const [imageUrl, setImageUrl] = useState<string>();
   const [isUploading, setIsUploading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const supabase = createClientSupabase();
 
   const handleClose = () => {
     setImageUrl(undefined);
@@ -149,7 +152,7 @@ export function NewMealModal({ restaurantId, isOpen, onClose, onSubmitComplete }
             {isUploading ? (
               <FormHelperText>アップロード中...</FormHelperText>
             ) : (
-              imageUrl && <MealPreviewImage src={imageUrl} alt="料理画像" />
+              imageUrl && <MealPreviewImage src={imageUrl} alt="料理画像" supabase={supabase} />
             )}
           </FormControl>
         </ModalBody>

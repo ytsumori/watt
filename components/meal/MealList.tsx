@@ -1,8 +1,8 @@
 "use client";
 
 import { activateMeal, discardMeal, getMeals } from "@/actions/meal";
-import { MealCard } from "@/components/meal/meal-card";
-import { NewMealModal } from "@/components/meal/new-meal-modal";
+import { MealCard } from "@/components/meal/MealCard";
+import { NewMealModal } from "@/components/meal/newMealModal";
 import { Button, Flex, Heading, VStack, useDisclosure } from "@chakra-ui/react";
 import { Meal } from "@prisma/client";
 import { useState } from "react";

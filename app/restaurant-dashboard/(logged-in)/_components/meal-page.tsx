@@ -4,7 +4,7 @@ import { getMeals } from "@/actions/meal";
 import { Meal } from "@prisma/client";
 import { useContext, useEffect, useState } from "react";
 import { RestaurantIdContext } from "./restaurant-id-provider";
-import { MealList } from "@/components/meal/meal-list";
+import { MealList } from "@/components/meal/MealList";
 import { Center, Spinner, Text, VStack } from "@chakra-ui/react";
 
 export function MealPage() {

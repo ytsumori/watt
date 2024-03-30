@@ -1,12 +1,12 @@
 "use client";
 
 import { Image, ImageProps } from "@chakra-ui/react";
-import { SupabaseClient } from "@supabase/supabase-js";
+import { type SupabaseClient } from "@supabase/supabase-js";
 
 type Props = {
   src: ImageProps["src"];
   alt: ImageProps["alt"];
-  supabase: SupabaseClient;
+  supabase: SupabaseClient<any, "public", any>;
 };
 
 export function MealPreviewImage({ src, alt, supabase }: Props) {
