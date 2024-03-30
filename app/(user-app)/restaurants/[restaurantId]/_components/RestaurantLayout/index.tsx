@@ -1,6 +1,6 @@
 "use client";
 
-import { MealPreviewBox } from "@/components/meal-preview";
+import { MealPreviewBox } from "@/components/MealPreview";
 import { CheckIcon } from "@chakra-ui/icons";
 import { Box, HStack, Heading, VStack, Text, Alert, AlertIcon, Divider, Button, Icon } from "@chakra-ui/react";
 import { Prisma } from "@prisma/client";

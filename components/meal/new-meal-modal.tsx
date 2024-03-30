@@ -18,7 +18,7 @@ import {
   Textarea,
 } from "@chakra-ui/react";
 import { useRef, useState } from "react";
-import { MealPreviewImage } from "@/components/meal-preview-image";
+import { MealPreviewImage } from "@/components/MealPreviewImage";
 import { createMeal } from "@/actions/meal";
 
 type Props = {

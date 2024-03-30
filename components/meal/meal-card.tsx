@@ -1,6 +1,6 @@
 "use client";
 
-import { MealPreviewImage } from "@/components/meal-preview-image";
+import { MealPreviewImage } from "@/components/MealPreviewImage";
 import { Card, CardBody, CardFooter, Heading, Text, VStack } from "@chakra-ui/react";
 import { Meal } from "@prisma/client";
 import { ReactNode } from "react";

@@ -5,7 +5,7 @@ import { useState } from "react";
 import { Box, HStack, Heading, Text, Flex, Spacer, Badge, Center } from "@chakra-ui/react";
 import { InView } from "react-intersection-observer";
 import { Prisma } from "@prisma/client";
-import { MealPreviewBox } from "@/components/meal-preview";
+import { MealPreviewBox } from "@/components/MealPreview";
 import Link from "next/link";
 
 export default function HomePage({

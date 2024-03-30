@@ -7,7 +7,7 @@ import { Meal, Order } from "@prisma/client";
 import { Alert, Button, Center, useDisclosure, Text, VStack, Spinner, Box, Heading } from "@chakra-ui/react";
 import { ConfirmModal } from "@/components/confirm-modal";
 import { cancelOrder } from "./_actions/cancel-order";
-import { MealPreviewImage } from "@/components/meal-preview-image";
+import { MealPreviewImage } from "@/components/MealPreviewImage";
 import { findMeal } from "@/actions/meal";
 
 export default function RejectOrder({ params }: { params: { orderId: string } }) {
