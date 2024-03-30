@@ -1,5 +1,3 @@
-import { SupabaseAuthProvider } from "./_components/SupabaseAuthProvider";
-
 import { AdminDashboardLayout } from "./_components/layout-client";
 
 export const metadata = {
@@ -8,9 +6,5 @@ export const metadata = {
 };
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <SupabaseAuthProvider>
-      <AdminDashboardLayout>{children}</AdminDashboardLayout>
-    </SupabaseAuthProvider>
-  );
+  return <AdminDashboardLayout>{children}</AdminDashboardLayout>;
 }
