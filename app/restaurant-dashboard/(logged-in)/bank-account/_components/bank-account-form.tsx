@@ -1,16 +1,15 @@
 "use client";
 
-import {
-  BankcodeSearchResult,
-  searchBanks,
-  searchBranches,
-} from "@/lib/bankcode-jp";
+import { BankcodeSearchResult, searchBanks, searchBranches } from "@/lib/bankcode-jp";
 import { translateBankAccountType } from "@/lib/prisma/translate-enum";
+import { isValidHolderName } from "@/utils/zengin";
 import { SearchIcon } from "@chakra-ui/icons";
 import {
   Button,
   Center,
   FormControl,
+  FormErrorMessage,
+  FormHelperText,
   FormLabel,
   Heading,
   Input,
@@ -39,24 +38,16 @@ export function BankAccountForm({ isSubmitting, onSubmit }: Props) {
   const [bankSearchText, setBankSearchText] = useState<string>();
   const [bankOptions, setBankOptions] = useState<BankcodeSearchResult[]>([]);
   const [bankCode, setBankCode] = useState<string>();
-  const [branchOptions, setBranchOptions] = useState<BankcodeSearchResult[]>(
-    []
-  );
+  const [branchOptions, setBranchOptions] = useState<BankcodeSearchResult[]>([]);
   const [branchCode, setBranchCode] = useState<string>();
   const [accountType, setAccountType] = useState<BankAccountType>();
   const [accountNo, setAccountNo] = useState<string>();
   const [holderName, setHolderName] = useState<string>();
 
   const isAccountTypeValid = !!accountType;
-  const isAccountNoValid = !!accountNo && !!accountNo?.match(/^\d{1,7}$/);
-  const isHolderNameValid = !!holderName;
-  const isValid = !!(
-    bankCode &&
-    branchCode &&
-    isAccountTypeValid &&
-    isAccountNoValid &&
-    isHolderNameValid
-  );
+  const isAccountNoValid = !!accountNo && accountNo.match(/^\d{1,7}$/);
+  const isHolderNameValid = !!holderName && isValidHolderName(holderName);
+  const isValid = !!(bankCode && branchCode && isAccountTypeValid && isAccountNoValid && isHolderNameValid);
 
   const resetBankAccountInfo = () => {
     setAccountType(undefined);
@@ -64,9 +55,7 @@ export function BankAccountForm({ isSubmitting, onSubmit }: Props) {
     setHolderName(undefined);
   };
 
-  const handleBankSearchTextChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleBankSearchTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setBankSearchText(e.target.value === "" ? undefined : e.target.value);
   };
 
@@ -119,27 +108,16 @@ export function BankAccountForm({ isSubmitting, onSubmit }: Props) {
             <InputLeftElement>
               <SearchIcon color="gray.300" />
             </InputLeftElement>
-            <Input
-              onChange={handleBankSearchTextChange}
-              value={bankSearchText ?? ""}
-            />
+            <Input onChange={handleBankSearchTextChange} value={bankSearchText ?? ""} />
           </InputGroup>
-          <Button
-            mt={2}
-            onClick={handleBankSearch}
-            isDisabled={!bankSearchText}
-          >
+          <Button mt={2} onClick={handleBankSearch} isDisabled={!bankSearchText}>
             検索
           </Button>
         </FormControl>
         {bankOptions.length > 0 && (
           <FormControl isRequired>
             <FormLabel>金融機関</FormLabel>
-            <Select
-              value={bankCode}
-              placeholder="金融機関を選択"
-              onChange={handleBankChange}
-            >
+            <Select value={bankCode} placeholder="金融機関を選択" onChange={handleBankChange}>
               {bankOptions.map((bank) => (
                 <option key={bank.code} value={bank.code}>
                   {bank.name}
@@ -151,11 +129,7 @@ export function BankAccountForm({ isSubmitting, onSubmit }: Props) {
         {branchOptions.length > 0 && (
           <FormControl isRequired>
             <FormLabel>支店</FormLabel>
-            <Select
-              value={branchCode}
-              placeholder="支店を選択"
-              onChange={handleBranchChange}
-            >
+            <Select value={branchCode} placeholder="支店を選択" onChange={handleBranchChange}>
               {branchOptions.map((branch) => (
                 <option key={branch.code} value={branch.code}>
                   {branch.name}({branch.code})
@@ -172,11 +146,7 @@ export function BankAccountForm({ isSubmitting, onSubmit }: Props) {
                 value={accountType}
                 placeholder="預金科目を選択"
                 onChange={(e) =>
-                  setAccountType(
-                    e.target.value === ""
-                      ? undefined
-                      : (e.target.value as BankAccountType)
-                  )
+                  setAccountType(e.target.value === "" ? undefined : (e.target.value as BankAccountType))
                 }
               >
                 {Object.values(BankAccountType).map((type) => (
@@ -187,34 +157,23 @@ export function BankAccountForm({ isSubmitting, onSubmit }: Props) {
               </Select>
             </FormControl>
             <FormControl isRequired isInvalid={!isAccountNoValid}>
-              <FormLabel>口座番号(半角数字)</FormLabel>
+              <FormLabel>口座番号</FormLabel>
               <Input
                 value={accountNo ?? ""}
-                onChange={(e) =>
-                  setAccountNo(
-                    e.target.value === "" ? undefined : e.target.value
-                  )
-                }
+                onChange={(e) => setAccountNo(e.target.value === "" ? undefined : e.target.value)}
               />
+              <FormHelperText>半角数字で入力してください</FormHelperText>
             </FormControl>
             <FormControl isRequired isInvalid={!isHolderNameValid}>
-              <FormLabel>口座名義(全角カナ)</FormLabel>
+              <FormLabel>口座名義</FormLabel>
               <Input
                 value={holderName ?? ""}
-                onChange={(e) =>
-                  setHolderName(
-                    e.target.value === "" ? undefined : e.target.value
-                  )
-                }
+                onChange={(e) => setHolderName(e.target.value === "" ? undefined : e.target.value)}
               />
+              <FormHelperText>半角英(大文字)数カナで入力してください</FormHelperText>
+              <FormErrorMessage></FormErrorMessage>
             </FormControl>
-            <Button
-              isLoading={isSubmitting}
-              size="lg"
-              mt={4}
-              isDisabled={!isValid}
-              onClick={handleSubmit}
-            >
+            <Button isLoading={isSubmitting} size="lg" mt={4} isDisabled={!isValid} onClick={handleSubmit}>
               登録する
             </Button>
           </>

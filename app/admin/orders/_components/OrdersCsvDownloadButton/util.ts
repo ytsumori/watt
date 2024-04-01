@@ -1,11 +1,7 @@
 import Encoding from "encoding-japanese";
 import Papa from "papaparse";
 import { ConvertedOrderInfo } from "../../_util/convertRequiredOrderInfo";
-
-export const isValidHolderName = (holderName: string): boolean => {
-  const isValid = /^[ｦ-ﾟ 0-9A-Z]*$/.test(holderName);
-  return isValid;
-};
+import { isValidHolderName } from "@/utils/zengin";
 
 export const isValidOrders = (order: ConvertedOrderInfo): boolean => {
   return order.bankAccount?.bankCode === undefined ||
