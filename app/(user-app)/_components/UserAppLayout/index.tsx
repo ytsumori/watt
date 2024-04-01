@@ -20,17 +20,17 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { signIn, signOut } from "next-auth/react";
-import { Session } from "next-auth";
 import { usePathname, useRouter } from "next/navigation";
 import { ConfirmModal } from "@/components/confirm-modal";
 import NextLink from "next/link";
 import Image from "next/image";
 import { findPreauthorizedOrder } from "@/actions/order";
+import { User } from "@prisma/client";
 
 type Props = {
   children: React.ReactNode;
   defaultPreauthorizedOrderId?: string;
-  user?: Session["user"];
+  user?: User;
 };
 
 export default function UserAppLayout({ children, defaultPreauthorizedOrderId, user }: Props) {
@@ -46,8 +46,8 @@ export default function UserAppLayout({ children, defaultPreauthorizedOrderId, u
   const [preauthorizedOrderId, setPreauthorizedOrderId] = React.useState(defaultPreauthorizedOrderId);
   useEffect(() => {
     if (user) {
-      if (!user.email && pathname !== "/profile") {
-        router.replace("/profile");
+      if (!user.phoneNumber && pathname !== "/profile") {
+        router.push("/profile");
       }
       if (!pathname.startsWith("/orders")) {
         findPreauthorizedOrder(user.id).then((preauthorizedOrder) => {

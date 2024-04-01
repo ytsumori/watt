@@ -2,6 +2,7 @@
 
 import prisma from "@/lib/prisma/client";
 import stripe from "@/lib/stripe";
+import { Prisma } from "@prisma/client";
 
 export async function isPaymentMethodRegistered(userId: string) {
   const user = await prisma.user.findUnique({
@@ -23,4 +24,13 @@ export async function isPaymentMethodRegistered(userId: string) {
   }
 
   return false;
+}
+
+export async function updateUser({ id, data }: { id: string; data: Prisma.UserUpdateInput }) {
+  return prisma.user.update({
+    where: {
+      id,
+    },
+    data,
+  });
 }

@@ -1,11 +1,12 @@
 "use client";
 
 import { checkOneTimePassword, generateOneTimePassword } from "@/actions/one-time-password";
+import { updateUser } from "@/actions/user";
 import { CheckIcon } from "@chakra-ui/icons";
 import {
-  Avatar,
   Button,
   FormControl,
+  FormErrorMessage,
   FormHelperText,
   FormLabel,
   HStack,
@@ -27,42 +28,60 @@ type Props = {
 
 export function ProfilePage({ me }: Props) {
   const [username, setUsername] = useState(me.name ?? "");
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [isPhoneNumberVerified, setIsPhoneNumberVerified] = useState(false);
-  const [verifyingNumber, setVerifyingNumber] = useState<string>();
+  const [verifiedPhoneNumber, setVerifiedPhoneNumber] = useState(me.phoneNumber);
+  const [phoneNumber, setPhoneNumber] = useState(me.phoneNumber ?? "");
+  const [isPhoneNumberVerifying, setIsPhoneNumberVerifying] = useState(false);
   const [otpCode, setOtpCode] = useState<string>("");
 
+  const isPhoneNumberValid = phoneNumber.match(/^\d{10,11}$/);
+
+  const isPhoneNumberVerified = !!(verifiedPhoneNumber && verifiedPhoneNumber === phoneNumber);
+
+  const isValidInput = username.length > 0 && phoneNumber.length > 0 && isPhoneNumberVerified;
+
   const handleSendVerifyToken = () => {
-    generateOneTimePassword(phoneNumber).then((status) => {
-      if (status === "waiting") {
-        setVerifyingNumber(phoneNumber);
-      }
+    generateOneTimePassword(phoneNumber).then((formattedPhoneNumber) => {
+      setPhoneNumber(formattedPhoneNumber);
+      setIsPhoneNumberVerifying(true);
     });
   };
 
   const handleVerifyTokenCheck = () => {
-    if (!verifyingNumber) return;
-    checkOneTimePassword({ phoneNumber: verifyingNumber, code: otpCode }).then((isValid) => {
+    if (!isPhoneNumberVerifying) return;
+    checkOneTimePassword({ phoneNumber, code: otpCode }).then((isValid) => {
       if (isValid) {
-        setIsPhoneNumberVerified(true);
-        setVerifyingNumber(undefined);
+        setIsPhoneNumberVerifying(false);
+        setVerifiedPhoneNumber(phoneNumber);
       } else {
         alert("認証に失敗しました");
       }
     });
   };
+
+  const handleSubmit = () => {
+    if (!isValidInput) return;
+    updateUser({
+      id: me.id,
+      data: {
+        name: username,
+        phoneNumber: verifiedPhoneNumber,
+      },
+    });
+  };
+
   return (
     <VStack w="full" p={4} alignItems="start" spacing={3}>
       <Heading>プロフィール</Heading>
-      <Avatar name={me.name ?? undefined} src={me.image ?? undefined} />
       <FormControl isRequired>
         <FormLabel>ニックネーム</FormLabel>
-        <Input value={username} onChange={(e) => setUsername(e.target.value)} />
         <FormHelperText>飲食店や他のユーザーに表示されることがあります</FormHelperText>
+        <Input value={username} onChange={(e) => setUsername(e.target.value)} />
       </FormControl>
-      <FormControl isRequired>
+      <FormControl isRequired isInvalid={!isPhoneNumberValid}>
         <FormLabel>携帯番号</FormLabel>
+        <FormHelperText>お店からの満席通知などに使用されます</FormHelperText>
         <InputGroup>
+          <InputLeftAddon>+81</InputLeftAddon>
           <Input
             value={phoneNumber}
             onChange={(e) => setPhoneNumber(e.target.value)}
@@ -75,10 +94,14 @@ export function ProfilePage({ me }: Props) {
             </InputRightElement>
           )}
         </InputGroup>
-        <FormHelperText>お店からの満席通知などに使用されます</FormHelperText>
+        <FormErrorMessage>正しい携帯番号を入力してください</FormErrorMessage>
       </FormControl>
-      <Button onClick={handleSendVerifyToken}>携帯番号を認証する</Button>
-      {verifyingNumber && (
+      {isPhoneNumberValid && !isPhoneNumberVerified && (
+        <Button variant="outline" onClick={handleSendVerifyToken}>
+          携帯番号を認証する
+        </Button>
+      )}
+      {isPhoneNumberVerifying && (
         <>
           <HStack>
             <PinInput otp value={otpCode} onChange={(value) => setOtpCode(value)}>
@@ -90,9 +113,14 @@ export function ProfilePage({ me }: Props) {
               <PinInputField />
             </PinInput>
           </HStack>
-          <Button onClick={handleVerifyTokenCheck}>認証する</Button>
+          <Button variant="outline" onClick={handleVerifyTokenCheck}>
+            認証する
+          </Button>
         </>
       )}
+      <Button w="full" isDisabled={!isValidInput} onClick={handleSubmit}>
+        保存する
+      </Button>
     </VStack>
   );
 }
