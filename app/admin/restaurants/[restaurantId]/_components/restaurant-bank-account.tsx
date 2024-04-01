@@ -22,6 +22,7 @@ import { FC, useEffect, useState } from "react";
 import { translateBankAccountType } from "@/lib/prisma/translate-enum";
 import { updateRestaurantBankAccount } from "@/actions/restaurant-bank-account";
 import { useRouter } from "next/navigation";
+import { isValidHolderName } from "@/utils/zengin";
 
 type BankAccount = Prisma.RestaurantBankAccountGetPayload<Prisma.RestaurantBankAccountDefaultArgs>;
 type RestaurantBankAccountProps = { restaurantBankAccount: BankAccount };
@@ -34,6 +35,8 @@ export const RestaurantBankAccount: FC<RestaurantBankAccountProps> = ({ restaura
   const [isAdminConfirmed, setIsAdminConfirmed] = useState<boolean>(restaurantBankAccount.isAdminConfirmed);
   const router = useRouter();
   const toast = useToast();
+
+  const isHolderNameInvalid = !isValidHolderName(holderName);
 
   useEffect(() => {
     getBank({ bankCode: restaurantBankAccount.bankCode }).then((bank) => {
@@ -81,7 +84,9 @@ export const RestaurantBankAccount: FC<RestaurantBankAccountProps> = ({ restaura
         </Text>
         {isEditMode ? (
           <>
-            <Button onClick={onSave}>保存する</Button>
+            <Button onClick={onSave} isDisabled={isHolderNameInvalid}>
+              保存する
+            </Button>
             <Button onClick={onClose}>閉じる</Button>
           </>
         ) : (
@@ -128,6 +133,7 @@ export const RestaurantBankAccount: FC<RestaurantBankAccountProps> = ({ restaura
                     border="solid"
                     borderColor="gray"
                     borderWidth={2}
+                    isInvalid={isHolderNameInvalid}
                   />
                 ) : (
                   restaurantBankAccount.holderName

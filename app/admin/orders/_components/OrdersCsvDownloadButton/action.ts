@@ -2,7 +2,7 @@
 import { BankAccountType } from "@prisma/client";
 import { ConvertedOrderInfo } from "../../_util/convertRequiredOrderInfo";
 import { format } from "date-fns";
-import { isValidHolderName } from "./util";
+import { isValidHolderName } from "@/utils/zengin";
 
 // 各レコードの値については https://www.rakuten-bank.co.jp/business/howto/pdf/h07_06_10.pdf を参照
 
@@ -21,7 +21,7 @@ export type TransferBankRecord = [
   string,
   string,
   string,
-  string,
+  string
 ];
 
 export const getHeaderRecord = (): string[] => {
@@ -53,16 +53,15 @@ export const getHeaderRecord = (): string[] => {
   ];
 };
 
-export const getTransferBankRecords = (
-  orders: ConvertedOrderInfo[],
-): TransferBankRecord[] => {
+export const getTransferBankRecords = (orders: ConvertedOrderInfo[]): TransferBankRecord[] => {
   return orders.map((order) => {
     const { bankAccount } = order;
     if (
       bankAccount?.bankCode === undefined ||
       bankAccount?.accountType === undefined ||
       bankAccount?.accountNo === undefined ||
-      bankAccount?.holderName === undefined || order.price === undefined
+      bankAccount?.holderName === undefined ||
+      order.price === undefined
     ) {
       throw new Error("bank record has not required fields");
     }
@@ -101,9 +100,7 @@ export const getTrailerRecord = (orders: ConvertedOrderInfo[]) => {
   ];
 };
 
-export const getCsvBankRecords = async (
-  orders: ConvertedOrderInfo[],
-): Promise<(string | number)[][]> => {
+export const getCsvBankRecords = async (orders: ConvertedOrderInfo[]): Promise<(string | number)[][]> => {
   const headerRecord = getHeaderRecord();
   const transferBankRecords = getTransferBankRecords(orders);
   const trailerRecord = getTrailerRecord(orders);
