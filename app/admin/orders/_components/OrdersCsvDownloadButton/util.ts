@@ -3,9 +3,7 @@ import Papa from "papaparse";
 import { ConvertedOrderInfo } from "../../_util/convertRequiredOrderInfo";
 
 export const isValidHolderName = (holderName: string): boolean => {
-  const splittedName = holderName.split("");
-  const regex = new RegExp(/[ｦ-ﾟ]/);
-  const isValid = splittedName.every((name) => name.match(regex) && name !== " ");
+  const isValid = /^[ｦ-ﾟ 0-9A-Z]*$/.test(holderName);
   return isValid;
 };
 
