@@ -2,6 +2,7 @@
 
 import { checkOneTimePassword, generateOneTimePassword } from "@/actions/one-time-password";
 import { updateUser } from "@/actions/user";
+import { ConfirmModal } from "@/components/confirm-modal";
 import { CheckIcon } from "@chakra-ui/icons";
 import {
   Button,
@@ -20,6 +21,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { User } from "@prisma/client";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 type Props = {
@@ -27,11 +29,13 @@ type Props = {
 };
 
 export function ProfilePage({ me }: Props) {
+  const router = useRouter();
   const [username, setUsername] = useState(me.name ?? "");
   const [verifiedPhoneNumber, setVerifiedPhoneNumber] = useState(me.phoneNumber);
   const [phoneNumber, setPhoneNumber] = useState(me.phoneNumber ?? "");
   const [isPhoneNumberVerifying, setIsPhoneNumberVerifying] = useState(false);
   const [otpCode, setOtpCode] = useState<string>("");
+  const [submitStatus, setSubmitStatus] = useState<"idle" | "submitting" | "completed">("idle");
 
   const isPhoneNumberValid = phoneNumber.match(/^\d{10,11}$/);
 
@@ -60,6 +64,7 @@ export function ProfilePage({ me }: Props) {
 
   const handleSubmit = () => {
     if (!isValidInput) return;
+    setSubmitStatus("submitting");
     updateUser({
       id: me.id,
       data: {
@@ -67,6 +72,7 @@ export function ProfilePage({ me }: Props) {
         phoneNumber: verifiedPhoneNumber,
       },
     });
+    setSubmitStatus("completed");
   };
 
   return (
@@ -118,9 +124,20 @@ export function ProfilePage({ me }: Props) {
           </Button>
         </>
       )}
-      <Button w="full" isDisabled={!isValidInput} onClick={handleSubmit}>
+      <Button w="full" isDisabled={!isValidInput} onClick={handleSubmit} isLoading={submitStatus !== "idle"}>
         保存する
       </Button>
+      <ConfirmModal
+        isOpen={submitStatus === "completed"}
+        title=""
+        confirmButton={{
+          label: "ホーム画面へ戻る",
+          onClick: () => router.push("/"),
+        }}
+        onClose={() => undefined}
+      >
+        変更を保存しました
+      </ConfirmModal>
     </VStack>
   );
 }
