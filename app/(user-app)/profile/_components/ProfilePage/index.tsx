@@ -37,6 +37,8 @@ export function ProfilePage({ me }: Props) {
   const [otpCode, setOtpCode] = useState<string>("");
   const [submitStatus, setSubmitStatus] = useState<"idle" | "submitting" | "completed">("idle");
 
+  const isInputUnchanged = username === me.name && phoneNumber === me.phoneNumber;
+
   const isPhoneNumberValid = phoneNumber.match(/^\d{10,11}$/);
 
   const isPhoneNumberVerified = !!(verifiedPhoneNumber && verifiedPhoneNumber === phoneNumber);
@@ -124,7 +126,12 @@ export function ProfilePage({ me }: Props) {
           </Button>
         </>
       )}
-      <Button w="full" isDisabled={!isValidInput} onClick={handleSubmit} isLoading={submitStatus !== "idle"}>
+      <Button
+        w="full"
+        isDisabled={!isValidInput || isInputUnchanged}
+        onClick={handleSubmit}
+        isLoading={submitStatus !== "idle"}
+      >
         保存する
       </Button>
       <ConfirmModal

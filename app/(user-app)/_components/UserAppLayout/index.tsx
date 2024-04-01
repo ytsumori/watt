@@ -97,6 +97,9 @@ export default function UserAppLayout({ children, defaultPreauthorizedOrderId, u
                 <MenuItem as={NextLink} href="/orders">
                   注文履歴
                 </MenuItem>
+                <MenuItem as={NextLink} href="/profile">
+                  プロフィール
+                </MenuItem>
                 <MenuItem onClick={handleSignOutClick}>ログアウト</MenuItem>
               </>
             ) : (
