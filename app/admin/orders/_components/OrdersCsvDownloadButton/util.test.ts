@@ -9,7 +9,7 @@ describe("[OrdersCsvDownloadButton / util]", () => {
   describe("isValidHolderName", () => {
     describe("正常系", () => {
       it("半角カタカナ", () => expect(isValidHolderName("ﾀﾅｶﾀﾛｳ")).toBe(true));
-      it("半角大文字英語", () => expect(isValidHolderName("HELLO")).toBe(true));
+      it("半角大文字英語", () => expect(isValidHolderName("TANAKATARO")).toBe(true));
       it("半角数字", () => expect(isValidHolderName("1234")).toBe(true));
       it("半角スペース", () => expect(isValidHolderName("ﾀﾅｶ ﾀﾛｳ")).toBe(true));
     });
