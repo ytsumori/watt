@@ -1,13 +1,24 @@
 import Encoding from "encoding-japanese";
 import Papa from "papaparse";
+import { ConvertedOrderInfo } from "../../_util/convertRequiredOrderInfo";
 
 export const isValidHolderName = (holderName: string): boolean => {
   const splittedName = holderName.split("");
   const regex = new RegExp(/[ｦ-ﾟ]/);
-  const isValid = splittedName.every((name) =>
-    name.match(regex) && name !== " "
-  );
+  const isValid = splittedName.every((name) => name.match(regex) && name !== " ");
   return isValid;
+};
+
+export const isValidOrders = (order: ConvertedOrderInfo): boolean => {
+  return order.bankAccount?.bankCode === undefined ||
+    order.bankAccount?.accountType === undefined ||
+    order.bankAccount?.accountNo === undefined ||
+    order.bankAccount?.holderName === undefined ||
+    order.price === undefined ||
+    order.isDownloaded ||
+    !isValidHolderName(order.bankAccount.holderName)
+    ? false
+    : true;
 };
 
 export const convertToBlob = (records: (string | number)[][]): Blob => {

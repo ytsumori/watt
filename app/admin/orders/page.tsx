@@ -12,7 +12,7 @@ export default async function OrdersPage({ searchParams }: { searchParams: { [ke
         include: {
           orders: {
             orderBy: { createdAt: "desc" },
-            where: { createdAt: { gt: dateRange.start, lte: dateRange.end }, isDownloaded: false },
+            where: { createdAt: { gt: dateRange.start, lte: dateRange.end } },
           },
         },
       },
