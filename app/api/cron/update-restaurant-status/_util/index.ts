@@ -15,7 +15,6 @@ type OpeningHour = Prisma.RestaurantGoogleMapOpeningHourGetPayload<{
 export function isOpenNow(openingHours: OpeningHour[]) {
   process.env.TZ = "Asia/Tokyo";
   const now = new Date();
-  console.log(now.toISOString());
   const currentDay = now.getDay();
   const yesterdayDay = currentDay === 0 ? 6 : currentDay - 1;
   const tomorrowDay = currentDay === 6 ? 0 : currentDay + 1;
