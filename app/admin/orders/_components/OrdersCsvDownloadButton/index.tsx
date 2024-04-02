@@ -38,7 +38,7 @@ export const OrdersCsvDownloadButton: FC<OrdersCsvDownloadButtonProps> = ({ orde
         const bankRecords = await getCsvBankRecords(groupedOrders);
         const blob = convertToBlob(bankRecords);
         const link = document.createElement("a");
-        link.download = "download.csv";
+        link.download = `export-${new Date().toLocaleString("ja-JP")}.csv`;
         link.href = URL.createObjectURL(blob);
         link.click();
         URL.revokeObjectURL(link.href);

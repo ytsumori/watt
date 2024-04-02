@@ -4,6 +4,7 @@ import { createOrderMock } from "@/test/mock/createOrderMock";
 import { createRestaurantMock } from "@/test/mock/createRestaurantMock";
 import { createRestaurantBankAccountMock } from "@/test/mock/createRestaurantBankAccountMock";
 import { RestaurantWithOrders } from "./type";
+import { convertAccountTypeToNumber } from "./util";
 
 describe("[OrdersCsvDownloadButton / action]", () => {
   const restaurantWithOrders: RestaurantWithOrders[] = Array.from({ length: 3 }, () => {
@@ -24,11 +25,11 @@ describe("[OrdersCsvDownloadButton / action]", () => {
           bankAccount.branchCode,
           "",
           "",
-          bankAccount.accountType,
+          convertAccountTypeToNumber(bankAccount.accountType),
           bankAccount.accountNo,
           bankAccount.holderName,
           restaurant.orders.reduce((acc, order) => acc + order.restaurantProfitPrice, 0),
-          1,
+          "1",
           restaurant.restaurantId,
           "",
           "",

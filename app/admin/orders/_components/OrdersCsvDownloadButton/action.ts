@@ -1,27 +1,28 @@
 "use server";
-import { BankAccountType } from "@prisma/client";
+
 import { format } from "date-fns";
 import { isValidHolderName } from "@/utils/zengin";
 import { RestaurantWithOrders } from "./type";
+import { convertAccountTypeToNumber } from "./util";
 
 // 各レコードの値については https://www.rakuten-bank.co.jp/business/howto/pdf/h07_06_10.pdf を参照
 
 export type DataRecord = [
+  "2",
   string,
+  "",
   string,
-  string,
-  string,
-  string,
-  string,
-  BankAccountType,
+  "",
+  "",
+  "1" | "2" | "4",
   string,
   string,
   number,
-  number,
+  "1",
   string,
-  string,
-  string,
-  string
+  "",
+  "",
+  ""
 ];
 
 export const getHeaderRecord = (): string[] => {
@@ -69,11 +70,11 @@ export const getDataRecords = (restaurants: RestaurantWithOrders[]): DataRecord[
       bankAccount.branchCode, // 受取人支店番号
       "", // 受取人支店名
       "", // 手形交換所番号
-      bankAccount.accountType, // 預金種目
+      convertAccountTypeToNumber(bankAccount.accountType), // 預金種目
       bankAccount.accountNo, // 受取人口座番号
       bankAccount.holderName, // 受取人口座名
       totalProfitPrice, // 送金金額
-      1, // 新規コード
+      "1", // 新規コード
       restaurant.restaurantId, // 顧客番号
       "", // 振込指定区分
       "", // 識別表示
