@@ -1,4 +1,3 @@
-import { getGoogleMapUrl } from "@/lib/places-api";
 import { RestaurantLayout } from "./_components/RestaurantLayout";
 import prisma from "@/lib/prisma/client";
 import { redirect } from "next/navigation";
@@ -19,15 +18,15 @@ export default async function Restaurant({ children, params }: Props) {
           isDiscarded: false,
         },
       },
+      googleMapPlaceInfo: {
+        select: {
+          url: true,
+        },
+      },
     },
   });
   if (!restaurant) {
     redirect("/");
   }
-  const { googleMapsUri } = await getGoogleMapUrl({ placeId: restaurant.googleMapPlaceId });
-  return (
-    <RestaurantLayout restaurant={restaurant} googleMapsUri={googleMapsUri}>
-      {children}
-    </RestaurantLayout>
-  );
+  return <RestaurantLayout restaurant={restaurant}>{children}</RestaurantLayout>;
 }

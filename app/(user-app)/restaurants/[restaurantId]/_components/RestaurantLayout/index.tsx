@@ -9,12 +9,11 @@ import { usePathname } from "next/navigation";
 import { FaMapMarkedAlt } from "react-icons/fa";
 
 type Props = {
-  restaurant: Prisma.RestaurantGetPayload<{ include: { meals: true } }>;
-  googleMapsUri: string;
+  restaurant: Prisma.RestaurantGetPayload<{ include: { meals: true; googleMapPlaceInfo: { select: { url: true } } } }>;
   children: React.ReactNode;
 };
 
-export function RestaurantLayout({ restaurant, children, googleMapsUri }: Props) {
+export function RestaurantLayout({ restaurant, children }: Props) {
   const pathname = usePathname();
   const selectedMealId = pathname.split("/meals/")[1] || undefined;
 
@@ -22,9 +21,17 @@ export function RestaurantLayout({ restaurant, children, googleMapsUri }: Props)
     <Box>
       <VStack w="full" p={4} alignItems="start" spacing={4}>
         <Heading size="lg">{restaurant.name}</Heading>
-        <Button w="full" leftIcon={<Icon as={FaMapMarkedAlt} />} as={NextLink} href={googleMapsUri} target="_blank">
-          Googleマップでお店情報を見る
-        </Button>
+        {restaurant.googleMapPlaceInfo && (
+          <Button
+            w="full"
+            leftIcon={<Icon as={FaMapMarkedAlt} />}
+            as={NextLink}
+            href={restaurant.googleMapPlaceInfo.url}
+            target="_blank"
+          >
+            Googleマップでお店情報を見る
+          </Button>
+        )}
         <Box h="20vh" w="full">
           <iframe
             width="100%"

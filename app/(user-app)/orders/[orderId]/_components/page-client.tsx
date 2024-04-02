@@ -37,12 +37,11 @@ import NextLink from "next/link";
 
 type Props = {
   order: Prisma.OrderGetPayload<{
-    include: { meal: { include: { restaurant: true } } };
+    include: { meal: { include: { restaurant: { include: { googleMapPlaceInfo: { select: { url: true } } } } } } };
   }>;
-  googleMapsUri: string;
 };
 
-export function OrderPage({ order, googleMapsUri }: Props) {
+export function OrderPage({ order }: Props) {
   const router = useRouter();
   const { isOpen: isConfirmModalOpen, onOpen: onConfirmModalOpen, onClose: onConfirmModalClose } = useDisclosure();
   const { isOpen: isCancelModalOpen, onOpen: onCancelModalOpen, onClose: onCancelModalClose } = useDisclosure();
@@ -131,15 +130,17 @@ export function OrderPage({ order, googleMapsUri }: Props) {
               <VStack alignItems="start">
                 <Heading size="md">店舗</Heading>
                 <Heading size="sm">{order.meal.restaurant.name}</Heading>
-                <Button
-                  w="full"
-                  leftIcon={<Icon as={FaMapMarkedAlt} />}
-                  as={NextLink}
-                  href={googleMapsUri}
-                  target="_blank"
-                >
-                  Googleマップでお店情報を見る
-                </Button>
+                {order.meal.restaurant.googleMapPlaceInfo && (
+                  <Button
+                    w="full"
+                    leftIcon={<Icon as={FaMapMarkedAlt} />}
+                    as={NextLink}
+                    href={order.meal.restaurant.googleMapPlaceInfo.url}
+                    target="_blank"
+                  >
+                    Googleマップでお店情報を見る
+                  </Button>
+                )}
                 <Box h="15vh" w="full">
                   <iframe
                     width="100%"
