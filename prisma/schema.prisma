@@ -77,9 +77,37 @@ model Restaurant {
   createdAt             DateTime @default(now())
   updatedAt             DateTime @default(now()) @updatedAt
 
-  bankAccount RestaurantBankAccount?
-  meals       Meal[]
-  staffs      Staff[]
+  bankAccount        RestaurantBankAccount?
+  googleMapPlaceInfo RestaurantGoogleMapPlaceInfo?
+  openingHours       RestaurantGoogleMapOpeningHours[]
+  meals              Meal[]
+  staffs             Staff[]
+}
+
+model RestaurantGoogleMapPlaceInfo {
+  id           String   @id @default(cuid())
+  restaurantId String   @unique
+  latitude     Decimal
+  longitude    Decimal
+  url          String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now()) @updatedAt
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+}
+
+model RestaurantGoogleMapOpeningHours {
+  id           String    @id @default(cuid())
+  restaurantId String    @unique
+  dayOfWeek    DayOfWeek
+  openHour     Int
+  openMinute   Int
+  closeHour    Int
+  closeMinute  Int
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @default(now()) @updatedAt
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
 }
 
 model Meal {
