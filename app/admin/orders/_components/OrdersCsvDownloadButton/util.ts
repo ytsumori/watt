@@ -1,18 +1,14 @@
 import Encoding from "encoding-japanese";
 import Papa from "papaparse";
-import { ConvertedOrderInfo } from "../../_util/convertRequiredOrderInfo";
 import { isValidHolderName } from "@/utils/zengin";
+import { DownloadableOrder } from "./type";
 
-export const isValidOrders = (order: ConvertedOrderInfo): boolean => {
-  return order.bankAccount?.bankCode === undefined ||
-    order.bankAccount?.accountType === undefined ||
-    order.bankAccount?.accountNo === undefined ||
-    order.bankAccount?.holderName === undefined ||
-    order.price === undefined ||
-    order.isDownloaded ||
-    !isValidHolderName(order.bankAccount.holderName)
-    ? false
-    : true;
+export const isValidOrder = (order: DownloadableOrder): boolean => {
+  return (
+    order.meal.restaurant.bankAccount !== null &&
+    !order.isDownloaded &&
+    isValidHolderName(order.meal.restaurant.bankAccount.holderName)
+  );
 };
 
 export const convertToBlob = (records: (string | number)[][]): Blob => {
