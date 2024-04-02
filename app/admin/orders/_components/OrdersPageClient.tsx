@@ -2,12 +2,15 @@
 
 import { Box, Flex, Table, TableContainer, Tbody, Td, Th, Thead, Tr } from "@chakra-ui/react";
 import { OrdersCsvDownloadButton } from "./OrdersCsvDownloadButton";
-import { ConvertedOrderInfo } from "../_util/convertRequiredOrderInfo";
 import { translateOrderStatus } from "@/lib/prisma/translate-enum";
 import { format } from "date-fns";
 import { DateRangeEditor } from "./DateRangeEditor";
+import { DownloadableOrder } from "./OrdersCsvDownloadButton/type";
 
-type Props = { orders: ConvertedOrderInfo[]; dateRange: { start: Date; end: Date } };
+type Props = {
+  orders: DownloadableOrder[];
+  dateRange: { start: Date; end: Date };
+};
 
 export function OrdersPageClient({ orders, dateRange }: Props) {
   return (
@@ -34,7 +37,7 @@ export function OrdersPageClient({ orders, dateRange }: Props) {
               <Tr key={order.id}>
                 <Td>{format(order.createdAt, "yyyy/MM/dd")}</Td>
                 <Td>{order.providerPaymentId}</Td>
-                <Td>{order.restaurantName}</Td>
+                <Td>{order.meal.restaurant.name}</Td>
                 <Td>{order.price.toLocaleString("ja-JP")}円</Td>
                 <Td>{order.restaurantProfitPrice.toLocaleString("ja-JP")}円</Td>
                 <Td>{translateOrderStatus(order.status)}</Td>

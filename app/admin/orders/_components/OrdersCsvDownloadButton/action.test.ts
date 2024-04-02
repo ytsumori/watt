@@ -1,52 +1,56 @@
 import { describe, expect, it } from "vitest";
-import { ConvertedOrderInfo } from "../../_util/convertRequiredOrderInfo";
-import { getTrailerRecord, getTransferBankRecords } from "./action";
+import { getDataRecords, getTrailerRecord } from "./action";
 import { createOrderMock } from "@/test/mock/createOrderMock";
 import { createRestaurantMock } from "@/test/mock/createRestaurantMock";
 import { createRestaurantBankAccountMock } from "@/test/mock/createRestaurantBankAccountMock";
+import { RestaurantWithOrders } from "./type";
 
 describe("[OrdersCsvDownloadButton / action]", () => {
-  const convertedOrderInfoMock = Array.from({ length: 3 }, () => {
-    const restaurants = createRestaurantMock();
-    const bankAccounts = createRestaurantBankAccountMock();
-    const { id, ...order } = createOrderMock();
+  const restaurantWithOrders: RestaurantWithOrders[] = Array.from({ length: 3 }, () => {
     return {
-      id: restaurants.id,
-      restaurantName: restaurants.name,
-      bankAccount: bankAccounts,
-      ...order,
+      restaurantId: createRestaurantMock().id,
+      bankAccount: createRestaurantBankAccountMock(),
+      orders: [createOrderMock()],
     };
   });
   describe("getTransferBankRecords", () => {
     it("適切な配列に変換されている", () => {
-      const expectedValue = convertedOrderInfoMock.map((order) => {
-        const { bankAccount } = order;
+      const expectedValue = restaurantWithOrders.map((restaurant) => {
+        const bankAccount = restaurant.bankAccount;
         return [
           "2",
-          bankAccount?.bankCode,
+          bankAccount.bankCode,
           "",
-          bankAccount?.bankCode,
+          bankAccount.branchCode,
           "",
           "",
-          bankAccount?.accountType,
-          bankAccount?.accountNo,
-          bankAccount?.holderName,
-          order.price,
+          bankAccount.accountType,
+          bankAccount.accountNo,
+          bankAccount.holderName,
+          restaurant.orders.reduce((acc, order) => acc + order.restaurantProfitPrice, 0),
           1,
-          bankAccount?.id,
+          restaurant.restaurantId,
           "",
           "",
           "",
         ];
       });
-      expect(getTransferBankRecords(convertedOrderInfoMock)).toStrictEqual(expectedValue);
+      expect(getDataRecords(restaurantWithOrders)).toStrictEqual(expectedValue);
     });
   });
 
   describe("getTrailerRecord", () => {
     it("適切な配列に変換されている", () => {
-      const sum = convertedOrderInfoMock.reduce((acc, cur) => acc + cur.price, 0);
-      expect(getTrailerRecord(convertedOrderInfoMock)).toStrictEqual(["8", convertedOrderInfoMock.length, sum, ""]);
+      const sum = restaurantWithOrders.reduce(
+        (acc, cur) => acc + cur.orders.reduce((orderAcc, orderCur) => orderAcc + orderCur.restaurantProfitPrice, 0),
+        0
+      );
+      expect(getTrailerRecord(getDataRecords(restaurantWithOrders))).toStrictEqual([
+        "8",
+        restaurantWithOrders.length,
+        sum,
+        "",
+      ]);
     });
   });
 });

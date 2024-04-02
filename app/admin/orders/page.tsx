@@ -1,29 +1,28 @@
 import prisma from "@/lib/prisma/client";
 import { OrdersPageClient } from "./_components/OrdersPageClient";
-import { convertRequiredOrderInfo } from "./_util/convertRequiredOrderInfo";
 import { calculateDateRange } from "./_components/DateRangeEditor/util";
 
 export default async function OrdersPage({ searchParams }: { searchParams: { [key: string]: string | undefined } }) {
   const dateRange = calculateDateRange(searchParams);
 
-  const restaurants = await prisma.restaurant.findMany({
+  const orders = await prisma.order.findMany({
+    where: {
+      createdAt: { gt: dateRange.start, lte: dateRange.end },
+      status: { in: ["COMPLETE", "PREAUTHORIZED"] },
+    },
+    orderBy: { createdAt: "desc" },
     include: {
-      meals: {
+      meal: {
         include: {
-          orders: {
-            orderBy: { createdAt: "desc" },
-            where: {
-              createdAt: { gt: dateRange.start, lte: dateRange.end },
-              status: { in: ["COMPLETE", "PREAUTHORIZED"] },
+          restaurant: {
+            include: {
+              bankAccount: true,
             },
           },
         },
       },
-      bankAccount: true,
     },
   });
-
-  const orders = convertRequiredOrderInfo(restaurants);
 
   return <OrdersPageClient orders={orders} dateRange={dateRange} />;
 }
