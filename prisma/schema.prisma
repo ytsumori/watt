@@ -98,7 +98,7 @@ model RestaurantGoogleMapPlaceInfo {
 
 model RestaurantGoogleMapOpeningHour {
   id             String    @id @default(cuid())
-  restaurantId   String    @unique
+  restaurantId   String
   openHour       Int
   openMinute     Int
   openDayOfWeek  DayOfWeek

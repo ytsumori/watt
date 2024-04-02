@@ -40,17 +40,28 @@ export async function getPlaceDetail({ placeId }: { placeId: string }) {
   return response.json() as Promise<PlaceDetailResult>;
 }
 
-type RestaurantBusinessStatusResult = {
+type OpeningHoursResult = {
   currentOpeningHours?: {
-    openNow: boolean;
+    periods: {
+      open: {
+        day: number;
+        hour: number;
+        minute: number;
+      };
+      close: {
+        day: number;
+        hour: number;
+        minute: number;
+      };
+    }[];
   };
 };
 
-export async function getRestaurantBusinessStatus({ placeId }: { placeId: string }) {
+export async function getOpeningHours({ placeId }: { placeId: string }) {
   const response = await fetch(
-    `https://places.googleapis.com/v1/places/${placeId}?fields=current_opening_hours.open_now&key=${process.env.GOOGLE_MAP_API_KEY}&languageCode=ja`
+    `https://places.googleapis.com/v1/places/${placeId}?fields=current_opening_hours.periods&key=${process.env.GOOGLE_MAP_API_KEY}&languageCode=ja`
   );
-  return response.json() as Promise<RestaurantBusinessStatusResult>;
+  return response.json() as Promise<OpeningHoursResult>;
 }
 
 type GoogleMapUrlResult = {
