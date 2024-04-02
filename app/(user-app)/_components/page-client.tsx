@@ -11,7 +11,9 @@ import Link from "next/link";
 export default function HomePage({
   restaurants,
 }: {
-  restaurants: Prisma.RestaurantGetPayload<{ include: { meals: true } }>[];
+  restaurants: Prisma.RestaurantGetPayload<{
+    include: { meals: true; googleMapPlaceInfo: { select: { latitude: true; longitude: true } } };
+  }>[];
 }) {
   const [selectedRestaurantId, setSelectedRestaurantId] = useState<string>();
 
@@ -25,7 +27,18 @@ export default function HomePage({
     <Flex h="full" w="full" direction="column" overflowY="hidden">
       <Box flex="1">
         <Map
-          restaurants={restaurants}
+          restaurants={restaurants.flatMap((restaurant) => {
+            if (!restaurant.googleMapPlaceInfo) return [];
+
+            return {
+              id: restaurant.id,
+              name: restaurant.name,
+              location: {
+                lat: restaurant.googleMapPlaceInfo.latitude.toNumber(),
+                lng: restaurant.googleMapPlaceInfo.longitude.toNumber(),
+              },
+            };
+          })}
           selectedRestaurantId={selectedRestaurantId}
           onRestaurantSelect={handleRestaurantSelect}
         />

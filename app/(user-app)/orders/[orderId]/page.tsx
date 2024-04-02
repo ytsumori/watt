@@ -3,7 +3,6 @@ import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import prisma from "@/lib/prisma/client";
 import { OrderPage } from "./_components/page-client";
-import { getGoogleMapUrl } from "@/lib/places-api";
 
 type Params = {
   orderId: string;
@@ -19,14 +18,19 @@ export default async function Order({ params }: { params: Params }) {
   const order = await prisma.order.findUnique({
     where: { id: params.orderId },
     include: {
-      meal: { include: { restaurant: true } },
+      meal: {
+        include: {
+          restaurant: {
+            include: { googleMapPlaceInfo: { select: { url: true } } },
+          },
+        },
+      },
     },
   });
 
   if (!order || order.userId !== user.id) {
     redirect("/");
   }
-  const { googleMapsUri } = await getGoogleMapUrl({ placeId: order.meal.restaurant.googleMapPlaceId });
 
-  return <OrderPage order={order} googleMapsUri={googleMapsUri}></OrderPage>;
+  return <OrderPage order={order}></OrderPage>;
 }

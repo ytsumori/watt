@@ -19,6 +19,11 @@ export default async function Restaurant({ children, params }: Props) {
           isDiscarded: false,
         },
       },
+      googleMapPlaceInfo: {
+        select: {
+          url: true,
+        },
+      },
     },
   });
   if (!restaurant) {
