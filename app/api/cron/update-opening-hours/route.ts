@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma/client";
-import { Prisma } from "@prisma/client";
+import { Restaurant } from "@prisma/client";
 import { getOpeningHours } from "@/lib/places-api";
 import { dayNumberToDayOfWeek } from "@/utils/day-of-week";
 
@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
   }
 
   const restaurants = await prisma.restaurant.findMany({
-    include: { meals: true, openingHours: true },
+    include: { meals: true },
     where: {
       meals: {
         some: {
@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
     },
   });
 
-  const updateOpeningHours = async (restaurant: Prisma.RestaurantGetPayload<{ include: { openingHours: true } }>) => {
+  const updateOpeningHours = async (restaurant: Restaurant) => {
     await prisma.restaurantGoogleMapOpeningHour.deleteMany({
       where: {
         restaurantId: restaurant.id,

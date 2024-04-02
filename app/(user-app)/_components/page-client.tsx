@@ -34,8 +34,8 @@ export default function HomePage({
               id: restaurant.id,
               name: restaurant.name,
               location: {
-                lat: restaurant.googleMapPlaceInfo.latitude.toNumber(),
-                lng: restaurant.googleMapPlaceInfo.longitude.toNumber(),
+                lat: restaurant.googleMapPlaceInfo.latitude,
+                lng: restaurant.googleMapPlaceInfo.longitude,
               },
             };
           })}
