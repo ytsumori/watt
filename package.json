@@ -4,7 +4,7 @@
   "scripts": {
     "dev": "dotenv -e .env.local -- pnpx supabase start && prisma generate && next dev",
     "dev/down": "dotenv -e .env.local -- pnpx supabase stop",
-    "build": "prisma generate && prisma db push --accept-data-loss && next build",
+    "build": "prisma generate && prisma db push && next build",
     "start": "next start",
     "test": "vitest",
     "e2e": "playwright test",
