@@ -19,7 +19,7 @@ export type DataRecord = [
   string,
   number,
   "1",
-  string,
+  number,
   "",
   "",
   ""
@@ -75,7 +75,7 @@ export const getDataRecords = (restaurants: RestaurantWithOrders[]): DataRecord[
       bankAccount.holderName, // 受取人口座名
       totalProfitPrice, // 送金金額
       "1", // 新規コード
-      restaurant.restaurantId, // 顧客番号
+      bankAccount.clientCode, // 顧客番号
       "", // 振込指定区分
       "", // 識別表示
       "", // ダミー

@@ -22,6 +22,7 @@ export type DownloadableOrder = Prisma.OrderGetPayload<{
                 accountType: true;
                 accountNo: true;
                 holderName: true;
+                clientCode: true;
               };
             };
           };
@@ -39,6 +40,7 @@ export type RestaurantWithOrders = {
     accountType: BankAccountType;
     accountNo: string;
     holderName: string;
+    clientCode: number;
   };
   orders: {
     id: string;

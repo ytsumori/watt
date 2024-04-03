@@ -165,6 +165,7 @@ model RestaurantBankAccount {
   accountNo        String
   holderName       String
   isAdminConfirmed Boolean         @default(false)
+  clientCode       Int             @unique @default(autoincrement())
   createdAt        DateTime        @default(now())
   updatedAt        DateTime        @default(now()) @updatedAt
 
