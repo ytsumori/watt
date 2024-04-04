@@ -139,28 +139,26 @@ export default function MealPage({ meal, paymentMethods, isRestaurantActive, pre
                 <Flex w="full">
                   <Text>{meal.title}</Text>
                   <Spacer />
-                  <Text>
-                    <Text
-                      as="span"
-                      fontSize="sm"
-                      textDecoration="line-through"
-                      textDecorationColor="red.400"
-                      textDecorationThickness="2px"
-                      mr={1}
-                    >
-                      ¥{meal.price.toLocaleString("ja-JP")}
-                    </Text>
-                    <VStack spacing="0" display="inline-flex">
-                      <Text color="red.400" as="b">
-                        ¥{applyEarlyDiscount(meal.price).toLocaleString("ja-JP")}
-                      </Text>
-                      <Box backgroundColor="red.400" borderRadius={4}>
-                        <Text color="white" fontWeight="bold" fontSize="xs" px={2}>
-                          早期割引
-                        </Text>
-                      </Box>
-                    </VStack>
+                  <Text
+                    as="p"
+                    fontSize="sm"
+                    textDecoration="line-through"
+                    textDecorationColor="red.400"
+                    textDecorationThickness="2px"
+                    mr={1}
+                  >
+                    ¥{meal.price.toLocaleString("ja-JP")}
                   </Text>
+                  <VStack spacing="0" display="inline-flex">
+                    <Text color="red.400" as="b">
+                      ¥{applyEarlyDiscount(meal.price).toLocaleString("ja-JP")}
+                    </Text>
+                    <Box backgroundColor="red.400" borderRadius={4}>
+                      <Text color="white" fontWeight="bold" fontSize="xs" px={2} as="p">
+                        早期割引
+                      </Text>
+                    </Box>
+                  </VStack>
                 </Flex>
                 <Divider />
                 <Heading size="sm" alignSelf="self-end">

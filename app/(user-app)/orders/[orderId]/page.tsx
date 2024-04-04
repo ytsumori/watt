@@ -2,7 +2,7 @@ import { options } from "@/lib/next-auth/options";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import prisma from "@/lib/prisma/client";
-import { OrderPage } from "./_components/page-client";
+import { OrderPage } from "./_components/OrderPage";
 
 type Params = {
   orderId: string;
