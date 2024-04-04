@@ -13,7 +13,7 @@ export function MealPreviewImage({ src, alt, supabase }: Props) {
   const imgPath = src ? src.split("/meals/")[1] : src;
 
   const resizedImgSrc = imgPath
-    ? supabase.storage.from("meals").getPublicUrl(imgPath, { transform: { width: 500, height: 600 } })
+    ? supabase.storage.from("meals").getPublicUrl(imgPath, { transform: { width: 1000, height: 1000 } })
     : undefined;
 
   return (
