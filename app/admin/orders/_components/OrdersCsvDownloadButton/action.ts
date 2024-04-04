@@ -25,7 +25,7 @@ export type DataRecord = [
   ""
 ];
 
-export const getHeaderRecord = (date: string): string[] => {
+export const getHeaderRecord = (transferDate: string): string[] => {
   if (
     process.env.CONSIGNOR_CODE === undefined ||
     process.env.CONSIGNOR_NAME === undefined ||
@@ -34,13 +34,17 @@ export const getHeaderRecord = (date: string): string[] => {
   ) {
     throw new Error("header Record has not required fields");
   }
+
+  const splittedTranferDate = transferDate.split("-");
+  const formattedTranferDate = splittedTranferDate[1] + splittedTranferDate[2];
+
   return [
     "1", // データ区分
     "21", // 種別コード
     "0", // 文字コード区分
     `${process.env.CONSIGNOR_CODE}`, // 委託者コード
     `${process.env.CONSIGNOR_NAME}`, // 委託者名
-    `${date}`, // 実行日
+    `${formattedTranferDate}`, // 実行日
     "0036", // 依頼人銀行番号
     "", // 依頼人銀行名
     `${process.env.CONSIGNOR_BRANCH_CODE}`, // 依頼人支店番号
@@ -93,10 +97,10 @@ export const getTrailerRecord = (dataRecords: DataRecord[]) => {
 };
 
 export const getCsvBankRecords = async (
-  date: string,
+  transferDate: string,
   restaurantsWithOrders: RestaurantWithOrders[]
 ): Promise<(string | number)[][]> => {
-  const headerRecord = getHeaderRecord(date);
+  const headerRecord = getHeaderRecord(transferDate);
   const dataRecords = getDataRecords(restaurantsWithOrders);
   const trailerRecord = getTrailerRecord(dataRecords);
   const endRecord = [

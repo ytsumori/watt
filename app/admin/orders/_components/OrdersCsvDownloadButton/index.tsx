@@ -24,13 +24,13 @@ type OrdersCsvDownloadButtonProps = {
 export const OrdersCsvDownloadButton: FC<OrdersCsvDownloadButtonProps> = ({ orders }) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const [downloadDate, setDownloadDate] = useState<string>("");
+  const [transferDate, setTransferDate] = useState<string>("");
   const filteredOrders = orders.filter(isValidOrder);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const handleClick = async () => {
     if (filteredOrders.length === 0) return;
-    if (downloadDate === "") return;
+    if (transferDate === "") return;
     setIsLoading(true);
     await updateManyOrdersIsDownloaded(filteredOrders.map((order) => order.id))
       .then(async () => {
@@ -49,10 +49,7 @@ export const OrdersCsvDownloadButton: FC<OrdersCsvDownloadButtonProps> = ({ orde
             groupedOrders[currentIndex].orders.push(order);
           }
         });
-
-        const splittedDate = downloadDate.split("-");
-        const formattedDate = splittedDate[1] + splittedDate[2];
-        const bankRecords = await getCsvBankRecords(formattedDate, groupedOrders);
+        const bankRecords = await getCsvBankRecords(transferDate, groupedOrders);
         const blob = convertToBlob(bankRecords);
         const link = document.createElement("a");
         link.download = `export-${new Date().toLocaleString("ja-JP")}.csv`;
@@ -62,7 +59,7 @@ export const OrdersCsvDownloadButton: FC<OrdersCsvDownloadButtonProps> = ({ orde
       })
       .catch((e) => console.error(e));
     setIsLoading(false);
-    setDownloadDate("");
+    setTransferDate("");
     onClose();
     router.refresh();
   };
@@ -79,11 +76,11 @@ export const OrdersCsvDownloadButton: FC<OrdersCsvDownloadButtonProps> = ({ orde
           <ModalHeader>振込を行う日を指定してください</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <Input type="date" value={downloadDate} onChange={(e) => setDownloadDate(e.target.value)} />
+            <Input type="date" value={transferDate} onChange={(e) => setTransferDate(e.target.value)} />
           </ModalBody>
 
           <ModalFooter gap={3}>
-            <Button onClick={handleClick} isDisabled={filteredOrders.length === 0 || isLoading || downloadDate === ""}>
+            <Button onClick={handleClick} isDisabled={filteredOrders.length === 0 || isLoading || transferDate === ""}>
               {isLoading ? "処理中" : "CSVダウンロード"}
             </Button>
             <Button onClick={onClose} variant="outline" colorScheme="gray">
