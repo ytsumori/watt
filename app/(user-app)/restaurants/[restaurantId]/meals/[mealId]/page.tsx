@@ -19,6 +19,25 @@ export default async function Meal({ params }: { params: Params }) {
   });
   const meal = await prisma.meal.findUnique({
     where: { id: params.mealId, restaurantId: params.restaurantId },
+    include: {
+      restaurant: {
+        include: {
+          meals: {
+            where: {
+              NOT: {
+                id: params.mealId,
+              },
+              isDiscarded: false,
+            },
+          },
+          googleMapPlaceInfo: {
+            select: {
+              url: true,
+            },
+          },
+        },
+      },
+    },
   });
   if (!restaurant || !meal) {
     redirect("/");

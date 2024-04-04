@@ -2,7 +2,7 @@
 
 import Map from "@/components/map";
 import { useState } from "react";
-import { Box, HStack, Heading, Text, Flex, Spacer, Badge, Center } from "@chakra-ui/react";
+import { Box, HStack, Heading, Text, Flex, Badge, Center } from "@chakra-ui/react";
 import { InView } from "react-intersection-observer";
 import { Prisma } from "@prisma/client";
 import { MealPreviewBox } from "@/components/meal-preview";
@@ -24,7 +24,7 @@ export default function HomePage({
   };
 
   return (
-    <Flex h="full" w="full" direction="column" overflowY="hidden">
+    <Flex h="100vh" w="100vw" direction="column" overflowY="hidden">
       <Box flex="1">
         <Map
           restaurants={restaurants.flatMap((restaurant) => {
