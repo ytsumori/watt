@@ -25,9 +25,7 @@ export type DataRecord = [
   ""
 ];
 
-export const getHeaderRecord = (): string[] => {
-  const current = new Date();
-  const now = format(current, "MMdd");
+export const getHeaderRecord = (date: string): string[] => {
   if (
     process.env.CONSIGNOR_CODE === undefined ||
     process.env.CONSIGNOR_NAME === undefined ||
@@ -42,7 +40,7 @@ export const getHeaderRecord = (): string[] => {
     "0", // 文字コード区分
     `${process.env.CONSIGNOR_CODE}`, // 委託者コード
     `${process.env.CONSIGNOR_NAME}`, // 委託者名
-    `${now}`, // 実行日
+    `${date}`, // 実行日
     "0036", // 依頼人銀行番号
     "", // 依頼人銀行名
     `${process.env.CONSIGNOR_BRANCH_CODE}`, // 依頼人支店番号
@@ -95,9 +93,10 @@ export const getTrailerRecord = (dataRecords: DataRecord[]) => {
 };
 
 export const getCsvBankRecords = async (
+  date: string,
   restaurantsWithOrders: RestaurantWithOrders[]
 ): Promise<(string | number)[][]> => {
-  const headerRecord = getHeaderRecord();
+  const headerRecord = getHeaderRecord(date);
   const dataRecords = getDataRecords(restaurantsWithOrders);
   const trailerRecord = getTrailerRecord(dataRecords);
   const endRecord = [
