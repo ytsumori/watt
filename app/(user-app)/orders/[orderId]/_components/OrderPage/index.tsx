@@ -64,8 +64,9 @@ export function OrderPage({ order }: Props) {
     cancelPaymentIntent(order.id).then((paymentStatus) => {
       if (paymentStatus === "canceled") {
         if (isFull) {
-          updateIsOpen({ id: order.meal.restaurant.id, isOpen: false });
-          notifyStaffFullCancellation({ orderId: order.id });
+          updateIsOpen({ id: order.meal.restaurant.id, isOpen: false }).then(() => {
+            notifyStaffFullCancellation({ orderId: order.id });
+          });
         } else {
           notifyStaffCancellation({ orderId: order.id });
         }
