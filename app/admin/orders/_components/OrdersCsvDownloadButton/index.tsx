@@ -38,7 +38,8 @@ export const OrdersCsvDownloadButton: FC<OrdersCsvDownloadButtonProps> = ({ orde
         const bankRecords = await getCsvBankRecords(groupedOrders);
         const blob = convertToBlob(bankRecords);
         const link = document.createElement("a");
-        link.download = `export-${new Date().toLocaleString("ja-JP")}.csv`;
+        const today = new Date();
+        link.download = `振込依頼ファイル-${today.toLocaleDateString("ja-JP").replaceAll("/", "-")}.csv`;
         link.href = URL.createObjectURL(blob);
         link.click();
         URL.revokeObjectURL(link.href);
