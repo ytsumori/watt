@@ -76,7 +76,7 @@ export const OrdersCsvDownloadButton: FC<OrdersCsvDownloadButtonProps> = ({ orde
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Modal Title</ModalHeader>
+          <ModalHeader>振込を行う日を指定してください</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <Input type="date" value={downloadDate} onChange={(e) => setDownloadDate(e.target.value)} />
@@ -86,8 +86,8 @@ export const OrdersCsvDownloadButton: FC<OrdersCsvDownloadButtonProps> = ({ orde
             <Button onClick={handleClick} isDisabled={filteredOrders.length === 0 || isLoading || downloadDate === ""}>
               {isLoading ? "処理中" : "CSVダウンロード"}
             </Button>
-            <Button colorScheme="blue" mr={3} onClick={onClose}>
-              Close
+            <Button onClick={onClose} variant="outline" colorScheme="gray">
+              close
             </Button>
           </ModalFooter>
         </ModalContent>
