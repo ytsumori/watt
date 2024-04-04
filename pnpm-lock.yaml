@@ -71,9 +71,6 @@ dependencies:
   dotenv:
     specifier: ^16.4.5
     version: 16.4.5
-  encoding-japanese:
-    specifier: ^2.0.0
-    version: 2.0.0
   eslint:
     specifier: 8.56.0
     version: 8.56.0
@@ -133,9 +130,6 @@ devDependencies:
   '@testing-library/react':
     specifier: ^14.2.1
     version: 14.2.1(react-dom@18.2.0)(react@18.2.0)
-  '@types/encoding-japanese':
-    specifier: ^2.0.5
-    version: 2.0.5
   '@types/google.maps':
     specifier: ^3.55.4
     version: 3.55.4
@@ -3095,10 +3089,6 @@ packages:
       '@types/node': 20.11.13
     dev: false
 
-  /@types/encoding-japanese@2.0.5:
-    resolution: {integrity: sha512-LjOB95Ri43cz+zZluJFFqtZGL/Pg80V/cM8ksIVuFV6INh5Ehc82iLbQyQ6heiSW8vmTzcg0hPKU+0+Em3yc1g==}
-    dev: true
-
   /@types/estree@1.0.5:
     resolution: {integrity: sha512-/kYRxGDLWzHOB7q+wtSUQlFrtcdUccpfy+X+9iMBpHK8QLLhx2wIPYuS5DYtR9Wa/YlZAbIovy7qVdB1Aq6Lyw==}
     dev: true
@@ -4034,11 +4024,6 @@ packages:
 
   /emoji-regex@9.2.2:
     resolution: {integrity: sha512-L18DaJsXSUk2+42pv8mLs5jJT2hqFkFE4j21wOmgbUqsZ2hL72NsUU785g9RXgo3s0ZNgVl42TiHp3ZtOv/Vyg==}
-    dev: false
-
-  /encoding-japanese@2.0.0:
-    resolution: {integrity: sha512-++P0RhebUC8MJAwJOsT93dT+5oc5oPImp1HubZpAuCZ5kTLnhuuBhKHj2jJeO/Gj93idPBWmIuQ9QWMe5rX3pQ==}
-    engines: {node: '>=8.10.0'}
     dev: false
 
   /enhanced-resolve@5.16.0:
