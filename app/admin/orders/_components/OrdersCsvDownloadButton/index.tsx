@@ -49,7 +49,8 @@ export const OrdersCsvDownloadButton: FC<OrdersCsvDownloadButtonProps> = ({ orde
             groupedOrders[currentIndex].orders.push(order);
           }
         });
-        const bankRecords = await getCsvBankRecords(transferDate, groupedOrders);
+
+        const bankRecords = await getCsvBankRecords(new Date(transferDate), groupedOrders);
         const blob = convertToBlob(bankRecords);
         const link = document.createElement("a");
         link.download = `export-${new Date().toLocaleString("ja-JP")}.csv`;

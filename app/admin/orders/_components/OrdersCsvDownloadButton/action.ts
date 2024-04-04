@@ -25,7 +25,7 @@ export type DataRecord = [
   ""
 ];
 
-export const getHeaderRecord = (transferDate: string): string[] => {
+export const getHeaderRecord = (transferDate: Date): string[] => {
   if (
     process.env.CONSIGNOR_CODE === undefined ||
     process.env.CONSIGNOR_NAME === undefined ||
@@ -35,8 +35,7 @@ export const getHeaderRecord = (transferDate: string): string[] => {
     throw new Error("header Record has not required fields");
   }
 
-  const splittedTranferDate = transferDate.split("-");
-  const formattedTranferDate = splittedTranferDate[1] + splittedTranferDate[2];
+  const formattedTranferDate = format(transferDate, "MMdd");
 
   return [
     "1", // データ区分
@@ -97,7 +96,7 @@ export const getTrailerRecord = (dataRecords: DataRecord[]) => {
 };
 
 export const getCsvBankRecords = async (
-  transferDate: string,
+  transferDate: Date,
   restaurantsWithOrders: RestaurantWithOrders[]
 ): Promise<(string | number)[][]> => {
   const headerRecord = getHeaderRecord(transferDate);
