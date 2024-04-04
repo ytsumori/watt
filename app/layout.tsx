@@ -10,14 +10,10 @@ export const metadata = {
 
 export const revalidate = 0;
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="jp">
-      <body style={{ overscrollBehavior: "none" }}>
+      <body>
         <Providers>{children}</Providers>
       </body>
       {process.env.GOOGLE_ANALYTICS_MEASUREMENT_ID && (

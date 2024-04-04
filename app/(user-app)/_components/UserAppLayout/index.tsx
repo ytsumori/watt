@@ -10,6 +10,7 @@ import {
   Avatar,
   Box,
   Flex,
+  HStack,
   Heading,
   Menu,
   MenuButton,
@@ -62,17 +63,19 @@ export default function UserAppLayout({ children, defaultPreauthorizedOrderId, u
   };
 
   return (
-    <Box h="100vh" w="100vw">
-      <Flex px={4} py={2}>
+    <>
+      <Flex px={4} py={2} w="full" backgroundColor="white">
         <Box w="full">
-          <NextLink href="/" style={{ display: "inline-block" }}>
-            <Image src="/watt-logo.png" alt="Watt" width={80} height={31} />
-          </NextLink>
-          <Box backgroundColor="red.400" borderRadius={4} display="inline-block" ml={2}>
-            <Text color="white" fontWeight="bold" fontSize="xs" px={2}>
-              早期割引キャンペーン中!!
-            </Text>
-          </Box>
+          <HStack spacing={2} alignItems="end">
+            <NextLink href="/">
+              <Image src="/watt-logo.png" alt="Watt" width={80} height={31} />
+            </NextLink>
+            <Box backgroundColor="red.400" borderRadius={4}>
+              <Text color="white" fontWeight="bold" fontSize="xs" px={2}>
+                早期割引キャンペーン中!!
+              </Text>
+            </Box>
+          </HStack>
           <Heading size="sm" color="orange" mt={1}>
             今入れるお店が見つかる！
           </Heading>
@@ -121,6 +124,7 @@ export default function UserAppLayout({ children, defaultPreauthorizedOrderId, u
           </MenuList>
         </Menu>
       </Flex>
+      {children}
       <ConfirmModal
         isOpen={isOrderModalOpen}
         onClose={onOrderModalClose}
@@ -139,7 +143,6 @@ export default function UserAppLayout({ children, defaultPreauthorizedOrderId, u
           お店に向かって支払いを完了してください。
         </Text>
       </ConfirmModal>
-      {children}
-    </Box>
+    </>
   );
 }
