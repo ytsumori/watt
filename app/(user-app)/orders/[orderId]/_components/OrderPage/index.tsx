@@ -27,10 +27,10 @@ import {
 import { Prisma } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { PaymentConfirmModal } from "./payment-confirm-modal";
+import { PaymentConfirmModal } from "../payment-confirm-modal";
 import Link from "next/link";
-import { notifyStaffCancellation, notifyStaffFullCancellation } from "../_actions/notify-staff-cancellation";
-import { CancelConfirmModal } from "./cancel-confirm-modal";
+import { notifyStaffCancellation, notifyStaffFullCancellation } from "../../_actions/notify-staff-cancellation";
+import { CancelConfirmModal } from "../cancel-confirm-modal";
 import { updateIsOpen } from "@/actions/restaurant";
 import { FaMapMarkedAlt } from "react-icons/fa";
 import NextLink from "next/link";
@@ -153,7 +153,7 @@ export function OrderPage({ order }: Props) {
                 </Box>
               </VStack>
               <Divider borderColor="black" />
-              <VStack alignItems="start">
+              <VStack alignItems="start" w="full">
                 <Heading size="md">注文商品</Heading>
                 <Heading size="sm">{order.meal.title}</Heading>
                 <Image
@@ -163,6 +163,11 @@ export function OrderPage({ order }: Props) {
                   objectFit="cover"
                   aspectRatio={1 / 1}
                 />
+                <Box borderWidth="1px" w="full" p={1}>
+                  <Text fontSize="xs" whiteSpace="pre-wrap">
+                    {order.meal.description}
+                  </Text>
+                </Box>
               </VStack>
               <Divider borderColor="black" />
               <VStack alignItems="start" w="full">
@@ -170,28 +175,26 @@ export function OrderPage({ order }: Props) {
                 <Flex w="full">
                   <Text>{order.meal.title}</Text>
                   <Spacer />
-                  <Text>
-                    <Text
-                      as="span"
-                      fontSize="sm"
-                      textDecoration="line-through"
-                      textDecorationColor="red.400"
-                      textDecorationThickness="2px"
-                      mr={1}
-                    >
-                      ¥{order.restaurantProfitPrice.toLocaleString("ja-JP")}
-                    </Text>
-                    <VStack spacing="0" display="inline-flex">
-                      <Text color="red.400" as="b">
-                        ¥{order.price.toLocaleString("ja-JP")}
-                      </Text>
-                      <Box backgroundColor="red.400" borderRadius={4}>
-                        <Text color="white" fontWeight="bold" fontSize="xs" px={2}>
-                          早期割引
-                        </Text>
-                      </Box>
-                    </VStack>
+                  <Text
+                    as="p"
+                    fontSize="sm"
+                    textDecoration="line-through"
+                    textDecorationColor="red.400"
+                    textDecorationThickness="2px"
+                    mr={1}
+                  >
+                    ¥{order.restaurantProfitPrice.toLocaleString("ja-JP")}
                   </Text>
+                  <VStack spacing="0" display="inline-flex">
+                    <Text color="red.400" as="b">
+                      ¥{order.price.toLocaleString("ja-JP")}
+                    </Text>
+                    <Box backgroundColor="red.400" borderRadius={4}>
+                      <Text color="white" fontWeight="bold" fontSize="xs" px={2}>
+                        早期割引
+                      </Text>
+                    </Box>
+                  </VStack>
                 </Flex>
                 <Divider />
                 <Heading size="sm" alignSelf="self-end">
@@ -258,7 +261,7 @@ export function OrderPage({ order }: Props) {
             <Heading size="md">店舗</Heading>
             <Heading size="sm">{order.meal.restaurant.name}</Heading>
           </VStack>
-          <VStack alignItems="start">
+          <VStack alignItems="start" w="full">
             <Heading size="md">注文商品</Heading>
             <Image
               w="50vw"
@@ -267,6 +270,11 @@ export function OrderPage({ order }: Props) {
               objectFit="cover"
               aspectRatio={1 / 1}
             />
+            <Box borderWidth="1px" w="full" p={1}>
+              <Text fontSize="xs" whiteSpace="pre-wrap">
+                {order.meal.description}
+              </Text>
+            </Box>
           </VStack>
           <VStack alignItems="start">
             <Heading size="md">金額</Heading>
@@ -331,7 +339,7 @@ export function OrderPage({ order }: Props) {
             <Heading size="md">店舗</Heading>
             <Heading size="sm">{order.meal.restaurant.name}</Heading>
           </VStack>
-          <VStack alignItems="start">
+          <VStack alignItems="start" w="full">
             <Heading size="md">注文商品</Heading>
             <Image
               w="50vw"
@@ -340,6 +348,11 @@ export function OrderPage({ order }: Props) {
               objectFit="cover"
               aspectRatio={1 / 1}
             />
+            <Box borderWidth="1px" w="full" p={1}>
+              <Text fontSize="xs" whiteSpace="pre-wrap">
+                {order.meal.description}
+              </Text>
+            </Box>
           </VStack>
           <VStack alignItems="start">
             <Heading size="md">金額</Heading>

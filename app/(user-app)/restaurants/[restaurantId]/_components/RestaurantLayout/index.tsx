@@ -81,6 +81,13 @@ export function RestaurantLayout({ restaurant, children }: Props) {
             </MealPreviewBox>
           ))}
         </HStack>
+        {restaurant.meals.find((meal) => meal.id === selectedMealId) !== undefined && (
+          <Box borderWidth="1px" w="full" p={1}>
+            <Text fontSize="xs" whiteSpace="pre-wrap">
+              {restaurant.meals.find((meal) => meal.id === selectedMealId)!.description}
+            </Text>
+          </Box>
+        )}
         {children}
       </VStack>
     </Box>
