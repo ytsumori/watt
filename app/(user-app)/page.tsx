@@ -27,13 +27,5 @@ export default async function Home() {
       isOpen: "desc",
     },
   });
-  const meals = await prisma.meal.findMany({
-    include: {
-      restaurant: true,
-    },
-    where: {
-      isDiscarded: false,
-    },
-  });
   return <HomePage restaurants={restaurants} />;
 }
