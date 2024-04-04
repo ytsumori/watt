@@ -84,6 +84,12 @@ export async function notifyStaffOrder({ restaurantId, orderId }: { restaurantId
                       aspectMode: "cover",
                       align: "start",
                     },
+                    {
+                      type: "text",
+                      text: order.meal.description ?? "",
+                      wrap: true,
+                      size: "xxs",
+                    },
                   ],
                 },
               ],
