@@ -9,6 +9,12 @@ export default async function Home() {
           isDiscarded: false,
         },
       },
+      googleMapPlaceInfo: {
+        select: {
+          latitude: true,
+          longitude: true,
+        },
+      },
     },
     where: {
       meals: {
