@@ -74,6 +74,9 @@ export async function capturePaymentIntent(orderId: string) {
   if (!order) {
     throw new Error("Order not found");
   }
+  if (order.status !== "PREAUTHORIZED") {
+    throw new Error("Invalid order status");
+  }
 
   const paymentIntent = await stripe.paymentIntents.capture(order.providerPaymentId);
   if (paymentIntent.status === "succeeded") {
