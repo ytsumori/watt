@@ -104,7 +104,7 @@ export function ProfilePage({ me }: Props) {
         </InputGroup>
         <FormErrorMessage>正しい携帯番号を入力してください</FormErrorMessage>
       </FormControl>
-      {isPhoneNumberValid && !isPhoneNumberVerified && (
+      {isPhoneNumberValid && !isPhoneNumberVerified && !isPhoneNumberVerifying && (
         <Button variant="outline" onClick={handleSendVerifyToken}>
           携帯番号を認証する
         </Button>
@@ -139,7 +139,10 @@ export function ProfilePage({ me }: Props) {
         title=""
         confirmButton={{
           label: "ホーム画面へ戻る",
-          onClick: () => router.push("/"),
+          onClick: () => {
+            router.push("/");
+            router.refresh();
+          },
         }}
         onClose={() => undefined}
       >
