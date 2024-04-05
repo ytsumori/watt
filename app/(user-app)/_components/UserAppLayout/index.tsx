@@ -48,7 +48,7 @@ export default function UserAppLayout({ children, defaultPreauthorizedOrderId, u
   useEffect(() => {
     if (user) {
       if (!user.phoneNumber && pathname !== "/profile") {
-        router.push("/profile");
+        router.push(`/profile?redirectedFrom=${pathname}`);
       }
       if (!pathname.startsWith("/orders")) {
         findPreauthorizedOrder(user.id).then((preauthorizedOrder) => {

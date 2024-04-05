@@ -26,9 +26,10 @@ import { useState } from "react";
 
 type Props = {
   me: User;
+  redirectedFrom?: string;
 };
 
-export function ProfilePage({ me }: Props) {
+export function ProfilePage({ me, redirectedFrom }: Props) {
   const router = useRouter();
   const [username, setUsername] = useState(me.name ?? "");
   const [verifiedPhoneNumber, setVerifiedPhoneNumber] = useState(me.phoneNumber);
@@ -138,9 +139,9 @@ export function ProfilePage({ me }: Props) {
         isOpen={submitStatus === "completed"}
         title=""
         confirmButton={{
-          label: "ホーム画面へ戻る",
+          label: `${redirectedFrom ? "元の" : "ホーム"}画面へ戻る`,
           onClick: () => {
-            router.push("/");
+            router.push(redirectedFrom ? redirectedFrom : "/");
             router.refresh();
           },
         }}
