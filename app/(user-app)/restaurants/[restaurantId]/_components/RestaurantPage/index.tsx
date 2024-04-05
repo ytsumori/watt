@@ -1,6 +1,6 @@
 "use client";
 
-import { MealPreviewBox } from "@/components/meal-preview";
+import { MealPreviewBox } from "@/components/meal/MealPreviewBox";
 import { Box, HStack, Heading, VStack, Text, Divider, Button, Icon } from "@chakra-ui/react";
 import { Prisma } from "@prisma/client";
 import NextLink from "next/link";

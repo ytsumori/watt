@@ -7,10 +7,12 @@ import { Meal, Order } from "@prisma/client";
 import { Alert, Button, Center, useDisclosure, Text, VStack, Spinner, Box, Heading } from "@chakra-ui/react";
 import { ConfirmModal } from "@/components/confirm-modal";
 import { cancelOrder } from "./_actions/cancel-order";
-import { MealPreviewImage } from "@/components/meal-preview-image";
+import { MealPreviewImage } from "@/components/meal/MealPreviewImage";
 import { findMeal } from "@/actions/meal";
+import { createClientSupabase } from "@/lib/supabase/client";
 
 export default function RejectOrder({ params }: { params: { orderId: string } }) {
+  const supabase = createClientSupabase();
   const restaurantId = useContext(RestaurantIdContext);
   const [order, setOrder] = useState<Order>();
   const [meal, setMeal] = useState<Meal>();
@@ -72,7 +74,7 @@ export default function RejectOrder({ params }: { params: { orderId: string } })
             <VStack>
               <Heading size="sm">注文予定の推しメシ</Heading>
               <Box w="50%">
-                <MealPreviewImage src={meal?.imageUrl} alt={meal.title} />
+                <MealPreviewImage src={meal?.imageUrl} alt={meal.title} supabase={supabase} />
               </Box>
             </VStack>
           )}
