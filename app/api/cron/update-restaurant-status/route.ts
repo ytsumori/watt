@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma/client";
-import { getRestaurantBusinessStatus } from "@/lib/places-api";
-import { Restaurant } from "@prisma/client";
+import { Prisma } from "@prisma/client";
+import { isOpenNow } from "./_util";
 
 export async function GET(request: NextRequest) {
   const authHeader = request.headers.get("authorization");
@@ -11,13 +11,22 @@ export async function GET(request: NextRequest) {
     });
   }
 
-  const restaurants = await prisma.restaurant.findMany();
-  const updateRestaurantStatus = async (restaurant: Restaurant) => {
-    const { currentOpeningHours } = await getRestaurantBusinessStatus({
-      placeId: restaurant.googleMapPlaceId,
-    });
-    if (!currentOpeningHours) return;
-    if (currentOpeningHours.openNow) {
+  const restaurants = await prisma.restaurant.findMany({
+    include: { meals: true, openingHours: true },
+    where: {
+      meals: {
+        some: {
+          isDiscarded: false,
+        },
+      },
+    },
+  });
+
+  const updateRestaurantStatus = async (
+    restaurant: Prisma.RestaurantGetPayload<{ include: { openingHours: true } }>
+  ) => {
+    if (restaurant.openingHours.length === 0) return;
+    if (isOpenNow(restaurant.openingHours)) {
       if (!restaurant.isOpenManuallyUpdated && !restaurant.isOpen) {
         await prisma.restaurant.update({
           where: { id: restaurant.id },

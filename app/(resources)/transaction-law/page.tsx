@@ -9,7 +9,7 @@ export default function TransactionLaw() {
       <Heading size="md" mt={4} mb={2}>
         販売業者
       </Heading>
-      <Text>株式会社キーザンキーザン</Text>
+      <Text>Watt株式会社</Text>
       <Heading size="md" mt={4} mb={2}>
         店名
       </Heading>

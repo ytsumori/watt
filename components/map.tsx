@@ -1,6 +1,5 @@
 "use client";
 
-import { usePlacesDetail } from "@/hooks/usePlacesDetail";
 import { Wrapper, Status } from "@googlemaps/react-wrapper";
 import { Children, cloneElement, isValidElement, useCallback, useEffect, useRef, useState } from "react";
 
@@ -9,12 +8,12 @@ const render = (status: Status) => {
 };
 
 type Props = {
-  restaurants: { id: string; name: string; googleMapPlaceId: string }[];
+  restaurants: { id: string; name: string; location: google.maps.LatLngLiteral }[];
   selectedRestaurantId?: string;
   onRestaurantSelect?: (restaurantId: string) => void;
 };
 
-const CENTER_POSITION = {
+const CENTER_POSITION: google.maps.LatLngLiteral = {
   lat: 34.70726721576163,
   lng: 135.51175158248128,
 };
@@ -71,7 +70,7 @@ export default function Map({ restaurants, selectedRestaurantId, onRestaurantSel
         {restaurants.map((restaurant) => (
           <RestaurantMarker
             key={restaurant.id}
-            placeId={restaurant.googleMapPlaceId}
+            location={restaurant.location}
             title={restaurant.name}
             selected={restaurant.id === selectedRestaurantId}
             onClick={() => handleRestaurantSelect(restaurant.id)}
@@ -173,14 +172,13 @@ function CurrentLocationMarker({ position, ...options }: CurrentLocationMarkerPr
 }
 
 interface MarkerProps extends google.maps.MarkerOptions {
-  placeId: string;
+  location: google.maps.LatLngLiteral;
   selected: boolean;
   onClick: () => void;
 }
 
-function RestaurantMarker({ placeId, selected, onClick, ...options }: MarkerProps) {
+function RestaurantMarker({ location, selected, onClick, ...options }: MarkerProps) {
   const [marker, setMarker] = useState<google.maps.Marker>();
-  const { placeDetail } = usePlacesDetail(options.map, placeId);
 
   useEffect(() => {
     if (!marker) {
@@ -239,9 +237,9 @@ function RestaurantMarker({ placeId, selected, onClick, ...options }: MarkerProp
   }, [marker, onClick]);
 
   useEffect(() => {
-    if (marker && placeDetail) {
-      marker.setPosition(placeDetail?.geometry?.location);
+    if (marker) {
+      marker.setPosition(location);
     }
-  }, [marker, placeDetail]);
+  }, [marker, location]);
   return null;
 }

@@ -1,31 +1,30 @@
-import Encoding from "encoding-japanese";
 import Papa from "papaparse";
-import { ConvertedOrderInfo } from "../../_util/convertRequiredOrderInfo";
+import { isValidHolderName } from "@/utils/zengin";
+import { DownloadableOrder } from "./type";
+import { BankAccountType } from "@prisma/client";
 
-export const isValidHolderName = (holderName: string): boolean => {
-  const splittedName = holderName.split("");
-  const regex = new RegExp(/[ｦ-ﾟ]/);
-  const isValid = splittedName.every((name) => name.match(regex) && name !== " ");
-  return isValid;
-};
-
-export const isValidOrders = (order: ConvertedOrderInfo): boolean => {
-  return order.bankAccount?.bankCode === undefined ||
-    order.bankAccount?.accountType === undefined ||
-    order.bankAccount?.accountNo === undefined ||
-    order.bankAccount?.holderName === undefined ||
-    order.price === undefined ||
-    order.isDownloaded ||
-    !isValidHolderName(order.bankAccount.holderName)
-    ? false
-    : true;
+export const isValidOrder = (order: DownloadableOrder): boolean => {
+  return (
+    order.meal.restaurant.bankAccount !== null &&
+    !order.isDownloaded &&
+    isValidHolderName(order.meal.restaurant.bankAccount.holderName)
+  );
 };
 
 export const convertToBlob = (records: (string | number)[][]): Blob => {
   const config = { delimiter: ",", header: true, newline: "\r\n" };
-  const delimiterString = Papa.unparse(records, config);
-  const strArray = Encoding.stringToCode(delimiterString);
-  const convertedArray = Encoding.convert(strArray, "UTF8", "UNICODE");
-  const UintArray = new Uint8Array(convertedArray);
-  return new Blob([UintArray], { type: "text/csv" });
+  const csv = Papa.unparse(records, config);
+  const bom = new Uint8Array([0xef, 0xbb, 0xbf]);
+  return new Blob([bom, csv], { type: "text/csv" });
+};
+
+export const convertAccountTypeToNumber = (accountType: BankAccountType): "1" | "2" | "4" => {
+  switch (accountType) {
+    case "SAVINGS":
+      return "1";
+    case "CHECKING":
+      return "2";
+    case "DEPOSIT":
+      return "4";
+  }
 };

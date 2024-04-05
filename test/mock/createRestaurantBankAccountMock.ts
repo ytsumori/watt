@@ -15,6 +15,7 @@ export const createRestaurantBankAccountMock = (order?: Partial<BankAccount>): B
     isAdminConfirmed: true,
     createdAt: new Date(),
     updatedAt: new Date(),
+    clientCode: 1,
     ...order,
   };
 };

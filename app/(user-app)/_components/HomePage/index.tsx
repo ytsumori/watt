@@ -2,7 +2,7 @@
 
 import Map from "@/components/map";
 import { useState } from "react";
-import { Box, HStack, Heading, Text, Flex, Spacer, Badge, Center } from "@chakra-ui/react";
+import { Box, HStack, Heading, Text, Flex, Badge, Center } from "@chakra-ui/react";
 import { InView } from "react-intersection-observer";
 import { Prisma } from "@prisma/client";
 import { MealPreviewBox } from "@/components/meal-preview";
@@ -11,7 +11,9 @@ import Link from "next/link";
 export default function HomePage({
   restaurants,
 }: {
-  restaurants: Prisma.RestaurantGetPayload<{ include: { meals: true } }>[];
+  restaurants: Prisma.RestaurantGetPayload<{
+    include: { meals: true; googleMapPlaceInfo: { select: { latitude: true; longitude: true } } };
+  }>[];
 }) {
   const [selectedRestaurantId, setSelectedRestaurantId] = useState<string>();
 
@@ -22,10 +24,21 @@ export default function HomePage({
   };
 
   return (
-    <Flex h="full" w="full" direction="column" overflowY="hidden">
+    <Flex h="100vh" w="100vw" direction="column" overflowY="hidden">
       <Box flex="1">
         <Map
-          restaurants={restaurants}
+          restaurants={restaurants.flatMap((restaurant) => {
+            if (!restaurant.googleMapPlaceInfo) return [];
+
+            return {
+              id: restaurant.id,
+              name: restaurant.name,
+              location: {
+                lat: restaurant.googleMapPlaceInfo.latitude,
+                lng: restaurant.googleMapPlaceInfo.longitude,
+              },
+            };
+          })}
           selectedRestaurantId={selectedRestaurantId}
           onRestaurantSelect={handleRestaurantSelect}
         />
