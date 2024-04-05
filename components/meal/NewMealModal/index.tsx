@@ -110,7 +110,7 @@ export function NewMealModal({ restaurantId, isOpen, onClose, onSubmitComplete }
     createMeal({
       restaurantId,
       price,
-      imageUrl: imageUrl.split("/meals/")[1],
+      imageUrl,
       title,
       description,
     }).then(() => {
