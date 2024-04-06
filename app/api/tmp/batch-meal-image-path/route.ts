@@ -16,11 +16,6 @@ export async function GET() {
   }
 
   const meals = await prisma.meal.findMany();
-  console.log(
-    meals.map((meal) => {
-      return meal.imageUrl.split("/meals/")[1];
-    })
-  );
 
   const updateMealImagePath = async (meal: Meal) => {
     const imagePath = meal.imageUrl.split("/meals/")[1];
