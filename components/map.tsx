@@ -9,7 +9,7 @@ const render = (status: Status) => {
 
 type Props = {
   restaurants: { id: string; name: string; location: google.maps.LatLngLiteral }[];
-  selectedRestaurantId?: string;
+  activeRestaurantIds: string[];
   onRestaurantSelect?: (restaurantId: string) => void;
 };
 
@@ -18,7 +18,7 @@ const CENTER_POSITION: google.maps.LatLngLiteral = {
   lng: 135.51175158248128,
 };
 
-export default function Map({ restaurants, selectedRestaurantId, onRestaurantSelect }: Props) {
+export default function Map({ restaurants, activeRestaurantIds, onRestaurantSelect }: Props) {
   const [zoom, setZoom] = useState(16);
   const [currentLocation, setCurrentLocation] = useState<google.maps.LatLngLiteral>();
 
@@ -72,7 +72,7 @@ export default function Map({ restaurants, selectedRestaurantId, onRestaurantSel
             key={restaurant.id}
             location={restaurant.location}
             title={restaurant.name}
-            selected={restaurant.id === selectedRestaurantId}
+            isActive={activeRestaurantIds.includes(restaurant.id)}
             onClick={() => handleRestaurantSelect(restaurant.id)}
             clickable
           />
@@ -173,11 +173,11 @@ function CurrentLocationMarker({ position, ...options }: CurrentLocationMarkerPr
 
 interface MarkerProps extends google.maps.MarkerOptions {
   location: google.maps.LatLngLiteral;
-  selected: boolean;
+  isActive: boolean;
   onClick: () => void;
 }
 
-function RestaurantMarker({ location, selected, onClick, ...options }: MarkerProps) {
+function RestaurantMarker({ location, isActive, onClick, ...options }: MarkerProps) {
   const [marker, setMarker] = useState<google.maps.Marker>();
 
   useEffect(() => {
@@ -195,8 +195,8 @@ function RestaurantMarker({ location, selected, onClick, ...options }: MarkerPro
 
   useEffect(() => {
     if (marker) {
-      if (selected) {
-        const selectedIcon: google.maps.Symbol = {
+      if (isActive) {
+        const activeIcon: google.maps.Symbol = {
           path: "M-1.547 12l6.563-6.609-1.406-1.406-5.156 5.203-2.063-2.109-1.406 1.406zM0 0q2.906 0 4.945 2.039t2.039 4.945q0 1.453-0.727 3.328t-1.758 3.516-2.039 3.070-1.711 2.273l-0.75 0.797q-0.281-0.328-0.75-0.867t-1.688-2.156-2.133-3.141-1.664-3.445-0.75-3.375q0-2.906 2.039-4.945t4.945-2.039z",
           fillColor: "#EFA039",
           fillOpacity: 1,
@@ -205,10 +205,10 @@ function RestaurantMarker({ location, selected, onClick, ...options }: MarkerPro
           scale: 3,
           anchor: new google.maps.Point(0, 20),
         };
-        marker.setIcon(selectedIcon);
+        marker.setIcon(activeIcon);
         marker.setZIndex(100);
       } else {
-        const unselectedIcon: google.maps.Symbol = {
+        const inactiveIcon: google.maps.Symbol = {
           path: "M-1.547 12l6.563-6.609-1.406-1.406-5.156 5.203-2.063-2.109-1.406 1.406zM0 0q2.906 0 4.945 2.039t2.039 4.945q0 1.453-0.727 3.328t-1.758 3.516-2.039 3.070-1.711 2.273l-0.75 0.797q-0.281-0.328-0.75-0.867t-1.688-2.156-2.133-3.141-1.664-3.445-0.75-3.375q0-2.906 2.039-4.945t4.945-2.039z",
           fillColor: "white",
           fillOpacity: 1,
@@ -217,11 +217,11 @@ function RestaurantMarker({ location, selected, onClick, ...options }: MarkerPro
           scale: 2,
           anchor: new google.maps.Point(0, 20),
         };
-        marker.setIcon(unselectedIcon);
+        marker.setIcon(inactiveIcon);
         marker.setZIndex(1);
       }
     }
-  }, [marker, selected]);
+  }, [marker, isActive]);
 
   useEffect(() => {
     if (marker) {
