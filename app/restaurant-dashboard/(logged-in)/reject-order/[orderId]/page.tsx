@@ -12,7 +12,6 @@ import { findMeal } from "@/actions/meal";
 import { createClientSupabase } from "@/lib/supabase/client";
 
 export default function RejectOrder({ params }: { params: { orderId: string } }) {
-  const supabase = createClientSupabase();
   const restaurantId = useContext(RestaurantIdContext);
   const [order, setOrder] = useState<Order>();
   const [meal, setMeal] = useState<Meal>();
@@ -80,7 +79,7 @@ export default function RejectOrder({ params }: { params: { orderId: string } })
             </Text>
             <Heading size="md">注文商品</Heading>
             <Box w="50%">
-              <MealPreviewImage src={meal?.imageUrl} alt={meal.title} supabase={supabase} />
+              <MealPreviewImage src={meal?.imageUrl} alt={meal.title} />
             </Box>
             <Box borderWidth="1px" w="full" p={1}>
               <Text fontSize="xs" whiteSpace="pre-wrap">

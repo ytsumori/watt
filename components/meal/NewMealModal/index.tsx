@@ -152,7 +152,7 @@ export function NewMealModal({ restaurantId, isOpen, onClose, onSubmitComplete }
             {isUploading ? (
               <FormHelperText>アップロード中...</FormHelperText>
             ) : (
-              imageUrl && <MealPreviewImage src={imageUrl} alt="料理画像" supabase={supabase} />
+              imageUrl && <MealPreviewImage src={imageUrl} alt="料理画像" />
             )}
           </FormControl>
         </ModalBody>
