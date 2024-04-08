@@ -19,7 +19,7 @@ export default function HomePage({
 
   const handleRestaurantSelect = (restaurantId: string) => {
     const element = document.getElementById(restaurantId);
-    if (element) element.scrollIntoView();
+    if (element) element.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
@@ -39,6 +39,7 @@ export default function HomePage({
             };
           })}
           activeRestaurantIds={inViewRestaurantIds}
+          availableRestaurantIds={restaurants.flatMap((restaurant) => (restaurant.isOpen ? [restaurant.id] : []))}
           onRestaurantSelect={handleRestaurantSelect}
         />
       </Box>
