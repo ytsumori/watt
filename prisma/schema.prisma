@@ -39,6 +39,7 @@ model User {
   name          String?
   email         String?   @unique
   emailVerified DateTime?
+  phoneNumber   String?   @unique
   image         String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @default(now()) @updatedAt
@@ -49,12 +50,10 @@ model User {
   orders         Order[]
 }
 
-model VerificationToken {
-  identifier String
-  token      String   @unique
-  expires    DateTime
-
-  @@unique([identifier, token])
+model OneTimePassword {
+  id          String @id @default(cuid())
+  phoneNumber String @unique
+  code        String @db.VarChar(6)
 }
 
 model StripeCustomer {

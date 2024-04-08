@@ -66,21 +66,31 @@ export default function RejectOrder({ params }: { params: { orderId: string } })
 
   return (
     <>
-      <Center w="100vw" h="100vh">
-        <VStack spacing={5} px={2}>
-          {meal && (
-            <VStack>
-              <Heading size="sm">注文予定の推しメシ</Heading>
-              <Box w="50%">
-                <MealPreviewImage src={meal?.imageUrl} alt={meal.title} />
-              </Box>
-            </VStack>
-          )}
-          <Button colorScheme="red" onClick={onOpen} w="full" size="md">
-            店内が満席であることを伝える
-          </Button>
-        </VStack>
-      </Center>
+      <VStack spacing={5} px={2} w="full" alignItems="start" p={4}>
+        <Heading>注文情報</Heading>
+        {meal && (
+          <>
+            <Text>
+              注文番号:
+              <Heading as="span" ml={2}>
+                {order.orderNumber}
+              </Heading>
+            </Text>
+            <Heading size="md">注文商品</Heading>
+            <Box w="50%">
+              <MealPreviewImage src={meal?.imageUrl} alt={meal.title} />
+            </Box>
+            <Box borderWidth="1px" w="full" p={1}>
+              <Text fontSize="xs" whiteSpace="pre-wrap">
+                {meal.description}
+              </Text>
+            </Box>
+          </>
+        )}
+        <Button colorScheme="red" onClick={onOpen} w="full" size="md">
+          店内が満席であることを伝える
+        </Button>
+      </VStack>
       <ConfirmModal
         isOpen={isOpen}
         title="満席を伝える"
