@@ -21,17 +21,17 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { signIn, signOut } from "next-auth/react";
-import { Session } from "next-auth";
 import { usePathname, useRouter } from "next/navigation";
 import { ConfirmModal } from "@/components/confirm-modal";
 import NextLink from "next/link";
 import Image from "next/image";
 import { findPreauthorizedOrder } from "@/actions/order";
+import { User } from "@prisma/client";
 
 type Props = {
   children: React.ReactNode;
   defaultPreauthorizedOrderId?: string;
-  user?: Session["user"];
+  user?: User;
 };
 
 export default function UserAppLayout({ children, defaultPreauthorizedOrderId, user }: Props) {
@@ -46,15 +46,20 @@ export default function UserAppLayout({ children, defaultPreauthorizedOrderId, u
   });
   const [preauthorizedOrderId, setPreauthorizedOrderId] = React.useState(defaultPreauthorizedOrderId);
   useEffect(() => {
-    if (user && !pathname.startsWith("/orders")) {
-      findPreauthorizedOrder(user.id).then((preauthorizedOrder) => {
-        if (!!preauthorizedOrder) {
-          setPreauthorizedOrderId(preauthorizedOrder.id);
-          onOrderModalOpen();
-        }
-      });
+    if (user) {
+      if (!user.phoneNumber && pathname !== "/profile") {
+        router.push(`/profile?redirectedFrom=${pathname}`);
+      }
+      if (!pathname.startsWith("/orders")) {
+        findPreauthorizedOrder(user.id).then((preauthorizedOrder) => {
+          if (!!preauthorizedOrder) {
+            setPreauthorizedOrderId(preauthorizedOrder.id);
+            onOrderModalOpen();
+          }
+        });
+      }
     }
-  }, [pathname, onOrderModalOpen, user]);
+  }, [pathname, onOrderModalOpen, user, router]);
 
   const handleSignOutClick = () => {
     if (confirm("ログアウトしますか？")) {
@@ -94,6 +99,9 @@ export default function UserAppLayout({ children, defaultPreauthorizedOrderId, u
                 </MenuItem>
                 <MenuItem as={NextLink} href="/orders">
                   注文履歴
+                </MenuItem>
+                <MenuItem as={NextLink} href="/profile">
+                  プロフィール
                 </MenuItem>
                 <MenuItem onClick={handleSignOutClick}>ログアウト</MenuItem>
               </>

@@ -34,6 +34,7 @@ import { CancelConfirmModal } from "../cancel-confirm-modal";
 import { updateIsOpen } from "@/actions/restaurant";
 import { FaMapMarkedAlt } from "react-icons/fa";
 import NextLink from "next/link";
+import { ConfirmModal } from "@/components/confirm-modal";
 
 type Props = {
   order: Prisma.OrderGetPayload<{
@@ -45,18 +46,23 @@ export function OrderPage({ order }: Props) {
   const router = useRouter();
   const { isOpen: isConfirmModalOpen, onOpen: onConfirmModalOpen, onClose: onConfirmModalClose } = useDisclosure();
   const { isOpen: isCancelModalOpen, onOpen: onCancelModalOpen, onClose: onCancelModalClose } = useDisclosure();
+  const { isOpen: isErrorModalOpen, onOpen: onErrorModalOpen, onClose: onErrorModalClose } = useDisclosure();
   const [isPaying, setIsPaying] = useState(false);
   const [isCancelling, setIsCancelling] = useState(false);
 
   const handlePaymentConfirm = () => {
     setIsPaying(true);
-    capturePaymentIntent(order.id).then((paymentStatus) => {
-      if (paymentStatus === "succeeded") {
-        router.refresh();
-      } else {
-        console.error("Failed to capture payment intent");
-      }
-    });
+    capturePaymentIntent(order.id)
+      .then((paymentStatus) => {
+        if (paymentStatus === "succeeded") {
+          router.refresh();
+        } else {
+          onErrorModalOpen();
+        }
+      })
+      .catch(() => {
+        onErrorModalOpen();
+      });
   };
 
   const handleCancelConfirm = (isFull: boolean) => {
@@ -216,6 +222,17 @@ export function OrderPage({ order }: Props) {
             onClose={onCancelModalClose}
             onConfirm={handleCancelConfirm}
           />
+          <ConfirmModal
+            isOpen={isErrorModalOpen}
+            title="決済に失敗しました"
+            confirmButton={{
+              label: "OK",
+              onClick: () => router.refresh(),
+            }}
+            onClose={() => undefined}
+          >
+            決済に失敗しました。ページを更新して再度ご確認ください。
+          </ConfirmModal>
           <Modal isOpen={isPaying} onClose={() => undefined} size="xs" isCentered>
             <ModalOverlay />
             <ModalContent>

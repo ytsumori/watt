@@ -1,5 +1,16 @@
 "use client";
-import { Button } from "@chakra-ui/react";
+import {
+  Button,
+  Input,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  useDisclosure,
+} from "@chakra-ui/react";
 import { FC, useState } from "react";
 import { convertToBlob, isValidOrder } from "./util";
 import { getCsvBankRecords } from "./action";
@@ -13,10 +24,13 @@ type OrdersCsvDownloadButtonProps = {
 export const OrdersCsvDownloadButton: FC<OrdersCsvDownloadButtonProps> = ({ orders }) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [transferDate, setTransferDate] = useState<string>("");
   const filteredOrders = orders.filter(isValidOrder);
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const handleClick = async () => {
     if (filteredOrders.length === 0) return;
+    if (transferDate === "") return;
     setIsLoading(true);
     await updateManyOrdersIsDownloaded(filteredOrders.map((order) => order.id))
       .then(async () => {
@@ -35,7 +49,8 @@ export const OrdersCsvDownloadButton: FC<OrdersCsvDownloadButtonProps> = ({ orde
             groupedOrders[currentIndex].orders.push(order);
           }
         });
-        const bankRecords = await getCsvBankRecords(groupedOrders);
+
+        const bankRecords = await getCsvBankRecords(new Date(transferDate), groupedOrders);
         const blob = convertToBlob(bankRecords);
         const link = document.createElement("a");
         const today = new Date();
@@ -46,17 +61,36 @@ export const OrdersCsvDownloadButton: FC<OrdersCsvDownloadButtonProps> = ({ orde
       })
       .catch((e) => console.error(e));
     setIsLoading(false);
+    setTransferDate("");
+    onClose();
     router.refresh();
   };
 
   return (
-    <Button
-      onClick={handleClick}
-      marginLeft="auto"
-      minWidth="auto"
-      isDisabled={filteredOrders.length === 0 || isLoading}
-    >
-      {isLoading ? "処理中" : "CSVダウンロード"}
-    </Button>
+    <>
+      <Button onClick={onOpen} marginLeft="auto" minWidth="auto" isDisabled={filteredOrders.length === 0}>
+        CSVダウンロード
+      </Button>
+
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>振込を行う日を指定してください</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Input type="date" value={transferDate} onChange={(e) => setTransferDate(e.target.value)} />
+          </ModalBody>
+
+          <ModalFooter gap={3}>
+            <Button onClick={handleClick} isDisabled={filteredOrders.length === 0 || isLoading || transferDate === ""}>
+              {isLoading ? "処理中" : "CSVダウンロード"}
+            </Button>
+            <Button onClick={onClose} variant="outline" colorScheme="gray">
+              close
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </>
   );
 };
