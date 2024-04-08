@@ -35,7 +35,7 @@ import { applyEarlyDiscount } from "@/utils/discount-price";
 import NextLink from "next/link";
 import { ConfirmModal } from "@/components/confirm-modal";
 import { FaMapMarkedAlt } from "react-icons/fa";
-import { MealPreviewBox } from "@/components/meal-preview";
+import { MealPreviewBox } from "@/components/meal/MealPreviewBox";
 
 type Props = {
   meal: Prisma.MealGetPayload<{
