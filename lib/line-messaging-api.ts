@@ -13,10 +13,14 @@ const client = new line.messagingApi.MessagingApiClient({
 });
 
 export async function pushMessage({ to, messages }: { to: string; messages: line.Message[] }) {
+  const retryKey = crypto.randomUUID();
   retry(
     async () => {
-      await client.pushMessage({ to, messages });
+      await client.pushMessage({ to, messages }, retryKey);
     },
-    { retries: 3 }
+    {
+      retries: 3,
+      onRetry: (e, attempt) => console.error(`Error pushing message to ${to} (attempt ${attempt}): ${e.message}`)
+    }
   );
 }
