@@ -22,9 +22,17 @@ export async function cancelOrder({
   if (paymentStatus === "canceled") {
     if (isFull) {
       await updateIsOpen({ id: restaurantId, isOpen: false });
-      notifyStaffFullCancellation({ orderId: orderId });
+      try {
+        await notifyStaffFullCancellation({ orderId: orderId });
+      } catch (e) {
+        console.error("Error notifying staff", e);
+      }
     } else {
-      notifyStaffCancellation({ orderId: orderId });
+      try {
+        await notifyStaffCancellation({ orderId: orderId });
+      } catch (e) {
+        console.error("Error notifying staff", e);
+      }
     }
   } else {
     throw new Error("Failed to cancel payment intent");

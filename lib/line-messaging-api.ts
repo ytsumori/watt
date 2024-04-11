@@ -14,7 +14,7 @@ const client = new line.messagingApi.MessagingApiClient({
 
 export async function pushMessage({ to, messages }: { to: string; messages: line.Message[] }) {
   const retryKey = crypto.randomUUID();
-  retry(
+  await retry(
     async () => {
       await client.pushMessage({ to, messages }, retryKey);
     },

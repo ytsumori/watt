@@ -22,7 +22,11 @@ export async function visitRestaurant({
   const order = await findPreauthorizedOrder(userId);
   if (!order) throw new Error("Preauthorized order not found");
 
-  notifyStaffOrder({ orderId: order.id });
+  try {
+    await notifyStaffOrder({ orderId: order.id });
+  } catch (e) {
+    console.error("Error notifying staff", e);
+  }
 
   return order;
 }
