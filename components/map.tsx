@@ -2,7 +2,6 @@
 
 import { Wrapper, Status } from "@googlemaps/react-wrapper";
 import { Children, cloneElement, isValidElement, useCallback, useEffect, useRef, useState } from "react";
-import { CgUnavailable } from "react-icons/cg";
 
 const render = (status: Status) => {
   return <h1>{status}</h1>;
