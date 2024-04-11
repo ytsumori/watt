@@ -18,8 +18,9 @@ import {
   Textarea,
 } from "@chakra-ui/react";
 import { useRef, useState } from "react";
-import { MealPreviewImage } from "@/components/meal-preview-image";
+import { MealPreviewImage } from "@/components/meal/MealPreviewImage";
 import { createMeal } from "@/actions/meal";
+import { createClientSupabase } from "@/lib/supabase/client";
 
 type Props = {
   restaurantId: string;
@@ -29,6 +30,8 @@ type Props = {
 };
 
 export function NewMealModal({ restaurantId, isOpen, onClose, onSubmitComplete }: Props) {
+  const supabase = createClientSupabase();
+
   const [title, setTitle] = useState<string>();
   const [price, setPrice] = useState<number>();
   const [description, setDescription] = useState<string>();
@@ -107,7 +110,7 @@ export function NewMealModal({ restaurantId, isOpen, onClose, onSubmitComplete }
     createMeal({
       restaurantId,
       price,
-      imageUrl: imageUrl,
+      imageUrl,
       title,
       description,
     }).then(() => {

@@ -2,7 +2,7 @@
 
 import { activateMeal, discardMeal, getMeals } from "@/actions/meal";
 import { MealCard } from "@/components/meal/meal-card";
-import { NewMealModal } from "@/components/meal/new-meal-modal";
+import { NewMealModal } from "@/components/meal/NewMealModal";
 import { Button, Flex, Heading, VStack, useDisclosure } from "@chakra-ui/react";
 import { Meal } from "@prisma/client";
 import { useState } from "react";

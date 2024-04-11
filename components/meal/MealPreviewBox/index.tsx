@@ -2,10 +2,11 @@
 
 import { Box, BoxProps, Text } from "@chakra-ui/react";
 import { Meal } from "@prisma/client";
-import { MealPreviewImage } from "./meal-preview-image";
+import { MealPreviewImage } from "../MealPreviewImage";
 import { ReactNode } from "react";
 import { applyEarlyDiscount } from "@/utils/discount-price";
 import Link from "next/link";
+import { createClientSupabase } from "@/lib/supabase/client";
 
 type Props = {
   meal: Meal;
@@ -26,15 +27,7 @@ export function MealPreviewBox({ meal, href, children, ...boxProps }: Props) {
       {...boxProps}
     >
       <MealPreviewImage src={meal.imageUrl} alt={`meal-${meal.id}`} />
-      <Box
-        position="absolute"
-        top={0}
-        left={0}
-        m={2}
-        borderRadius={4}
-        backgroundColor="blackAlpha.700"
-        px={2}
-      >
+      <Box position="absolute" top={0} left={0} m={2} borderRadius={4} backgroundColor="blackAlpha.700" px={2}>
         <Text color="white" noOfLines={1}>
           {meal.title}
         </Text>

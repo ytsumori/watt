@@ -4,28 +4,11 @@ import prisma from "@/lib/prisma/client";
 export default async function Home() {
   const restaurants = await prisma.restaurant.findMany({
     include: {
-      meals: {
-        where: {
-          isDiscarded: false,
-        },
-      },
-      googleMapPlaceInfo: {
-        select: {
-          latitude: true,
-          longitude: true,
-        },
-      },
+      meals: { where: { isDiscarded: false } },
+      googleMapPlaceInfo: { select: { latitude: true, longitude: true } },
     },
-    where: {
-      meals: {
-        some: {
-          isDiscarded: false,
-        },
-      },
-    },
-    orderBy: {
-      isOpen: "desc",
-    },
+    where: { meals: { some: { isDiscarded: false } } },
+    orderBy: { isOpen: "desc" },
   });
   return <HomePage restaurants={restaurants} />;
 }

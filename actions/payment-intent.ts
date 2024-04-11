@@ -5,6 +5,7 @@ import stripe from "@/lib/stripe";
 import prisma from "@/lib/prisma/client";
 import { createOrder, findOrder, updateOrderStatus } from "./order";
 import { applyEarlyDiscount } from "@/utils/discount-price";
+import { CancellationReason, CancellationUserType } from "@prisma/client";
 
 export async function createPaymentIntent({
   mealId,
@@ -74,6 +75,9 @@ export async function capturePaymentIntent(orderId: string) {
   if (!order) {
     throw new Error("Order not found");
   }
+  if (order.status !== "PREAUTHORIZED") {
+    throw new Error("Invalid order status");
+  }
 
   const paymentIntent = await stripe.paymentIntents.capture(order.providerPaymentId);
   if (paymentIntent.status === "succeeded") {
@@ -85,7 +89,15 @@ export async function capturePaymentIntent(orderId: string) {
   return paymentIntent.status;
 }
 
-export async function cancelPaymentIntent(orderId: string) {
+export async function cancelPaymentIntent({
+  orderId,
+  reason,
+  cancelledBy,
+}: {
+  orderId: string;
+  reason: CancellationReason;
+  cancelledBy: CancellationUserType;
+}) {
   const order = await findOrder({ where: { id: orderId } });
   if (!order) {
     throw new Error("Order not found");
@@ -93,9 +105,16 @@ export async function cancelPaymentIntent(orderId: string) {
 
   const paymentIntent = await stripe.paymentIntents.cancel(order.providerPaymentId);
   if (paymentIntent.status === "canceled") {
-    await updateOrderStatus({
-      id: orderId,
-      status: "CANCELLED",
+    await prisma.order.update({
+      where: { id: orderId },
+      data: { status: "CANCELLED" },
+    });
+    await prisma.orderCancellation.create({
+      data: {
+        orderId,
+        reason,
+        cancelledBy,
+      },
     });
   }
   return paymentIntent.status;

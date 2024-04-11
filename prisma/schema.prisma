@@ -39,6 +39,7 @@ model User {
   name          String?
   email         String?   @unique
   emailVerified DateTime?
+  phoneNumber   String?   @unique
   image         String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @default(now()) @updatedAt
@@ -49,12 +50,10 @@ model User {
   orders         Order[]
 }
 
-model VerificationToken {
-  identifier String
-  token      String   @unique
-  expires    DateTime
-
-  @@unique([identifier, token])
+model OneTimePassword {
+  id          String @id @default(cuid())
+  phoneNumber String @unique
+  code        String @db.VarChar(6)
 }
 
 model StripeCustomer {
@@ -141,8 +140,31 @@ model Order {
   createdAt             DateTime    @default(now())
   updatedAt             DateTime    @default(now()) @updatedAt
 
+  cancellation OrderCancellation?
+
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   meal Meal @relation(fields: [mealId], references: [id], onDelete: Cascade)
+}
+
+model OrderCancellation {
+  id          String               @id @default(cuid())
+  orderId     String               @unique
+  reason      CancellationReason
+  cancelledBy CancellationUserType
+  cancelledAt DateTime             @default(now())
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+enum CancellationUserType {
+  USER
+  STAFF
+}
+
+enum CancellationReason {
+  FULL
+  USER_DEMAND
+  CLOSED
 }
 
 model Staff {

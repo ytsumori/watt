@@ -5,8 +5,8 @@ import { useState } from "react";
 import { Box, HStack, Heading, Text, Flex, Badge, Center } from "@chakra-ui/react";
 import { InView } from "react-intersection-observer";
 import { Prisma } from "@prisma/client";
-import { MealPreviewBox } from "@/components/meal-preview";
-import Link from "next/link";
+import { MealPreviewBox } from "@/components/meal/MealPreviewBox";
+import NextLink from "next/link";
 
 export default function HomePage({
   restaurants,
@@ -15,12 +15,11 @@ export default function HomePage({
     include: { meals: true; googleMapPlaceInfo: { select: { latitude: true; longitude: true } } };
   }>[];
 }) {
-  const [selectedRestaurantId, setSelectedRestaurantId] = useState<string>();
+  const [inViewRestaurantIds, setInViewRestaurantIds] = useState<string[]>([]);
 
   const handleRestaurantSelect = (restaurantId: string) => {
-    setSelectedRestaurantId(restaurantId);
     const element = document.getElementById(restaurantId);
-    if (element) element.scrollIntoView();
+    if (element) element.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
@@ -39,7 +38,8 @@ export default function HomePage({
               },
             };
           })}
-          selectedRestaurantId={selectedRestaurantId}
+          activeRestaurantIds={inViewRestaurantIds}
+          availableRestaurantIds={restaurants.flatMap((restaurant) => (restaurant.isOpen ? [restaurant.id] : []))}
           onRestaurantSelect={handleRestaurantSelect}
         />
       </Box>
@@ -54,19 +54,22 @@ export default function HomePage({
           >
             <InView
               initialInView={index < 2}
-              threshold={1}
+              threshold={0}
               onChange={(inView) => {
                 if (inView) {
-                  setSelectedRestaurantId(restaurant.id);
-                } else if (!inView && index === 0) {
-                  setSelectedRestaurantId(restaurants[1]?.id);
-                } else if (!inView && index === restaurants.length - 1) {
-                  setSelectedRestaurantId(restaurants[index - 1]?.id);
+                  setInViewRestaurantIds((prev) => [...prev, restaurant.id]);
+                } else {
+                  setInViewRestaurantIds((prev) => prev.filter((id) => id !== restaurant.id));
                 }
               }}
             >
               <Flex mx={4} alignItems="center">
-                <Heading size="md" color={restaurant.isOpen ? "black" : "gray"}>
+                <Heading
+                  size="md"
+                  color={restaurant.isOpen ? "black" : "gray"}
+                  as={NextLink}
+                  href={`/restaurants/${restaurant.id}`}
+                >
                   {restaurant.name}
                 </Heading>
                 {restaurant.isOpen ? (
@@ -91,7 +94,7 @@ export default function HomePage({
                     borderRadius={8}
                     borderWidth={2}
                     borderColor="orange.400"
-                    as={Link}
+                    as={NextLink}
                     href={`/restaurants/${restaurant.id}`}
                   >
                     <Text color="orange.400">お店の詳細を見る</Text>
