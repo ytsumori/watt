@@ -25,7 +25,7 @@ describe("[utils/zengin]", () => {
         { testName: "半角小文字英語", value: "tanakatarou" },
         { testName: "全角英語", value: "ＴＡＮＡＫＡＴＡＲＯＵ" },
         { testName: "全角カタカナ", value: "タナカタロウ" },
-        { testName: "全角スペース", value: "ﾀﾅｶ　ﾀﾛｳ" },
+        { testName: "全角スペース", value: "ﾀﾅｶ　ﾀﾛｳ" }
       ];
       inputs.forEach((input) => {
         it(input.testName, () => {

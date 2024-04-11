@@ -11,7 +11,7 @@ describe("[OrdersCsvDownloadButton / action]", () => {
     return {
       restaurantId: createRestaurantMock().id,
       bankAccount: createRestaurantBankAccountMock(),
-      orders: [createOrderMock()],
+      orders: [createOrderMock()]
     };
   });
   describe("getTransferBankRecords", () => {
@@ -33,7 +33,7 @@ describe("[OrdersCsvDownloadButton / action]", () => {
           restaurant.restaurantId,
           "",
           "",
-          "",
+          ""
         ];
       });
       expect(getDataRecords(restaurantWithOrders)).toStrictEqual(expectedValue);
@@ -50,7 +50,7 @@ describe("[OrdersCsvDownloadButton / action]", () => {
         "8",
         restaurantWithOrders.length,
         sum,
-        "",
+        ""
       ]);
     });
   });

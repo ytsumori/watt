@@ -1,8 +1,6 @@
 import { BankAccountType, OrderStatus } from "@prisma/client";
 
-export const translateBankAccountType = (
-  accountType: BankAccountType
-): string => {
+export const translateBankAccountType = (accountType: BankAccountType): string => {
   switch (accountType) {
     case BankAccountType.SAVINGS:
       return "普通";

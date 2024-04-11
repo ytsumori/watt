@@ -7,7 +7,7 @@ import { notifyCancel } from "./notify-cancel";
 export async function cancelOrder(orderId: string) {
   const order = await prisma.order.findUnique({
     where: { id: orderId },
-    include: { meal: { select: { restaurantId: true } } },
+    include: { meal: { select: { restaurantId: true } } }
   });
 
   if (!order) {
@@ -18,12 +18,12 @@ export async function cancelOrder(orderId: string) {
 
   await prisma.restaurant.update({
     where: { id: order.meal.restaurantId },
-    data: { isOpen: false, isOpenManuallyUpdated: true },
+    data: { isOpen: false, isOpenManuallyUpdated: true }
   });
 
   notifyCancel(order.userId);
 
   return await prisma.order.findUnique({
-    where: { id: orderId },
+    where: { id: orderId }
   });
 }

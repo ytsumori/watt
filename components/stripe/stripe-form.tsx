@@ -31,8 +31,8 @@ export default function StripeForm() {
             currency: "jpy",
             clientSecret,
             appearance: {
-              theme: "stripe",
-            },
+              theme: "stripe"
+            }
           }}
         >
           <SetupForm />

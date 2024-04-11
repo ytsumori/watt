@@ -17,7 +17,7 @@ type Props = {
 
 const CENTER_POSITION: google.maps.LatLngLiteral = {
   lat: 34.70726721576163,
-  lng: 135.51175158248128,
+  lng: 135.51175158248128
 };
 
 export default function Map({ restaurants, activeRestaurantIds, availableRestaurantIds, onRestaurantSelect }: Props) {
@@ -47,7 +47,7 @@ export default function Map({ restaurants, activeRestaurantIds, availableRestaur
         (position: GeolocationPosition) => {
           setCurrentLocation({
             lat: position.coords.latitude,
-            lng: position.coords.longitude,
+            lng: position.coords.longitude
           });
         },
         () => {
@@ -160,7 +160,7 @@ function CurrentLocationMarker({ position, ...options }: CurrentLocationMarkerPr
         fillOpacity: 1,
         strokeColor: "#0080FF",
         strokeOpacity: 0.3,
-        strokeWeight: 15,
+        strokeWeight: 15
       });
     }
   }, [marker, options]);
@@ -208,7 +208,7 @@ function RestaurantMarker({ location, active, available, onClick, ...options }: 
             strokeWeight: 1,
             strokeColor: "white",
             scale: 2.5,
-            anchor: new google.maps.Point(0, 20),
+            anchor: new google.maps.Point(0, 20)
           };
           marker.setIcon(activeIcon);
           marker.setZIndex(google.maps.Marker.MAX_ZINDEX);
@@ -220,7 +220,7 @@ function RestaurantMarker({ location, active, available, onClick, ...options }: 
             strokeWeight: 1,
             strokeColor: "#EFA039",
             scale: 2,
-            anchor: new google.maps.Point(0, 20),
+            anchor: new google.maps.Point(0, 20)
           };
           marker.setIcon(inactiveIcon);
           marker.setZIndex(1);
@@ -233,7 +233,7 @@ function RestaurantMarker({ location, active, available, onClick, ...options }: 
           strokeWeight: 1,
           strokeColor: "gray",
           scale: 1.5,
-          anchor: new google.maps.Point(0, 20),
+          anchor: new google.maps.Point(0, 20)
         });
         marker.setZIndex(0);
       }

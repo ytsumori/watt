@@ -14,7 +14,7 @@ import {
   Tr,
   Link,
   useToast,
-  Tooltip,
+  Tooltip
 } from "@chakra-ui/react";
 import { Prisma } from "@prisma/client";
 import { copySignUpURL } from "../../_util/clipboard-text";
@@ -51,12 +51,12 @@ export function RestaurantsPage({ restaurants }: Props) {
               const handleCopy = () => {
                 copySignUpURL({
                   id: restaurant.id,
-                  password: restaurant.password,
+                  password: restaurant.password
                 });
                 toast({
                   title: "コピーしました",
                   status: "success",
-                  duration: 2000,
+                  duration: 2000
                 });
               };
               return (

@@ -7,13 +7,13 @@ export async function GET(request: NextRequest) {
   const authHeader = request.headers.get("authorization");
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
     return new Response("Unauthorized", {
-      status: 401,
+      status: 401
     });
   }
 
   const restaurants = await prisma.restaurant.findMany({
     where: { googleMapPlaceInfo: null },
-    include: { googleMapPlaceInfo: true },
+    include: { googleMapPlaceInfo: true }
   });
 
   const createGoogleMapPlaceInfo = async (
@@ -27,8 +27,8 @@ export async function GET(request: NextRequest) {
         restaurantId: restaurant.id,
         url: result.googleMapsUri,
         latitude: result.location.latitude,
-        longitude: result.location.longitude,
-      },
+        longitude: result.location.longitude
+      }
     });
   };
   await Promise.all(restaurants.map(createGoogleMapPlaceInfo));

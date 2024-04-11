@@ -15,16 +15,16 @@ export const options: AuthOptions = {
           id: profile.sub,
           name: profile.name,
           email: profile.email,
-          image: profile.picture,
+          image: profile.picture
         };
-      },
-    }),
+      }
+    })
   ],
   theme: { colorScheme: "light", brandColor: "#0BC5EA" },
   adapter: PrismaAdapter(prisma),
   debug: process.env.NODE_ENV === "development",
   session: {
-    strategy: "jwt",
+    strategy: "jwt"
   },
   callbacks: {
     async jwt({ token, account, user }) {
@@ -41,9 +41,9 @@ export const options: AuthOptions = {
         ...session,
         user: {
           ...session.user,
-          id: token.id,
-        },
+          id: token.id
+        }
       };
-    },
-  },
+    }
+  }
 };

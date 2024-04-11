@@ -14,15 +14,15 @@ export default async function Restaurant({ params }: Props) {
     include: {
       meals: {
         where: {
-          isDiscarded: false,
-        },
+          isDiscarded: false
+        }
       },
       googleMapPlaceInfo: {
         select: {
-          url: true,
-        },
-      },
-    },
+          url: true
+        }
+      }
+    }
   });
   if (!restaurant) {
     redirect("/");

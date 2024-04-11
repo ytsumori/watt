@@ -23,7 +23,7 @@ import {
   Popover,
   PopoverTrigger,
   PopoverContent,
-  PopoverHeader,
+  PopoverHeader
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { copySignUpURL } from "../../_util/clipboard-text";
@@ -36,11 +36,7 @@ export function NewRestaurantPageClient() {
     id: string;
     password: string;
   }>();
-  const {
-    isOpen: isCopiedOpen,
-    onToggle: onCopiedToggle,
-    onClose: onCopiedClose,
-  } = useDisclosure();
+  const { isOpen: isCopiedOpen, onToggle: onCopiedToggle, onClose: onCopiedClose } = useDisclosure();
 
   const handleSearchClick = () => {
     if (!searchText) return;
@@ -53,7 +49,7 @@ export function NewRestaurantPageClient() {
     if (!selectedPlace) return;
     createRestaurant({
       name: selectedPlace.displayName.text,
-      googleMapPlaceId: selectedPlace.id,
+      googleMapPlaceId: selectedPlace.id
     })
       .then((result) => {
         setSubmitResult({ id: result.id, password: result.password });
@@ -76,22 +72,14 @@ export function NewRestaurantPageClient() {
         <VStack spacing={4}>
           <FormControl>
             <FormLabel>Googleマップで検索</FormLabel>
-            <Input
-              onChange={(e) => setSearchText(e.target.value ?? undefined)}
-              value={searchText ?? ""}
-            />
+            <Input onChange={(e) => setSearchText(e.target.value ?? undefined)} value={searchText ?? ""} />
           </FormControl>
           <Button isDisabled={!searchText} onClick={handleSearchClick}>
             検索する
           </Button>
         </VStack>
 
-        <SimpleGrid
-          maxWidth="100vw"
-          columns={{ base: 2, md: 3 }}
-          spacing={4}
-          overflowY="auto"
-        >
+        <SimpleGrid maxWidth="100vw" columns={{ base: 2, md: 3 }} spacing={4} overflowY="auto">
           {searchResults?.map((result) => (
             <Card key={result.id} w="full">
               <CardBody>
@@ -105,9 +93,7 @@ export function NewRestaurantPageClient() {
                 />
               </CardBody>
               <CardFooter>
-                <Button onClick={() => setSelectedPlace(result)}>
-                  この店を登録する
-                </Button>
+                <Button onClick={() => setSelectedPlace(result)}>この店を登録する</Button>
               </CardFooter>
             </Card>
           ))}
@@ -131,10 +117,7 @@ export function NewRestaurantPageClient() {
                   <VStack spacing={4}>
                     <FormControl>
                       <FormLabel>店名</FormLabel>
-                      <Input
-                        isReadOnly
-                        value={selectedPlace.displayName.text ?? ""}
-                      />
+                      <Input isReadOnly value={selectedPlace.displayName.text ?? ""} />
                     </FormControl>
                     <iframe
                       width="100%"

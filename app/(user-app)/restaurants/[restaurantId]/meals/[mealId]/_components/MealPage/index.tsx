@@ -20,7 +20,7 @@ import {
   Td,
   useDisclosure,
   Icon,
-  HStack,
+  HStack
 } from "@chakra-ui/react";
 import { useState } from "react";
 import Stripe from "stripe";
@@ -55,7 +55,7 @@ export default function MealPage({ meal, paymentMethods, isRestaurantActive, pre
   const {
     isOpen: isVisitConfirmModalOpen,
     onOpen: onVisitConfirmModalOpen,
-    onClose: onVisitConfirmModalClose,
+    onClose: onVisitConfirmModalClose
   } = useDisclosure();
   const pathname = usePathname();
 
@@ -77,7 +77,7 @@ export default function MealPage({ meal, paymentMethods, isRestaurantActive, pre
       .catch(() => {
         setErrorMessage({
           title: "エラー",
-          description: "エラーが発生しました。もう一度お試しください。",
+          description: "エラーが発生しました。もう一度お試しください。"
         });
       });
   };
@@ -257,10 +257,10 @@ export default function MealPage({ meal, paymentMethods, isRestaurantActive, pre
             confirmButton={{
               label: "お店に向かう",
               onClick: handleVisitingConfirm,
-              isLoading: isVisitRequesting,
+              isLoading: isVisitRequesting
             }}
             cancelButton={{
-              label: "キャンセル",
+              label: "キャンセル"
             }}
           >
             向かっていることをお店に通知します。
@@ -275,7 +275,7 @@ export default function MealPage({ meal, paymentMethods, isRestaurantActive, pre
         title={errorMessage?.title ?? ""}
         confirmButton={{
           label: "OK",
-          onClick: () => router.refresh(),
+          onClick: () => router.refresh()
         }}
         onClose={() => undefined}
       >

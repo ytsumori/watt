@@ -5,16 +5,16 @@ export async function sendOtpCode(to: string, code: string) {
   const data = {
     message,
     recipient: `+81${to}`,
-    sender: "Watt",
+    sender: "Watt"
   };
   try {
     const response = await fetch("https://api.xoxzo.com/sms/messages/", {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Basic ${btoa(`${process.env.XOXZO_API_SID}:${process.env.XOXZO_API_TOKEN}`)}`,
+        Authorization: `Basic ${btoa(`${process.env.XOXZO_API_SID}:${process.env.XOXZO_API_TOKEN}`)}`
       },
       method: "POST",
-      body: JSON.stringify(data),
+      body: JSON.stringify(data)
     });
     return response.status;
   } catch (e) {
@@ -27,16 +27,16 @@ export async function sendMessage(to: string, message: string) {
   const data = {
     message,
     recipient: `+81${to}`,
-    sender: "Watt",
+    sender: "Watt"
   };
   try {
     const response = await fetch("https://api.xoxzo.com/sms/messages/", {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Basic ${btoa(`${process.env.XOXZO_API_SID}:${process.env.XOXZO_API_TOKEN}`)}`,
+        Authorization: `Basic ${btoa(`${process.env.XOXZO_API_SID}:${process.env.XOXZO_API_TOKEN}`)}`
       },
       method: "POST",
-      body: JSON.stringify(data),
+      body: JSON.stringify(data)
     });
     return response.status;
   } catch (e) {

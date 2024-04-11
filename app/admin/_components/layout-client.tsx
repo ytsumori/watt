@@ -1,22 +1,11 @@
 "use client";
 
 import { HamburgerIcon } from "@chakra-ui/icons";
-import {
-  Box,
-  IconButton,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
-} from "@chakra-ui/react";
+import { Box, IconButton, Menu, MenuButton, MenuItem, MenuList } from "@chakra-ui/react";
 import Link from "next/link";
 import { FaShop, FaMoneyCheck } from "react-icons/fa6";
 
-export function AdminDashboardLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export function AdminDashboardLayout({ children }: { children: React.ReactNode }) {
   return (
     <Box position="relative">
       <Menu>

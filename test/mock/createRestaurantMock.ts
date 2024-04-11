@@ -13,6 +13,6 @@ export const createRestaurantMock = (restaurant?: Partial<Restaurant>): Restaura
     password: createRandomStr(20),
     createdAt: new Date(),
     updatedAt: new Date(),
-    ...restaurant,
+    ...restaurant
   };
 };

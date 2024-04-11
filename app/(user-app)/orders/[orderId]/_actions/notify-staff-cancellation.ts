@@ -6,7 +6,7 @@ import prisma from "@/lib/prisma/client";
 export async function notifyStaffCancellation({ orderId }: { orderId: string }) {
   const order = await prisma.order.findUnique({
     where: {
-      id: orderId,
+      id: orderId
     },
     select: {
       orderNumber: true,
@@ -16,14 +16,14 @@ export async function notifyStaffCancellation({ orderId }: { orderId: string }) 
             select: {
               staffs: {
                 select: {
-                  lineId: true,
-                },
-              },
-            },
-          },
-        },
-      },
-    },
+                  lineId: true
+                }
+              }
+            }
+          }
+        }
+      }
+    }
   });
   if (!order) throw new Error("Order not found");
   order.meal.restaurant.staffs.forEach((staff) => {
@@ -44,7 +44,7 @@ export async function notifyStaffCancellation({ orderId }: { orderId: string }) 
                   text: "来店キャンセル通知",
                   weight: "bold",
                   color: "#DC3444",
-                  size: "sm",
+                  size: "sm"
                 },
                 {
                   type: "text",
@@ -52,7 +52,7 @@ export async function notifyStaffCancellation({ orderId }: { orderId: string }) 
                   weight: "bold",
                   size: "lg",
                   wrap: true,
-                  margin: "md",
+                  margin: "md"
                 },
                 {
                   type: "box",
@@ -64,28 +64,28 @@ export async function notifyStaffCancellation({ orderId }: { orderId: string }) 
                       contents: [
                         {
                           type: "span",
-                          text: "注文番号：",
+                          text: "注文番号："
                         },
                         {
                           type: "span",
                           text: order.orderNumber.toString(),
                           size: "xxl",
-                          weight: "bold",
-                        },
-                      ],
-                    },
-                  ],
-                },
-              ],
+                          weight: "bold"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
             },
             styles: {
               footer: {
-                separator: true,
-              },
-            },
-          },
-        },
-      ],
+                separator: true
+              }
+            }
+          }
+        }
+      ]
     });
   });
 }
@@ -93,7 +93,7 @@ export async function notifyStaffCancellation({ orderId }: { orderId: string }) 
 export async function notifyStaffFullCancellation({ orderId }: { orderId: string }) {
   const order = await prisma.order.findUnique({
     where: {
-      id: orderId,
+      id: orderId
     },
     select: {
       orderNumber: true,
@@ -103,14 +103,14 @@ export async function notifyStaffFullCancellation({ orderId }: { orderId: string
             select: {
               staffs: {
                 select: {
-                  lineId: true,
-                },
-              },
-            },
-          },
-        },
-      },
-    },
+                  lineId: true
+                }
+              }
+            }
+          }
+        }
+      }
+    }
   });
   if (!order) throw new Error("Order not found");
   order.meal.restaurant.staffs.forEach((staff) => {
@@ -131,7 +131,7 @@ export async function notifyStaffFullCancellation({ orderId }: { orderId: string
                   text: "来店キャンセル通知",
                   weight: "bold",
                   color: "#DC3444",
-                  size: "sm",
+                  size: "sm"
                 },
                 {
                   type: "text",
@@ -139,7 +139,7 @@ export async function notifyStaffFullCancellation({ orderId }: { orderId: string
                   weight: "bold",
                   size: "lg",
                   wrap: true,
-                  margin: "md",
+                  margin: "md"
                 },
                 {
                   type: "box",
@@ -151,17 +151,17 @@ export async function notifyStaffFullCancellation({ orderId }: { orderId: string
                       contents: [
                         {
                           type: "span",
-                          text: "注文番号：",
+                          text: "注文番号："
                         },
                         {
                           type: "span",
                           text: order.orderNumber.toString(),
                           size: "xxl",
-                          weight: "bold",
-                        },
-                      ],
-                    },
-                  ],
+                          weight: "bold"
+                        }
+                      ]
+                    }
+                  ]
                 },
                 {
                   type: "text",
@@ -169,18 +169,18 @@ export async function notifyStaffFullCancellation({ orderId }: { orderId: string
                   wrap: true,
                   margin: "lg",
                   color: "#DC3444",
-                  weight: "regular",
-                },
-              ],
+                  weight: "regular"
+                }
+              ]
             },
             styles: {
               footer: {
-                separator: true,
-              },
-            },
-          },
-        },
-      ],
+                separator: true
+              }
+            }
+          }
+        }
+      ]
     });
   });
 }

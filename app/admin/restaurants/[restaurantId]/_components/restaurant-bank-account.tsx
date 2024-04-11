@@ -14,7 +14,7 @@ import {
   Input,
   Flex,
   Checkbox,
-  useToast,
+  useToast
 } from "@chakra-ui/react";
 import { getBank, getBranch } from "@/lib/bankcode-jp";
 import { Prisma } from "@prisma/client";
@@ -45,7 +45,7 @@ export const RestaurantBankAccount: FC<RestaurantBankAccountProps> = ({ restaura
       setTimeout(() => {
         getBranch({
           bankCode: restaurantBankAccount.bankCode,
-          branchCode: restaurantBankAccount.branchCode,
+          branchCode: restaurantBankAccount.branchCode
         }).then((result) => result.branch?.name && setBranchName(result.branch.name));
       }, 1500);
     });
@@ -55,7 +55,7 @@ export const RestaurantBankAccount: FC<RestaurantBankAccountProps> = ({ restaura
     if (isEditMode) {
       await updateRestaurantBankAccount({
         restaurantId: restaurantBankAccount.restaurantId,
-        bankAccount: { ...restaurantBankAccount, holderName, isAdminConfirmed },
+        bankAccount: { ...restaurantBankAccount, holderName, isAdminConfirmed }
       })
         .then(() => {
           setIsEditMode(false);

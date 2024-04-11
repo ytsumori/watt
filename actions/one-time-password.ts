@@ -23,15 +23,15 @@ export async function generateOneTimePassword(phoneNumber: string) {
 
   await prisma.oneTimePassword.upsert({
     where: {
-      phoneNumber,
+      phoneNumber
     },
     update: {
-      code,
+      code
     },
     create: {
       phoneNumber,
-      code,
-    },
+      code
+    }
   });
 
   await sendOtpCode(phoneNumber, code);
@@ -43,8 +43,8 @@ export async function checkOneTimePassword({ phoneNumber, code }: { phoneNumber:
   const onTimePassword = await prisma.oneTimePassword.findFirst({
     where: {
       phoneNumber,
-      code,
-    },
+      code
+    }
   });
   return !!onTimePassword;
 }

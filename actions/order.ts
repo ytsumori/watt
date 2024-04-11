@@ -11,8 +11,8 @@ export async function findPreauthorizedOrder(userId: string) {
   return await prisma.order.findFirst({
     where: {
       userId,
-      status: "PREAUTHORIZED",
-    },
+      status: "PREAUTHORIZED"
+    }
   });
 }
 
@@ -24,7 +24,7 @@ export async function createOrder({
   mealId,
   userId,
   providerPaymentId,
-  price,
+  price
 }: {
   mealId: string;
   userId: string;
@@ -33,7 +33,7 @@ export async function createOrder({
 }) {
   const meal = await prisma.meal.findUnique({
     where: { id: mealId },
-    select: { id: true, price: true, isDiscarded: true },
+    select: { id: true, price: true, isDiscarded: true }
   });
   if (!meal) {
     throw new Error("Meal not found");
@@ -51,15 +51,15 @@ export async function createOrder({
       mealId: meal.id,
       providerPaymentId,
       price,
-      restaurantProfitPrice: meal.price,
-    },
+      restaurantProfitPrice: meal.price
+    }
   });
 }
 
 export async function updateOrderStatus({ id, status }: { id: string; status: OrderStatus }) {
   return await prisma.order.update({
     where: { id },
-    data: { status },
+    data: { status }
   });
 }
 

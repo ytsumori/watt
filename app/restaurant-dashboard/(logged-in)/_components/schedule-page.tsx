@@ -13,8 +13,8 @@ export function SchedulePage() {
     findRestaurant({
       where: { id: restaurantId },
       select: {
-        isOpen: true,
-      },
+        isOpen: true
+      }
     }).then((restaurant) => {
       setIsRestaurantOpen(restaurant?.isOpen ?? false);
     });

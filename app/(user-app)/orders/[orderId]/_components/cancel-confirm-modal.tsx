@@ -26,11 +26,11 @@ export function CancelConfirmModal({ isOpen, isCancelling, onClose, onConfirm }:
       confirmButton={{
         label: "注文をキャンセル",
         onClick: () => onConfirm(isFull),
-        isLoading: isCancelling,
+        isLoading: isCancelling
       }}
       cancelButton={{
         label: "注文を続ける",
-        isDisabled: isCancelling,
+        isDisabled: isCancelling
       }}
     >
       <Checkbox isChecked={isFull} onChange={(e) => setIsFull(e.target.checked)}>

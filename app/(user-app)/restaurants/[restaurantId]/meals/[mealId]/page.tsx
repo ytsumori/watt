@@ -15,7 +15,7 @@ type Params = {
 export default async function Meal({ params }: { params: Params }) {
   const restaurant = await prisma.restaurant.findUnique({
     where: { id: params.restaurantId },
-    select: { isOpen: true },
+    select: { isOpen: true }
   });
   const meal = await prisma.meal.findUnique({
     where: { id: params.mealId, restaurantId: params.restaurantId },
@@ -25,19 +25,19 @@ export default async function Meal({ params }: { params: Params }) {
           meals: {
             where: {
               NOT: {
-                id: params.mealId,
+                id: params.mealId
               },
-              isDiscarded: false,
-            },
+              isDiscarded: false
+            }
           },
           googleMapPlaceInfo: {
             select: {
-              url: true,
-            },
-          },
-        },
-      },
-    },
+              url: true
+            }
+          }
+        }
+      }
+    }
   });
   if (!restaurant || !meal) {
     redirect("/");

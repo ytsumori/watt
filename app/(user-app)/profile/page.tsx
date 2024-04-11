@@ -16,8 +16,8 @@ export default async function Profile({ searchParams }: Props) {
 
   const me = await prisma.user.findUnique({
     where: {
-      id: myId,
-    },
+      id: myId
+    }
   });
   if (!me) {
     await signOut();

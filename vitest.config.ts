@@ -9,7 +9,7 @@ export default defineConfig({
     environment: "jsdom",
     exclude: [...defaultExclude, "./e2e/**/*"],
     alias: {
-      "@": path.resolve(__dirname, "./"),
-    },
-  },
+      "@": path.resolve(__dirname, "./")
+    }
+  }
 });

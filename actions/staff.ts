@@ -6,15 +6,15 @@ import prisma from "@/lib/prisma/client";
 export async function getStaffs({ lineId }: { lineId: string }) {
   return await prisma.staff.findMany({
     where: {
-      lineId,
-    },
+      lineId
+    }
   });
 }
 
 export async function createStaff({
   lineIdToken,
   restaurantId,
-  password,
+  password
 }: {
   lineIdToken: string;
   restaurantId: string;
@@ -23,8 +23,8 @@ export async function createStaff({
   const restaurant = await prisma.restaurant.findUnique({
     where: {
       id: restaurantId,
-      password,
-    },
+      password
+    }
   });
   if (!restaurant) {
     throw new Error("Invalid password");
@@ -33,7 +33,7 @@ export async function createStaff({
   return await prisma.staff.create({
     data: {
       lineId: response.sub,
-      restaurantId,
-    },
+      restaurantId
+    }
   });
 }

@@ -16,6 +16,6 @@ export const createRestaurantBankAccountMock = (order?: Partial<BankAccount>): B
     createdAt: new Date(),
     updatedAt: new Date(),
     clientCode: 1,
-    ...order,
+    ...order
   };
 };

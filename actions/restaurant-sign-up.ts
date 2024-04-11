@@ -7,13 +7,7 @@ type Payload = {
   password: string;
 };
 
-export async function signUpRestaurant({
-  lineIdToken,
-  signUpToken,
-}: {
-  lineIdToken: string;
-  signUpToken: string;
-}) {
+export async function signUpRestaurant({ lineIdToken, signUpToken }: { lineIdToken: string; signUpToken: string }) {
   const jwt = require("jsonwebtoken");
   const { restaurantId, password } = (await jwt.verify(
     signUpToken,

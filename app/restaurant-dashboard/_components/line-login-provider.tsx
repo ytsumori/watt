@@ -12,7 +12,7 @@ export function LineLoginProvider({ children }: { children: React.ReactNode }) {
     liff
       .init({
         liffId: process.env.NEXT_PUBLIC_LIFF_ID!,
-        withLoginOnExternalBrowser: true,
+        withLoginOnExternalBrowser: true
       })
       .then(() => {
         const idToken = liff.getIDToken();
@@ -31,9 +31,5 @@ export function LineLoginProvider({ children }: { children: React.ReactNode }) {
       </Center>
     );
 
-  return (
-    <LineIdTokenContext.Provider value={idToken}>
-      {children}
-    </LineIdTokenContext.Provider>
-  );
+  return <LineIdTokenContext.Provider value={idToken}>{children}</LineIdTokenContext.Provider>;
 }

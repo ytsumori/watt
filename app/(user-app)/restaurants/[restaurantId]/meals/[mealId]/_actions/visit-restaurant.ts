@@ -7,7 +7,7 @@ import { notifyStaffOrder } from "./notify-staff-order";
 export async function visitRestaurant({
   mealId,
   userId,
-  paymentMethodId,
+  paymentMethodId
 }: {
   mealId: string;
   userId: string;

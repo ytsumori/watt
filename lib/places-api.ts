@@ -13,12 +13,12 @@ export async function searchPlaces({ text }: { text: string }) {
     headers: {
       "Content-Type": "application/json",
       "X-Goog-Api-Key": process.env.GOOGLE_MAP_API_KEY!,
-      "X-Goog-FieldMask": "places.id,places.displayName.text",
+      "X-Goog-FieldMask": "places.id,places.displayName.text"
     },
     body: JSON.stringify({
       textQuery: text,
-      languageCode: "ja",
-    }),
+      languageCode: "ja"
+    })
   });
   return response.json() as Promise<{
     places: SearchPlaceResult[];

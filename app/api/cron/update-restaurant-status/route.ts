@@ -7,7 +7,7 @@ export async function GET(request: NextRequest) {
   const authHeader = request.headers.get("authorization");
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
     return new Response("Unauthorized", {
-      status: 401,
+      status: 401
     });
   }
 
@@ -16,10 +16,10 @@ export async function GET(request: NextRequest) {
     where: {
       meals: {
         some: {
-          isDiscarded: false,
-        },
-      },
-    },
+          isDiscarded: false
+        }
+      }
+    }
   });
 
   const updateRestaurantStatus = async (
@@ -30,14 +30,14 @@ export async function GET(request: NextRequest) {
       if (!restaurant.isOpenManuallyUpdated && !restaurant.isOpen) {
         await prisma.restaurant.update({
           where: { id: restaurant.id },
-          data: { isOpen: true, isOpenManuallyUpdated: false },
+          data: { isOpen: true, isOpenManuallyUpdated: false }
         });
       }
     } else {
       if (restaurant.isOpen) {
         await prisma.restaurant.update({
           where: { id: restaurant.id },
-          data: { isOpen: false, isOpenManuallyUpdated: false },
+          data: { isOpen: false, isOpenManuallyUpdated: false }
         });
       }
     }

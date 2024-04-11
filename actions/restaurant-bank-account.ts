@@ -7,11 +7,11 @@ import { Prisma } from "@prisma/client";
 export async function findBankAccountByRestaurantId(restaurantId: string) {
   return await prisma.restaurantBankAccount.findFirst({
     where: {
-      restaurantId,
+      restaurantId
     },
     include: {
-      restaurant: true,
-    },
+      restaurant: true
+    }
   });
 }
 
@@ -21,7 +21,7 @@ export async function createRestaurantBankAccount({
   branchCode,
   accountType,
   accountNo,
-  holderName,
+  holderName
 }: {
   restaurantId: string;
   bankCode: string;
@@ -37,8 +37,8 @@ export async function createRestaurantBankAccount({
       branchCode,
       accountType,
       accountNo,
-      holderName,
-    },
+      holderName
+    }
   });
 }
 
@@ -46,12 +46,9 @@ type UpdateArgs = {
   restaurantId: string;
   bankAccount: Prisma.RestaurantBankAccountUpdateInput;
 };
-export async function updateRestaurantBankAccount({
-  restaurantId,
-  bankAccount,
-}: UpdateArgs) {
+export async function updateRestaurantBankAccount({ restaurantId, bankAccount }: UpdateArgs) {
   return await prisma.restaurantBankAccount.update({
     where: { restaurantId },
-    data: { ...bankAccount },
+    data: { ...bankAccount }
   });
 }

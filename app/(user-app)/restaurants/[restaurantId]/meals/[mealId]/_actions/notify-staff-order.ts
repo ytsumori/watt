@@ -6,7 +6,7 @@ import prisma from "@/lib/prisma/client";
 export async function notifyStaffOrder({ orderId }: { orderId: string }) {
   const order = await prisma.order.findUnique({
     where: {
-      id: orderId,
+      id: orderId
     },
     select: {
       orderNumber: true,
@@ -19,30 +19,30 @@ export async function notifyStaffOrder({ orderId }: { orderId: string }) {
               id: true,
               staffs: {
                 select: {
-                  lineId: true,
-                },
-              },
-            },
-          },
-        },
+                  lineId: true
+                }
+              }
+            }
+          }
+        }
       },
       user: {
         select: {
           id: true,
-          name: true,
-        },
-      },
-    },
+          name: true
+        }
+      }
+    }
   });
   if (!order) throw new Error("Order not found");
   const count = await prisma.order.count({
     where: {
       userId: order.user.id,
       meal: {
-        restaurantId: order.meal.restaurant.id,
+        restaurantId: order.meal.restaurant.id
       },
-      status: "COMPLETE",
-    },
+      status: "COMPLETE"
+    }
   });
   order.meal.restaurant.staffs.forEach((staff) => {
     pushMessage({
@@ -62,7 +62,7 @@ export async function notifyStaffOrder({ orderId }: { orderId: string }) {
                   text: "来店予定通知",
                   weight: "bold",
                   color: "#1DB446",
-                  size: "sm",
+                  size: "sm"
                 },
                 {
                   type: "box",
@@ -74,7 +74,7 @@ export async function notifyStaffOrder({ orderId }: { orderId: string }) {
                       weight: "bold",
                       size: "lg",
                       margin: "md",
-                      wrap: true,
+                      wrap: true
                     },
                     {
                       type: "box",
@@ -86,15 +86,15 @@ export async function notifyStaffOrder({ orderId }: { orderId: string }) {
                           contents: [
                             {
                               type: "span",
-                              text: "ニックネーム：",
+                              text: "ニックネーム："
                             },
                             {
                               type: "span",
                               text: order.user.name ?? "",
-                              weight: "bold",
-                            },
+                              weight: "bold"
+                            }
                           ],
-                          text: "ニックネーム：ハロー",
+                          text: "ニックネーム：ハロー"
                         },
                         {
                           type: "text",
@@ -102,24 +102,24 @@ export async function notifyStaffOrder({ orderId }: { orderId: string }) {
                           contents: [
                             {
                               type: "span",
-                              text: "過去来店回数：",
+                              text: "過去来店回数："
                             },
                             {
                               type: "span",
                               text: count.toString(),
-                              weight: "bold",
-                            },
+                              weight: "bold"
+                            }
                           ],
-                          text: "ニックネーム：ハロー",
-                        },
+                          text: "ニックネーム：ハロー"
+                        }
                       ],
-                      margin: "sm",
-                    },
-                  ],
+                      margin: "sm"
+                    }
+                  ]
                 },
                 {
                   type: "separator",
-                  margin: "lg",
+                  margin: "lg"
                 },
                 {
                   type: "box",
@@ -132,20 +132,20 @@ export async function notifyStaffOrder({ orderId }: { orderId: string }) {
                       contents: [
                         {
                           type: "span",
-                          text: "注文番号：",
+                          text: "注文番号："
                         },
                         {
                           type: "span",
                           text: order.orderNumber.toString(),
                           size: "xxl",
-                          weight: "bold",
-                        },
-                      ],
+                          weight: "bold"
+                        }
+                      ]
                     },
                     {
                       type: "text",
                       text: "注文予定の推しメシ",
-                      weight: "bold",
+                      weight: "bold"
                     },
                     {
                       type: "image",
@@ -153,17 +153,17 @@ export async function notifyStaffOrder({ orderId }: { orderId: string }) {
                       size: "xl",
                       aspectRatio: "1:1",
                       aspectMode: "cover",
-                      align: "start",
+                      align: "start"
                     },
                     {
                       type: "text",
                       text: order.meal.description ?? "",
                       wrap: true,
-                      size: "xxs",
-                    },
-                  ],
-                },
-              ],
+                      size: "xxs"
+                    }
+                  ]
+                }
+              ]
             },
             footer: {
               type: "box",
@@ -174,21 +174,21 @@ export async function notifyStaffOrder({ orderId }: { orderId: string }) {
                   action: {
                     type: "uri",
                     label: "店内が満席であることを知らせる",
-                    uri: `${process.env.NEXT_PUBLIC_LIFF_URL}/reject-order/${orderId}`,
+                    uri: `${process.env.NEXT_PUBLIC_LIFF_URL}/reject-order/${orderId}`
                   },
                   style: "primary",
-                  color: "#dc3444",
-                },
-              ],
+                  color: "#dc3444"
+                }
+              ]
             },
             styles: {
               footer: {
-                separator: true,
-              },
-            },
-          },
-        },
-      ],
+                separator: true
+              }
+            }
+          }
+        }
+      ]
     });
   });
 }

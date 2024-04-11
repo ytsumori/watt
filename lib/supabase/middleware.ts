@@ -8,7 +8,7 @@ export const createMiddlewareSupabase = () => {
     cookies: {
       get(name: string) {
         return cookieStore.get(name)?.value;
-      },
-    },
+      }
+    }
   });
 };

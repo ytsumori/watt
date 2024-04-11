@@ -24,8 +24,8 @@ describe("[update-restaurant-status / _util]", () => {
           openMinute: 0,
           closeDayOfWeek: "MONDAY" as const,
           closeHour: 22,
-          closeMinute: 0,
-        },
+          closeMinute: 0
+        }
       ];
       const result = isOpenNow(openingHours);
       expect(result).toBe(true);
@@ -42,8 +42,8 @@ describe("[update-restaurant-status / _util]", () => {
           openMinute: 0,
           closeDayOfWeek: "MONDAY" as const,
           closeHour: 22,
-          closeMinute: 0,
-        },
+          closeMinute: 0
+        }
       ];
       const result = isOpenNow(openingHours);
       expect(result).toBe(false);
@@ -60,8 +60,8 @@ describe("[update-restaurant-status / _util]", () => {
           openMinute: 0,
           closeDayOfWeek: "MONDAY" as const,
           closeHour: 22,
-          closeMinute: 0,
-        },
+          closeMinute: 0
+        }
       ];
       const result = isOpenNow(openingHours);
       expect(result).toBe(false);
@@ -78,8 +78,8 @@ describe("[update-restaurant-status / _util]", () => {
           openMinute: 0,
           closeDayOfWeek: "TUESDAY" as const,
           closeHour: 3,
-          closeMinute: 0,
-        },
+          closeMinute: 0
+        }
       ];
       const result = isOpenNow(openingHours);
       expect(result).toBe(true);
@@ -96,8 +96,8 @@ describe("[update-restaurant-status / _util]", () => {
           openMinute: 0,
           closeDayOfWeek: "TUESDAY" as const,
           closeHour: 3,
-          closeMinute: 0,
-        },
+          closeMinute: 0
+        }
       ];
       const result = isOpenNow(openingHours);
       expect(result).toBe(true);
@@ -114,8 +114,8 @@ describe("[update-restaurant-status / _util]", () => {
           openMinute: 0,
           closeDayOfWeek: "TUESDAY" as const,
           closeHour: 3,
-          closeMinute: 0,
-        },
+          closeMinute: 0
+        }
       ];
       const result = isOpenNow(openingHours);
       expect(result).toBe(false);
@@ -132,7 +132,7 @@ describe("[update-restaurant-status / _util]", () => {
           openMinute: 0,
           closeDayOfWeek: "MONDAY" as const,
           closeHour: 14,
-          closeMinute: 0,
+          closeMinute: 0
         },
         {
           openDayOfWeek: "MONDAY" as const,
@@ -140,8 +140,8 @@ describe("[update-restaurant-status / _util]", () => {
           openMinute: 0,
           closeDayOfWeek: "MONDAY" as const,
           closeHour: 20,
-          closeMinute: 0,
-        },
+          closeMinute: 0
+        }
       ];
       const result = isOpenNow(openingHours);
       expect(result).toBe(false);
@@ -158,7 +158,7 @@ describe("[update-restaurant-status / _util]", () => {
           openMinute: 0,
           closeDayOfWeek: "MONDAY" as const,
           closeHour: 14,
-          closeMinute: 0,
+          closeMinute: 0
         },
         {
           openDayOfWeek: "MONDAY" as const,
@@ -166,8 +166,8 @@ describe("[update-restaurant-status / _util]", () => {
           openMinute: 0,
           closeDayOfWeek: "MONDAY" as const,
           closeHour: 20,
-          closeMinute: 0,
-        },
+          closeMinute: 0
+        }
       ];
       const result = isOpenNow(openingHours);
       expect(result).toBe(true);
@@ -184,7 +184,7 @@ describe("[update-restaurant-status / _util]", () => {
           openMinute: 0,
           closeDayOfWeek: "MONDAY" as const,
           closeHour: 14,
-          closeMinute: 0,
+          closeMinute: 0
         },
         {
           openDayOfWeek: "MONDAY" as const,
@@ -192,8 +192,8 @@ describe("[update-restaurant-status / _util]", () => {
           openMinute: 0,
           closeDayOfWeek: "MONDAY" as const,
           closeHour: 20,
-          closeMinute: 0,
-        },
+          closeMinute: 0
+        }
       ];
       const result = isOpenNow(openingHours);
       expect(result).toBe(false);
@@ -210,7 +210,7 @@ describe("[update-restaurant-status / _util]", () => {
           openMinute: 0,
           closeDayOfWeek: "MONDAY" as const,
           closeHour: 14,
-          closeMinute: 0,
+          closeMinute: 0
         },
         {
           openDayOfWeek: "MONDAY" as const,
@@ -218,8 +218,8 @@ describe("[update-restaurant-status / _util]", () => {
           openMinute: 0,
           closeDayOfWeek: "MONDAY" as const,
           closeHour: 20,
-          closeMinute: 0,
-        },
+          closeMinute: 0
+        }
       ];
       const result = isOpenNow(openingHours);
       expect(result).toBe(true);
@@ -236,8 +236,8 @@ describe("[update-restaurant-status / _util]", () => {
           openMinute: 0,
           closeDayOfWeek: "TUESDAY" as const,
           closeHour: 0,
-          closeMinute: 0,
-        },
+          closeMinute: 0
+        }
       ];
       const result = isOpenNow(openingHours);
       expect(result).toBe(true);
@@ -254,8 +254,8 @@ describe("[update-restaurant-status / _util]", () => {
           openMinute: 0,
           closeDayOfWeek: "SUNDAY" as const,
           closeHour: 0,
-          closeMinute: 0,
-        },
+          closeMinute: 0
+        }
       ];
       const result = isOpenNow(openingHours);
       expect(result).toBe(true);
