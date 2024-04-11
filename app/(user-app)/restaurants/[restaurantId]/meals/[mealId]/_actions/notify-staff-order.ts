@@ -3,22 +3,48 @@
 import { pushMessage } from "@/lib/line-messaging-api";
 import prisma from "@/lib/prisma/client";
 
-export async function notifyStaffOrder({ restaurantId, orderId }: { restaurantId: string; orderId: string }) {
-  const staffs = await prisma.staff.findMany({
-    where: {
-      restaurantId,
-    },
-  });
+export async function notifyStaffOrder({ orderId }: { orderId: string }) {
   const order = await prisma.order.findUnique({
     where: {
       id: orderId,
     },
-    include: {
-      meal: true,
+    select: {
+      orderNumber: true,
+      meal: {
+        select: {
+          imageUrl: true,
+          description: true,
+          restaurant: {
+            select: {
+              id: true,
+              staffs: {
+                select: {
+                  lineId: true,
+                },
+              },
+            },
+          },
+        },
+      },
+      user: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
     },
   });
   if (!order) throw new Error("Order not found");
-  staffs.forEach((staff) => {
+  const count = await prisma.order.count({
+    where: {
+      userId: order.user.id,
+      meal: {
+        restaurantId: order.meal.restaurant.id,
+      },
+      status: "COMPLETE",
+    },
+  });
+  order.meal.restaurant.staffs.forEach((staff) => {
     pushMessage({
       to: staff.lineId,
       messages: [
@@ -39,16 +65,61 @@ export async function notifyStaffOrder({ restaurantId, orderId }: { restaurantId
                   size: "sm",
                 },
                 {
-                  type: "text",
-                  text: "お店に向かってるメンバーがいます",
-                  weight: "bold",
-                  size: "lg",
-                  margin: "md",
-                  wrap: true,
+                  type: "box",
+                  layout: "vertical",
+                  contents: [
+                    {
+                      type: "text",
+                      text: "メンバーが向かっています",
+                      weight: "bold",
+                      size: "lg",
+                      margin: "md",
+                      wrap: true,
+                    },
+                    {
+                      type: "box",
+                      layout: "vertical",
+                      contents: [
+                        {
+                          type: "text",
+                          // @ts-ignore: contents attribute exists
+                          contents: [
+                            {
+                              type: "span",
+                              text: "ニックネーム：",
+                            },
+                            {
+                              type: "span",
+                              text: order.user.name ?? "",
+                              weight: "bold",
+                            },
+                          ],
+                          text: "ニックネーム：ハロー",
+                        },
+                        {
+                          type: "text",
+                          // @ts-ignore: contents attribute exists
+                          contents: [
+                            {
+                              type: "span",
+                              text: "過去来店回数：",
+                            },
+                            {
+                              type: "span",
+                              text: count.toString(),
+                              weight: "bold",
+                            },
+                          ],
+                          text: "ニックネーム：ハロー",
+                        },
+                      ],
+                      margin: "sm",
+                    },
+                  ],
                 },
                 {
                   type: "separator",
-                  margin: "xxl",
+                  margin: "lg",
                 },
                 {
                   type: "box",
@@ -103,7 +174,7 @@ export async function notifyStaffOrder({ restaurantId, orderId }: { restaurantId
                   action: {
                     type: "uri",
                     label: "店内が満席であることを知らせる",
-                    uri: `${process.env.NEXT_PUBLIC_LIFF_URL}/reject-order/${order.id}`,
+                    uri: `${process.env.NEXT_PUBLIC_LIFF_URL}/reject-order/${orderId}`,
                   },
                   style: "primary",
                   color: "#dc3444",
