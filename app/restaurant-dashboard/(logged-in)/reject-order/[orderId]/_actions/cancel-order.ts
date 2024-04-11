@@ -14,7 +14,7 @@ export async function cancelOrder(orderId: string) {
     throw new Error("Order not found");
   }
 
-  await cancelPaymentIntent(order.id);
+  await cancelPaymentIntent({ orderId: order.id, reason: "FULL", cancelledBy: "STAFF" });
 
   await prisma.restaurant.update({
     where: { id: order.meal.restaurantId },

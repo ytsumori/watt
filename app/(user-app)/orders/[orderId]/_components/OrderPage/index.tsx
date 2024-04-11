@@ -67,21 +67,23 @@ export function OrderPage({ order }: Props) {
 
   const handleCancelConfirm = (isFull: boolean) => {
     setIsCancelling(true);
-    cancelPaymentIntent(order.id).then((paymentStatus) => {
-      if (paymentStatus === "canceled") {
-        if (isFull) {
-          updateIsOpen({ id: order.meal.restaurant.id, isOpen: false }).then(() => {
-            notifyStaffFullCancellation({ orderId: order.id });
-          });
+    cancelPaymentIntent({ orderId: order.id, cancelledBy: "USER", reason: isFull ? "FULL" : "USER_DEMAND" }).then(
+      (paymentStatus) => {
+        if (paymentStatus === "canceled") {
+          if (isFull) {
+            updateIsOpen({ id: order.meal.restaurant.id, isOpen: false }).then(() => {
+              notifyStaffFullCancellation({ orderId: order.id });
+            });
+          } else {
+            notifyStaffCancellation({ orderId: order.id });
+          }
+          router.push("/");
+          router.refresh();
         } else {
-          notifyStaffCancellation({ orderId: order.id });
+          console.error("Failed to cancel payment intent");
         }
-        router.push("/");
-        router.refresh();
-      } else {
-        console.error("Failed to cancel payment intent");
       }
-    });
+    );
   };
 
   switch (order.status) {
