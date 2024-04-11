@@ -10,12 +10,12 @@ PAYPAY.Configure({
   merchantId: process.env.PAYPAY_MERCHANT_ID,
   /* production_mode : Set the connection destination of the sandbox environment / production environment. 
  The default false setting connects to the sandbox environment. The True setting connects to the production environment. */
-  productionMode: false,
+  productionMode: false
 });
 
 export async function getAuthorizationUrl({
   userId,
-  redirectUrl,
+  redirectUrl
 }: {
   userId: string;
   redirectUrl: string;
@@ -24,7 +24,7 @@ export async function getAuthorizationUrl({
     scopes: ["preauth_capture_native"],
     nonce: crypto.randomUUID(),
     redirectUrl: redirectUrl,
-    referenceId: userId,
+    referenceId: userId
   };
   return new Promise((resolve, _reject) => {
     PAYPAY.AccountLinkQRCodeCreate(payload, (response: any) => {
@@ -44,9 +44,7 @@ export async function decodeJWTToken(token: string): Promise<{
   return jwt.decode(token, { complete: true }).payload;
 }
 
-export async function validateAuthorization(
-  userAuthorizationId: string
-): Promise<string> {
+export async function validateAuthorization(userAuthorizationId: string): Promise<string> {
   return new Promise((resolve, _reject) => {
     PAYPAY.getUserAuthorizationStatus(userAuthorizationId, (response: any) => {
       return resolve(response.BODY.resultInfo.code);
@@ -60,7 +58,7 @@ export async function createQRCode(merchantPaymentId: string): Promise<string> {
     merchantPaymentId: merchantPaymentId,
     amount: {
       amount: 1,
-      currency: "JPY",
+      currency: "JPY"
     },
     codeType: "ORDER_QR",
     orderDescription: "Mune's Favourite Cake",
@@ -68,7 +66,7 @@ export async function createQRCode(merchantPaymentId: string): Promise<string> {
     redirectUrl: "https://paypay.ne.jp/",
     redirectType: "WEB_LINK",
     userAgent:
-      "Mozilla/5.0 (iPhone; CPU iPhone OS 10_3 like Mac OS X) AppleWebKit/602.1.50 (KHTML, like Gecko) CriOS/56.0.2924.75 Mobile/14E5239e Safari/602.1",
+      "Mozilla/5.0 (iPhone; CPU iPhone OS 10_3 like Mac OS X) AppleWebKit/602.1.50 (KHTML, like Gecko) CriOS/56.0.2924.75 Mobile/14E5239e Safari/602.1"
   };
   // Calling the method to create a qr code
   return new Promise((resolve, _reject) => {

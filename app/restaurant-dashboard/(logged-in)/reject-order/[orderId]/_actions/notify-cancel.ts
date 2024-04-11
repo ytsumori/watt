@@ -6,7 +6,7 @@ import { sendMessage } from "@/lib/xoxzo";
 export async function notifyCancel(userId: string) {
   const user = await prisma.user.findUnique({
     where: { id: userId },
-    select: { phoneNumber: true },
+    select: { phoneNumber: true }
   });
 
   if (!user) {

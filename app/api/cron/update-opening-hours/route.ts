@@ -8,7 +8,7 @@ export async function GET(request: NextRequest) {
   const authHeader = request.headers.get("authorization");
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
     return new Response("Unauthorized", {
-      status: 401,
+      status: 401
     });
   }
 
@@ -17,20 +17,20 @@ export async function GET(request: NextRequest) {
     where: {
       meals: {
         some: {
-          isDiscarded: false,
-        },
-      },
-    },
+          isDiscarded: false
+        }
+      }
+    }
   });
 
   const updateOpeningHours = async (restaurant: Restaurant) => {
     await prisma.restaurantGoogleMapOpeningHour.deleteMany({
       where: {
-        restaurantId: restaurant.id,
-      },
+        restaurantId: restaurant.id
+      }
     });
     const { currentOpeningHours } = await getOpeningHours({
-      placeId: restaurant.googleMapPlaceId,
+      placeId: restaurant.googleMapPlaceId
     });
     if (!currentOpeningHours || currentOpeningHours.periods.length === 0) return;
 
@@ -42,8 +42,8 @@ export async function GET(request: NextRequest) {
         openMinute: period.open.minute,
         closeDayOfWeek: dayNumberToDayOfWeek(period.close.day),
         closeHour: period.close.hour,
-        closeMinute: period.close.minute,
-      })),
+        closeMinute: period.close.minute
+      }))
     });
   };
   await Promise.all(restaurants.map(updateOpeningHours));

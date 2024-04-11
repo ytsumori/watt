@@ -11,7 +11,7 @@ describe("[OrdersCsvDownloadButton / util]", () => {
       it("Blobを返す", () => {
         const records = [
           ["name", "age"],
-          ["tanaka", 20],
+          ["tanaka", 20]
         ];
         const blob = convertToBlob(records);
         expect(blob).toBeInstanceOf(Blob);
@@ -28,7 +28,7 @@ describe("[OrdersCsvDownloadButton / util]", () => {
       const downloadableOrderMock: DownloadableOrder = {
         id: restaurant.id,
         meal: { restaurant: { bankAccount: bankAccount, ...restaurant } },
-        ...order,
+        ...order
       };
 
       expect(isValidOrder(downloadableOrderMock)).toBe(true);
@@ -40,7 +40,7 @@ describe("[OrdersCsvDownloadButton / util]", () => {
       const downloadableOrderMock: DownloadableOrder = {
         id: restaurant.id,
         meal: { restaurant: { bankAccount: null, ...restaurant } },
-        ...order,
+        ...order
       };
 
       expect(isValidOrder(downloadableOrderMock)).toBe(false);
@@ -54,7 +54,7 @@ describe("[OrdersCsvDownloadButton / util]", () => {
         id: restaurant.id,
         meal: { restaurant: { bankAccount: bankAccount, ...restaurant } },
         ...order,
-        isDownloaded: true,
+        isDownloaded: true
       };
 
       expect(isValidOrder(downloadableOrderMock)).toBe(false);
@@ -67,7 +67,7 @@ describe("[OrdersCsvDownloadButton / util]", () => {
       const downloadableOrderMock: DownloadableOrder = {
         id: restaurant.id,
         meal: { restaurant: { bankAccount: { ...bankAccount, holderName: "invalid" }, ...restaurant } },
-        ...order,
+        ...order
       };
 
       expect(isValidOrder(downloadableOrderMock)).toBe(false);

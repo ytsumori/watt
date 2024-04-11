@@ -10,7 +10,7 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  VStack,
+  VStack
 } from "@chakra-ui/react";
 
 type Props = {
@@ -30,14 +30,7 @@ type Props = {
   onClose: () => void;
 };
 
-export function ConfirmModal({
-  isOpen,
-  children,
-  title,
-  confirmButton,
-  cancelButton,
-  onClose,
-}: Props) {
+export function ConfirmModal({ isOpen, children, title, confirmButton, cancelButton, onClose }: Props) {
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered>
       <ModalOverlay />

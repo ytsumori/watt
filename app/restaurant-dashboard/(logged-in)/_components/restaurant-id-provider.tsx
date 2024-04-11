@@ -10,11 +10,7 @@ import { signUpRestaurant } from "@/actions/restaurant-sign-up";
 
 export const RestaurantIdContext = createContext("");
 
-export function RestaurantIdProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export function RestaurantIdProvider({ children }: { children: React.ReactNode }) {
   const idToken = useContext(LineIdTokenContext);
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -29,7 +25,7 @@ export function RestaurantIdProvider({
           if (signUpToken) {
             signUpRestaurant({
               signUpToken,
-              lineIdToken: idToken,
+              lineIdToken: idToken
             })
               .then((res) => {
                 setRestaurantId(res.restaurantId);
@@ -54,9 +50,5 @@ export function RestaurantIdProvider({
         </VStack>
       </Center>
     );
-  return (
-    <RestaurantIdContext.Provider value={restaurantId}>
-      {children}
-    </RestaurantIdContext.Provider>
-  );
+  return <RestaurantIdContext.Provider value={restaurantId}>{children}</RestaurantIdContext.Provider>;
 }

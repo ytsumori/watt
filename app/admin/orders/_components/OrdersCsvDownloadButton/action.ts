@@ -50,7 +50,7 @@ export const getHeaderRecord = (transferDate: Date): string[] => {
     "", // 依頼人支店名
     "1", // 預金種目
     `${process.env.ACCOUNT_NUMBER}`, // 依頼人口座番号
-    "", // ダミー
+    "" // ダミー
   ];
 };
 
@@ -79,7 +79,7 @@ export const getDataRecords = (restaurants: RestaurantWithOrders[]): DataRecord[
       bankAccount.clientCode, // 顧客番号
       "", // 振込指定区分
       "", // 識別表示
-      "", // ダミー
+      "" // ダミー
     ];
   });
 };
@@ -91,7 +91,7 @@ export const getTrailerRecord = (dataRecords: DataRecord[]) => {
     "8", // データ区分
     ordersCount, // 依頼件数
     totalPrice, // 依頼合計金額
-    "", // ダミー
+    "" // ダミー
   ];
 };
 
@@ -104,7 +104,7 @@ export const getCsvBankRecords = async (
   const trailerRecord = getTrailerRecord(dataRecords);
   const endRecord = [
     "9", // データ区分
-    "", // ダミー
+    "" // ダミー
   ];
 
   return [headerRecord, ...dataRecords, trailerRecord, endRecord];

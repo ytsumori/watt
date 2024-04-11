@@ -21,7 +21,7 @@ export default function RejectOrder({ params }: { params: { orderId: string } })
   useEffect(() => {
     findOrder({
       where: { id: params.orderId, meal: { restaurantId: restaurantId } },
-      include: { meal: true },
+      include: { meal: true }
     }).then((order) => {
       if (order) {
         setOrder(order);
@@ -98,11 +98,11 @@ export default function RejectOrder({ params }: { params: { orderId: string } })
         confirmButton={{
           label: "満席を伝える",
           onClick: handleReject,
-          isLoading: isPosting,
+          isLoading: isPosting
         }}
         cancelButton={{
           label: "戻る",
-          isDisabled: isPosting,
+          isDisabled: isPosting
         }}
         onClose={onClose}
       >

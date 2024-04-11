@@ -8,7 +8,7 @@ export default async function OrdersPage({ searchParams }: { searchParams: { [ke
   const orders = await prisma.order.findMany({
     where: {
       createdAt: { gt: dateRange.start, lte: dateRange.end },
-      status: { in: ["COMPLETE", "PREAUTHORIZED"] },
+      status: { in: ["COMPLETE", "PREAUTHORIZED"] }
     },
     orderBy: { createdAt: "desc" },
     include: {
@@ -16,12 +16,12 @@ export default async function OrdersPage({ searchParams }: { searchParams: { [ke
         include: {
           restaurant: {
             include: {
-              bankAccount: true,
-            },
-          },
-        },
-      },
-    },
+              bankAccount: true
+            }
+          }
+        }
+      }
+    }
   });
 
   return <OrdersPageClient orders={orders} dateRange={dateRange} />;

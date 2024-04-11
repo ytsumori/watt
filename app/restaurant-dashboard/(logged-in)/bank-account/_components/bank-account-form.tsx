@@ -16,7 +16,7 @@ import {
   InputGroup,
   InputLeftElement,
   Select,
-  VStack,
+  VStack
 } from "@chakra-ui/react";
 import { BankAccountType } from "@prisma/client";
 import { useState } from "react";

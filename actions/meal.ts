@@ -6,8 +6,8 @@ import { Prisma } from "@prisma/client";
 export async function findMeal(id: string) {
   return await prisma.meal.findUnique({
     where: {
-      id,
-    },
+      id
+    }
   });
 }
 
@@ -20,7 +20,7 @@ export async function createMeal({
   price,
   imageUrl,
   title,
-  description,
+  description
 }: {
   restaurantId: string;
   price: number;
@@ -34,29 +34,29 @@ export async function createMeal({
       price,
       imageUrl,
       title,
-      description,
-    },
+      description
+    }
   });
 }
 
 export async function discardMeal({ id }: { id: string }) {
   return await prisma.meal.update({
     where: {
-      id,
+      id
     },
     data: {
-      isDiscarded: true,
-    },
+      isDiscarded: true
+    }
   });
 }
 
 export async function activateMeal({ id }: { id: string }) {
   return await prisma.meal.update({
     where: {
-      id,
+      id
     },
     data: {
-      isDiscarded: false,
-    },
+      isDiscarded: false
+    }
   });
 }

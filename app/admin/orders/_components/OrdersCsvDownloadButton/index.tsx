@@ -9,7 +9,7 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  useDisclosure,
+  useDisclosure
 } from "@chakra-ui/react";
 import { FC, useState } from "react";
 import { convertToBlob, isValidOrder } from "./util";
@@ -43,7 +43,7 @@ export const OrdersCsvDownloadButton: FC<OrdersCsvDownloadButtonProps> = ({ orde
             groupedOrders.push({
               restaurantId: order.meal.restaurant.id,
               bankAccount: order.meal.restaurant.bankAccount,
-              orders: [order],
+              orders: [order]
             });
           } else {
             groupedOrders[currentIndex].orders.push(order);

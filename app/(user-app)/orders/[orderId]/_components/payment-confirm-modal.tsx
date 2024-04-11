@@ -27,11 +27,11 @@ export function PaymentConfirmModal({ isOpen, isConfirming, onClose, onConfirm }
         label: "決済を確定する",
         onClick: onConfirm,
         isDisabled: !isChecked,
-        isLoading: isConfirming,
+        isLoading: isConfirming
       }}
       cancelButton={{
         label: "戻る",
-        isDisabled: isConfirming,
+        isDisabled: isConfirming
       }}
     >
       <VStack alignItems="start">

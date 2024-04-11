@@ -14,7 +14,7 @@ export function PaymentsPage() {
   useEffect(() => {
     getOrders({
       where: { meal: { restaurantId: restaurantId } },
-      orderBy: { createdAt: "desc" },
+      orderBy: { createdAt: "desc" }
     }).then((result) => {
       setOrders(result);
     });
@@ -37,9 +37,7 @@ export function PaymentsPage() {
               <Th>{order.createdAt.toLocaleString("ja-JP")}</Th>
               {order.status === "COMPLETE" ? (
                 <>
-                  <Th>
-                    {order.restaurantProfitPrice.toLocaleString("ja-JP")}円
-                  </Th>
+                  <Th>{order.restaurantProfitPrice.toLocaleString("ja-JP")}円</Th>
                   <Th>{order.price.toLocaleString("ja-JP")}円</Th>
                 </>
               ) : (

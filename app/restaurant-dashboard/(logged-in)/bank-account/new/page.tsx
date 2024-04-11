@@ -5,10 +5,7 @@ import { useToast } from "@chakra-ui/react";
 import { useContext, useState } from "react";
 import { useRouter } from "next/navigation";
 import { RestaurantIdContext } from "../../_components/restaurant-id-provider";
-import {
-  BankAccountForm,
-  BankAccountFormData,
-} from "../_components/bank-account-form";
+import { BankAccountForm, BankAccountFormData } from "../_components/bank-account-form";
 
 export default function NewBankAccount() {
   const router = useRouter();
@@ -20,7 +17,7 @@ export default function NewBankAccount() {
     setIsSubmitting(true);
     createRestaurantBankAccount({
       restaurantId,
-      ...formData,
+      ...formData
     })
       .then(() => {
         router.push("/restaurant-dashboard");
@@ -29,12 +26,10 @@ export default function NewBankAccount() {
         setIsSubmitting(false);
         toast({
           title: "エラーが発生しました",
-          status: "error",
+          status: "error"
         });
       });
   };
 
-  return (
-    <BankAccountForm onSubmit={handleSubmit} isSubmitting={isSubmitting} />
-  );
+  return <BankAccountForm onSubmit={handleSubmit} isSubmitting={isSubmitting} />;
 }

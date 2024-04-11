@@ -14,6 +14,6 @@ export const calculateDateRange = (searchParams: { [key: string]: string | undef
     start: start ? sub(new Date(start), { hours: 9 }) : setMilliseconds(sub(now, subTime), 0),
     end: end
       ? setMilliseconds(add(new Date(end), { hours: 14, minutes: 59, seconds: 59 }), 999)
-      : setMilliseconds(add(now, duration), 999),
+      : setMilliseconds(add(now, duration), 999)
   };
 };

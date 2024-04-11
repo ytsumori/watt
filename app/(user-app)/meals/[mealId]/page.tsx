@@ -8,7 +8,7 @@ type Params = {
 
 export default async function Meal({ params }: { params: Params }) {
   const meal = await prisma.meal.findUnique({
-    where: { id: params.mealId },
+    where: { id: params.mealId }
   });
   if (!meal) {
     redirect("/");

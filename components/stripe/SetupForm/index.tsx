@@ -10,7 +10,7 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  useDisclosure,
+  useDisclosure
 } from "@chakra-ui/react";
 import { usePathname, useSearchParams } from "next/navigation";
 import Link from "next/link";
@@ -70,8 +70,8 @@ export default function SetupForm() {
       confirmParams: {
         return_url: `${process.env.NEXT_PUBLIC_HOST_URL}${pathname}${
           redirectPathname ? `?redirect_pathname=${redirectPathname}` : ""
-        }`,
-      },
+        }`
+      }
     });
 
     if (error) {

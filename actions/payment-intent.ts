@@ -10,7 +10,7 @@ import { CancellationReason, CancellationUserType } from "@prisma/client";
 export async function createPaymentIntent({
   mealId,
   userId,
-  paymentMethodId,
+  paymentMethodId
 }: {
   mealId: string;
   userId: string;
@@ -22,20 +22,20 @@ export async function createPaymentIntent({
   }
   const meal = await prisma.meal.findUnique({
     where: {
-      id: mealId,
+      id: mealId
     },
     select: {
       id: true,
       isDiscarded: true,
-      price: true,
-    },
+      price: true
+    }
   });
   if (!meal || meal.isDiscarded) {
     throw new Error("Meal is discarded");
   }
   const user = await prisma.user.findUnique({
     where: { id: userId },
-    include: { stripeCustomer: true },
+    include: { stripeCustomer: true }
   });
   if (!user || !user.stripeCustomer) {
     throw new Error("User not found");
@@ -57,14 +57,14 @@ export async function createPaymentIntent({
     payment_method: paymentMethod.id,
     off_session: true,
     capture_method: "manual",
-    confirm: true,
+    confirm: true
   });
 
   await createOrder({
     mealId: meal.id,
     userId: user.id,
     providerPaymentId: paymentIntent.id,
-    price: discountedPrice,
+    price: discountedPrice
   });
 
   return paymentIntent.status;
@@ -83,7 +83,7 @@ export async function capturePaymentIntent(orderId: string) {
   if (paymentIntent.status === "succeeded") {
     await updateOrderStatus({
       id: orderId,
-      status: "COMPLETE",
+      status: "COMPLETE"
     });
   }
   return paymentIntent.status;
@@ -92,7 +92,7 @@ export async function capturePaymentIntent(orderId: string) {
 export async function cancelPaymentIntent({
   orderId,
   reason,
-  cancelledBy,
+  cancelledBy
 }: {
   orderId: string;
   reason: CancellationReason;
@@ -107,14 +107,14 @@ export async function cancelPaymentIntent({
   if (paymentIntent.status === "canceled") {
     await prisma.order.update({
       where: { id: orderId },
-      data: { status: "CANCELLED" },
+      data: { status: "CANCELLED" }
     });
     await prisma.orderCancellation.create({
       data: {
         orderId,
         reason,
-        cancelledBy,
-      },
+        cancelledBy
+      }
     });
   }
   return paymentIntent.status;

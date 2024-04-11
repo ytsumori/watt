@@ -45,7 +45,7 @@ export default function NewBankAccount() {
       setTimeout(() => {
         getBranch({
           bankCode: defaultBankAccount.bankCode,
-          branchCode: defaultBankAccount.branchCode,
+          branchCode: defaultBankAccount.branchCode
         }).then((result) => {
           if (result.branch === undefined) return;
           return setDefaultBranchName(result.branch.name);
@@ -58,7 +58,7 @@ export default function NewBankAccount() {
     setIsSubmitting(true);
     updateRestaurantBankAccount({
       restaurantId,
-      bankAccount: { ...formData },
+      bankAccount: { ...formData }
     })
       .then(() => {
         router.push("/restaurant-dashboard");
@@ -67,7 +67,7 @@ export default function NewBankAccount() {
         setIsSubmitting(false);
         toast({
           title: "エラーが発生しました",
-          status: "error",
+          status: "error"
         });
       });
   };

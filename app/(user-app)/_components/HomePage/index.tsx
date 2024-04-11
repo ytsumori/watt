@@ -9,7 +9,7 @@ import { MealPreviewBox } from "@/components/meal/MealPreviewBox";
 import NextLink from "next/link";
 
 export default function HomePage({
-  restaurants,
+  restaurants
 }: {
   restaurants: Prisma.RestaurantGetPayload<{
     include: { meals: true; googleMapPlaceInfo: { select: { latitude: true; longitude: true } } };
@@ -34,8 +34,8 @@ export default function HomePage({
               name: restaurant.name,
               location: {
                 lat: restaurant.googleMapPlaceInfo.latitude,
-                lng: restaurant.googleMapPlaceInfo.longitude,
-              },
+                lng: restaurant.googleMapPlaceInfo.longitude
+              }
             };
           })}
           activeRestaurantIds={inViewRestaurantIds}

@@ -22,7 +22,7 @@ import {
   Spinner,
   Text,
   VStack,
-  useDisclosure,
+  useDisclosure
 } from "@chakra-ui/react";
 import { Prisma } from "@prisma/client";
 import { useRouter } from "next/navigation";
@@ -58,14 +58,14 @@ export function OrderPage({ order }: Props) {
         } else {
           setErrorMessage({
             title: "決済に失敗しました",
-            description: "決済に失敗しました。ページを更新して再度ご確認ください。",
+            description: "決済に失敗しました。ページを更新して再度ご確認ください。"
           });
         }
       })
       .catch(() => {
         setErrorMessage({
           title: "決済に失敗しました",
-          description: "決済に失敗しました。ページを更新して再度ご確認ください。",
+          description: "決済に失敗しました。ページを更新して再度ご確認ください。"
         });
       });
   };
@@ -81,7 +81,7 @@ export function OrderPage({ order }: Props) {
       .catch(() => {
         setErrorMessage({
           title: "キャンセルに失敗しました",
-          description: "キャンセルに失敗しました。ページを更新して再度ご確認ください。",
+          description: "キャンセルに失敗しました。ページを更新して再度ご確認ください。"
         });
       });
   };
@@ -229,7 +229,7 @@ export function OrderPage({ order }: Props) {
             title={errorMessage?.title ?? ""}
             confirmButton={{
               label: "OK",
-              onClick: () => router.refresh(),
+              onClick: () => router.refresh()
             }}
             onClose={() => undefined}
           >

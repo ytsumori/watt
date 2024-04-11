@@ -15,7 +15,7 @@ import {
   ModalHeader,
   NumberInput,
   NumberInputField,
-  Textarea,
+  Textarea
 } from "@chakra-ui/react";
 import { useRef, useState } from "react";
 import { MealPreviewImage } from "@/components/meal/MealPreviewImage";
@@ -112,7 +112,7 @@ export function NewMealModal({ restaurantId, isOpen, onClose, onSubmitComplete }
       price,
       imageUrl,
       title,
-      description,
+      description
     }).then(() => {
       handleClose();
       onSubmitComplete();

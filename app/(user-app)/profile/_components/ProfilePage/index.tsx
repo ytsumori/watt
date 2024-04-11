@@ -18,7 +18,7 @@ import {
   InputRightElement,
   PinInput,
   PinInputField,
-  VStack,
+  VStack
 } from "@chakra-ui/react";
 import { User } from "@prisma/client";
 import { useRouter } from "next/navigation";
@@ -72,8 +72,8 @@ export function ProfilePage({ me, redirectedFrom }: Props) {
       id: me.id,
       data: {
         name: username,
-        phoneNumber: verifiedPhoneNumber,
-      },
+        phoneNumber: verifiedPhoneNumber
+      }
     });
     setSubmitStatus("completed");
   };
@@ -143,7 +143,7 @@ export function ProfilePage({ me, redirectedFrom }: Props) {
           onClick: () => {
             router.push(redirectedFrom ? redirectedFrom : "/");
             router.refresh();
-          },
+          }
         }}
         onClose={() => undefined}
       >

@@ -21,11 +21,11 @@ export default async function Order({ params }: { params: Params }) {
       meal: {
         include: {
           restaurant: {
-            include: { googleMapPlaceInfo: { select: { url: true } } },
-          },
-        },
-      },
-    },
+            include: { googleMapPlaceInfo: { select: { url: true } } }
+          }
+        }
+      }
+    }
   });
 
   if (!order || order.userId !== user.id) {

@@ -12,7 +12,7 @@ import {
   TabPanel,
   TabPanels,
   Tabs,
-  VStack,
+  VStack
 } from "@chakra-ui/react";
 import { useContext, useEffect, useState } from "react";
 import { Restaurant } from "@prisma/client";

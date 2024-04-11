@@ -18,7 +18,7 @@ import {
   MenuList,
   Spacer,
   Text,
-  useDisclosure,
+  useDisclosure
 } from "@chakra-ui/react";
 import { signIn, signOut } from "next-auth/react";
 import { usePathname, useRouter } from "next/navigation";
@@ -40,9 +40,9 @@ export default function UserAppLayout({ children, defaultPreauthorizedOrderId, u
   const {
     isOpen: isOrderModalOpen,
     onOpen: onOrderModalOpen,
-    onClose: onOrderModalClose,
+    onClose: onOrderModalClose
   } = useDisclosure({
-    defaultIsOpen: !!defaultPreauthorizedOrderId && !pathname.startsWith("/orders"),
+    defaultIsOpen: !!defaultPreauthorizedOrderId && !pathname.startsWith("/orders")
   });
   const [preauthorizedOrderId, setPreauthorizedOrderId] = React.useState(defaultPreauthorizedOrderId);
   useEffect(() => {
@@ -142,7 +142,7 @@ export default function UserAppLayout({ children, defaultPreauthorizedOrderId, u
           onClick: () => {
             router.push(`/orders/${preauthorizedOrderId}`);
             onOrderModalClose();
-          },
+          }
         }}
       >
         <Text>

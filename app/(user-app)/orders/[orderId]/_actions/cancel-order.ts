@@ -7,7 +7,7 @@ import { notifyStaffCancellation, notifyStaffFullCancellation } from "./notify-s
 export async function cancelOrder({
   orderId,
   restaurantId,
-  isFull,
+  isFull
 }: {
   orderId: string;
   restaurantId: string;
@@ -16,7 +16,7 @@ export async function cancelOrder({
   const paymentStatus = await cancelPaymentIntent({
     orderId,
     cancelledBy: "USER",
-    reason: isFull ? "FULL" : "USER_DEMAND",
+    reason: isFull ? "FULL" : "USER_DEMAND"
   });
 
   if (paymentStatus === "canceled") {

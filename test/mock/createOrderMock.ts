@@ -16,6 +16,6 @@ export const createOrderMock = (order?: Partial<Order>): Order => {
     isDownloaded: false,
     createdAt: new Date(),
     updatedAt: new Date(),
-    ...order,
+    ...order
   };
 };

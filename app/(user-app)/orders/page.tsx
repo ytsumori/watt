@@ -14,9 +14,9 @@ export default async function Orders() {
   const orders = await prisma.order.findMany({
     where: { userId: user.id },
     include: {
-      meal: { include: { restaurant: true } },
+      meal: { include: { restaurant: true } }
     },
-    orderBy: { createdAt: "desc" },
+    orderBy: { createdAt: "desc" }
   });
 
   return <OrdersPage orders={orders}></OrdersPage>;
