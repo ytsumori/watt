@@ -1,6 +1,6 @@
 "use client";
 
-import { cancelPaymentIntent, capturePaymentIntent } from "@/actions/payment-intent";
+import { capturePaymentIntent } from "@/actions/payment-intent";
 import {
   Alert,
   AlertDescription,
@@ -29,12 +29,11 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { PaymentConfirmModal } from "../payment-confirm-modal";
 import Link from "next/link";
-import { notifyStaffCancellation, notifyStaffFullCancellation } from "../../_actions/notify-staff-cancellation";
 import { CancelConfirmModal } from "../cancel-confirm-modal";
-import { updateIsOpen } from "@/actions/restaurant";
 import { FaMapMarkedAlt } from "react-icons/fa";
 import NextLink from "next/link";
 import { ConfirmModal } from "@/components/confirm-modal";
+import { cancelOrder } from "../../_actions/cancel-order";
 
 type Props = {
   order: Prisma.OrderGetPayload<{
@@ -46,9 +45,9 @@ export function OrderPage({ order }: Props) {
   const router = useRouter();
   const { isOpen: isConfirmModalOpen, onOpen: onConfirmModalOpen, onClose: onConfirmModalClose } = useDisclosure();
   const { isOpen: isCancelModalOpen, onOpen: onCancelModalOpen, onClose: onCancelModalClose } = useDisclosure();
-  const { isOpen: isErrorModalOpen, onOpen: onErrorModalOpen, onClose: onErrorModalClose } = useDisclosure();
   const [isPaying, setIsPaying] = useState(false);
   const [isCancelling, setIsCancelling] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<{ title: string; description: string }>();
 
   const handlePaymentConfirm = () => {
     setIsPaying(true);
@@ -57,33 +56,34 @@ export function OrderPage({ order }: Props) {
         if (paymentStatus === "succeeded") {
           router.refresh();
         } else {
-          onErrorModalOpen();
+          setErrorMessage({
+            title: "決済に失敗しました",
+            description: "決済に失敗しました。ページを更新して再度ご確認ください。",
+          });
         }
       })
       .catch(() => {
-        onErrorModalOpen();
+        setErrorMessage({
+          title: "決済に失敗しました",
+          description: "決済に失敗しました。ページを更新して再度ご確認ください。",
+        });
       });
   };
 
   const handleCancelConfirm = (isFull: boolean) => {
     setIsCancelling(true);
-    cancelPaymentIntent({ orderId: order.id, cancelledBy: "USER", reason: isFull ? "FULL" : "USER_DEMAND" }).then(
-      (paymentStatus) => {
-        if (paymentStatus === "canceled") {
-          if (isFull) {
-            updateIsOpen({ id: order.meal.restaurant.id, isOpen: false }).then(() => {
-              notifyStaffFullCancellation({ orderId: order.id });
-            });
-          } else {
-            notifyStaffCancellation({ orderId: order.id });
-          }
-          router.push("/");
-          router.refresh();
-        } else {
-          console.error("Failed to cancel payment intent");
-        }
-      }
-    );
+
+    cancelOrder({ orderId: order.id, restaurantId: order.meal.restaurant.id, isFull })
+      .then(() => {
+        router.push("/");
+        router.refresh();
+      })
+      .catch(() => {
+        setErrorMessage({
+          title: "キャンセルに失敗しました",
+          description: "キャンセルに失敗しました。ページを更新して再度ご確認ください。",
+        });
+      });
   };
 
   switch (order.status) {
@@ -225,15 +225,15 @@ export function OrderPage({ order }: Props) {
             onConfirm={handleCancelConfirm}
           />
           <ConfirmModal
-            isOpen={isErrorModalOpen}
-            title="決済に失敗しました"
+            isOpen={errorMessage !== undefined}
+            title={errorMessage?.title ?? ""}
             confirmButton={{
               label: "OK",
               onClick: () => router.refresh(),
             }}
             onClose={() => undefined}
           >
-            決済に失敗しました。ページを更新して再度ご確認ください。
+            {errorMessage?.description ?? ""}
           </ConfirmModal>
           <Modal isOpen={isPaying} onClose={() => undefined} size="xs" isCentered>
             <ModalOverlay />
