@@ -15,28 +15,12 @@ export async function getMeals(args: Prisma.MealFindManyArgs) {
   return await prisma.meal.findMany(args);
 }
 
-export async function createMeal({
-  restaurantId,
-  price,
-  imageUrl,
-  title,
-  description
-}: {
+type MealCreateInput = Pick<Prisma.MealCreateInput, "title" | "description" | "imageUrl" | "imagePath" | "price"> & {
   restaurantId: string;
-  price: number;
-  imageUrl: string;
-  title: string;
-  description?: string;
-}) {
-  await prisma.meal.create({
-    data: {
-      restaurantId,
-      price,
-      imageUrl,
-      title,
-      description
-    }
-  });
+};
+
+export async function createMeal({ restaurantId, price, imageUrl, imagePath, title, description }: MealCreateInput) {
+  await prisma.meal.create({ data: { restaurantId, price, imageUrl, imagePath, title, description } });
 }
 
 export async function discardMeal({ id }: { id: string }) {
