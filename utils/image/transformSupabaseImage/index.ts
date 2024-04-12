@@ -2,10 +2,10 @@ import { createClientSupabase } from "@/lib/supabase/client";
 
 export const transformSupabaseImage = (
   bucketName: string,
-  src?: string,
+  src?: string | null,
   size?: { width: number; height: number }
 ): string | undefined => {
-  if (src === undefined) return undefined;
+  if (!src) return undefined;
 
   const supabase = createClientSupabase();
   const isUrl = src.startsWith("https://") || src.startsWith("http://");
