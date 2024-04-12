@@ -2,7 +2,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "dev": "dotenv -e .env.local -- pnpx supabase start && prisma generate && next dev",
+    "dev": "dotenv -e .env.local -- pnpx supabase start -x realtime,inbucket,edge-runtime,logflare,vector,pg_prove && prisma generate && next dev",
     "dev/down": "dotenv -e .env.local -- pnpx supabase stop",
     "build": "prisma generate && prisma db push --accept-data-loss && next build",
     "start": "next start",
