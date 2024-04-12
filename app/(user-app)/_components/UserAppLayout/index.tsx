@@ -117,7 +117,7 @@ export default function UserAppLayout({ children, defaultPreauthorizedOrderId, u
                   <AccordionIcon />
                 </AccordionButton>
                 <AccordionPanel py={0} px={1}>
-                  <MenuItem as="a" href="https://watt0313.studio.site/" target="_blank">
+                  <MenuItem as="a" href="https://corp.watt.jp.net/" target="_blank">
                     運営会社
                   </MenuItem>
                   <MenuItem as={NextLink} href="/terms">
