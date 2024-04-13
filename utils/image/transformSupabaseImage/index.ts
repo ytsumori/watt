@@ -2,11 +2,9 @@ import { createClientSupabase } from "@/lib/supabase/client";
 
 export const transformSupabaseImage = (
   bucketName: string,
-  src?: string | null,
+  src: string,
   size?: { width: number; height: number }
-): string | undefined => {
-  if (!src) return undefined;
-
+): string => {
   const isUrl = src.startsWith("https://") || src.startsWith("http://");
   if (isUrl) return src;
 
