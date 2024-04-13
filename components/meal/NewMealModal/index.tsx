@@ -38,13 +38,11 @@ export function NewMealModal({ restaurantId, isOpen, onClose, onSubmitComplete }
   const [description, setDescription] = useState<string>();
 
   const inputFileRef = useRef<HTMLInputElement>(null);
-  const [imageUrl, setImageUrl] = useState<string>();
   const [imagePath, setImagePath] = useState<string>();
   const [isUploading, setIsUploading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleClose = () => {
-    setImageUrl(undefined);
     setImagePath(undefined);
     setPrice(undefined);
     setTitle(undefined);
@@ -94,32 +92,23 @@ export function NewMealModal({ restaurantId, isOpen, onClose, onSubmitComplete }
 
       if (data) {
         const publicUrl = supabase.storage.from("meals").getPublicUrl(data.path);
-        setImageUrl(publicUrl.data.publicUrl);
         setImagePath(publicUrl.data.publicUrl.split("/meals/")[1]);
       }
       setIsUploading(false);
     } catch (error) {
       console.error(error);
       setIsUploading(false);
-      setImageUrl(undefined);
       setImagePath(undefined);
     }
   };
 
-  const isSubmitDisabled = !imagePath || !imageUrl || !price || !title || !description;
+  const isSubmitDisabled = !imagePath || !price || !title || !description;
 
   const handleClickSubmit = async () => {
     if (isSubmitDisabled) return;
     setIsSubmitting(true);
 
-    createMeal({
-      restaurantId,
-      price,
-      imagePath,
-      imageUrl,
-      title,
-      description
-    }).then(() => {
+    createMeal({ restaurantId, price, imagePath, title, description }).then(() => {
       handleClose();
       onSubmitComplete();
       setIsSubmitting(false);
