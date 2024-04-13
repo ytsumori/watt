@@ -13,7 +13,7 @@ type Props = {
 export function MealCard({ meal, button }: Props) {
   return (
     <Card variant="outline" maxW="300px">
-      <MealPreviewImage src={meal.imageUrl} alt={meal.id} />
+      <MealPreviewImage src={meal.imagePath} alt={meal.id} />
       <VStack spacing={0}>
         <CardBody>
           <VStack alignItems="start">

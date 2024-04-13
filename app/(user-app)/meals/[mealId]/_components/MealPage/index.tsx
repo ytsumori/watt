@@ -1,22 +1,22 @@
 "use client";
 
 import { applyEarlyDiscount } from "@/utils/discount-price";
+import { transformSupabaseImage } from "@/utils/image/transformSupabaseImage";
 import { Box, Button, HStack, Heading, Image, Text, VStack } from "@chakra-ui/react";
 import { Meal } from "@prisma/client";
 import Link from "next/link";
 
-type Props = {
-  meal: Meal;
-};
+type Props = { meal: Meal };
 
 export function MealPage({ meal }: Props) {
+  const publicUrl = transformSupabaseImage("meals", meal.imagePath);
   return (
     <VStack p={4} spacing={4} alignItems="start">
       <VStack alignItems="start" spacing={4}>
         <Heading size="lg">{meal.title}</Heading>
         <VStack alignItems="start" spacing={4}>
           <VStack w="full" alignItems="start" spacing={2}>
-            <Image src={meal.imageUrl} alt={meal.title} />
+            <Image src={publicUrl} alt={meal.title} />
             <Text fontSize="sm" whiteSpace="pre-wrap">
               {meal.description}
             </Text>

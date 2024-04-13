@@ -34,6 +34,7 @@ import { FaMapMarkedAlt } from "react-icons/fa";
 import NextLink from "next/link";
 import { ConfirmModal } from "@/components/confirm-modal";
 import { cancelOrder } from "../../_actions/cancel-order";
+import { transformSupabaseImage } from "@/utils/image/transformSupabaseImage";
 
 type Props = {
   order: Prisma.OrderGetPayload<{
@@ -48,6 +49,7 @@ export function OrderPage({ order }: Props) {
   const [isPaying, setIsPaying] = useState(false);
   const [isCancelling, setIsCancelling] = useState(false);
   const [errorMessage, setErrorMessage] = useState<{ title: string; description: string }>();
+  const publicUrl = transformSupabaseImage("meals", order.meal.imagePath);
 
   const handlePaymentConfirm = () => {
     setIsPaying(true);
@@ -165,13 +167,7 @@ export function OrderPage({ order }: Props) {
               <VStack alignItems="start" w="full">
                 <Heading size="md">注文商品</Heading>
                 <Heading size="sm">{order.meal.title}</Heading>
-                <Image
-                  w="50vw"
-                  src={order.meal.imageUrl}
-                  alt={`meal-${order.meal.id}`}
-                  objectFit="cover"
-                  aspectRatio={1 / 1}
-                />
+                <Image w="50vw" src={publicUrl} alt={`meal-${order.meal.id}`} objectFit="cover" aspectRatio={1 / 1} />
                 <Box borderWidth="1px" w="full" p={1}>
                   <Text fontSize="xs" whiteSpace="pre-wrap">
                     {order.meal.description}
@@ -283,13 +279,7 @@ export function OrderPage({ order }: Props) {
           </VStack>
           <VStack alignItems="start" w="full">
             <Heading size="md">注文商品</Heading>
-            <Image
-              w="50vw"
-              src={order.meal.imageUrl}
-              alt={`meal-${order.meal.id}`}
-              objectFit="cover"
-              aspectRatio={1 / 1}
-            />
+            <Image w="50vw" src={publicUrl} alt={`meal-${order.meal.id}`} objectFit="cover" aspectRatio={1 / 1} />
             <Box borderWidth="1px" w="full" p={1}>
               <Text fontSize="xs" whiteSpace="pre-wrap">
                 {order.meal.description}
@@ -361,13 +351,7 @@ export function OrderPage({ order }: Props) {
           </VStack>
           <VStack alignItems="start" w="full">
             <Heading size="md">注文商品</Heading>
-            <Image
-              w="50vw"
-              src={order.meal.imageUrl}
-              alt={`meal-${order.meal.id}`}
-              objectFit="cover"
-              aspectRatio={1 / 1}
-            />
+            <Image w="50vw" src={publicUrl} alt={`meal-${order.meal.id}`} objectFit="cover" aspectRatio={1 / 1} />
             <Box borderWidth="1px" w="full" p={1}>
               <Text fontSize="xs" whiteSpace="pre-wrap">
                 {order.meal.description}

@@ -4,12 +4,12 @@ import { useContext, useEffect, useState } from "react";
 import { RestaurantIdContext } from "../../_components/restaurant-id-provider";
 import { findOrder } from "@/actions/order";
 import { Meal, Order } from "@prisma/client";
-import { Alert, Button, Center, useDisclosure, Text, VStack, Spinner, Box, Heading } from "@chakra-ui/react";
+import { Alert, Button, Center, useDisclosure, Text, VStack, Spinner, Box, Heading, effect } from "@chakra-ui/react";
 import { ConfirmModal } from "@/components/confirm-modal";
 import { cancelOrder } from "./_actions/cancel-order";
 import { MealPreviewImage } from "@/components/meal/MealPreviewImage";
 import { findMeal } from "@/actions/meal";
-import { createClientSupabase } from "@/lib/supabase/client";
+import { transformSupabaseImage } from "@/utils/image/transformSupabaseImage";
 
 export default function RejectOrder({ params }: { params: { orderId: string } }) {
   const restaurantId = useContext(RestaurantIdContext);
@@ -79,7 +79,7 @@ export default function RejectOrder({ params }: { params: { orderId: string } })
             </Text>
             <Heading size="md">注文商品</Heading>
             <Box w="50%">
-              <MealPreviewImage src={meal?.imageUrl} alt={meal.title} />
+              <MealPreviewImage src={transformSupabaseImage("meals", meal.imagePath)} alt={meal.title} />
             </Box>
             <Box borderWidth="1px" w="full" p={1}>
               <Text fontSize="xs" whiteSpace="pre-wrap">

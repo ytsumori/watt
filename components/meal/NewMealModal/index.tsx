@@ -21,6 +21,7 @@ import { useRef, useState } from "react";
 import { MealPreviewImage } from "@/components/meal/MealPreviewImage";
 import { createMeal } from "@/actions/meal";
 import { createClientSupabase } from "@/lib/supabase/client";
+import { transformSupabaseImage } from "@/utils/image/transformSupabaseImage";
 
 type Props = {
   restaurantId: string;
@@ -38,11 +39,13 @@ export function NewMealModal({ restaurantId, isOpen, onClose, onSubmitComplete }
 
   const inputFileRef = useRef<HTMLInputElement>(null);
   const [imageUrl, setImageUrl] = useState<string>();
+  const [imagePath, setImagePath] = useState<string>();
   const [isUploading, setIsUploading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleClose = () => {
     setImageUrl(undefined);
+    setImagePath(undefined);
     setPrice(undefined);
     setTitle(undefined);
     setDescription(undefined);
@@ -92,16 +95,18 @@ export function NewMealModal({ restaurantId, isOpen, onClose, onSubmitComplete }
       if (data) {
         const publicUrl = supabase.storage.from("meals").getPublicUrl(data.path);
         setImageUrl(publicUrl.data.publicUrl);
+        setImagePath(publicUrl.data.publicUrl.split("/meals/")[1]);
       }
       setIsUploading(false);
     } catch (error) {
       console.error(error);
       setIsUploading(false);
       setImageUrl(undefined);
+      setImagePath(undefined);
     }
   };
 
-  const isSubmitDisabled = !imageUrl || !price || !title || !description;
+  const isSubmitDisabled = !imagePath || !imageUrl || !price || !title || !description;
 
   const handleClickSubmit = async () => {
     if (isSubmitDisabled) return;
@@ -110,6 +115,7 @@ export function NewMealModal({ restaurantId, isOpen, onClose, onSubmitComplete }
     createMeal({
       restaurantId,
       price,
+      imagePath,
       imageUrl,
       title,
       description
@@ -152,7 +158,7 @@ export function NewMealModal({ restaurantId, isOpen, onClose, onSubmitComplete }
             {isUploading ? (
               <FormHelperText>アップロード中...</FormHelperText>
             ) : (
-              imageUrl && <MealPreviewImage src={imageUrl} alt="料理画像" />
+              imagePath && <MealPreviewImage src={transformSupabaseImage("meals", imagePath)} alt="料理画像" />
             )}
           </FormControl>
         </ModalBody>
