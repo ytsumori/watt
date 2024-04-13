@@ -4,7 +4,7 @@ import { transformSupabaseImage } from "@/utils/image/transformSupabaseImage";
 import { Image, ImageProps } from "@chakra-ui/react";
 
 type Props = {
-  src: ImageProps["src"] | null;
+  src: string;
   alt: ImageProps["alt"];
 };
 
