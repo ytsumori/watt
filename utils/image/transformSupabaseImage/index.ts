@@ -7,13 +7,13 @@ export const transformSupabaseImage = (
 ): string | undefined => {
   if (!src) return undefined;
 
-  const supabase = createClientSupabase();
   const isUrl = src.startsWith("https://") || src.startsWith("http://");
-  const { data } = isUrl
-    ? supabase.storage
-        .from(bucketName)
-        .getPublicUrl(src.split(`/${bucketName}/`)[1], { transform: size ?? { width: 500, height: 500 } })
-    : supabase.storage.from("meals").getPublicUrl(src, { transform: size ?? { width: 500, height: 500 } });
+  if (isUrl) return src;
+
+  const supabase = createClientSupabase();
+  const { data } = supabase.storage
+    .from(bucketName)
+    .getPublicUrl(src, { transform: size ?? { width: 500, height: 500 } });
 
   return data.publicUrl;
 };
