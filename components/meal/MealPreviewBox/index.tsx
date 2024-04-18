@@ -9,31 +9,29 @@ import Link from "next/link";
 
 type Props = {
   meal: Meal;
-  href: string;
+  href?: string;
   children?: ReactNode;
 } & BoxProps;
 
 export function MealPreviewBox({ meal, href, children, ...boxProps }: Props) {
   return (
     <Box
-      as={Link}
-      href={href}
-      maxW="200px"
-      minW="200px"
-      key={meal.id}
+      maxW="150px"
+      minW="150px"
       borderRadius={8}
       position="relative"
       {...boxProps}
+      {...(href ? { as: Link, href: href } : {})}
     >
       <MealPreviewImage src={meal.imagePath} alt={`meal-${meal.id}`} />
       <Box position="absolute" top={0} left={0} m={2} borderRadius={4} backgroundColor="blackAlpha.700" px={2}>
-        <Text color="white" noOfLines={1}>
+        <Text color="white" noOfLines={1} fontSize="xs">
           {meal.title}
         </Text>
       </Box>
       <Box position="absolute" bottom={0} right={0} m={2} textAlign="center">
         <Box backgroundColor="red.400" borderRadius={4}>
-          <Text color="white" fontWeight="bold" fontSize="md">
+          <Text color="white" fontWeight="bold" fontSize="xs">
             ¥{applyEarlyDiscount(meal.price).toLocaleString("ja-JP")}
           </Text>
         </Box>
@@ -45,7 +43,7 @@ export function MealPreviewBox({ meal, href, children, ...boxProps }: Props) {
           textDecoration="line-through"
           textDecorationColor="red.400"
           textDecorationThickness="2px"
-          fontSize="sm"
+          fontSize="xs"
           px={2}
           textAlign="center"
         >

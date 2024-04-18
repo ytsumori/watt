@@ -14,7 +14,7 @@ type Props = {
 
 export function OrdersPage({ orders }: Props) {
   return (
-    <VStack alignItems="start" spacing={4} p={4}>
+    <VStack alignItems="start" spacing={4} p={4} h="full" overflowY="auto">
       <Heading>注文履歴</Heading>
       <VStack spacing={0} w="full">
         {orders.map((order) => (
