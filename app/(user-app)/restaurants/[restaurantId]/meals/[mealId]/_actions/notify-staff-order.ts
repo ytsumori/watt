@@ -118,7 +118,7 @@ export async function notifyStaffOrder({ orderId }: { orderId: string }) {
                     { type: "text", text: "注文予定の推しメシ", weight: "bold" },
                     {
                       type: "image",
-                      url: transformSupabaseImage("meals", order.meal.imagePath) ?? "",
+                      url: transformSupabaseImage("meals", order.meal.imagePath),
                       size: "xl",
                       aspectRatio: "1:1",
                       aspectMode: "cover",
