@@ -23,7 +23,7 @@ export default function HomePage({
   };
 
   return (
-    <Flex h="100vh" w="100vw" direction="column" overflowY="hidden">
+    <>
       <Box flex="1">
         <Map
           restaurants={restaurants.flatMap((restaurant) => {
@@ -43,7 +43,7 @@ export default function HomePage({
           onRestaurantSelect={handleRestaurantSelect}
         />
       </Box>
-      <Box maxHeight="70%" overflowY="auto" pb={4} className="hidden-scrollbar" backgroundColor="blackAlpha.100">
+      <Box h="320px" overflowY="auto" pb={4} className="hidden-scrollbar" backgroundColor="blackAlpha.100">
         {restaurants.map((restaurant, index) => (
           <Box
             key={restaurant.id}
@@ -54,7 +54,7 @@ export default function HomePage({
           >
             <InView
               initialInView={index < 2}
-              threshold={0}
+              threshold={1}
               onChange={(inView) => {
                 if (inView) {
                   setInViewRestaurantIds((prev) => [...prev, restaurant.id]);
@@ -65,6 +65,7 @@ export default function HomePage({
             >
               <Flex mx={4} alignItems="center">
                 <Heading
+                  size="sm"
                   color={restaurant.isOpen ? "black" : "gray"}
                   as={NextLink}
                   href={`/restaurants/${restaurant.id}`}
@@ -87,9 +88,9 @@ export default function HomePage({
                 ))}
                 {restaurant.isOpen && (
                   <Center
-                    maxW="200px"
-                    minW="200px"
-                    h="200px"
+                    maxW="150px"
+                    minW="150px"
+                    h="150px"
                     borderRadius={8}
                     borderWidth={2}
                     borderColor="orange.400"
@@ -105,6 +106,6 @@ export default function HomePage({
           </Box>
         ))}
       </Box>
-    </Flex>
+    </>
   );
 }
