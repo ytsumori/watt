@@ -1,4 +1,6 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {};
 
-module.exports = nextConfig;
+module.exports = {
+  // TODO: Cloud Runへの移行時にuncommentする
+  // output: "standalone"
+};
