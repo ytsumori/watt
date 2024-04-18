@@ -65,7 +65,6 @@ export default function HomePage({
             >
               <Flex mx={4} alignItems="center">
                 <Heading
-                  size="md"
                   color={restaurant.isOpen ? "black" : "gray"}
                   as={NextLink}
                   href={`/restaurants/${restaurant.id}`}
@@ -84,7 +83,7 @@ export default function HomePage({
               </Flex>
               <HStack px={4} overflowX="auto" className="hidden-scrollbar" mt={3}>
                 {restaurant.meals.map((meal) => (
-                  <MealPreviewBox key={meal.id} meal={meal} href={`/meals/${meal.id}`} />
+                  <MealPreviewBox key={meal.id} meal={meal} href={`restaurants/${restaurant.id}/meals/${meal.id}`} />
                 ))}
                 {restaurant.isOpen && (
                   <Center

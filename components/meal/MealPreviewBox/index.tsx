@@ -9,21 +9,19 @@ import Link from "next/link";
 
 type Props = {
   meal: Meal;
-  href: string;
+  href?: string;
   children?: ReactNode;
 } & BoxProps;
 
 export function MealPreviewBox({ meal, href, children, ...boxProps }: Props) {
   return (
     <Box
-      as={Link}
-      href={href}
       maxW="200px"
       minW="200px"
-      key={meal.id}
       borderRadius={8}
       position="relative"
       {...boxProps}
+      {...(href ? { as: Link, href: href } : {})}
     >
       <MealPreviewImage src={meal.imagePath} alt={`meal-${meal.id}`} />
       <Box position="absolute" top={0} left={0} m={2} borderRadius={4} backgroundColor="blackAlpha.700" px={2}>
