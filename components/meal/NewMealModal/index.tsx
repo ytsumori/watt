@@ -1,10 +1,7 @@
 "use client";
-
-import { supabase } from "@/lib/supabase";
 import {
   Button,
   FormControl,
-  FormHelperText,
   FormLabel,
   Input,
   Modal,
@@ -17,11 +14,10 @@ import {
   NumberInputField,
   Textarea
 } from "@chakra-ui/react";
-import { useRef, useState } from "react";
-import { MealPreviewImage } from "@/components/meal/MealPreviewImage";
-import { createMeal } from "@/actions/meal";
-import { createClientSupabase } from "@/lib/supabase/client";
-import { transformSupabaseImage } from "@/utils/image/transformSupabaseImage";
+import { useState } from "react";
+import { useFormState } from "react-dom";
+import { State, onCreateMeal } from "./action";
+import { SubmitButton } from "@/components/common/SubmitButton";
 
 type Props = {
   restaurantId: string;
@@ -31,31 +27,25 @@ type Props = {
 };
 
 export function NewMealModal({ restaurantId, isOpen, onClose, onSubmitComplete }: Props) {
-  const supabase = createClientSupabase();
-
-  const [title, setTitle] = useState<string>();
   const [price, setPrice] = useState<number>();
-  const [description, setDescription] = useState<string>();
-
-  const inputFileRef = useRef<HTMLInputElement>(null);
-  const [imagePath, setImagePath] = useState<string>();
-  const [isUploading, setIsUploading] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string>();
+  const initialState: State = { message: null, errors: {} };
+  const [_state, dispatch] = useFormState<State, FormData>(
+    (prev, state) =>
+      onCreateMeal(prev, state).then((res) => {
+        if (!res.errors) {
+          onSubmitComplete();
+          onClose();
+        }
+        return res;
+      }),
+    initialState
+  );
 
   const handleClose = () => {
-    setImagePath(undefined);
     setPrice(undefined);
-    setTitle(undefined);
-    setDescription(undefined);
+    setPreviewUrl(undefined);
     onClose();
-  };
-
-  const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.value === "") {
-      setTitle(undefined);
-    } else {
-      setTitle(event.target.value);
-    }
   };
 
   const handlePriceChange = (value: string) => {
@@ -64,55 +54,16 @@ export function NewMealModal({ restaurantId, isOpen, onClose, onSubmitComplete }
     setPrice(numberValue);
   };
 
-  const handleDescriptionChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    if (event.target.value === "") {
-      setDescription(undefined);
-    } else {
-      setDescription(event.target.value);
-    }
-  };
-
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    setIsUploading(true);
     try {
       event.preventDefault();
-      if (!inputFileRef.current?.files) {
-        throw new Error("No file selected");
-      }
-
-      const file = inputFileRef.current.files[0];
-      if (!(file && file.type.match("image.*"))) {
-        throw new Error("Not an image");
-      }
-
-      const filename = window.crypto.randomUUID();
-      const { data, error } = await supabase.storage.from("meals").upload(`${restaurantId}/${filename}`, file);
-
-      if (error) throw error;
-
-      if (data) {
-        const publicUrl = supabase.storage.from("meals").getPublicUrl(data.path);
-        setImagePath(publicUrl.data.publicUrl.split("/meals/")[1]);
-      }
-      setIsUploading(false);
+      if (!event.target.files) throw new Error("No file selected");
+      const file = event.target.files[0];
+      if (!(file && file.type.match("image.*"))) throw new Error("Not an image");
+      setPreviewUrl(URL.createObjectURL(file));
     } catch (error) {
       console.error(error);
-      setIsUploading(false);
-      setImagePath(undefined);
     }
-  };
-
-  const isSubmitDisabled = !imagePath || !price || !title || !description;
-
-  const handleClickSubmit = async () => {
-    if (isSubmitDisabled) return;
-    setIsSubmitting(true);
-
-    createMeal({ restaurantId, price, imagePath, title, description }).then(() => {
-      handleClose();
-      onSubmitComplete();
-      setIsSubmitting(false);
-    });
   };
 
   return (
@@ -120,45 +71,39 @@ export function NewMealModal({ restaurantId, isOpen, onClose, onSubmitComplete }
       <ModalContent>
         <ModalHeader>推しメシを登録</ModalHeader>
         <ModalCloseButton />
-        <ModalBody>
-          <FormControl isRequired>
-            <FormLabel>メニュー名</FormLabel>
-            <Input onChange={handleTitleChange} value={title ?? ""} />
-          </FormControl>
-          <FormControl isRequired mt={2}>
-            <FormLabel>金額(税込)</FormLabel>
-            <NumberInput min={0} onChange={handlePriceChange} value={price ? "¥" + price : ""}>
-              <NumberInputField />
-            </NumberInput>
-          </FormControl>
-          <FormControl isRequired mt={2}>
-            <FormLabel>説明</FormLabel>
-            <Textarea
-              size="sm"
-              resize="vertical"
-              minHeight={200}
-              onChange={handleDescriptionChange}
-              value={description ?? ""}
-            />
-          </FormControl>
-          <FormControl isRequired mt={2}>
-            <FormLabel>料理画像(正方形)</FormLabel>
-            <input name="file" ref={inputFileRef} type="file" required accept="image/*" onChange={handleFileChange} />
-            {isUploading ? (
-              <FormHelperText>アップロード中...</FormHelperText>
-            ) : (
-              imagePath && <MealPreviewImage src={transformSupabaseImage("meals", imagePath)} alt="料理画像" />
-            )}
-          </FormControl>
-        </ModalBody>
-        <ModalFooter>
-          <Button mr={3} onClick={handleClose} variant="outline">
-            キャンセル
-          </Button>
-          <Button onClick={handleClickSubmit} isDisabled={isSubmitDisabled} isLoading={isSubmitting}>
-            保存
-          </Button>
-        </ModalFooter>
+        <form action={dispatch}>
+          <ModalBody>
+            <Input name="restaurantId" defaultValue={restaurantId} hidden />
+            <FormControl isRequired>
+              <FormLabel>メニュー名</FormLabel>
+              <Input name="title" />
+            </FormControl>
+            <FormControl isRequired mt={2}>
+              <FormLabel>金額(税込)</FormLabel>
+              <NumberInput min={0} onChange={handlePriceChange} value={price ? "¥" + price : ""}>
+                <NumberInputField name="amount" />
+              </NumberInput>
+            </FormControl>
+            <FormControl isRequired mt={2}>
+              <FormLabel>説明</FormLabel>
+              <Textarea name="description" size="sm" resize="vertical" minHeight={200} />
+            </FormControl>
+            <FormControl isRequired mt={2}>
+              <FormLabel>料理画像(正方形)</FormLabel>
+              <input name="image" type="file" required accept="image/*" onChange={handleFileChange} />
+              {previewUrl && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img width={500} height={500} src={previewUrl} alt="Preview" />
+              )}
+            </FormControl>
+          </ModalBody>
+          <ModalFooter>
+            <Button mr={3} onClick={handleClose} variant="outline">
+              キャンセル
+            </Button>
+            <SubmitButton />
+          </ModalFooter>
+        </form>
       </ModalContent>
     </Modal>
   );
