@@ -15,7 +15,7 @@ import {
   Textarea
 } from "@chakra-ui/react";
 import { useState } from "react";
-import { useFormState, useFormStatus } from "react-dom";
+import { useFormState } from "react-dom";
 import { State, onCreateMeal } from "./action";
 import { SubmitButton } from "@/components/common/SubmitButton";
 
@@ -30,7 +30,17 @@ export function NewMealModal({ restaurantId, isOpen, onClose, onSubmitComplete }
   const [price, setPrice] = useState<number>();
   const [previewUrl, setPreviewUrl] = useState<string>();
   const initialState: State = { message: null, errors: {} };
-  const [state, dispatch] = useFormState(onCreateMeal, initialState);
+  const [_state, dispatch] = useFormState<State, FormData>(
+    (prev, state) =>
+      onCreateMeal(prev, state).then((res) => {
+        if (!res.errors) {
+          onSubmitComplete();
+          onClose();
+        }
+        return res;
+      }),
+    initialState
+  );
 
   const handleClose = () => {
     setPrice(undefined);

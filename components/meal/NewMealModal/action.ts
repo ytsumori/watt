@@ -4,7 +4,6 @@ import { createServerSupabase } from "@/lib/supabase/server";
 import { z } from "zod";
 import { randomUUID } from "crypto";
 import { transformSupabaseImage } from "@/utils/image/transformSupabaseImage";
-import { redirect } from "next/navigation";
 
 const FormSchema = z.object({
   restaurantId: z.string({ invalid_type_error: "レストランが存在していません" }),
@@ -24,7 +23,7 @@ export type State = {
   errors?: { menu?: string[]; amount?: string[]; description?: string[] };
 };
 
-export async function onCreateMeal(formData: FormData) {
+export const onCreateMeal = async (_prev: State, formData: FormData): Promise<State> => {
   const validatedFields = FormSchema.safeParse({
     restaurantId: formData.get("restaurantId"),
     title: formData.get("title"),
@@ -55,5 +54,5 @@ export async function onCreateMeal(formData: FormData) {
   } catch (error) {
     return { message: "fail createMeal" };
   }
-  redirect(`/admin/restaurants/${validatedFields.data.restaurantId}`);
-}
+  return { message: "success" };
+};
