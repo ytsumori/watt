@@ -5,12 +5,12 @@ import { isOpenNow } from "./_util";
 import { notifyRestaurantToOpen } from "./_actions/notify-restaurant-to-open";
 
 export async function GET(request: NextRequest) {
-  // const authHeader = request.headers.get("authorization");
-  // if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-  //   return new Response("Unauthorized", {
-  //     status: 401
-  //   });
-  // }
+  const authHeader = request.headers.get("authorization");
+  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+    return new Response("Unauthorized", {
+      status: 401
+    });
+  }
 
   const restaurants = await prisma.restaurant.findMany({
     include: { meals: true, openingHours: true },
