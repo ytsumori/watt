@@ -78,6 +78,7 @@ model Restaurant {
 
   bankAccount        RestaurantBankAccount?
   googleMapPlaceInfo RestaurantGoogleMapPlaceInfo?
+  closedAlerts       RestaurantClosedAlert[]
   openingHours       RestaurantGoogleMapOpeningHour[]
   meals              Meal[]
   staffs             Staff[]
@@ -106,6 +107,16 @@ model RestaurantGoogleMapOpeningHour {
   closeDayOfWeek DayOfWeek
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @default(now()) @updatedAt
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+}
+
+model RestaurantClosedAlert {
+  id           String    @id @default(cuid())
+  restaurantId String
+  closedAt     DateTime  @default(now())
+  notifiedAt   DateTime?
+  openAt       DateTime?
 
   restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
 }
