@@ -2,14 +2,15 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma/client";
 import { Prisma } from "@prisma/client";
 import { isOpenNow } from "./_util";
+import { notifyRestaurantToOpen } from "./_actions/notify-restaurant-to-open";
 
 export async function GET(request: NextRequest) {
-  const authHeader = request.headers.get("authorization");
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return new Response("Unauthorized", {
-      status: 401
-    });
-  }
+  // const authHeader = request.headers.get("authorization");
+  // if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  //   return new Response("Unauthorized", {
+  //     status: 401
+  //   });
+  // }
 
   const restaurants = await prisma.restaurant.findMany({
     include: { meals: true, openingHours: true },
@@ -27,17 +28,40 @@ export async function GET(request: NextRequest) {
   ) => {
     if (restaurant.openingHours.length === 0) return;
     if (isOpenNow(restaurant.openingHours)) {
-      if (!restaurant.isOpenManuallyUpdated && !restaurant.isOpen) {
-        await prisma.restaurant.update({
-          where: { id: restaurant.id },
-          data: { isOpen: true, isOpenManuallyUpdated: false }
+      if (!restaurant.isOpen) {
+        const unopenClosedAlert = await prisma.restaurantClosedAlert.findFirst({
+          select: {
+            id: true,
+            closedAt: true,
+            notifiedAt: true
+          },
+          where: {
+            openAt: null
+          }
         });
+        if (unopenClosedAlert) {
+          // notify only once if the restaurant is closed before 24 hours ago
+          const isClosedBeforeOneDayAgo =
+            new Date().getTime() - unopenClosedAlert.closedAt.getTime() > 24 * 60 * 60 * 1000;
+          if (!unopenClosedAlert.notifiedAt && isClosedBeforeOneDayAgo) {
+            await notifyRestaurantToOpen({ restaurantId: restaurant.id });
+            await prisma.restaurantClosedAlert.update({
+              where: { id: unopenClosedAlert.id },
+              data: { notifiedAt: new Date() }
+            });
+          }
+        } else {
+          await prisma.restaurant.update({
+            where: { id: restaurant.id },
+            data: { isOpen: true }
+          });
+        }
       }
     } else {
       if (restaurant.isOpen) {
         await prisma.restaurant.update({
           where: { id: restaurant.id },
-          data: { isOpen: false, isOpenManuallyUpdated: false }
+          data: { isOpen: false }
         });
       }
     }
