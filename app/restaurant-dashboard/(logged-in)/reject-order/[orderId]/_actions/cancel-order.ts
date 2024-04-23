@@ -3,6 +3,7 @@
 import { cancelPaymentIntent } from "@/actions/payment-intent";
 import prisma from "@/lib/prisma/client";
 import { notifyCancel } from "./notify-cancel";
+import { updateIsOpen } from "@/actions/restaurant";
 
 export async function cancelOrder(orderId: string) {
   const order = await prisma.order.findUnique({
@@ -16,10 +17,7 @@ export async function cancelOrder(orderId: string) {
 
   await cancelPaymentIntent({ orderId: order.id, reason: "FULL", cancelledBy: "STAFF" });
 
-  await prisma.restaurant.update({
-    where: { id: order.meal.restaurantId },
-    data: { isOpen: false, isOpenManuallyUpdated: true }
-  });
+  await updateIsOpen({ id: order.meal.restaurantId, isOpen: false });
 
   notifyCancel(order.userId);
 

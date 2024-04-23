@@ -18,7 +18,6 @@ export async function updateIsOpen({ id, isOpen }: { id: string; isOpen: boolean
     },
     data: {
       isOpen,
-      isOpenManuallyUpdated: true,
       closedAlerts: {
         ...(isOpen
           ? {
