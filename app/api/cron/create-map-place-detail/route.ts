@@ -6,7 +6,7 @@ import { getPlaceDetail } from "@/lib/places-api";
 export async function GET(request: NextRequest) {
   const authHeader = request.headers.get("authorization");
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return new Response("Unauthorized", {
+    return new NextResponse("Unauthorized", {
       status: 401
     });
   }
@@ -33,5 +33,5 @@ export async function GET(request: NextRequest) {
   };
   await Promise.all(restaurants.map(createGoogleMapPlaceInfo));
 
-  return NextResponse.json({ status: "ok" });
+  return NextResponse.json({ success: true });
 }
