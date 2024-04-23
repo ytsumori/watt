@@ -14,7 +14,8 @@ import {
   Tr,
   Link,
   useToast,
-  Tooltip
+  Tooltip,
+  Heading
 } from "@chakra-ui/react";
 import { Prisma } from "@prisma/client";
 import { copySignUpURL } from "../../_util/clipboard-text";
@@ -28,6 +29,9 @@ export function RestaurantsPage({ restaurants }: Props) {
   const toast = useToast();
   return (
     <Box p={6}>
+      <Heading size="lg" mb={4}>
+        レストラン一覧
+      </Heading>
       <Link href="/admin/restaurants/new">
         <Button size="md">新規登録</Button>
       </Link>
@@ -63,7 +67,9 @@ export function RestaurantsPage({ restaurants }: Props) {
                 <Tr key={restaurant.id}>
                   <Td>{restaurant.id}</Td>
                   <Td>
-                    <Link href={"restaurants/" + restaurant.id}>{restaurant.name}</Link>
+                    <Link as={NextLink} href={"restaurants/" + restaurant.id}>
+                      {restaurant.name}
+                    </Link>
                   </Td>
                   <Td textAlign="center">
                     <IconButton aria-label="登録用URLコピー" icon={<CopyIcon />} onClick={handleCopy} />

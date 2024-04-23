@@ -1,4 +1,4 @@
-import { BankAccountType, Order, OrderStatus, Prisma, RestaurantBankAccount } from "@prisma/client";
+import { BankAccountType, OrderStatus, Prisma } from "@prisma/client";
 
 export type DownloadableOrder = Prisma.OrderGetPayload<{
   select: {
