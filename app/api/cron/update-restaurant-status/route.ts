@@ -7,7 +7,7 @@ import { notifyRestaurantToOpen } from "./_actions/notify-restaurant-to-open";
 export async function GET(request: NextRequest) {
   const authHeader = request.headers.get("authorization");
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return new Response("Unauthorized", {
+    return new NextResponse("Unauthorized", {
       status: 401
     });
   }
@@ -68,5 +68,5 @@ export async function GET(request: NextRequest) {
   };
   await Promise.all(restaurants.map(updateRestaurantStatus));
 
-  return NextResponse.json({ status: "ok" });
+  return NextResponse.json({ success: true });
 }
