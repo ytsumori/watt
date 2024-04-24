@@ -35,12 +35,3 @@ export async function updateIsOpen({ id, isOpen }: { id: string; isOpen: boolean
     }
   });
 }
-
-export async function createRestaurant({ name, googleMapPlaceId }: { name: string; googleMapPlaceId: string }) {
-  return await prisma.restaurant.create({
-    data: {
-      name,
-      googleMapPlaceId
-    }
-  });
-}
