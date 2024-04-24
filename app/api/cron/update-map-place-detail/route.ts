@@ -12,24 +12,30 @@ export async function GET(request: NextRequest) {
   }
 
   const restaurants = await prisma.restaurant.findMany({
-    where: { googleMapPlaceInfo: null },
     include: { googleMapPlaceInfo: true }
   });
 
   const createGoogleMapPlaceInfo = async (
     restaurant: Prisma.RestaurantGetPayload<{ include: { googleMapPlaceInfo: true } }>
   ) => {
-    if (restaurant.googleMapPlaceInfo) return;
     const result = await getPlaceDetail({ placeId: restaurant.googleMapPlaceId });
-
-    await prisma.restaurantGoogleMapPlaceInfo.create({
-      data: {
-        restaurantId: restaurant.id,
-        url: result.googleMapsUri,
-        latitude: result.location.latitude,
-        longitude: result.location.longitude
-      }
-    });
+    if (restaurant.googleMapPlaceInfo) {
+      await prisma.restaurantGoogleMapPlaceInfo.update({
+        where: {
+          id: restaurant.googleMapPlaceInfo.id
+        },
+        data: {
+          url: result.googleMapsUri,
+          latitude: result.location.latitude,
+          longitude: result.location.longitude,
+          restaurant: {
+            update: {
+              name: result.displayName.text
+            }
+          }
+        }
+      });
+    }
   };
   await Promise.all(restaurants.map(createGoogleMapPlaceInfo));
 

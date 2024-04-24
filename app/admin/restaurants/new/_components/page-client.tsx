@@ -1,7 +1,6 @@
 "use client";
 
-import { createRestaurant } from "@/actions/restaurant";
-import { SearchPlaceResult, searchPlaces } from "@/lib/places-api";
+import { PlaceDetailResult, searchPlaces } from "@/lib/places-api";
 import {
   Button,
   Card,
@@ -27,11 +26,12 @@ import {
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { copySignUpURL } from "../../_util/clipboard-text";
+import { createRestaurant } from "../_actions/create-restaurant";
 
 export function NewRestaurantPageClient() {
-  const [selectedPlace, setSelectedPlace] = useState<SearchPlaceResult>();
+  const [selectedPlace, setSelectedPlace] = useState<PlaceDetailResult>();
   const [searchText, setSearchText] = useState<string>();
-  const [searchResults, setSearchResults] = useState<SearchPlaceResult[]>();
+  const [searchResults, setSearchResults] = useState<PlaceDetailResult[]>();
   const [submitResult, setSubmitResult] = useState<{
     id: string;
     password: string;
@@ -49,7 +49,10 @@ export function NewRestaurantPageClient() {
     if (!selectedPlace) return;
     createRestaurant({
       name: selectedPlace.displayName.text,
-      googleMapPlaceId: selectedPlace.id
+      googleMapPlaceId: selectedPlace.id,
+      latitude: selectedPlace.location.latitude,
+      longitude: selectedPlace.location.longitude,
+      url: selectedPlace.googleMapsUri
     })
       .then((result) => {
         setSubmitResult({ id: result.id, password: result.password });
