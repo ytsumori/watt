@@ -18,16 +18,20 @@ export async function updateIsOpen({ id, isOpen }: { id: string; isOpen: boolean
     },
     data: {
       isOpen,
-      isOpenManuallyUpdated: true
-    }
-  });
-}
-
-export async function createRestaurant({ name, googleMapPlaceId }: { name: string; googleMapPlaceId: string }) {
-  return await prisma.restaurant.create({
-    data: {
-      name,
-      googleMapPlaceId
+      closedAlerts: {
+        ...(isOpen
+          ? {
+              updateMany: {
+                where: {
+                  openAt: null
+                },
+                data: {
+                  openAt: new Date()
+                }
+              }
+            }
+          : { create: {} })
+      }
     }
   });
 }

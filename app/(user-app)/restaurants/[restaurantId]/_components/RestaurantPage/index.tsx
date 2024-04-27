@@ -42,7 +42,7 @@ export function RestaurantPage({ restaurant }: Props) {
       </Box>
       <HStack overflowX="auto" maxW="full" className="hidden-scrollbar">
         {restaurant.meals.map((meal) => (
-          <MealPreviewBox key={meal.id} meal={meal} href={`restaurants/${restaurant.id}/meals/${meal.id}`} />
+          <MealPreviewBox key={meal.id} meal={meal} href={`${restaurant.id}/meals/${meal.id}`} />
         ))}
       </HStack>
     </VStack>

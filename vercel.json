@@ -9,8 +9,8 @@
       "schedule": "15 6 * * *"
     },
     {
-      "path": "/api/cron/create-map-place-detail",
-      "schedule": "15 6 * * *"
+      "path": "/api/cron/update-map-place-detail",
+      "schedule": "15 6 1 * *"
     }
   ]
 }
