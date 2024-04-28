@@ -44,7 +44,7 @@ export const createHttpTask = async <T extends object>({
       }
     };
     const res = await client.createTask(request);
-    return res[0].name;
+    return res[0].name?.split("/")[res[0].name?.split("/").length - 1];
   } catch (error) {
     console.log("ERROR on createHttpTask", error);
   }
