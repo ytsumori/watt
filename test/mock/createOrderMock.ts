@@ -9,6 +9,7 @@ export const createOrderMock = (order?: Partial<Order>): Order => {
     orderNumber: 1,
     mealId: createRandomStr(),
     userId: createRandomStr(),
+    taskId: null,
     providerPaymentId: createRandomStr(),
     status: "COMPLETE",
     price: 1000,
