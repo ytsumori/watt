@@ -4,7 +4,11 @@ import { credentials } from "@grpc/grpc-js";
 
 type Args<T extends object> = { payload: T; url: string; delaySeconds: number };
 
-export const createHttpTask = async <T extends object>({ url, delaySeconds, payload }: Args<T>) => {
+export const createHttpTask = async <T extends object>({
+  url,
+  delaySeconds,
+  payload
+}: Args<T>): Promise<string | null | undefined> => {
   const client =
     process.env.NODE_ENV === "development"
       ? new CloudTasksClient({ port: 8000, servicePath: "localhost", sslCreds: credentials.createInsecure() })
@@ -22,7 +26,7 @@ export const createHttpTask = async <T extends object>({ url, delaySeconds, payl
   if (!project || !queue || !location) throw new Error("Environment variables are required");
 
   if (Object.keys(payload).length === 0 || !payload) throw new Error("Arguments are required");
-  console.log("queuePath", client.queuePath(project, location, queue));
+
   try {
     const request: protos.google.cloud.tasks.v2.ICreateTaskRequest = {
       parent: client.queuePath(project, location, queue),
@@ -39,7 +43,8 @@ export const createHttpTask = async <T extends object>({ url, delaySeconds, payl
         scheduleTime: { seconds: Math.floor(Date.now() / 1000) + delaySeconds }
       }
     };
-    await client.createTask(request);
+    const res = await client.createTask(request);
+    return res[0].name;
   } catch (error) {
     console.log("ERROR on createHttpTask", error);
   }
