@@ -61,7 +61,7 @@ export async function createPaymentIntent({
     payload: { orderId: order.id }
   });
 
-  if (!taskId) throw new Error("Failed to update order task id");
+  if (!taskId) throw new Error("not found task id");
 
   await prisma.order.update({ where: { id: order.id }, data: { taskId } });
 
