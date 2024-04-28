@@ -1,21 +1,28 @@
 "use server";
 import { CloudTasksClient, type protos } from "@google-cloud/tasks";
+import { credentials } from "@grpc/grpc-js";
 
 type Args<T extends object> = { payload: T; url: string; delaySeconds: number };
 
-export const createProdHttpTask = async <T extends object>({ url, delaySeconds, payload }: Args<T>) => {
-  const client = new CloudTasksClient({
-    credentials: { client_email: process.env.CLOUD_TASKS_AUTH_EMAIL, private_key: process.env.CLOUD_TASKS_AUTH_SECRET }
-  });
+export const createHttpTask = async <T extends object>({ url, delaySeconds, payload }: Args<T>) => {
+  const client =
+    process.env.NODE_ENV === "development"
+      ? new CloudTasksClient({ port: 8000, servicePath: "localhost", sslCreds: credentials.createInsecure() })
+      : new CloudTasksClient({
+          credentials: {
+            client_email: process.env.CLOUD_TASKS_AUTH_EMAIL,
+            private_key: process.env.CLOUD_TASKS_AUTH_SECRET
+          }
+        });
 
   const project = process.env.GCP_PROJECT_NAME;
-  const queue = process.env.CLOUD_TASKS_QUEUE_NAME;
   const location = process.env.CLOUD_TASKS_LOCATION;
+  const queue = process.env.CLOUD_TASKS_QUEUE_NAME;
 
   if (!project || !queue || !location) throw new Error("Environment variables are required");
 
   if (Object.keys(payload).length === 0 || !payload) throw new Error("Arguments are required");
-
+  console.log("queuePath", client.queuePath(project, location, queue));
   try {
     const request: protos.google.cloud.tasks.v2.ICreateTaskRequest = {
       parent: client.queuePath(project, location, queue),
@@ -34,27 +41,6 @@ export const createProdHttpTask = async <T extends object>({ url, delaySeconds, 
     };
     await client.createTask(request);
   } catch (error) {
-    console.log("ERROR on createProdHttTask", error);
+    console.log("ERROR on createHttpTask", error);
   }
-};
-
-export const createLocalHttpTask = async <T extends object>({ url, delaySeconds, payload }: Args<T>) => {
-  const timeoutId = setTimeout(async () => {
-    try {
-      await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", authorization: `Bearer ${process.env.CLOUD_TASKS_API_SECRET}` },
-        body: JSON.stringify(payload)
-      });
-    } catch (error) {
-      clearTimeout(timeoutId);
-    }
-  }, delaySeconds * 1000);
-};
-
-export const createHttpTask = async <T extends object>({ url, delaySeconds, payload }: Args<T>) => {
-  // httpタスクはcloud tasksを使っていて開発環境ではcloud tasksを再現できないため擬似的に実行している
-  process.env.NODE_ENV === "development"
-    ? await createLocalHttpTask({ url, delaySeconds, payload })
-    : await createProdHttpTask({ url, delaySeconds, payload });
 };
