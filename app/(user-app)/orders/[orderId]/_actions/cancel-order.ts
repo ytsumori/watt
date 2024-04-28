@@ -3,16 +3,11 @@
 import { cancelPaymentIntent } from "@/actions/payment-intent";
 import { updateIsOpen } from "@/actions/restaurant";
 import { notifyStaffCancellation, notifyStaffFullCancellation } from "./notify-staff-cancellation";
+import { deleteHttpTask } from "@/lib/googleTasks/deleteHttpTask";
 
-export async function cancelOrder({
-  orderId,
-  restaurantId,
-  isFull
-}: {
-  orderId: string;
-  restaurantId: string;
-  isFull: boolean;
-}) {
+type Args = { orderId: string; restaurantId: string; isFull: boolean };
+
+export const cancelOrder = async ({ orderId, restaurantId, isFull }: Args) => {
   const paymentStatus = await cancelPaymentIntent({
     orderId,
     cancelledBy: "USER",
@@ -20,6 +15,7 @@ export async function cancelOrder({
   });
 
   if (paymentStatus === "canceled") {
+    await deleteHttpTask(orderId);
     if (isFull) {
       await updateIsOpen({ id: restaurantId, isOpen: false });
       try {
@@ -37,4 +33,4 @@ export async function cancelOrder({
   } else {
     throw new Error("Failed to cancel payment intent");
   }
-}
+};

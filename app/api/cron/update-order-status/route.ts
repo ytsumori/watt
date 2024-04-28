@@ -16,10 +16,7 @@ export async function POST(request: NextRequest) {
   if (!order) return NextResponse.json({ message: "order not found" }, { status: 404 });
   if (order.status === "CANCELLED") return NextResponse.json({ message: "already canncelled" }, { status: 403 });
 
-  /**
-   * @todo reasonをlateなど他の値に置き換える
-   */
-  const paymentStatus = await cancelPaymentIntent({ orderId: order.id, reason: "CLOSED", cancelledBy: "USER" });
+  const paymentStatus = await cancelPaymentIntent({ orderId: order.id, reason: "LATE", cancelledBy: "USER" });
   if (paymentStatus === "canceled") {
     try {
       await prisma.order.update({ where: { id: body.orderId }, data: { status: "CANCELLED" } });
