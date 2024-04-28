@@ -42,14 +42,13 @@ export const onCreateMeal = async (_prev: State, formData: FormData): Promise<St
 
   if (error) return { message: "fail to upload image" };
 
-  const imagePath = transformSupabaseImage("meals", data.path);
   try {
     await createMeal({
       restaurantId: validatedFields.data.restaurantId,
       title: validatedFields.data.title,
       price: validatedFields.data.amount,
       description: validatedFields.data.description,
-      imagePath
+      imagePath: data.path
     });
   } catch (error) {
     return { message: "fail createMeal" };
