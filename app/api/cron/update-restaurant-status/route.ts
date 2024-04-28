@@ -36,7 +36,8 @@ export async function GET(request: NextRequest) {
             notifiedAt: true
           },
           where: {
-            openAt: null
+            openAt: null,
+            restaurantId: restaurant.id
           }
         });
         if (unopenClosedAlert) {
