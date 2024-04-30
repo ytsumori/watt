@@ -61,9 +61,11 @@ export async function createPaymentIntent({
     payload: { orderId: order.id }
   });
 
-  if (!taskId) throw new Error("not found task id");
-
-  await prisma.order.update({ where: { id: order.id }, data: { taskId } });
+  if (!taskId) {
+    await prisma.order.update({ where: { id: order.id }, data: { taskId } });
+  } else {
+    console.error("Error creating task");
+  }
 
   return paymentIntent.status;
 }
