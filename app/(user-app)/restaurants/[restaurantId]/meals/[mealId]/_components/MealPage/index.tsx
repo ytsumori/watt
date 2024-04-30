@@ -33,7 +33,6 @@ import NextLink from "next/link";
 import { ConfirmModal } from "@/components/confirm-modal";
 import { FaMapMarkedAlt } from "react-icons/fa";
 import { MealPreviewBox } from "@/components/meal/MealPreviewBox";
-import { visitRestaurant } from "../../_actions/visit-restaurant";
 
 type Props = {
   meal: Prisma.MealGetPayload<{
@@ -43,9 +42,17 @@ type Props = {
   isRestaurantActive: boolean;
   preauthorizedOrder?: Order;
   userId?: string;
+  visitRestaurant: (args: { mealId: string; userId: string; paymentMethodId: string }) => Promise<Order>;
 };
 
-export default function MealPage({ meal, paymentMethods, isRestaurantActive, preauthorizedOrder, userId }: Props) {
+export default function MealPage({
+  meal,
+  paymentMethods,
+  isRestaurantActive,
+  preauthorizedOrder,
+  userId,
+  visitRestaurant
+}: Props) {
   const router = useRouter();
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string | undefined>(
     paymentMethods.length === 1 ? paymentMethods[0].id : undefined

@@ -6,6 +6,7 @@ import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import MealPage from "./_components/MealPage";
 import { findPreauthorizedOrder } from "@/actions/order";
+import { visitRestaurant } from "./_actions/visit-restaurant";
 import { Metadata } from "next";
 import { transformSupabaseImage } from "@/utils/image/transformSupabaseImage";
 
@@ -47,11 +48,19 @@ export default async function Meal({ params }: Params) {
         preauthorizedOrder={order ?? undefined}
         userId={userId}
         isRestaurantActive={restaurant.isOpen}
+        visitRestaurant={visitRestaurant}
       />
     );
   }
 
-  return <MealPage meal={meal} isRestaurantActive={restaurant.isOpen} paymentMethods={[]} />;
+  return (
+    <MealPage
+      meal={meal}
+      isRestaurantActive={restaurant.isOpen}
+      paymentMethods={[]}
+      visitRestaurant={visitRestaurant}
+    />
+  );
 }
 
 export async function generateMetadata({ params }: Params): Promise<Metadata | undefined> {

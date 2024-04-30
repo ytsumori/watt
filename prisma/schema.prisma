@@ -142,6 +142,7 @@ model Order {
   orderNumber           Int         @unique @default(autoincrement())
   userId                String
   mealId                String
+  taskId                String?
   providerPaymentId     String      @unique
   status                OrderStatus @default(PREAUTHORIZED)
   price                 Int
@@ -175,6 +176,7 @@ enum CancellationReason {
   FULL
   USER_DEMAND
   CLOSED
+  LATE
 }
 
 model Staff {
