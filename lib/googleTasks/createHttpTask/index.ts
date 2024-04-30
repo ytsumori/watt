@@ -15,7 +15,7 @@ export const createHttpTask = async <T extends object>({
       : new CloudTasksClient({
           credentials: {
             client_email: process.env.CLOUD_TASKS_AUTH_EMAIL,
-            private_key: process.env.CLOUD_TASKS_AUTH_SECRET
+            private_key: process.env.CLOUD_TASKS_AUTH_SECRET!!.split(String.raw`\n`).join("\n")
           }
         });
 
