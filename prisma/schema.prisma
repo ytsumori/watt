@@ -67,14 +67,13 @@ model StripeCustomer {
 }
 
 model Restaurant {
-  id                    String   @id @default(cuid())
-  name                  String
-  isOpen                Boolean  @default(false)
-  isOpenManuallyUpdated Boolean  @default(false)
-  googleMapPlaceId      String   @unique
-  password              String   @unique @default(uuid())
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @default(now()) @updatedAt
+  id               String   @id @default(cuid())
+  name             String
+  isOpen           Boolean  @default(false)
+  googleMapPlaceId String   @unique
+  password         String   @unique @default(uuid())
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @default(now()) @updatedAt
 
   bankAccount        RestaurantBankAccount?
   googleMapPlaceInfo RestaurantGoogleMapPlaceInfo?
