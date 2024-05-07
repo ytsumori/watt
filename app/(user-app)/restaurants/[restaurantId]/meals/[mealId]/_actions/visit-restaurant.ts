@@ -27,22 +27,22 @@ export async function visitRestaurant({ mealId, userId }: { mealId: string; user
     }
   });
 
-  // const taskId = await createHttpTask({
-  //   url: `${process.env.NEXT_PUBLIC_HOST_URL}/api/cron/update-order-status`,
-  //   delaySeconds: 60 * 30,
-  //   payload: { orderId: order.id }
-  // });
+  const taskId = await createHttpTask({
+    url: `${process.env.NEXT_PUBLIC_HOST_URL}/api/cron/update-order-status`,
+    delaySeconds: 60 * 30,
+    payload: { orderId: order.id }
+  });
 
-  // if (taskId) {
-  //   await prisma.orderAutomaticCancellation.create({
-  //     data: {
-  //       orderId: order.id,
-  //       googleCloudTaskId: taskId
-  //     }
-  //   });
-  // } else {
-  //   console.error("Error creating task");
-  // }
+  if (taskId) {
+    await prisma.orderAutomaticCancellation.create({
+      data: {
+        orderId: order.id,
+        googleCloudTaskId: taskId
+      }
+    });
+  } else {
+    console.error("Error creating task");
+  }
 
   try {
     await notifyStaffOrder({ orderId: order.id });
