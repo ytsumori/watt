@@ -8,17 +8,14 @@ import { deleteHttpTask } from "@/lib/googleTasks/deleteHttpTask";
 
 export async function createPaymentIntent({
   orderId,
-  userId,
   paymentMethodId,
   additionalAmount
 }: {
   orderId: string;
-  userId: string;
   paymentMethodId: string;
   additionalAmount: number;
 }) {
   const myId = await getMyId();
-  if (myId !== userId) throw new Error("Invalid User");
 
   const order = await prisma.order.findUnique({
     include: { meal: true },
@@ -28,7 +25,7 @@ export async function createPaymentIntent({
   if (!order) throw new Error("Order not found");
   if (order.status !== "COMPLETE") throw new Error("Invalid order status");
 
-  const user = await prisma.user.findUnique({ where: { id: userId }, include: { stripeCustomer: true } });
+  const user = await prisma.user.findUnique({ where: { id: myId }, include: { stripeCustomer: true } });
   if (!user || !user.stripeCustomer) throw new Error("User not found");
 
   const paymentMethod = await stripe.customers.retrievePaymentMethod(
@@ -62,16 +59,8 @@ export async function createPaymentIntent({
   return payment.id;
 }
 
-export async function capturePaymentIntent({
-  paymentId,
-  userId
-}: {
-  orderId: string;
-  paymentId: string;
-  userId: string;
-}) {
+export async function capturePaymentIntent({ paymentId }: { paymentId: string }) {
   const myId = await getMyId();
-  if (myId !== userId) throw new Error("Invalid User");
 
   const payment = await prisma.payment.findUnique({ include: { order: true }, where: { id: paymentId } });
   if (!payment) throw new Error("Payment not found");

@@ -49,6 +49,7 @@ export function OrderPage({ order }: Props) {
     completeOrder(order.id).then(() => {
       setIsConfirming(false);
       router.refresh();
+      window.scrollTo(0, 0);
     });
   };
 
@@ -75,12 +76,64 @@ export function OrderPage({ order }: Props) {
           <VStack alignItems="start" spacing={8} p={4}>
             <VStack alignItems="start" spacing={4}>
               <Heading>注文を確定</Heading>
+              <VStack alignItems="start">
+                <Heading size="md">店舗</Heading>
+                <Heading size="sm">{order.meal.restaurant.name}</Heading>
+                {order.meal.restaurant.googleMapPlaceInfo && (
+                  <Button
+                    w="full"
+                    leftIcon={<Icon as={FaMapMarkedAlt} />}
+                    as={NextLink}
+                    href={order.meal.restaurant.googleMapPlaceInfo.url}
+                    target="_blank"
+                  >
+                    Googleマップでお店情報を見る
+                  </Button>
+                )}
+                <Box h="15vh" w="full">
+                  <iframe
+                    width="100%"
+                    height="100%"
+                    style={{ border: 0 }}
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    src={`https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY}&q=place_id:${order.meal.restaurant.googleMapPlaceId}`}
+                  />
+                </Box>
+              </VStack>
               <Text>
                 注文番号:
                 <Heading as="span" ml={2}>
                   {order.orderNumber}
                 </Heading>
               </Text>
+              <VStack alignItems="start" spacing={4} w="full">
+                <VStack alignItems="start" w="full">
+                  <Heading size="md">注文商品</Heading>
+                  <Heading size="sm">{order.meal.title}</Heading>
+                  <Image w="50vw" src={publicUrl} alt={`meal-${order.meal.id}`} objectFit="cover" aspectRatio={1 / 1} />
+                  <Box borderWidth="1px" w="full" p={1}>
+                    <Text fontSize="xs" whiteSpace="pre-wrap">
+                      {order.meal.description}
+                    </Text>
+                  </Box>
+                </VStack>
+                <Divider borderColor="black" />
+                <VStack alignItems="start" w="full">
+                  <Heading size="md">金額</Heading>
+                  <Flex w="full">
+                    <Text>{order.meal.title}</Text>
+                    <Spacer />
+                    <Text as="p" fontWeight="bold">
+                      ¥{order.meal.price.toLocaleString("ja-JP")}
+                    </Text>
+                  </Flex>
+                  <Divider />
+                  <Heading size="sm" alignSelf="self-end">
+                    合計 ¥{order.meal.price.toLocaleString("ja-JP")}
+                  </Heading>
+                </VStack>
+              </VStack>
               <Alert
                 status="info"
                 flexDirection="column"
@@ -114,60 +167,6 @@ export function OrderPage({ order }: Props) {
                 >
                   キャンセル
                 </Button>
-              </VStack>
-            </VStack>
-            <VStack alignItems="start" spacing={4} w="full">
-              <Heading>注文情報</Heading>
-              <VStack alignItems="start">
-                <Heading size="md">店舗</Heading>
-                <Heading size="sm">{order.meal.restaurant.name}</Heading>
-                {order.meal.restaurant.googleMapPlaceInfo && (
-                  <Button
-                    w="full"
-                    leftIcon={<Icon as={FaMapMarkedAlt} />}
-                    as={NextLink}
-                    href={order.meal.restaurant.googleMapPlaceInfo.url}
-                    target="_blank"
-                  >
-                    Googleマップでお店情報を見る
-                  </Button>
-                )}
-                <Box h="15vh" w="full">
-                  <iframe
-                    width="100%"
-                    height="100%"
-                    style={{ border: 0 }}
-                    loading="lazy"
-                    referrerPolicy="no-referrer-when-downgrade"
-                    src={`https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY}&q=place_id:${order.meal.restaurant.googleMapPlaceId}`}
-                  />
-                </Box>
-              </VStack>
-              <Divider borderColor="black" />
-              <VStack alignItems="start" w="full">
-                <Heading size="md">注文商品</Heading>
-                <Heading size="sm">{order.meal.title}</Heading>
-                <Image w="50vw" src={publicUrl} alt={`meal-${order.meal.id}`} objectFit="cover" aspectRatio={1 / 1} />
-                <Box borderWidth="1px" w="full" p={1}>
-                  <Text fontSize="xs" whiteSpace="pre-wrap">
-                    {order.meal.description}
-                  </Text>
-                </Box>
-              </VStack>
-              <Divider borderColor="black" />
-              <VStack alignItems="start" w="full">
-                <Heading size="md">金額</Heading>
-                <Flex w="full">
-                  <Text>{order.meal.title}</Text>
-                  <Spacer />
-                  <Text as="p" fontWeight="bold">
-                    ¥{order.meal.price.toLocaleString("ja-JP")}
-                  </Text>
-                </Flex>
-                <Divider />
-                <Heading size="sm" alignSelf="self-end">
-                  合計 ¥{order.meal.price.toLocaleString("ja-JP")}
-                </Heading>
               </VStack>
             </VStack>
           </VStack>
