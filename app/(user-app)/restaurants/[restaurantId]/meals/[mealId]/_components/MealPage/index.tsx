@@ -182,7 +182,8 @@ export default function MealPage({ meal, isRestaurantActive, preauthorizedOrder,
               isLoading: isVisitRequesting
             }}
             cancelButton={{
-              label: "キャンセル"
+              label: "キャンセル",
+              isDisabled: isVisitRequesting
             }}
           >
             向かっていることをお店に通知します。30分以内にお店に到着してください。
