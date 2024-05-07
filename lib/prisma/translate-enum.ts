@@ -15,12 +15,12 @@ export const translateBankAccountType = (accountType: BankAccountType): string =
 
 export const translateOrderStatus = (status: OrderStatus): string => {
   switch (status) {
-    case OrderStatus.PREAUTHORIZED:
-      return "支払い待ち";
+    case OrderStatus.PREORDERED:
+      return "仮注文";
     case OrderStatus.CANCELLED:
       return "キャンセル済み";
     case OrderStatus.COMPLETE:
-      return "決済完了";
+      return "注文完了";
     default:
       throw new Error("Invalid order status");
   }

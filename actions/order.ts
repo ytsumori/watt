@@ -7,11 +7,11 @@ export async function findOrder(args: Prisma.OrderFindUniqueArgs) {
   return await prisma.order.findUnique(args);
 }
 
-export async function findPreauthorizedOrder(userId: string) {
+export async function findPreorder(userId: string) {
   return await prisma.order.findFirst({
     where: {
       userId,
-      status: "PREAUTHORIZED"
+      status: "PREORDERED"
     }
   });
 }
@@ -40,7 +40,7 @@ export async function createOrder({
   } else if (meal.isDiscarded) {
     throw new Error("Meal is discarded");
   }
-  const existingPayment = await findPreauthorizedOrder(userId);
+  const existingPayment = await findPreorder(userId);
   if (existingPayment) {
     throw new Error("Active payment already exists");
   }

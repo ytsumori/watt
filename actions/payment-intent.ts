@@ -3,29 +3,30 @@
 import { getMyId } from "@/actions/me";
 import stripe from "@/lib/stripe";
 import prisma from "@/lib/prisma/client";
-import { createOrder, findOrder, updateOrderStatus } from "./order";
 import { applyEarlyDiscount } from "@/utils/discount-price";
-import { CancellationReason, CancellationUserType } from "@prisma/client";
-import { createHttpTask } from "@/lib/googleTasks/createHttpTask";
 import { deleteHttpTask } from "@/lib/googleTasks/deleteHttpTask";
 
 export async function createPaymentIntent({
-  mealId,
+  orderId,
   userId,
-  paymentMethodId
+  paymentMethodId,
+  additionalAmount
 }: {
-  mealId: string;
+  orderId: string;
   userId: string;
   paymentMethodId: string;
+  additionalAmount: number;
 }) {
   const myId = await getMyId();
   if (myId !== userId) throw new Error("Invalid User");
 
-  const meal = await prisma.meal.findUnique({
-    where: { id: mealId },
-    select: { id: true, isDiscarded: true, price: true }
+  const order = await prisma.order.findUnique({
+    include: { meal: true },
+    where: { id: orderId, userId: myId }
   });
-  if (!meal || meal.isDiscarded) throw new Error("Meal is discarded");
+
+  if (!order) throw new Error("Order not found");
+  if (order.status !== "COMPLETE") throw new Error("Invalid order status");
 
   const user = await prisma.user.findUnique({ where: { id: userId }, include: { stripeCustomer: true } });
   if (!user || !user.stripeCustomer) throw new Error("User not found");
@@ -36,7 +37,7 @@ export async function createPaymentIntent({
   );
   if (!paymentMethod) throw new Error("Payment method not found");
 
-  const discountedPrice = applyEarlyDiscount(meal.price);
+  const discountedPrice = applyEarlyDiscount(order.meal.price);
 
   const paymentIntent = await stripe.paymentIntents.create({
     amount: discountedPrice,
@@ -48,70 +49,41 @@ export async function createPaymentIntent({
     confirm: true
   });
 
-  const order = await createOrder({
-    mealId: meal.id,
-    userId: user.id,
-    providerPaymentId: paymentIntent.id,
-    price: discountedPrice
+  const payment = await prisma.payment.create({
+    data: {
+      orderId,
+      stripePaymentId: paymentIntent.id,
+      additionalAmount: additionalAmount,
+      totalAmount: discountedPrice + additionalAmount,
+      restaurantProfitPrice: order.meal.price
+    }
   });
 
-  const taskId = await createHttpTask({
-    url: `${process.env.NEXT_PUBLIC_HOST_URL}/api/cron/update-order-status`,
-    delaySeconds: 60 * 30,
-    payload: { orderId: order.id }
-  });
-
-  if (!taskId) {
-    await prisma.order.update({ where: { id: order.id }, data: { taskId } });
-  } else {
-    console.error("Error creating task");
-  }
-
-  return paymentIntent.status;
+  return payment.id;
 }
 
-export async function capturePaymentIntent(orderId: string) {
-  const order = await findOrder({ where: { id: orderId } });
-  if (!order) throw new Error("Order not found");
-
-  if (order.status !== "PREAUTHORIZED") throw new Error("Invalid order status");
-
-  const paymentIntent = await stripe.paymentIntents.capture(order.providerPaymentId);
-  if (paymentIntent.status === "succeeded") {
-    await updateOrderStatus({ id: orderId, status: "COMPLETE" });
-    await deleteHttpTask(orderId);
-  }
-
-  return paymentIntent.status;
-}
-
-export async function cancelPaymentIntent({
-  orderId,
-  reason,
-  cancelledBy
+export async function capturePaymentIntent({
+  paymentId,
+  userId
 }: {
   orderId: string;
-  reason: CancellationReason;
-  cancelledBy: CancellationUserType;
+  paymentId: string;
+  userId: string;
 }) {
-  const order = await findOrder({ where: { id: orderId } });
-  if (!order) {
-    throw new Error("Order not found");
+  const myId = await getMyId();
+  if (myId !== userId) throw new Error("Invalid User");
+
+  const payment = await prisma.payment.findUnique({ include: { order: true }, where: { id: paymentId } });
+  if (!payment) throw new Error("Payment not found");
+
+  if (payment.order.userId !== myId) throw new Error("Invalid User");
+  if (payment.order.status !== "COMPLETE") throw new Error("Invalid order status");
+
+  const paymentIntent = await stripe.paymentIntents.capture(payment.stripePaymentId);
+  if (paymentIntent.status === "succeeded") {
+    await prisma.payment.update({ where: { id: payment.id }, data: { completedAt: new Date() } });
+    await deleteHttpTask(payment.orderId);
   }
 
-  const paymentIntent = await stripe.paymentIntents.cancel(order.providerPaymentId);
-  if (paymentIntent.status === "canceled") {
-    await prisma.order.update({
-      where: { id: orderId },
-      data: { status: "CANCELLED" }
-    });
-    await prisma.orderCancellation.create({
-      data: {
-        orderId,
-        reason,
-        cancelledBy
-      }
-    });
-  }
   return paymentIntent.status;
 }
