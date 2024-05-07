@@ -6,57 +6,37 @@ import {
   VStack,
   Alert,
   AlertIcon,
-  TableContainer,
-  Table,
-  Thead,
-  Tr,
-  Th,
-  Tbody,
   Divider,
   Text,
   Flex,
   Spacer,
   Box,
-  Td,
   useDisclosure,
   Icon,
   HStack
 } from "@chakra-ui/react";
 import { useState } from "react";
-import Stripe from "stripe";
 import { Order, Prisma } from "@prisma/client";
 import { signIn } from "next-auth/react";
-import { CheckCircleIcon, CheckIcon } from "@chakra-ui/icons";
-import { useRouter, usePathname } from "next/navigation";
-import { applyEarlyDiscount } from "@/utils/discount-price";
+import { CheckIcon } from "@chakra-ui/icons";
+import { useRouter } from "next/navigation";
 import NextLink from "next/link";
 import { ConfirmModal } from "@/components/confirm-modal";
 import { FaMapMarkedAlt } from "react-icons/fa";
 import { MealPreviewBox } from "@/components/meal/MealPreviewBox";
+import { visitRestaurant } from "../../_actions/visit-restaurant";
 
 type Props = {
   meal: Prisma.MealGetPayload<{
     include: { restaurant: { include: { meals: true; googleMapPlaceInfo: { select: { url: true } } } } };
   }>;
-  paymentMethods: Stripe.PaymentMethod[];
   isRestaurantActive: boolean;
   preauthorizedOrder?: Order;
   userId?: string;
-  visitRestaurant: (args: { mealId: string; userId: string; paymentMethodId: string }) => Promise<Order>;
 };
 
-export default function MealPage({
-  meal,
-  paymentMethods,
-  isRestaurantActive,
-  preauthorizedOrder,
-  userId,
-  visitRestaurant
-}: Props) {
+export default function MealPage({ meal, isRestaurantActive, preauthorizedOrder, userId }: Props) {
   const router = useRouter();
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string | undefined>(
-    paymentMethods.length === 1 ? paymentMethods[0].id : undefined
-  );
   const [isVisitRequesting, setIsVisitRequesting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<{ title: string; description: string }>();
   const {
@@ -64,20 +44,19 @@ export default function MealPage({
     onOpen: onVisitConfirmModalOpen,
     onClose: onVisitConfirmModalClose
   } = useDisclosure();
-  const pathname = usePathname();
 
   const handleVisitingClick = async () => {
-    if (!userId || !selectedPaymentMethod) return;
+    if (!userId) return;
 
     onVisitConfirmModalOpen();
   };
 
   const handleVisitingConfirm = async () => {
-    if (!userId || !selectedPaymentMethod) return;
+    if (!userId) return;
 
     setIsVisitRequesting(true);
 
-    visitRestaurant({ mealId: meal.id, userId, paymentMethodId: selectedPaymentMethod })
+    visitRestaurant({ mealId: meal.id, userId })
       .then((order) => {
         router.push(`/orders/${order.id}`);
       })
@@ -155,86 +134,22 @@ export default function MealPage({
                 <Divider borderColor="black" />
                 {userId ? (
                   <>
-                    <Box>
-                      <Heading size="md" minW="full">
-                        支払い方法
-                      </Heading>
-                      <Text fontSize="xs">お支払い方法を選択してください</Text>
-                    </Box>
-                    <TableContainer minW="full">
-                      <Table variant="simple" size="sm" __css={{ th: { paddingX: 0 }, td: { paddingX: 0 } }} w="full">
-                        <Thead>
-                          <Tr>
-                            <Th></Th>
-                            <Th>ブランド</Th>
-                            <Th>カード番号</Th>
-                            <Th>有効期限</Th>
-                          </Tr>
-                        </Thead>
-                        <Tbody>
-                          {paymentMethods.map((paymentMethod) => (
-                            <Tr key={paymentMethod.id} onClick={() => setSelectedPaymentMethod(paymentMethod.id)}>
-                              <Td>
-                                {selectedPaymentMethod === paymentMethod.id && (
-                                  <CheckCircleIcon color="orange.400" boxSize={5} />
-                                )}
-                              </Td>
-                              <Td>{paymentMethod.card?.brand}</Td>
-                              <Td>**** **** **** {paymentMethod.card?.last4}</Td>
-                              <Td>
-                                {paymentMethod.card?.exp_month}/{paymentMethod.card?.exp_year}
-                              </Td>
-                            </Tr>
-                          ))}
-                        </Tbody>
-                      </Table>
-                    </TableContainer>
-                    <Button variant="outline" as={NextLink} href={`/payment-methods/new?redirect_pathname=${pathname}`}>
-                      決済方法を登録
-                    </Button>
-                    <Divider borderColor="black" />
                     <Heading size="md">ご注文内容の確認</Heading>
                     <Flex w="full">
                       <Text>{meal.title}</Text>
                       <Spacer />
-                      <Text
-                        as="p"
-                        fontSize="sm"
-                        textDecoration="line-through"
-                        textDecorationColor="red.400"
-                        textDecorationThickness="2px"
-                        mr={1}
-                      >
+                      <Text as="p" fontSize="sm" fontWeight="bold" mr={1}>
                         ¥{meal.price.toLocaleString("ja-JP")}
                       </Text>
-                      <VStack spacing="0" display="inline-flex">
-                        <Text color="red.400" as="b">
-                          ¥{applyEarlyDiscount(meal.price).toLocaleString("ja-JP")}
-                        </Text>
-                        <Box backgroundColor="red.400" borderRadius={4}>
-                          <Text color="white" fontWeight="bold" fontSize="xs" px={2} as="p">
-                            早期割引
-                          </Text>
-                        </Box>
-                      </VStack>
                     </Flex>
                     <Divider />
                     <Heading size="sm" alignSelf="self-end">
-                      合計 ¥{applyEarlyDiscount(meal.price).toLocaleString("ja-JP")}
+                      合計 ¥{meal.price.toLocaleString("ja-JP")}
                     </Heading>
                     <Divider borderColor="black" />
-                    <Text fontSize="xs">
-                      注文内容を確定します。次の画面でお店に到着後に決済を確定するまで、調理は開始されずお支払いも発生しません。
-                    </Text>
-                    <Button
-                      isLoading={isVisitRequesting}
-                      onClick={handleVisitingClick}
-                      w="full"
-                      maxW="full"
-                      isDisabled={selectedPaymentMethod === undefined}
-                      size="md"
-                    >
-                      お店に向かう
+                    <Text fontSize="xs">お店に到着後に次の画面で注文を確定するまで、調理は開始されません。</Text>
+                    <Button isLoading={isVisitRequesting} onClick={handleVisitingClick} w="full" maxW="full" size="md">
+                      仮注文してお店に向かう
                     </Button>
                   </>
                 ) : (
@@ -270,10 +185,7 @@ export default function MealPage({
               label: "キャンセル"
             }}
           >
-            向かっていることをお店に通知します。
-            <br />
-            <br />
-            次の画面でお店に到着後に決済を確定するまで、調理は開始されずお支払いも発生しません。
+            向かっていることをお店に通知します。30分以内にお店に到着してください。
           </ConfirmModal>
         </VStack>
       </VStack>

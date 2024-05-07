@@ -1,6 +1,5 @@
 "use client";
 
-import { capturePaymentIntent } from "@/actions/payment-intent";
 import {
   Alert,
   AlertDescription,
@@ -10,16 +9,10 @@ import {
   Button,
   Divider,
   Flex,
-  HStack,
   Heading,
   Icon,
   Image,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalOverlay,
   Spacer,
-  Spinner,
   Text,
   VStack,
   useDisclosure
@@ -27,14 +20,14 @@ import {
 import { Prisma } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { PaymentConfirmModal } from "../payment-confirm-modal";
-import Link from "next/link";
+import { CompleteConfirmModal } from "../payment-confirm-modal";
 import { CancelConfirmModal } from "../cancel-confirm-modal";
 import { FaMapMarkedAlt } from "react-icons/fa";
 import NextLink from "next/link";
 import { ConfirmModal } from "@/components/confirm-modal";
 import { cancelOrder } from "../../_actions/cancel-order";
 import { transformSupabaseImage } from "@/utils/image/transformSupabaseImage";
+import { completeOrder } from "../../_actions/complete-order";
 
 type Props = {
   order: Prisma.OrderGetPayload<{
@@ -44,32 +37,19 @@ type Props = {
 
 export function OrderPage({ order }: Props) {
   const router = useRouter();
-  const { isOpen: isConfirmModalOpen, onOpen: onConfirmModalOpen, onClose: onConfirmModalClose } = useDisclosure();
+  const { isOpen: isCompleteModalOpen, onOpen: onCompleteModalOpen, onClose: onCompleteModalClose } = useDisclosure();
   const { isOpen: isCancelModalOpen, onOpen: onCancelModalOpen, onClose: onCancelModalClose } = useDisclosure();
-  const [isPaying, setIsPaying] = useState(false);
+  const [isConfirming, setIsConfirming] = useState(false);
   const [isCancelling, setIsCancelling] = useState(false);
   const [errorMessage, setErrorMessage] = useState<{ title: string; description: string }>();
   const publicUrl = transformSupabaseImage("meals", order.meal.imagePath);
 
-  const handlePaymentConfirm = () => {
-    setIsPaying(true);
-    capturePaymentIntent(order.id)
-      .then((paymentStatus) => {
-        if (paymentStatus === "succeeded") {
-          router.refresh();
-        } else {
-          setErrorMessage({
-            title: "決済に失敗しました",
-            description: "決済に失敗しました。ページを更新して再度ご確認ください。"
-          });
-        }
-      })
-      .catch(() => {
-        setErrorMessage({
-          title: "決済に失敗しました",
-          description: "決済に失敗しました。ページを更新して再度ご確認ください。"
-        });
-      });
+  const handleCompleteConfirm = () => {
+    setIsConfirming(true);
+    completeOrder(order.id).then(() => {
+      setIsConfirming(false);
+      router.refresh();
+    });
   };
 
   const handleCancelConfirm = (isFull: boolean) => {
@@ -89,7 +69,7 @@ export function OrderPage({ order }: Props) {
   };
 
   switch (order.status) {
-    case "PREAUTHORIZED":
+    case "PREORDERED":
       return (
         <>
           <VStack alignItems="start" spacing={8} p={4}>
@@ -111,7 +91,7 @@ export function OrderPage({ order }: Props) {
               >
                 <AlertIcon />
                 <AlertDescription>
-                  入店後お店の人に「Wattでの注文で」と伝え、こちらの画面を見せて決済を確定してください
+                  入店後お店の人に「Wattでの注文で」と伝え、こちらの画面を見せて注文を確定してください
                 </AlertDescription>
               </Alert>
               <VStack w="full">
@@ -119,10 +99,10 @@ export function OrderPage({ order }: Props) {
                   size="md"
                   w="full"
                   maxW="full"
-                  onClick={onConfirmModalOpen}
-                  isDisabled={isPaying || isCancelling}
+                  onClick={onCompleteModalOpen}
+                  isDisabled={isConfirming || isCancelling}
                 >
-                  決済を確定する
+                  注文を確定する
                 </Button>
                 <Button
                   size="md"
@@ -130,7 +110,7 @@ export function OrderPage({ order }: Props) {
                   w="full"
                   maxW="full"
                   onClick={onCancelModalOpen}
-                  isDisabled={isPaying || isCancelling}
+                  isDisabled={isConfirming || isCancelling}
                 >
                   キャンセル
                 </Button>
@@ -180,39 +160,22 @@ export function OrderPage({ order }: Props) {
                 <Flex w="full">
                   <Text>{order.meal.title}</Text>
                   <Spacer />
-                  <Text
-                    as="p"
-                    fontSize="sm"
-                    textDecoration="line-through"
-                    textDecorationColor="red.400"
-                    textDecorationThickness="2px"
-                    mr={1}
-                  >
-                    ¥{order.restaurantProfitPrice.toLocaleString("ja-JP")}
+                  <Text as="p" fontWeight="bold">
+                    ¥{order.meal.price.toLocaleString("ja-JP")}
                   </Text>
-                  <VStack spacing="0" display="inline-flex">
-                    <Text color="red.400" as="b">
-                      ¥{order.price.toLocaleString("ja-JP")}
-                    </Text>
-                    <Box backgroundColor="red.400" borderRadius={4}>
-                      <Text color="white" fontWeight="bold" fontSize="xs" px={2}>
-                        早期割引
-                      </Text>
-                    </Box>
-                  </VStack>
                 </Flex>
                 <Divider />
                 <Heading size="sm" alignSelf="self-end">
-                  合計 ¥{order.price.toLocaleString("ja-JP")}
+                  合計 ¥{order.meal.price.toLocaleString("ja-JP")}
                 </Heading>
               </VStack>
             </VStack>
           </VStack>
-          <PaymentConfirmModal
-            isOpen={isConfirmModalOpen}
-            isConfirming={isPaying}
-            onClose={onConfirmModalClose}
-            onConfirm={handlePaymentConfirm}
+          <CompleteConfirmModal
+            isOpen={isCompleteModalOpen}
+            isConfirming={isConfirming}
+            onClose={onCompleteModalClose}
+            onConfirm={handleCompleteConfirm}
           />
           <CancelConfirmModal
             isOpen={isCancelModalOpen}
@@ -231,24 +194,6 @@ export function OrderPage({ order }: Props) {
           >
             {errorMessage?.description ?? ""}
           </ConfirmModal>
-          <Modal isOpen={isPaying} onClose={() => undefined} size="xs" isCentered>
-            <ModalOverlay />
-            <ModalContent>
-              <ModalBody textAlign="center">
-                <Spinner />
-                <Text>決済中...</Text>
-              </ModalBody>
-            </ModalContent>
-          </Modal>
-          <Modal isOpen={isCancelling} onClose={() => undefined} size="xs" isCentered>
-            <ModalOverlay />
-            <ModalContent>
-              <ModalBody textAlign="center">
-                <Spinner />
-                <Text>キャンセル中...</Text>
-              </ModalBody>
-            </ModalContent>
-          </Modal>
         </>
       );
     case "CANCELLED":
@@ -290,30 +235,12 @@ export function OrderPage({ order }: Props) {
             <Heading size="md">金額</Heading>
             <Heading size="sm">
               合計{" "}
-              <Text
-                as="span"
-                fontSize="sm"
-                fontWeight="normal"
-                textDecoration="line-through"
-                textDecorationColor="red.400"
-                textDecorationThickness="2px"
-                mr={1}
-              >
-                ¥{order.restaurantProfitPrice.toLocaleString("ja-JP")}
+              <Text as="span" fontWeight="bold">
+                ¥{order.meal.price.toLocaleString("ja-JP")}
               </Text>
-              <HStack spacing={1} display="inline-flex">
-                <Text color="red.400" as="b">
-                  ¥{order.price.toLocaleString("ja-JP")}
-                </Text>
-                <Box backgroundColor="red.400" borderRadius={4}>
-                  <Text color="white" fontWeight="bold" fontSize="xs" px={2}>
-                    早期割引
-                  </Text>
-                </Box>
-              </HStack>
             </Heading>
           </VStack>
-          <Button variant="outline" size="md" colorScheme="gray" w="full" maxW="full" as={Link} href="/">
+          <Button variant="outline" size="md" colorScheme="gray" w="full" maxW="full" as={NextLink} href="/">
             ホーム画面に戻る
           </Button>
         </VStack>
@@ -321,7 +248,7 @@ export function OrderPage({ order }: Props) {
     case "COMPLETE":
       return (
         <VStack alignItems="start" p={4} spacing={4}>
-          <Heading>決済完了</Heading>
+          <Heading>注文完了</Heading>
           <Text>
             注文番号:
             <Heading as="span" ml={2}>
@@ -337,13 +264,31 @@ export function OrderPage({ order }: Props) {
             borderRadius={4}
           >
             <AlertIcon />
-            <AlertTitle>決済が完了しました</AlertTitle>
-            <AlertDescription>
-              こちらの画面を
-              <br />
-              お店の人に確認してもらってください
-            </AlertDescription>
+            <AlertTitle>注文が完了しました</AlertTitle>
+            <AlertDescription>お食事をお楽しみください</AlertDescription>
           </Alert>
+          <VStack w="full">
+            <Button
+              as={NextLink}
+              size="md"
+              w="full"
+              maxW="full"
+              href={`/orders/${order.id}/payments/new`}
+              isDisabled={isConfirming || isCancelling}
+            >
+              Watt上で支払う
+            </Button>
+            <Button
+              size="md"
+              colorScheme="gray"
+              w="full"
+              maxW="full"
+              onClick={onCancelModalOpen}
+              isDisabled={isConfirming || isCancelling}
+            >
+              お店で支払う
+            </Button>
+          </VStack>
           <Heading>注文情報</Heading>
           <VStack alignItems="start">
             <Heading size="md">店舗</Heading>
@@ -362,30 +307,12 @@ export function OrderPage({ order }: Props) {
             <Heading size="md">金額</Heading>
             <Heading size="sm">
               合計{" "}
-              <Text
-                as="span"
-                fontSize="sm"
-                fontWeight="normal"
-                textDecoration="line-through"
-                textDecorationColor="red.400"
-                textDecorationThickness="2px"
-                mr={1}
-              >
-                ¥{order.restaurantProfitPrice.toLocaleString("ja-JP")}
+              <Text as="span" fontWeight="bold">
+                ¥{order.meal.price.toLocaleString("ja-JP")}
               </Text>
-              <HStack spacing={1} display="inline-flex">
-                <Text color="red.400" as="b">
-                  ¥{order.price.toLocaleString("ja-JP")}
-                </Text>
-                <Box backgroundColor="red.400" borderRadius={4}>
-                  <Text color="white" fontWeight="bold" fontSize="xs" px={2}>
-                    早期割引
-                  </Text>
-                </Box>
-              </HStack>
             </Heading>
           </VStack>
-          <Button variant="outline" size="md" colorScheme="gray" w="full" maxW="full" as={Link} href="/">
+          <Button variant="outline" size="md" colorScheme="gray" w="full" maxW="full" as={NextLink} href="/">
             ホーム画面に戻る
           </Button>
         </VStack>

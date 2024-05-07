@@ -26,7 +26,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { ConfirmModal } from "@/components/confirm-modal";
 import NextLink from "next/link";
 import Image from "next/image";
-import { findPreauthorizedOrder } from "@/actions/order";
+import { findPreorder } from "@/actions/order";
 import { User } from "@prisma/client";
 
 type Props = {
@@ -52,7 +52,7 @@ export default function UserAppLayout({ children, defaultPreauthorizedOrderId, u
         router.push(`/profile?redirectedFrom=${pathname}`);
       }
       if (!pathname.startsWith("/orders")) {
-        findPreauthorizedOrder(user.id).then((preauthorizedOrder) => {
+        findPreorder(user.id).then((preauthorizedOrder) => {
           if (!!preauthorizedOrder) {
             setPreauthorizedOrderId(preauthorizedOrder.id);
             onOrderModalOpen();
@@ -78,11 +78,6 @@ export default function UserAppLayout({ children, defaultPreauthorizedOrderId, u
                 <Image src="/watt-logo.png" alt="Watt" width={80} height={31} />
               </NextLink>
               <VStack alignItems="start" spacing={0}>
-                <Box backgroundColor="red.400" borderRadius={4}>
-                  <Text color="white" fontWeight="bold" fontSize="10px" px={2}>
-                    早期割引キャンペーン中!!
-                  </Text>
-                </Box>
                 <Text fontSize="xs" color="orange" fontWeight="bold" lineHeight="12px" mt="1px">
                   今入れるお店が見つかる！
                 </Text>
@@ -148,9 +143,9 @@ export default function UserAppLayout({ children, defaultPreauthorizedOrderId, u
       <ConfirmModal
         isOpen={isOrderModalOpen}
         onClose={onOrderModalClose}
-        title="選択中の推しメシがあります"
+        title="すでに注文した推しメシがあります"
         confirmButton={{
-          label: "支払いページに移動する",
+          label: "注文ページに移動する",
           onClick: () => {
             router.push(`/orders/${preauthorizedOrderId}`);
             onOrderModalClose();
@@ -158,9 +153,9 @@ export default function UserAppLayout({ children, defaultPreauthorizedOrderId, u
         }}
       >
         <Text>
-          現在選択中の推しメシがあります。
+          注文した推しメシがあります。
           <br />
-          お店に向かって支払いを完了してください。
+          お店に向かってください。
         </Text>
       </ConfirmModal>
     </>

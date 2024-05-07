@@ -34,7 +34,7 @@ export function CancelConfirmModal({ isOpen, isCancelling, onClose, onConfirm }:
       }}
     >
       <Checkbox isChecked={isFull} onChange={(e) => setIsFull(e.target.checked)}>
-        <Text fontSize="sm">満席だったのでキャンセルする</Text>
+        <Text fontSize="sm">「満席だった」または「お店が閉まっていた」のでキャンセルする</Text>
       </Checkbox>
     </ConfirmModal>
   );
