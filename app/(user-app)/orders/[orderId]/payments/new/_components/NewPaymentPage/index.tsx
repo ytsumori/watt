@@ -39,6 +39,7 @@ export function NewPaymentPage({ order, paymentMethods }: Props) {
   const router = useRouter();
   const pathname = usePathname();
   const [additionalPrice, setAdditionalPrice] = useState<number>();
+  const [isPosting, setIsPosting] = useState(false);
 
   const handleAdditionalPriceChange = (value: string) => {
     const numberValue = Number(value);
@@ -48,11 +49,13 @@ export function NewPaymentPage({ order, paymentMethods }: Props) {
 
   const handleClickNext = () => {
     if (!selectedPaymentMethod) return;
+    setIsPosting(true);
     createPaymentIntent({
       orderId: order.id,
       additionalAmount: additionalPrice ?? 0,
       paymentMethodId: selectedPaymentMethod
     }).then((paymentId) => {
+      setIsPosting(false);
       router.push(`/orders/${order.id}/payments/${paymentId}`);
     });
   };
@@ -111,7 +114,7 @@ export function NewPaymentPage({ order, paymentMethods }: Props) {
         </Button>
       </VStack>
       <Spacer />
-      <Button size="lg" w="full" onClick={handleClickNext}>
+      <Button size="lg" w="full" onClick={handleClickNext} isLoading={isPosting}>
         次へ
       </Button>
     </Flex>

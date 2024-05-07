@@ -1,8 +1,9 @@
 "use client";
 
 import { capturePaymentIntent } from "@/actions/payment-intent";
-import { Box, Button, Center, Flex, Heading, Text } from "@chakra-ui/react";
+import { Badge, Box, Button, Center, Flex, Heading, Spacer, Text, VStack } from "@chakra-ui/react";
 import { Prisma } from "@prisma/client";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 type Props = {
@@ -12,8 +13,9 @@ type Props = {
 };
 
 export function PaymentPage({ payment }: Props) {
+  const router = useRouter();
   const [isPriceFlipped, setIsPriceFlipped] = useState(false);
-  const [isCompleted, setIsCompleted] = useState(payment.completedAt !== null);
+  const [isPosting, setIsPosting] = useState(false);
 
   useEffect(() => {
     if (!isPriceFlipped) {
@@ -22,10 +24,12 @@ export function PaymentPage({ payment }: Props) {
   }, [isPriceFlipped]);
 
   const handlePay = () => {
+    setIsPosting(true);
     capturePaymentIntent({ paymentId: payment.id })
       .then((status) => {
         if (status === "succeeded") {
-          setIsCompleted(true);
+          router.refresh();
+          setIsPosting(false);
         }
       })
       .catch((error) => {
@@ -33,13 +37,26 @@ export function PaymentPage({ payment }: Props) {
       });
   };
 
-  if (isCompleted) {
+  if (payment.completedAt !== null) {
     return (
-      <Flex direction="column" h="full" p={4}>
-        <Center h="full">
-          <Heading size="md">支払いが完了しました</Heading>
-        </Center>
-      </Flex>
+      <Center h="full" p={4} flexDirection="column">
+        <VStack my="auto">
+          <Heading size="md">{payment.order.meal.restaurant.name}に支払い</Heading>
+          <Text>{payment.completedAt.toLocaleString("ja-JP")}</Text>
+          <Heading fontSize="80px">
+            {payment.totalAmount.toLocaleString("ja-JP")}
+            <Text as="span" fontSize="20px">
+              円
+            </Text>
+          </Heading>
+          <Badge colorScheme="orange" variant="solid" borderRadius={16} fontSize="1em" p={2}>
+            支払い完了
+          </Badge>
+        </VStack>
+        <Button mt={6} size="lg" w="full" variant="outline" onClick={() => router.push("/")}>
+          ホーム画面に戻る
+        </Button>
+      </Center>
     );
   }
 
@@ -56,7 +73,7 @@ export function PaymentPage({ payment }: Props) {
           </Heading>
         </Center>
       </Box>
-      <Button mt={6} size="lg" w="full" onClick={handlePay}>
+      <Button mt={6} size="lg" w="full" onClick={handlePay} isLoading={isPosting}>
         支払う
       </Button>
     </Flex>

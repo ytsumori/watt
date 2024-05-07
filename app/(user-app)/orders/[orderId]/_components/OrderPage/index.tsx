@@ -5,6 +5,7 @@ import {
   AlertDescription,
   AlertIcon,
   AlertTitle,
+  Badge,
   Box,
   Button,
   Divider,
@@ -269,13 +270,16 @@ export function OrderPage({ order }: Props) {
           <VStack w="full">
             <Button
               as={NextLink}
-              size="md"
+              size="lg"
               w="full"
               maxW="full"
               href={`/orders/${order.id}/payments/new`}
               isDisabled={isConfirming || isCancelling}
             >
-              Watt上で支払う
+              <VStack spacing={1}>
+                <Text fontSize="md">Watt上で支払う</Text>
+                <Badge colorScheme="orange">¥100割引</Badge>
+              </VStack>
             </Button>
             <Button
               size="md"

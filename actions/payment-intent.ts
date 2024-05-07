@@ -18,7 +18,7 @@ export async function createPaymentIntent({
   const myId = await getMyId();
 
   const order = await prisma.order.findUnique({
-    include: { meal: true },
+    include: { meal: true, payment: true },
     where: { id: orderId, userId: myId }
   });
 
@@ -36,8 +36,14 @@ export async function createPaymentIntent({
 
   const discountedPrice = applyEarlyDiscount(order.meal.price);
 
+  if (order.payment) {
+    const oldIntent = await stripe.paymentIntents.cancel(order.payment.stripePaymentId);
+    if (oldIntent.status !== "canceled") throw new Error("Failed to cancel old payment intent");
+    await prisma.payment.delete({ where: { id: order.payment.id } });
+  }
+
   const paymentIntent = await stripe.paymentIntents.create({
-    amount: discountedPrice,
+    amount: discountedPrice + additionalAmount,
     currency: "jpy",
     customer: user.stripeCustomer.stripeCustomerId,
     payment_method: paymentMethod.id,
@@ -45,7 +51,6 @@ export async function createPaymentIntent({
     capture_method: "manual",
     confirm: true
   });
-
   const payment = await prisma.payment.create({
     data: {
       orderId,
@@ -55,7 +60,6 @@ export async function createPaymentIntent({
       restaurantProfitPrice: order.meal.price
     }
   });
-
   return payment.id;
 }
 
