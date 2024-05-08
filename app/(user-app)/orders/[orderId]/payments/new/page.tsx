@@ -26,12 +26,17 @@ export default async function NewPayment({ params }: { params: Params }) {
             include: { googleMapPlaceInfo: { select: { url: true } } }
           }
         }
-      }
+      },
+      payment: { select: { completedAt: true } }
     }
   });
 
   if (!order || order.userId !== user.id) {
     redirect("/");
+  }
+
+  if (order.payment && order.payment.completedAt !== null) {
+    redirect(`/orders/${order.id}`);
   }
 
   const stripeCustomer = await getStripeCustomer({ userId: user.id });
