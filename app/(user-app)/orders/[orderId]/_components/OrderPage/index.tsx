@@ -21,14 +21,14 @@ import {
 import { Prisma } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { CompleteConfirmModal } from "../payment-confirm-modal";
-import { CancelConfirmModal } from "../cancel-confirm-modal";
 import { FaMapMarkedAlt } from "react-icons/fa";
 import NextLink from "next/link";
 import { ConfirmModal } from "@/components/confirm-modal";
 import { cancelOrder } from "../../_actions/cancel-order";
 import { transformSupabaseImage } from "@/utils/image/transformSupabaseImage";
 import { completeOrder } from "../../_actions/complete-order";
+import { CompleteConfirmModal } from "../PaymentConfirmModal";
+import { CancelConfirmModal } from "../CancelConfirmModal";
 
 type Props = {
   order: Prisma.OrderGetPayload<{
