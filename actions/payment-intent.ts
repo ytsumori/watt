@@ -57,7 +57,7 @@ export async function createPaymentIntent({
       stripePaymentId: paymentIntent.id,
       additionalAmount: additionalAmount,
       totalAmount: discountedPrice + additionalAmount,
-      restaurantProfitPrice: order.meal.price
+      restaurantProfitPrice: order.meal.price + additionalAmount
     }
   });
   return payment.id;
