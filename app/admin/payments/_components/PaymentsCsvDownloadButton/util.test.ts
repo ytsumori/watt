@@ -3,7 +3,8 @@ import { convertToBlob, isValidPayment } from "./util";
 import { createRestaurantMock } from "@/test/mock/createRestaurantMock";
 import { createRestaurantBankAccountMock } from "@/test/mock/createRestaurantBankAccountMock";
 import { createOrderMock } from "@/test/mock/createOrderMock";
-import { DownloadableOrder } from "./type";
+import { DownloadablePayment } from "./type";
+import { createPaymentMock } from "@/test/mock/createPaymentMock";
 
 describe("[OrdersCsvDownloadButton / util]", () => {
   describe("convertToBlob", () => {
@@ -24,11 +25,12 @@ describe("[OrdersCsvDownloadButton / util]", () => {
     it("正常系", () => {
       const restaurant = createRestaurantMock();
       const bankAccount = createRestaurantBankAccountMock();
-      const { id, ...order } = createOrderMock();
-      const downloadableOrderMock: DownloadableOrder = {
+      const { id, ...payment } = createPaymentMock();
+      const order = createOrderMock();
+      const downloadableOrderMock: DownloadablePayment = {
         id: restaurant.id,
-        meal: { restaurant: { bankAccount: bankAccount, ...restaurant } },
-        ...order
+        order: { meal: { restaurant: { bankAccount: bankAccount, ...restaurant } }, ...order },
+        ...payment
       };
 
       expect(isValidPayment(downloadableOrderMock)).toBe(true);
@@ -36,11 +38,12 @@ describe("[OrdersCsvDownloadButton / util]", () => {
 
     it("異常系: bankAccountがnull", () => {
       const restaurant = createRestaurantMock();
-      const { id, ...order } = createOrderMock();
-      const downloadableOrderMock: DownloadableOrder = {
+      const { id, ...payment } = createPaymentMock();
+      const order = createOrderMock();
+      const downloadableOrderMock: DownloadablePayment = {
         id: restaurant.id,
-        meal: { restaurant: { bankAccount: null, ...restaurant } },
-        ...order
+        order: { meal: { restaurant: { bankAccount: null, ...restaurant } }, ...order },
+        ...payment
       };
 
       expect(isValidPayment(downloadableOrderMock)).toBe(false);
@@ -49,12 +52,13 @@ describe("[OrdersCsvDownloadButton / util]", () => {
     it("異常系: isDownloadedがtrue", () => {
       const restaurant = createRestaurantMock();
       const bankAccount = createRestaurantBankAccountMock();
-      const { id, ...order } = createOrderMock();
-      const downloadableOrderMock: DownloadableOrder = {
+      const { id, ...payment } = createPaymentMock();
+      const order = createOrderMock();
+      const downloadableOrderMock: DownloadablePayment = {
         id: restaurant.id,
-        meal: { restaurant: { bankAccount: bankAccount, ...restaurant } },
-        ...order,
-        isDownloaded: true
+        order: { meal: { restaurant: { bankAccount: bankAccount, ...restaurant } }, ...order },
+        ...payment,
+        isCsvDownloaded: true
       };
 
       expect(isValidPayment(downloadableOrderMock)).toBe(false);
@@ -63,11 +67,15 @@ describe("[OrdersCsvDownloadButton / util]", () => {
     it("異常系: holderNameが不正", () => {
       const restaurant = createRestaurantMock();
       const bankAccount = createRestaurantBankAccountMock();
-      const { id, ...order } = createOrderMock();
-      const downloadableOrderMock: DownloadableOrder = {
+      const { id, ...payment } = createPaymentMock();
+      const order = createOrderMock();
+      const downloadableOrderMock: DownloadablePayment = {
         id: restaurant.id,
-        meal: { restaurant: { bankAccount: { ...bankAccount, holderName: "invalid" }, ...restaurant } },
-        ...order
+        order: {
+          meal: { restaurant: { bankAccount: { ...bankAccount, holderName: "invalid" }, ...restaurant } },
+          ...order
+        },
+        ...payment
       };
 
       expect(isValidPayment(downloadableOrderMock)).toBe(false);

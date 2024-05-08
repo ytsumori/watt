@@ -2,8 +2,9 @@
 
 import { format } from "date-fns";
 import { isValidHolderName } from "@/utils/zengin";
-import { RestaurantWithOrders } from "./type";
+
 import { convertAccountTypeToNumber } from "./util";
+import { RestaurantWithPayments } from "./type";
 
 // 各レコードの値については https://www.rakuten-bank.co.jp/business/howto/pdf/h07_06_10.pdf を参照
 
@@ -54,7 +55,7 @@ export const getHeaderRecord = (transferDate: Date): string[] => {
   ];
 };
 
-export const getDataRecords = (restaurants: RestaurantWithOrders[]): DataRecord[] => {
+export const getDataRecords = (restaurants: RestaurantWithPayments[]): DataRecord[] => {
   return restaurants.map((restaurant) => {
     const bankAccount = restaurant.bankAccount;
     if (!bankAccount) {
@@ -63,7 +64,7 @@ export const getDataRecords = (restaurants: RestaurantWithOrders[]): DataRecord[
     if (!isValidHolderName(bankAccount.holderName)) {
       throw new Error("invalid holder name");
     }
-    const totalProfitPrice = restaurant.orders.reduce((acc, order) => acc + order.restaurantProfitPrice, 0);
+    const totalProfitPrice = restaurant.payments.reduce((acc, payment) => acc + payment.restaurantProfitPrice, 0);
     return [
       "2", // データ区分
       bankAccount.bankCode, // 受取人銀行番号
@@ -97,7 +98,7 @@ export const getTrailerRecord = (dataRecords: DataRecord[]) => {
 
 export const getCsvBankRecords = async (
   transferDate: Date,
-  restaurantsWithOrders: RestaurantWithOrders[]
+  restaurantsWithOrders: RestaurantWithPayments[]
 ): Promise<(string | number)[][]> => {
   const headerRecord = getHeaderRecord(transferDate);
   const dataRecords = getDataRecords(restaurantsWithOrders);
