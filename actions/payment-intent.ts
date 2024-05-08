@@ -37,6 +37,8 @@ export async function createPaymentIntent({
   const discountedPrice = applyEarlyDiscount(order.meal.price);
 
   if (order.payment) {
+    if (order.payment.completedAt !== null) throw new Error("Payment already completed");
+
     const oldIntent = await stripe.paymentIntents.cancel(order.payment.stripePaymentId);
     if (oldIntent.status !== "canceled") throw new Error("Failed to cancel old payment intent");
     await prisma.payment.delete({ where: { id: order.payment.id } });
