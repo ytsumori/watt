@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { convertToBlob, isValidOrder } from "./util";
+import { convertToBlob, isValidPayment } from "./util";
 import { createRestaurantMock } from "@/test/mock/createRestaurantMock";
 import { createRestaurantBankAccountMock } from "@/test/mock/createRestaurantBankAccountMock";
 import { createOrderMock } from "@/test/mock/createOrderMock";
@@ -31,7 +31,7 @@ describe("[OrdersCsvDownloadButton / util]", () => {
         ...order
       };
 
-      expect(isValidOrder(downloadableOrderMock)).toBe(true);
+      expect(isValidPayment(downloadableOrderMock)).toBe(true);
     });
 
     it("異常系: bankAccountがnull", () => {
@@ -43,7 +43,7 @@ describe("[OrdersCsvDownloadButton / util]", () => {
         ...order
       };
 
-      expect(isValidOrder(downloadableOrderMock)).toBe(false);
+      expect(isValidPayment(downloadableOrderMock)).toBe(false);
     });
 
     it("異常系: isDownloadedがtrue", () => {
@@ -57,7 +57,7 @@ describe("[OrdersCsvDownloadButton / util]", () => {
         isDownloaded: true
       };
 
-      expect(isValidOrder(downloadableOrderMock)).toBe(false);
+      expect(isValidPayment(downloadableOrderMock)).toBe(false);
     });
 
     it("異常系: holderNameが不正", () => {
@@ -70,7 +70,7 @@ describe("[OrdersCsvDownloadButton / util]", () => {
         ...order
       };
 
-      expect(isValidOrder(downloadableOrderMock)).toBe(false);
+      expect(isValidPayment(downloadableOrderMock)).toBe(false);
     });
   });
 });

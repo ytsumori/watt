@@ -1,13 +1,13 @@
 import Papa from "papaparse";
 import { isValidHolderName } from "@/utils/zengin";
-import { DownloadableOrder } from "./type";
+import { DownloadablePayment } from "./type";
 import { BankAccountType } from "@prisma/client";
 
-export const isValidOrder = (order: DownloadableOrder): boolean => {
+export const isValidPayment = (payment: DownloadablePayment): boolean => {
   return (
-    order.meal.restaurant.bankAccount !== null &&
-    !order.isDownloaded &&
-    isValidHolderName(order.meal.restaurant.bankAccount.holderName)
+    payment.order.meal.restaurant.bankAccount !== null &&
+    !payment.isCsvDownloaded &&
+    isValidHolderName(payment.order.meal.restaurant.bankAccount.holderName)
   );
 };
 
