@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 import { Checkbox, Text } from "@chakra-ui/react";
-import { ConfirmModal } from "../../../../../components/confirm-modal";
+import { ConfirmModal } from "@/components/confirm-modal";
 
 type Props = {
   isOpen: boolean;
