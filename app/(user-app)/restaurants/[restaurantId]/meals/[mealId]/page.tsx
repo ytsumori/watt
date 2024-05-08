@@ -1,5 +1,3 @@
-import stripe from "@/lib/stripe";
-import { getStripeCustomer } from "@/actions/stripe-customer";
 import prisma from "@/lib/prisma/client";
 import { options } from "@/lib/next-auth/options";
 import { getServerSession } from "next-auth";
@@ -34,11 +32,6 @@ export default async function Meal({ params }: Params) {
     // logged in
     const userId = session.user.id;
     const order = await findPreorder(userId);
-
-    const stripeCustomer = await getStripeCustomer({ userId });
-    const paymentMethods = stripeCustomer
-      ? await stripe.customers.listPaymentMethods(stripeCustomer.stripeCustomerId)
-      : undefined;
 
     return (
       <MealPage
