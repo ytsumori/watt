@@ -8,7 +8,6 @@ export const createRestaurantMock = (restaurant?: Partial<Restaurant>): Restaura
     id: createRandomStr(),
     name: createRandomStr(5),
     isOpen: true,
-    isOpenManuallyUpdated: true,
     googleMapPlaceId: createRandomStr(5),
     password: createRandomStr(20),
     createdAt: new Date(),
