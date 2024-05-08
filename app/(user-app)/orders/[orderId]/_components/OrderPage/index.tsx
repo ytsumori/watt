@@ -275,6 +275,7 @@ export function OrderPage({ order }: Props) {
           </Alert>
           {!isPaymentCompleted && (
             <VStack w="full">
+              <Text fontSize="small">Watt上で支払いを済ませると、注文金額から¥100割引されます</Text>
               <Button
                 as={NextLink}
                 size="lg"
@@ -283,10 +284,7 @@ export function OrderPage({ order }: Props) {
                 href={`/orders/${order.id}/payments/new`}
                 isDisabled={isConfirming || isCancelling}
               >
-                <VStack spacing={1}>
-                  <Text fontSize="md">Watt上で支払う</Text>
-                  <Badge colorScheme="orange">¥100割引</Badge>
-                </VStack>
+                Wattで会計する
               </Button>
             </VStack>
           )}
@@ -318,10 +316,7 @@ export function OrderPage({ order }: Props) {
               </VStack>
             )}
             <Heading size="sm">
-              合計{" "}
-              <Text as="span" fontWeight="bold">
-                ¥{(isPaymentCompleted ? order.payment!!.totalAmount : order.meal.price).toLocaleString("ja-JP")}
-              </Text>
+              ¥{(isPaymentCompleted ? order.payment!!.totalAmount : order.meal.price).toLocaleString("ja-JP")}
             </Heading>
           </VStack>
           <Button variant="outline" size="md" colorScheme="gray" w="full" maxW="full" as={NextLink} href="/">
