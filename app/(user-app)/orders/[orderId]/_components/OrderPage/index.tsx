@@ -32,7 +32,10 @@ import { CancelConfirmModal } from "../CancelConfirmModal";
 
 type Props = {
   order: Prisma.OrderGetPayload<{
-    include: { meal: { include: { restaurant: { include: { googleMapPlaceInfo: { select: { url: true } } } } } } };
+    include: {
+      meal: { include: { restaurant: { include: { googleMapPlaceInfo: { select: { url: true } } } } } };
+      payment: true;
+    };
   }>;
 };
 
@@ -246,6 +249,7 @@ export function OrderPage({ order }: Props) {
         </VStack>
       );
     case "COMPLETE":
+      const isPaymentCompleted = order.payment !== null && order.payment.completedAt !== null;
       return (
         <VStack alignItems="start" p={4} spacing={4}>
           <Heading>注文完了</Heading>
@@ -265,33 +269,27 @@ export function OrderPage({ order }: Props) {
           >
             <AlertIcon />
             <AlertTitle>注文が完了しました</AlertTitle>
-            <AlertDescription>お食事をお楽しみください</AlertDescription>
+            <AlertDescription>
+              {isPaymentCompleted ? "ご利用ありがとうございました" : "お食事をお楽しみください"}
+            </AlertDescription>
           </Alert>
-          <VStack w="full">
-            <Button
-              as={NextLink}
-              size="lg"
-              w="full"
-              maxW="full"
-              href={`/orders/${order.id}/payments/new`}
-              isDisabled={isConfirming || isCancelling}
-            >
-              <VStack spacing={1}>
-                <Text fontSize="md">Watt上で支払う</Text>
-                <Badge colorScheme="orange">¥100割引</Badge>
-              </VStack>
-            </Button>
-            <Button
-              size="md"
-              colorScheme="gray"
-              w="full"
-              maxW="full"
-              onClick={onCancelModalOpen}
-              isDisabled={isConfirming || isCancelling}
-            >
-              お店で支払う
-            </Button>
-          </VStack>
+          {!isPaymentCompleted && (
+            <VStack w="full">
+              <Button
+                as={NextLink}
+                size="lg"
+                w="full"
+                maxW="full"
+                href={`/orders/${order.id}/payments/new`}
+                isDisabled={isConfirming || isCancelling}
+              >
+                <VStack spacing={1}>
+                  <Text fontSize="md">Watt上で支払う</Text>
+                  <Badge colorScheme="orange">¥100割引</Badge>
+                </VStack>
+              </Button>
+            </VStack>
+          )}
           <Heading>注文情報</Heading>
           <VStack alignItems="start">
             <Heading size="md">店舗</Heading>
@@ -308,10 +306,21 @@ export function OrderPage({ order }: Props) {
           </VStack>
           <VStack alignItems="start">
             <Heading size="md">金額</Heading>
+            {isPaymentCompleted && (
+              <VStack spacing={0} alignItems="start">
+                <Text size="md">推しメシ料金 ¥{order.meal.price.toLocaleString("ja-JP")}</Text>
+                <Text size="md">追加料金 ¥{order.payment!!.additionalAmount.toLocaleString("ja-JP")}</Text>
+                {order.meal.price + order.payment!!.additionalAmount !== order.payment!!.totalAmount && (
+                  <Text size="md" textColor="red.400">
+                    Watt割引 -¥{order.meal.price + order.payment!!.additionalAmount - order.payment!!.totalAmount}
+                  </Text>
+                )}
+              </VStack>
+            )}
             <Heading size="sm">
               合計{" "}
               <Text as="span" fontWeight="bold">
-                ¥{order.meal.price.toLocaleString("ja-JP")}
+                ¥{(isPaymentCompleted ? order.payment!!.totalAmount : order.meal.price).toLocaleString("ja-JP")}
               </Text>
             </Heading>
           </VStack>
