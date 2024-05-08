@@ -30,12 +30,17 @@ export function NewMealModal({ restaurantId, isOpen, onClose, onSubmitComplete }
   const [price, setPrice] = useState<number>();
   const [previewUrl, setPreviewUrl] = useState<string>();
   const initialState: State = { message: null, errors: {} };
+  const resetValues = () => {
+    setPrice(undefined);
+    setPreviewUrl(undefined);
+  };
   const [_state, dispatch] = useFormState<State, FormData>(
     (prev, state) =>
       onCreateMeal(prev, state).then((res) => {
         if (!res.errors) {
           onSubmitComplete();
           onClose();
+          resetValues();
         }
         return res;
       }),

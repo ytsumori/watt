@@ -1,4 +1,5 @@
 "use client";
+
 import {
   Button,
   Input,
@@ -12,41 +13,44 @@ import {
   useDisclosure
 } from "@chakra-ui/react";
 import { FC, useState } from "react";
-import { convertToBlob, isValidOrder } from "./util";
+import { convertToBlob, isValidPayment } from "./util";
 import { getCsvBankRecords } from "./action";
-import { updateManyOrdersIsDownloaded } from "@/actions/order";
 import { useRouter } from "next/navigation";
-import { DownloadableOrder, RestaurantWithOrders } from "./type";
+import { DownloadablePayment, RestaurantWithPayments } from "./type";
+import { updatePaymentsDownloaded } from "../../_actions/updatePaymentsDownloaded";
 
-type OrdersCsvDownloadButtonProps = {
-  orders: DownloadableOrder[];
+type PaymentsCsvDownloadButtonProps = {
+  payments: DownloadablePayment[];
 };
-export const OrdersCsvDownloadButton: FC<OrdersCsvDownloadButtonProps> = ({ orders }) => {
+export const PaymentsCsvDownloadButton: FC<PaymentsCsvDownloadButtonProps> = ({ payments }) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [transferDate, setTransferDate] = useState<string>("");
-  const filteredOrders = orders.filter(isValidOrder);
+  const filteredPayments = payments.filter(isValidPayment);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const handleClick = async () => {
-    if (filteredOrders.length === 0) return;
+    if (filteredPayments.length === 0) return;
     if (transferDate === "") return;
     setIsLoading(true);
-    await updateManyOrdersIsDownloaded(filteredOrders.map((order) => order.id))
+    await updatePaymentsDownloaded({ paymentIds: filteredPayments.map((payment) => payment.id) })
       .then(async () => {
-        let groupedOrders: RestaurantWithOrders[] = [];
-        filteredOrders.forEach((order) => {
-          const currentIndex = groupedOrders.findIndex(
-            (groupedOrder) => groupedOrder.restaurantId === order.meal.restaurant.id
-          );
-          if (currentIndex === -1 && order.meal.restaurant.bankAccount) {
-            groupedOrders.push({
-              restaurantId: order.meal.restaurant.id,
-              bankAccount: order.meal.restaurant.bankAccount,
-              orders: [order]
-            });
-          } else {
-            groupedOrders[currentIndex].orders.push(order);
+        let groupedOrders: RestaurantWithPayments[] = [];
+        filteredPayments.forEach((payment) => {
+          const completedAt = payment.completedAt;
+          if (completedAt) {
+            const currentIndex = groupedOrders.findIndex(
+              (groupedOrder) => groupedOrder.restaurantId === payment.order.meal.restaurant.id
+            );
+            if (currentIndex === -1 && payment.order.meal.restaurant.bankAccount) {
+              groupedOrders.push({
+                restaurantId: payment.order.meal.restaurant.id,
+                bankAccount: payment.order.meal.restaurant.bankAccount,
+                payments: [{ ...payment, completedAt }]
+              });
+            } else {
+              groupedOrders[currentIndex].payments.push({ ...payment, completedAt });
+            }
           }
         });
 
@@ -68,7 +72,7 @@ export const OrdersCsvDownloadButton: FC<OrdersCsvDownloadButtonProps> = ({ orde
 
   return (
     <>
-      <Button onClick={onOpen} marginLeft="auto" minWidth="auto" isDisabled={filteredOrders.length === 0}>
+      <Button onClick={onOpen} marginLeft="auto" minWidth="auto" isDisabled={filteredPayments.length === 0}>
         CSVダウンロード
       </Button>
 
@@ -82,7 +86,10 @@ export const OrdersCsvDownloadButton: FC<OrdersCsvDownloadButtonProps> = ({ orde
           </ModalBody>
 
           <ModalFooter gap={3}>
-            <Button onClick={handleClick} isDisabled={filteredOrders.length === 0 || isLoading || transferDate === ""}>
+            <Button
+              onClick={handleClick}
+              isDisabled={filteredPayments.length === 0 || isLoading || transferDate === ""}
+            >
               {isLoading ? "処理中" : "CSVダウンロード"}
             </Button>
             <Button onClick={onClose} variant="outline" colorScheme="gray">

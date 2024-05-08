@@ -1,12 +1,9 @@
-import stripe from "@/lib/stripe";
-import { getStripeCustomer } from "@/actions/stripe-customer";
 import prisma from "@/lib/prisma/client";
 import { options } from "@/lib/next-auth/options";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import MealPage from "./_components/MealPage";
-import { findPreauthorizedOrder } from "@/actions/order";
-import { visitRestaurant } from "./_actions/visit-restaurant";
+import { findPreorder } from "@/actions/order";
 import { Metadata } from "next";
 import { transformSupabaseImage } from "@/utils/image/transformSupabaseImage";
 
@@ -34,33 +31,19 @@ export default async function Meal({ params }: Params) {
   if (session) {
     // logged in
     const userId = session.user.id;
-    const order = await findPreauthorizedOrder(userId);
-
-    const stripeCustomer = await getStripeCustomer({ userId });
-    const paymentMethods = stripeCustomer
-      ? await stripe.customers.listPaymentMethods(stripeCustomer.stripeCustomerId)
-      : undefined;
+    const order = await findPreorder(userId);
 
     return (
       <MealPage
-        paymentMethods={paymentMethods?.data ?? []}
         meal={meal}
         preauthorizedOrder={order ?? undefined}
         userId={userId}
         isRestaurantActive={restaurant.isOpen}
-        visitRestaurant={visitRestaurant}
       />
     );
   }
 
-  return (
-    <MealPage
-      meal={meal}
-      isRestaurantActive={restaurant.isOpen}
-      paymentMethods={[]}
-      visitRestaurant={visitRestaurant}
-    />
-  );
+  return <MealPage meal={meal} isRestaurantActive={restaurant.isOpen} />;
 }
 
 export async function generateMetadata({ params }: Params): Promise<Metadata | undefined> {

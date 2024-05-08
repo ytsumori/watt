@@ -22,7 +22,7 @@ export function AdminDashboardLayout({ children }: { children: React.ReactNode }
           <MenuItem icon={<FaShop />} as={Link} href={"/admin/restaurants"}>
             レストラン一覧
           </MenuItem>
-          <MenuItem icon={<FaMoneyCheck />} as={Link} href={"/admin/orders"}>
+          <MenuItem icon={<FaMoneyCheck />} as={Link} href={"/admin/payments"}>
             決済一覧
           </MenuItem>
         </MenuList>

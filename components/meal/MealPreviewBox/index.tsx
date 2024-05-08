@@ -4,7 +4,6 @@ import { Box, BoxProps, Text } from "@chakra-ui/react";
 import { Meal } from "@prisma/client";
 import { MealPreviewImage } from "../MealPreviewImage";
 import { ReactNode } from "react";
-import { applyEarlyDiscount } from "@/utils/discount-price";
 import Link from "next/link";
 
 type Props = {
@@ -30,22 +29,15 @@ export function MealPreviewBox({ meal, href, children, ...boxProps }: Props) {
         </Text>
       </Box>
       <Box position="absolute" bottom={0} right={0} m={2} textAlign="center">
-        <Box backgroundColor="red.400" borderRadius={4}>
-          <Text color="white" fontWeight="bold" fontSize="xs">
-            ¥{applyEarlyDiscount(meal.price).toLocaleString("ja-JP")}
-          </Text>
-        </Box>
         <Text
           borderRadius={4}
           backgroundColor="blackAlpha.700"
           as="span"
           color="white"
-          textDecoration="line-through"
-          textDecorationColor="red.400"
-          textDecorationThickness="2px"
           fontSize="xs"
           px={2}
           textAlign="center"
+          fontWeight="bold"
         >
           ¥{meal.price.toLocaleString("ja-JP")}
         </Text>

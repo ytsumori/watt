@@ -8,7 +8,7 @@ import Link from "next/link";
 
 type Props = {
   orders: Prisma.OrderGetPayload<{
-    include: { meal: { include: { restaurant: true } } };
+    include: { meal: { include: { restaurant: true } }; payment: true };
   }>[];
 };
 
@@ -32,12 +32,14 @@ export function OrdersPage({ orders }: Props) {
             <Text fontSize="x-small">{order.createdAt.toLocaleString("ja-JP")}</Text>
             <Text fontSize="medium">{order.meal.restaurant.name}</Text>
             <Text fontSize="medium">{order.meal.title}</Text>
-            <Text fontSize="small">
-              合計 ¥
-              <Text fontSize="medium" as="b">
-                {order.price}
+            {order.payment && (
+              <Text fontSize="small">
+                合計 ¥
+                <Text fontSize="medium" as="b">
+                  {order.payment.totalAmount.toLocaleString("ja-JP")}
+                </Text>
               </Text>
-            </Text>
+            )}
             <Badge position="absolute" top={0} right={0} m={2} colorScheme={getBadgeColor(order.status)}>
               {translateOrderStatus(order.status)}
             </Badge>
@@ -51,7 +53,7 @@ export function OrdersPage({ orders }: Props) {
 
 function getBadgeColor(status: OrderStatus) {
   switch (status) {
-    case "PREAUTHORIZED":
+    case "PREORDERED":
       return "yellow";
     case "COMPLETE":
       return "green";

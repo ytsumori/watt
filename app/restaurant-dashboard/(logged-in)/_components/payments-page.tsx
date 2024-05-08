@@ -2,20 +2,18 @@
 
 import { useContext, useEffect, useState } from "react";
 import { RestaurantIdContext } from "./restaurant-id-provider";
-import { Order } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { Table, TableContainer, Tbody, Th, Thead, Tr } from "@chakra-ui/react";
-import { getOrders } from "@/actions/order";
+
 import { translateOrderStatus } from "@/lib/prisma/translate-enum";
+import { getOrders } from "../_actions/getOrders";
 
 export function PaymentsPage() {
   const restaurantId = useContext(RestaurantIdContext);
-  const [orders, setOrders] = useState<Order[]>([]);
+  const [orders, setOrders] = useState<Prisma.OrderGetPayload<{ include: { payment: true } }>[]>([]);
 
   useEffect(() => {
-    getOrders({
-      where: { meal: { restaurantId: restaurantId } },
-      orderBy: { createdAt: "desc" }
-    }).then((result) => {
+    getOrders(restaurantId).then((result) => {
       setOrders(result);
     });
   }, [restaurantId]);
@@ -35,15 +33,15 @@ export function PaymentsPage() {
             <Tr key={order.id}>
               <Th>{translateOrderStatus(order.status)}</Th>
               <Th>{order.createdAt.toLocaleString("ja-JP")}</Th>
-              {order.status === "COMPLETE" ? (
+              {order.status === "COMPLETE" && order.payment ? (
                 <>
-                  <Th>{order.restaurantProfitPrice.toLocaleString("ja-JP")}円</Th>
-                  <Th>{order.price.toLocaleString("ja-JP")}円</Th>
+                  <Th>{order.payment.restaurantProfitPrice.toLocaleString("ja-JP")}円</Th>
+                  <Th>{order.payment.totalAmount.toLocaleString("ja-JP")}円</Th>
                 </>
               ) : (
                 <>
-                  <Th>0円</Th>
-                  <Th>0円</Th>
+                  <Th>-</Th>
+                  <Th>-</Th>
                 </>
               )}
             </Tr>

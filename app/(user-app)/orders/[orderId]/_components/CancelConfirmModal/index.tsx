@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 import { Checkbox, Text } from "@chakra-ui/react";
-import { ConfirmModal } from "../../../../../components/confirm-modal";
+import { ConfirmModal } from "@/components/confirm-modal";
 
 type Props = {
   isOpen: boolean;
@@ -34,7 +34,7 @@ export function CancelConfirmModal({ isOpen, isCancelling, onClose, onConfirm }:
       }}
     >
       <Checkbox isChecked={isFull} onChange={(e) => setIsFull(e.target.checked)}>
-        <Text fontSize="sm">満席だったのでキャンセルする</Text>
+        <Text fontSize="sm">「満席だった」または「お店が閉まっていた」のでキャンセルする</Text>
       </Checkbox>
     </ConfirmModal>
   );

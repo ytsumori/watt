@@ -1,6 +1,5 @@
 "use server";
 
-import { cancelPaymentIntent } from "@/actions/payment-intent";
 import prisma from "@/lib/prisma/client";
 import { notifyCancel } from "./notify-cancel";
 import { updateIsOpen } from "@/actions/restaurant";
@@ -15,11 +14,17 @@ export async function cancelOrder(orderId: string) {
     throw new Error("Order not found");
   }
 
-  await cancelPaymentIntent({ orderId: order.id, reason: "FULL", cancelledBy: "STAFF" });
-
+  await prisma.order.update({
+    where: { id: orderId },
+    data: { status: "CANCELLED", cancellation: { create: { reason: "FULL", cancelledBy: "STAFF" } } }
+  });
   await updateIsOpen({ id: order.meal.restaurantId, isOpen: false });
 
-  notifyCancel(order.userId);
+  try {
+    await notifyCancel(order.userId);
+  } catch (e) {
+    console.error("Error notifying user", e);
+  }
 
   return await prisma.order.findUnique({
     where: { id: orderId }
