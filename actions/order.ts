@@ -1,6 +1,6 @@
 "use server";
 
-import { OrderStatus, Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import prisma from "@/lib/prisma/client";
 
 export async function findOrder(args: Prisma.OrderFindUniqueArgs) {
@@ -13,52 +13,5 @@ export async function findPreorder(userId: string) {
       userId,
       status: "PREORDERED"
     }
-  });
-}
-
-export async function getOrders(args: Prisma.OrderFindManyArgs) {
-  return await prisma.order.findMany(args);
-}
-
-export async function createOrder({
-  mealId,
-  userId,
-  providerPaymentId,
-  price
-}: {
-  mealId: string;
-  userId: string;
-  providerPaymentId: string;
-  price: number;
-}) {
-  const meal = await prisma.meal.findUnique({
-    where: { id: mealId },
-    select: { id: true, price: true, isDiscarded: true }
-  });
-  if (!meal) {
-    throw new Error("Meal not found");
-  } else if (meal.isDiscarded) {
-    throw new Error("Meal is discarded");
-  }
-  const existingPayment = await findPreorder(userId);
-  if (existingPayment) {
-    throw new Error("Active payment already exists");
-  }
-
-  return await prisma.order.create({
-    data: {
-      userId,
-      mealId: meal.id,
-      providerPaymentId,
-      price,
-      restaurantProfitPrice: meal.price
-    }
-  });
-}
-
-export async function updateOrderStatus({ id, status }: { id: string; status: OrderStatus }) {
-  return await prisma.order.update({
-    where: { id },
-    data: { status }
   });
 }

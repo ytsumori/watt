@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma/client";
 import { notifyStaffCancellation } from "@/app/(user-app)/orders/[orderId]/_actions/notify-staff-cancellation";
-import { findOrder } from "@/actions/order";
 
 export async function POST(request: NextRequest) {
   const authHeader = request.headers.get("authorization");
@@ -11,7 +10,7 @@ export async function POST(request: NextRequest) {
 
   const body: { orderId: string } = await request.json();
 
-  const order = await findOrder({ where: { id: body.orderId } });
+  const order = await prisma.order.findUnique({ where: { id: body.orderId } });
   if (!order) return NextResponse.json({ message: "order not found" }, { status: 404 });
   if (order.status === "CANCELLED") return NextResponse.json({ message: "already canncelled" }, { status: 403 });
 
