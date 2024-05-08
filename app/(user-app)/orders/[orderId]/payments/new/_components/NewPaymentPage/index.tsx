@@ -149,7 +149,7 @@ export function NewPaymentPage({ order, paymentMethods }: Props) {
           onClick: onErrorMessageClose
         }}
         onClose={onErrorMessageClose}
-      ></ConfirmModal>
+      />
     </>
   );
 }
