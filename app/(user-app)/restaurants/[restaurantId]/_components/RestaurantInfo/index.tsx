@@ -1,5 +1,6 @@
 "use client";
 
+import { orderPaymentOptions } from "@/lib/prisma/order-enum";
 import { translatePaymentOption, translateSmokingOption } from "@/lib/prisma/translate-enum";
 import { Box, Heading, VStack, Text, Divider, Button, Icon, SimpleGrid } from "@chakra-ui/react";
 import { Prisma } from "@prisma/client";
@@ -48,12 +49,14 @@ export function RestaurantInfo({ restaurant }: Props) {
             <>
               <Text>支払い方法</Text>
               <Text>
-                {restaurant.paymentOptions.map((option) => (
-                  <>
-                    {translatePaymentOption(option.option)}
-                    <br />
-                  </>
-                ))}
+                {orderPaymentOptions(restaurant.paymentOptions.map((paymentOption) => paymentOption.option)).map(
+                  (option) => (
+                    <>
+                      {translatePaymentOption(option)}
+                      <br />
+                    </>
+                  )
+                )}
               </Text>
             </>
           )}
