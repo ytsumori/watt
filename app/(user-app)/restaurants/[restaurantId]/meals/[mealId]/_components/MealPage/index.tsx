@@ -149,7 +149,7 @@ export default function MealPage({ meal, isRestaurantActive, preauthorizedOrder,
                     <Divider borderColor="black" />
                     <Text fontSize="xs">お店に到着後に次の画面で注文を確定するまで、調理は開始されません。</Text>
                     <Button isLoading={isVisitRequesting} onClick={handleVisitingClick} w="full" maxW="full" size="md">
-                      仮注文してお店に向かう
+                      お店に向かう
                     </Button>
                   </>
                 ) : (

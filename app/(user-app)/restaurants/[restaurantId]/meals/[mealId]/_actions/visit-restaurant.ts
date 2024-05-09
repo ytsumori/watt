@@ -28,7 +28,7 @@ export async function visitRestaurant({ mealId, userId }: { mealId: string; user
   });
 
   const taskId = await createHttpTask({
-    url: `${process.env.NEXT_PUBLIC_HOST_URL}/api/cron/update-order-status`,
+    url: `${process.env.NEXT_PUBLIC_HOST_URL}/api/cloud-tasks/cancel-order`,
     delaySeconds: 60 * 30,
     payload: { orderId: order.id }
   });

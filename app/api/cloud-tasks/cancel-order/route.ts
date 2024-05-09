@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma/client";
-import { notifyStaffCancellation } from "@/app/(user-app)/orders/[orderId]/_actions/notify-staff-cancellation";
+import { notifyStaffAutomaticCancellation } from "./_actions/notify-staff-automatic-cancellation";
 
 export async function POST(request: NextRequest) {
   const authHeader = request.headers.get("authorization");
@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
   });
 
   try {
-    await notifyStaffCancellation({ orderId: body.orderId });
+    await notifyStaffAutomaticCancellation({ orderId: body.orderId });
   } catch (e) {
     console.error("Error cancelling order", e);
     return NextResponse.json({ message: "Error cancelling order" }, { status: 500 });
