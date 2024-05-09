@@ -11,7 +11,7 @@ describe("[OrdersCsvDownloadButton / action]", () => {
     return {
       restaurantId: createRestaurantMock().id,
       bankAccount: createRestaurantBankAccountMock(),
-      payments: [{ ...createPaymentMock(), completedAt: new Date() }]
+      payments: [{ ...createPaymentMock(), completedAt: new Date(), orderNumber: 1 }]
     };
   });
   describe("getTransferBankRecords", () => {
@@ -30,7 +30,7 @@ describe("[OrdersCsvDownloadButton / action]", () => {
           bankAccount.holderName,
           restaurant.payments.reduce((acc, order) => acc + order.restaurantProfitPrice, 0),
           "1",
-          restaurant.restaurantId,
+          bankAccount.clientCode,
           "",
           "",
           ""
