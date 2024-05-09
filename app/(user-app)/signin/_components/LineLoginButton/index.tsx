@@ -17,25 +17,25 @@ export const LineLoginButton: FC<Props> = ({ callbackUrl }) => {
   };
 
   return (
-    <button
-      onClick={onClick}
-      style={{
-        backgroundColor: "#06C755",
-        display: "flex",
-        alignItems: "center",
-        margin: "0px 3px",
-        borderRadius: "5px",
-        color: "#FFFFFF",
-        fontWeight: "bold",
-        opacity
-      }}
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
-    >
-      <Box padding="3px" borderRight="2px solid rgba(0, 0, 0, 0.08)">
-        <Image src="/line-logo.png" alt="LINE" width={44} height={44} />
-      </Box>
-      <span style={{ margin: "0px 44px" }}>LINEでログインする</span>
-    </button>
+    <Box backgroundColor="#000000" borderRadius="5px">
+      <button
+        onClick={onClick}
+        style={{
+          backgroundColor: `rgba(6, 199, 86, ${opacity})`,
+          display: "flex",
+          alignItems: "center",
+          borderRadius: "5px",
+          color: "#FFFFFF",
+          fontWeight: "bold"
+        }}
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
+      >
+        <Box padding="9px" borderRight="2px solid rgba(0, 0, 0, 0.08)">
+          <Image src="/line-logo.png" alt="LINE" width={44} height={44} />
+        </Box>
+        <span style={{ margin: "0px 44px", lineHeight: 1 }}>LINEでログインする</span>
+      </button>
+    </Box>
   );
 };
