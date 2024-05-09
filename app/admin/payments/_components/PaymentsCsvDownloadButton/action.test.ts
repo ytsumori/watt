@@ -26,11 +26,12 @@ describe("[OrdersCsvDownloadButton / action]", () => {
           "",
           "",
           convertAccountTypeToNumber(bankAccount.accountType),
-          bankAccount.accountNo,
+          bankAccount.accountNo.padStart(7, "0"),
           bankAccount.holderName,
-          restaurant.payments.reduce((acc, order) => acc + order.restaurantProfitPrice, 0),
+          restaurant.payments.reduce((acc, payment) => acc + payment.restaurantProfitPrice, 0),
           "1",
           bankAccount.clientCode,
+          "",
           "",
           "",
           ""
@@ -49,8 +50,8 @@ describe("[OrdersCsvDownloadButton / action]", () => {
       );
       expect(getTrailerRecord(getDataRecords(restaurantWithPayments))).toStrictEqual([
         "8",
-        restaurantWithPayments.length,
-        sum,
+        restaurantWithPayments.length.toString().padStart(6, "0"),
+        sum.toString().padStart(12, "0"),
         ""
       ]);
     });
