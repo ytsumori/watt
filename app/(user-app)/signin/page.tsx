@@ -1,8 +1,8 @@
 import { SigninForm } from "./_components/SigninForm";
 
-type Params = { params: { callbackUrl?: string } };
+type Params = { searchParams: { callbackUrl?: string } };
 
-export default async function Signin({ params }: Params) {
-  const callbackUrl = params.callbackUrl ?? "/";
+export default async function Signin({ searchParams }: Params) {
+  const callbackUrl = searchParams.callbackUrl ?? "/";
   return <SigninForm callbackUrl={callbackUrl} />;
 }
