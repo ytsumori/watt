@@ -57,12 +57,6 @@ export default function Dashboard() {
           <Button leftIcon={<EditIcon />} onClick={() => router.push("/restaurant-dashboard/bank-account/edit")}>
             振込先口座を登録
           </Button>
-          <iframe
-            style={{ border: 0 }}
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-            src={`https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY}&q=place_id:${restaurant.googleMapPlaceId}`}
-          />
         </VStack>
       </Box>
       <Tabs isFitted>

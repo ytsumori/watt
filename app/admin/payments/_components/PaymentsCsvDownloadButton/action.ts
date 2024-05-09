@@ -6,7 +6,7 @@ import { isValidHolderName } from "@/utils/zengin";
 import { convertAccountTypeToNumber } from "./util";
 import { RestaurantWithPayments } from "./type";
 
-// 各レコードの値については https://www.rakuten-bank.co.jp/business/howto/pdf/h07_06_10.pdf を参照
+// 各レコードの値については https://gmo-aozora.com/support/guide/once-upload.pdf を参照
 
 export type DataRecord = [
   "2",
@@ -23,14 +23,15 @@ export type DataRecord = [
   number,
   "",
   "",
+  "",
   ""
 ];
 
 export const getHeaderRecord = (transferDate: Date): string[] => {
   if (
-    process.env.CONSIGNOR_CODE === undefined ||
     process.env.CONSIGNOR_NAME === undefined ||
     process.env.CONSIGNOR_BRANCH_CODE === undefined ||
+    process.env.CONSIGNOR_BRANCH_NAME === undefined ||
     process.env.ACCOUNT_NUMBER === undefined
   ) {
     throw new Error("header Record has not required fields");
@@ -42,13 +43,13 @@ export const getHeaderRecord = (transferDate: Date): string[] => {
     "1", // データ区分
     "21", // 種別コード
     "0", // 文字コード区分
-    `${process.env.CONSIGNOR_CODE}`, // 委託者コード
+    "9999999999", // 委託者コード
     `${process.env.CONSIGNOR_NAME}`, // 委託者名
     `${formattedTranferDate}`, // 実行日
-    "0036", // 依頼人銀行番号
-    "", // 依頼人銀行名
+    "0310", // 依頼人銀行番号
+    "ｼﾞ-ｴﾑｵ-ｱｵｿﾞﾗﾈﾂﾄ", // 依頼人銀行名
     `${process.env.CONSIGNOR_BRANCH_CODE}`, // 依頼人支店番号
-    "", // 依頼人支店名
+    `${process.env.CONSIGNOR_BRANCH_NAME}`, // 依頼人支店名
     "1", // 預金種目
     `${process.env.ACCOUNT_NUMBER}`, // 依頼人口座番号
     "" // ダミー
@@ -73,11 +74,12 @@ export const getDataRecords = (restaurants: RestaurantWithPayments[]): DataRecor
       "", // 受取人支店名
       "", // 手形交換所番号
       convertAccountTypeToNumber(bankAccount.accountType), // 預金種目
-      bankAccount.accountNo, // 受取人口座番号
+      bankAccount.accountNo.padStart(7, "0"), // 受取人口座番号
       bankAccount.holderName, // 受取人口座名
       totalProfitPrice, // 送金金額
       "1", // 新規コード
-      bankAccount.clientCode, // 顧客番号
+      bankAccount.clientCode, // 顧客コード1
+      "", // 顧客コード2
       "", // 振込指定区分
       "", // 識別表示
       "" // ダミー
@@ -90,8 +92,8 @@ export const getTrailerRecord = (dataRecords: DataRecord[]) => {
   const totalPrice = dataRecords.reduce((acc, record) => acc + record[9], 0);
   return [
     "8", // データ区分
-    ordersCount, // 依頼件数
-    totalPrice, // 依頼合計金額
+    ordersCount.toString().padStart(6, "0"), // 依頼件数
+    totalPrice.toString().padStart(12, "0"), // 依頼合計金額
     "" // ダミー
   ];
 };
