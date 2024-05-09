@@ -67,13 +67,14 @@ model StripeCustomer {
 }
 
 model Restaurant {
-  id               String   @id @default(cuid())
+  id               String         @id @default(cuid())
   name             String
-  isOpen           Boolean  @default(false)
-  googleMapPlaceId String   @unique
-  password         String   @unique @default(uuid())
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @default(now()) @updatedAt
+  isOpen           Boolean        @default(false)
+  googleMapPlaceId String         @unique
+  password         String         @unique @default(uuid())
+  smokingOption    SmokingOption?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @default(now()) @updatedAt
 
   bankAccount        RestaurantBankAccount?
   googleMapPlaceInfo RestaurantGoogleMapPlaceInfo?
@@ -81,6 +82,31 @@ model Restaurant {
   openingHours       RestaurantGoogleMapOpeningHour[]
   meals              Meal[]
   staffs             Staff[]
+  paymentOptions     RestaurantPaymentOption[]
+  menuImages         RestaurantMenuImage[]
+}
+
+model RestaurantPaymentOption {
+  id           String        @id @default(cuid())
+  restaurantId String
+  option       PaymentOption
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @default(now()) @updatedAt
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+
+  @@unique([restaurantId, option])
+}
+
+model RestaurantMenuImage {
+  id           String   @id @default(cuid())
+  restaurantId String
+  imagePath    String
+  menuNumber   Int
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now()) @updatedAt
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
 }
 
 model RestaurantGoogleMapPlaceInfo {
@@ -176,18 +202,6 @@ model OrderAutomaticCancellation {
   order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
 }
 
-enum CancellationUserType {
-  USER
-  STAFF
-}
-
-enum CancellationReason {
-  FULL
-  USER_DEMAND
-  CLOSED
-  LATE
-}
-
 model Payment {
   id                    String    @id @default(cuid())
   orderId               String    @unique
@@ -253,4 +267,30 @@ enum OrderStatus {
   PREORDERED
   COMPLETE
   CANCELLED
+}
+
+enum CancellationUserType {
+  USER
+  STAFF
+}
+
+enum CancellationReason {
+  FULL
+  USER_DEMAND
+  CLOSED
+  LATE
+}
+
+enum PaymentOption {
+  CASH
+  CREDIT_CARD
+  E_MONEY
+  QR_CODE
+}
+
+enum SmokingOption {
+  SMOKING
+  NON_SMOKING
+  SEPARATED
+  SEPARATED_ONLY_E_CIGARETTE
 }
