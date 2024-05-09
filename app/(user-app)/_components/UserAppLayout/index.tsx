@@ -46,11 +46,10 @@ export default function UserAppLayout({ children, defaultPreauthorizedOrderId, u
     defaultIsOpen: !!defaultPreauthorizedOrderId && !pathname.startsWith("/orders")
   });
   const [preauthorizedOrderId, setPreauthorizedOrderId] = React.useState(defaultPreauthorizedOrderId);
+
   useEffect(() => {
     if (user) {
-      if (!user.phoneNumber && pathname !== "/profile") {
-        router.push(`/profile?redirectedFrom=${pathname}`);
-      }
+      if (!user.phoneNumber && pathname !== "/profile") router.push(`/profile?redirectedFrom=${pathname}`);
       if (!pathname.startsWith("/orders")) {
         findPreorder(user.id).then((preauthorizedOrder) => {
           if (!!preauthorizedOrder) {
@@ -62,10 +61,10 @@ export default function UserAppLayout({ children, defaultPreauthorizedOrderId, u
     }
   }, [pathname, onOrderModalOpen, user, router]);
 
+  if (pathname === "/signin") return <>{children}</>;
+
   const handleSignOutClick = () => {
-    if (confirm("ログアウトしますか？")) {
-      signOut();
-    }
+    if (confirm("ログアウトしますか？")) signOut();
   };
 
   return (

@@ -6,15 +6,11 @@ import prisma from "@/lib/prisma/client";
 
 export default async function App({ children }: { children: React.ReactNode }) {
   const session = await getServerSession(options);
-  if (!session) {
-    return <UserAppLayout>{children}</UserAppLayout>;
-  }
+  if (!session) return <UserAppLayout>{children}</UserAppLayout>;
 
   const sessionUser = session.user;
   const user = await prisma.user.findUnique({ where: { id: sessionUser.id } });
-  if (!user) {
-    return <UserAppLayout>{children}</UserAppLayout>;
-  }
+  if (!user) return <UserAppLayout>{children}</UserAppLayout>;
 
   const preauthorizedOrder = await findPreorder(user.id);
 

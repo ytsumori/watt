@@ -20,30 +20,18 @@ export const options: AuthOptions = {
       }
     })
   ],
-  theme: { colorScheme: "light", brandColor: "#0BC5EA" },
+  pages: { signIn: "/signin" },
   adapter: PrismaAdapter(prisma),
   debug: process.env.NODE_ENV === "development",
-  session: {
-    strategy: "jwt"
-  },
+  session: { strategy: "jwt" },
   callbacks: {
     async jwt({ token, account, user }) {
-      if (user) {
-        token.id = user.id;
-      }
-      if (account) {
-        token.accessToken = account.access_token;
-      }
+      if (user) token.id = user.id;
+      if (account) token.accessToken = account.access_token;
       return token;
     },
     async session({ session, token }) {
-      return {
-        ...session,
-        user: {
-          ...session.user,
-          id: token.id
-        }
-      };
+      return { ...session, user: { ...session.user, id: token.id } };
     }
   }
 };
