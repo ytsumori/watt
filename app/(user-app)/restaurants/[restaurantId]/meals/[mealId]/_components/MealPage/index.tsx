@@ -12,7 +12,6 @@ import {
   Spacer,
   Box,
   useDisclosure,
-  Icon,
   HStack
 } from "@chakra-ui/react";
 import { useState } from "react";
@@ -22,13 +21,15 @@ import { CheckIcon } from "@chakra-ui/icons";
 import { useRouter } from "next/navigation";
 import NextLink from "next/link";
 import { ConfirmModal } from "@/components/confirm-modal";
-import { FaMapMarkedAlt } from "react-icons/fa";
 import { MealPreviewBox } from "@/components/meal/MealPreviewBox";
 import { visitRestaurant } from "../../_actions/visit-restaurant";
+import { RestaurantInfo } from "../../../../_components/RestaurantInfo";
 
 type Props = {
   meal: Prisma.MealGetPayload<{
-    include: { restaurant: { include: { meals: true; googleMapPlaceInfo: { select: { url: true } } } } };
+    include: {
+      restaurant: { include: { meals: true; googleMapPlaceInfo: { select: { url: true } }; paymentOptions: true } };
+    };
   }>;
   isRestaurantActive: boolean;
   preauthorizedOrder?: Order;
@@ -71,28 +72,7 @@ export default function MealPage({ meal, isRestaurantActive, preauthorizedOrder,
   return (
     <>
       <VStack w="full" p={4} alignItems="start" spacing={4}>
-        <Heading size="lg">{meal.restaurant.name}</Heading>
-        {meal.restaurant.googleMapPlaceInfo && (
-          <Button
-            w="full"
-            leftIcon={<Icon as={FaMapMarkedAlt} />}
-            as={NextLink}
-            href={meal.restaurant.googleMapPlaceInfo.url}
-            target="_blank"
-          >
-            Googleマップでお店情報を見る
-          </Button>
-        )}
-        <Box h="20vh" w="full">
-          <iframe
-            width="100%"
-            height="100%"
-            style={{ border: 0 }}
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-            src={`https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY}&q=place_id:${meal.restaurant.googleMapPlaceId}`}
-          />
-        </Box>
+        <RestaurantInfo restaurant={meal.restaurant} />
         <Divider borderColor="black" />
         <Box>
           <Heading size="md">推しメシ</Heading>
