@@ -21,7 +21,6 @@ export const options: AuthOptions = {
     })
   ],
   pages: { signIn: "/signin" },
-  theme: { colorScheme: "dark", brandColor: "#0BC5EA", buttonText: "LINEでログイン" },
   adapter: PrismaAdapter(prisma),
   debug: process.env.NODE_ENV === "development",
   session: { strategy: "jwt" },
