@@ -10,6 +10,7 @@ export const createRestaurantMock = (restaurant?: Partial<Restaurant>): Restaura
     isOpen: true,
     googleMapPlaceId: createRandomStr(5),
     password: createRandomStr(20),
+    smokingOption: null,
     createdAt: new Date(),
     updatedAt: new Date(),
     ...restaurant

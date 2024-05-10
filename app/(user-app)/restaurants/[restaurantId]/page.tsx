@@ -9,7 +9,11 @@ type Params = { params: { restaurantId: string } };
 export default async function Restaurant({ params }: Params) {
   const restaurant = await prisma.restaurant.findUnique({
     where: { id: params.restaurantId },
-    include: { meals: { where: { isDiscarded: false } }, googleMapPlaceInfo: { select: { url: true } } }
+    include: {
+      meals: { where: { isDiscarded: false } },
+      googleMapPlaceInfo: { select: { url: true } },
+      paymentOptions: true
+    }
   });
   if (!restaurant) redirect("/");
 
