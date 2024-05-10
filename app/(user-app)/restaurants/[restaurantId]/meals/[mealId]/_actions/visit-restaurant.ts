@@ -4,11 +4,12 @@ import { notifyStaffOrder } from "./notify-staff-order";
 import prisma from "@/lib/prisma/client";
 import { createHttpTask } from "@/lib/googleTasks/createHttpTask";
 import { findPreorder } from "@/actions/order";
+import { sendVoiceCall } from "@/lib/xoxzo";
 
 export async function visitRestaurant({ mealId, userId }: { mealId: string; userId: string }) {
   const meal = await prisma.meal.findUnique({
     where: { id: mealId },
-    select: { id: true, price: true, isDiscarded: true }
+    select: { id: true, price: true, isDiscarded: true, restaurant: { select: { phoneNumber: true } } }
   });
   if (!meal) {
     throw new Error("Meal not found");
@@ -48,6 +49,17 @@ export async function visitRestaurant({ mealId, userId }: { mealId: string; user
     await notifyStaffOrder({ orderId: order.id });
   } catch (e) {
     console.error("Error notifying staff", e);
+  }
+
+  if (meal.restaurant.phoneNumber) {
+    try {
+      await sendVoiceCall(
+        meal.restaurant.phoneNumber,
+        "http://tognimzvzoyiykenqufx.supabase.co/storage/v1/object/public/notification-audio/visiting-notificaion.mp3"
+      );
+    } catch (e) {
+      console.error("Error sending voice call", e);
+    }
   }
 
   return order;

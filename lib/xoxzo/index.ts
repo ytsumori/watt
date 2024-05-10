@@ -60,10 +60,8 @@ export async function sendVoiceCall(to: string, audioUrl: string) {
       method: "POST",
       body: JSON.stringify(data)
     });
-    console.log(await response.json());
     return response.status;
   } catch (e) {
-    console.log("call missed");
     console.error(e);
     return 500;
   }

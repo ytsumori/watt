@@ -6,7 +6,15 @@ type PageProps = { params: { restaurantId: string } };
 export default async function RestaurantPage({ params }: PageProps) {
   const restaurant = await prisma.restaurant.findUnique({
     where: { id: params.restaurantId },
-    select: { id: true, name: true, bankAccount: true, meals: true, smokingOption: true, paymentOptions: true }
+    select: {
+      id: true,
+      name: true,
+      bankAccount: true,
+      meals: true,
+      smokingOption: true,
+      paymentOptions: true,
+      phoneNumber: true
+    }
   });
 
   if (!restaurant) return <>データが見つかりません</>;
