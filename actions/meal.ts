@@ -15,14 +15,6 @@ export async function getMeals(args: Prisma.MealFindManyArgs) {
   return await prisma.meal.findMany(args);
 }
 
-type MealCreateInput = Pick<Prisma.MealCreateInput, "title" | "description" | "imagePath" | "price"> & {
-  restaurantId: string;
-};
-
-export async function createMeal({ restaurantId, price, imagePath, title, description }: MealCreateInput) {
-  await prisma.meal.create({ data: { restaurantId, price, imagePath, title, description } });
-}
-
 export async function discardMeal({ id }: { id: string }) {
   return await prisma.meal.update({
     where: {
