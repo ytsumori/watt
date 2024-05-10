@@ -3,7 +3,6 @@
 import { getMyId } from "@/actions/me";
 import stripe from "@/lib/stripe";
 import prisma from "@/lib/prisma/client";
-import { applyEarlyDiscount } from "@/utils/discount-price";
 import { deleteHttpTask } from "@/lib/googleTasks/deleteHttpTask";
 
 export async function createPaymentIntent({
@@ -34,8 +33,6 @@ export async function createPaymentIntent({
   );
   if (!paymentMethod) throw new Error("Payment method not found");
 
-  const discountedPrice = applyEarlyDiscount(order.meal.price);
-
   if (order.payment) {
     if (order.payment.completedAt !== null) throw new Error("Payment already completed");
 
@@ -45,7 +42,7 @@ export async function createPaymentIntent({
   }
 
   const paymentIntent = await stripe.paymentIntents.create({
-    amount: discountedPrice + additionalAmount,
+    amount: order.meal.price + additionalAmount,
     currency: "jpy",
     customer: user.stripeCustomer.stripeCustomerId,
     payment_method: paymentMethod.id,
@@ -58,7 +55,7 @@ export async function createPaymentIntent({
       orderId,
       stripePaymentId: paymentIntent.id,
       additionalAmount: additionalAmount,
-      totalAmount: discountedPrice + additionalAmount,
+      totalAmount: order.meal.price + additionalAmount,
       restaurantProfitPrice: order.meal.price + additionalAmount
     }
   });
