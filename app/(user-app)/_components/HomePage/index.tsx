@@ -1,13 +1,14 @@
 "use client";
 
 import Map from "@/components/map";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Box, HStack, Heading, Badge, VStack } from "@chakra-ui/react";
 import { InView } from "react-intersection-observer";
 import { Prisma } from "@prisma/client";
 import { MealPreviewBox } from "@/components/meal/MealPreviewBox";
 import { useRouter } from "next/navigation";
 import NextLink from "next/link";
+import { calculateDistance } from "@/utils/distance";
 
 export default function HomePage({
   restaurants
@@ -18,6 +19,11 @@ export default function HomePage({
 }) {
   const router = useRouter();
   const [inViewRestaurantIds, setInViewRestaurantIds] = useState<string[]>([]);
+  const [currentPosition, setCurrentPosition] = useState<GeolocationPosition | null>(null);
+
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition((position) => setCurrentPosition(position));
+  }, []);
 
   const handleRestaurantSelect = (restaurantId: string) => {
     const element = document.getElementById(restaurantId);
@@ -34,10 +40,7 @@ export default function HomePage({
             return {
               id: restaurant.id,
               name: restaurant.name,
-              location: {
-                lat: restaurant.googleMapPlaceInfo.latitude,
-                lng: restaurant.googleMapPlaceInfo.longitude
-              }
+              location: { lat: restaurant.googleMapPlaceInfo.latitude, lng: restaurant.googleMapPlaceInfo.longitude }
             };
           })}
           activeRestaurantIds={inViewRestaurantIds}
@@ -85,6 +88,21 @@ export default function HomePage({
                       × 今は入れません
                     </Badge>
                   )}
+
+                  {restaurant.googleMapPlaceInfo?.latitude &&
+                    restaurant.googleMapPlaceInfo?.longitude &&
+                    currentPosition?.coords.latitude &&
+                    currentPosition?.coords.longitude && (
+                      <Badge border="GrayText" variant="solid">
+                        {calculateDistance({
+                          origin: { lat: currentPosition.coords.latitude, lng: currentPosition.coords.longitude },
+                          destination: {
+                            lat: restaurant.googleMapPlaceInfo.latitude,
+                            lng: restaurant.googleMapPlaceInfo.longitude
+                          }
+                        })}
+                      </Badge>
+                    )}
                 </VStack>
               </NextLink>
             </InView>
