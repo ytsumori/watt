@@ -29,7 +29,7 @@ export const createHttpTask = async <T extends object>({
 
   if (Object.keys(payload).length === 0 || !payload) throw new Error("Arguments are required");
 
-  const url = process.env.NEXT_PUBLIC_DOCKER_HOST_URL ?? process.env.NEXT_PUBLIC_HOST_URL + `/api/cloud-tasks/${name}`;
+  const url = `${process.env.NEXT_PUBLIC_DOCKER_HOST_URL ?? process.env.NEXT_PUBLIC_HOST_URL}/api/cloud-tasks/${name}`;
 
   try {
     const request: protos.google.cloud.tasks.v2.ICreateTaskRequest = {

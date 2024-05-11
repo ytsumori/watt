@@ -22,7 +22,7 @@ export async function visitRestaurant({ mealId, userId }: { mealId: string; user
 
   const order = await prisma.order.create({ data: { userId, mealId } });
 
-  const taskId = await createHttpTask({ name: "cancel-order", delaySeconds: 10, payload: { orderId: order.id } });
+  const taskId = await createHttpTask({ name: "cancel-order", delaySeconds: 60 * 30, payload: { orderId: order.id } });
 
   if (taskId) {
     await prisma.orderAutomaticCancellation.create({ data: { orderId: order.id, googleCloudTaskId: taskId } });
