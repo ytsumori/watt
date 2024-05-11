@@ -24,11 +24,11 @@ export const deleteHttpTask = async (orderId: string) => {
           }
         });
 
-  if (!order.automaticCancellation?.googleCloudTaskId) return console.log("No task to delete");
+  if (!order.automaticCancellation?.googleCloudTaskId) return console.error("No task to delete");
 
   try {
     await client.deleteTask({
-      name: `${client.queuePath(project, location, queue)}/tasks/${order.automaticCancellation?.googleCloudTaskId}`
+      name: `${client.queuePath(project, location, queue)}/tasks/${order.automaticCancellation.googleCloudTaskId}`
     });
   } catch (e) {
     console.log("ERROR on deleteHttpTask", e);

@@ -25,7 +25,8 @@ export default async function Payments({ searchParams }: { searchParams: { [key:
           }
         }
       }
-    }
+    },
+    orderBy: { completedAt: "asc" }
   });
 
   return <PaymentsPage payments={payments} dateRange={dateRange} />;

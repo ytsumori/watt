@@ -3,7 +3,6 @@
 import { getMyId } from "@/actions/me";
 import stripe from "@/lib/stripe";
 import prisma from "@/lib/prisma/client";
-import { deleteHttpTask } from "@/lib/googleTasks/deleteHttpTask";
 
 export async function createPaymentIntent({
   orderId,
@@ -74,7 +73,6 @@ export async function capturePaymentIntent({ paymentId }: { paymentId: string })
   const paymentIntent = await stripe.paymentIntents.capture(payment.stripePaymentId);
   if (paymentIntent.status === "succeeded") {
     await prisma.payment.update({ where: { id: payment.id }, data: { completedAt: new Date() } });
-    await deleteHttpTask(payment.orderId);
   }
 
   return paymentIntent.status;
