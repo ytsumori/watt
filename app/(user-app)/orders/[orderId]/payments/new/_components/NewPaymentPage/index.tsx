@@ -28,7 +28,6 @@ import { CheckCircleIcon } from "@chakra-ui/icons";
 import Stripe from "stripe";
 import { useState } from "react";
 import { createPaymentIntent } from "@/actions/payment-intent";
-import { applyEarlyDiscount } from "@/utils/discount-price";
 import { ConfirmModal } from "@/components/confirm-modal";
 
 type Props = {
@@ -77,14 +76,7 @@ export function NewPaymentPage({ order, paymentMethods }: Props) {
           <Heading>支払い金額の入力</Heading>
           <Heading size="md">{order.meal.restaurant.name}</Heading>
           <Text>推しメシ代金</Text>
-          <div>
-            <Text as="b" textDecoration="line-through" textDecorationColor="red.400" textDecorationThickness="2px">
-              {order.meal.price.toLocaleString("ja-JP")}円
-            </Text>
-            <Heading color="red.400" size="md">
-              {applyEarlyDiscount(order.meal.price).toLocaleString("ja-JP")}円
-            </Heading>
-          </div>
+          <Heading size="md">{order.meal.price.toLocaleString("ja-JP")}円</Heading>
           <Text size="md">追加料金</Text>
           <HStack w="full">
             <NumberInput
@@ -98,9 +90,7 @@ export function NewPaymentPage({ order, paymentMethods }: Props) {
             <Text>円</Text>
           </HStack>
           <Text size="md">合計金額</Text>
-          <Heading size="lg">
-            {(applyEarlyDiscount(order.meal.price) + (additionalPrice ?? 0)).toLocaleString("ja-JP")}円
-          </Heading>
+          <Heading size="lg">{(order.meal.price + (additionalPrice ?? 0)).toLocaleString("ja-JP")}円</Heading>
           <Divider />
           <Box>
             <Text>支払い方法</Text>

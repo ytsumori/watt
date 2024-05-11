@@ -1,7 +1,7 @@
 "use client";
 
 import { MealPreviewImage } from "@/components/meal/MealPreviewImage";
-import { Card, CardBody, CardFooter, Heading, Text, VStack } from "@chakra-ui/react";
+import { Box, Card, CardBody, CardFooter, Heading, Text, VStack } from "@chakra-ui/react";
 import { Meal } from "@prisma/client";
 import { ReactNode } from "react";
 
@@ -18,12 +18,12 @@ export function MealCard({ meal, button }: Props) {
         <CardBody>
           <VStack alignItems="start">
             <Heading size="md">{meal.title}</Heading>
-            <Text size="sm">
-              <Text as="b" mr={2}>
-                金額:
+            <Box>
+              {meal.listPrice && <Text fontSize="xs">定価：¥{meal.listPrice.toLocaleString("ja-JP")}</Text>}
+              <Text fontSize="sm" as="b">
+                金額：¥{meal.price.toLocaleString("ja-JP")}
               </Text>
-              ¥{meal.price.toLocaleString("ja-JP")}
-            </Text>
+            </Box>
             <Text size="sm" whiteSpace="pre-wrap" border="1px" p={2}>
               {meal.description}
             </Text>

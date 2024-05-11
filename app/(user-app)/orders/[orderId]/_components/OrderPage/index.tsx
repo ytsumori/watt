@@ -274,19 +274,16 @@ export function OrderPage({ order }: Props) {
             </AlertDescription>
           </Alert>
           {!isPaymentCompleted && (
-            <VStack w="full">
-              <Text fontSize="small">Watt上で支払いを済ませると、注文金額から¥100割引されます</Text>
-              <Button
-                as={NextLink}
-                size="lg"
-                w="full"
-                maxW="full"
-                href={`/orders/${order.id}/payments/new`}
-                isDisabled={isConfirming || isCancelling}
-              >
-                Wattで会計する
-              </Button>
-            </VStack>
+            <Button
+              as={NextLink}
+              size="lg"
+              w="full"
+              maxW="full"
+              href={`/orders/${order.id}/payments/new`}
+              isDisabled={isConfirming || isCancelling}
+            >
+              Wattで会計する
+            </Button>
           )}
           <Heading>注文情報</Heading>
           <VStack alignItems="start">
