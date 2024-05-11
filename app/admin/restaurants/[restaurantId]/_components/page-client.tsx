@@ -1,18 +1,40 @@
 "use client";
 
-import { Heading, VStack, Select, useToast, CheckboxGroup, Checkbox, HStack } from "@chakra-ui/react";
+import {
+  Heading,
+  VStack,
+  Select,
+  useToast,
+  CheckboxGroup,
+  Checkbox,
+  HStack,
+  Input,
+  InputGroup,
+  InputLeftAddon,
+  Button
+} from "@chakra-ui/react";
 import { PaymentOption, Prisma, SmokingOption } from "@prisma/client";
 
 import { MealList } from "@/components/meal/MealList";
 import { RestaurantBankAccount } from "./restaurant-bank-account";
 import { translatePaymentOption, translateSmokingOption } from "@/lib/prisma/translate-enum";
-import { updateSmokingOptions } from "../_actions/updateSmokingOption";
 import { useState } from "react";
-import { updatePaymentOptions } from "../_actions/updatePaymentOptions";
+import { formatPhoneNumber, isValidPhoneNumber } from "@/utils/phone-number";
+import { updatePhoneNumber } from "../_actions/update-phone-number";
+import { updatePaymentOptions } from "../_actions/update-payment-options";
+import { updateSmokingOptions } from "../_actions/update-smoking-option";
 
 type Props = {
   restaurant: Prisma.RestaurantGetPayload<{
-    select: { id: true; name: true; bankAccount: true; meals: true; smokingOption: true; paymentOptions: true };
+    select: {
+      id: true;
+      name: true;
+      bankAccount: true;
+      meals: true;
+      smokingOption: true;
+      paymentOptions: true;
+      phoneNumber: true;
+    };
   }>;
 };
 
@@ -21,7 +43,9 @@ export function RestaurantDetailPage({ restaurant }: Props) {
   const [paymentOptions, setPaymentOptions] = useState<PaymentOption[]>(
     restaurant.paymentOptions.map((option) => option.option)
   );
+  const [phoneNumber, setPhoneNumber] = useState<string>(restaurant.phoneNumber ?? "");
   const toast = useToast();
+
   const handleSmokingOptionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const option = event.target.value as SmokingOption;
     updateSmokingOptions({ restaurantId: restaurant.id, option }).then((restaurant) => {
@@ -29,12 +53,24 @@ export function RestaurantDetailPage({ restaurant }: Props) {
       setSmokingOption(restaurant.smokingOption ?? undefined);
     });
   };
+
   const handlePaymentOptionChange = (options: PaymentOption[]) => {
     updatePaymentOptions({ restaurantId: restaurant.id, options }).then((restaurant) => {
       toast({ title: "決済方法を更新しました", status: "success", duration: 3000 });
       setPaymentOptions(restaurant.paymentOptions.map((option) => option.option));
     });
   };
+
+  const handlePhoneNumberSubmit = () => {
+    if (isValidPhoneNumber(phoneNumber)) {
+      const formattedPhoneNumber = formatPhoneNumber(phoneNumber);
+      updatePhoneNumber({ restaurantId: restaurant.id, phoneNumber: formattedPhoneNumber }).then((restaurant) => {
+        toast({ title: "電話番号を更新しました", status: "success", duration: 3000 });
+        setPhoneNumber(restaurant.phoneNumber ?? "");
+      });
+    }
+  };
+
   return (
     <VStack p={10} alignItems="start" spacing={5}>
       <Heading as="h1" size="lg">
@@ -66,6 +102,26 @@ export function RestaurantDetailPage({ restaurant }: Props) {
             })}
           </HStack>
         </CheckboxGroup>
+      </VStack>
+      <VStack alignItems="start">
+        <Heading size="md">電話番号</Heading>
+        <HStack>
+          <InputGroup>
+            <InputLeftAddon>+81</InputLeftAddon>
+            <Input
+              type="tel"
+              placeholder="電話番号"
+              value={phoneNumber}
+              onChange={(e) => setPhoneNumber(e.target.value)}
+            />
+          </InputGroup>
+          <Button
+            isDisabled={!isValidPhoneNumber(phoneNumber) || restaurant.phoneNumber === phoneNumber}
+            onClick={handlePhoneNumberSubmit}
+          >
+            保存する
+          </Button>
+        </HStack>
       </VStack>
       <MealList restaurantId={restaurant.id} defaultMeals={restaurant.meals} />
     </VStack>

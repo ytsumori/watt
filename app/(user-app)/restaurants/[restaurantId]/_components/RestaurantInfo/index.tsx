@@ -5,6 +5,7 @@ import { translatePaymentOption, translateSmokingOption } from "@/lib/prisma/tra
 import { Box, Heading, VStack, Text, Divider, Button, Icon, SimpleGrid } from "@chakra-ui/react";
 import { Prisma } from "@prisma/client";
 import NextLink from "next/link";
+import { Fragment } from "react";
 import { FaMapMarkedAlt } from "react-icons/fa";
 
 type Props = {
@@ -51,10 +52,10 @@ export function RestaurantInfo({ restaurant }: Props) {
               <Text>
                 {orderPaymentOptions(restaurant.paymentOptions.map((paymentOption) => paymentOption.option)).map(
                   (option) => (
-                    <>
+                    <Fragment key={option}>
                       {translatePaymentOption(option)}
                       <br />
-                    </>
+                    </Fragment>
                   )
                 )}
               </Text>

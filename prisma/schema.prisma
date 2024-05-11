@@ -73,6 +73,7 @@ model Restaurant {
   googleMapPlaceId String         @unique
   password         String         @unique @default(uuid())
   smokingOption    SmokingOption?
+  phoneNumber      String?
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @default(now()) @updatedAt
 
