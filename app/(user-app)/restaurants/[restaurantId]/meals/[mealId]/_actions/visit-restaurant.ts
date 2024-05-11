@@ -21,26 +21,12 @@ export async function visitRestaurant({ mealId, userId }: { mealId: string; user
     throw new Error("Active payment already exists");
   }
 
-  const order = await prisma.order.create({
-    data: {
-      userId,
-      mealId
-    }
-  });
+  const order = await prisma.order.create({ data: { userId, mealId } });
 
-  const taskId = await createHttpTask({
-    url: `${process.env.NEXT_PUBLIC_HOST_URL}/api/cloud-tasks/cancel-order`,
-    delaySeconds: 60 * 30,
-    payload: { orderId: order.id }
-  });
+  const taskId = await createHttpTask({ name: "cancel-order", delaySeconds: 60 * 30, payload: { orderId: order.id } });
 
   if (taskId) {
-    await prisma.orderAutomaticCancellation.create({
-      data: {
-        orderId: order.id,
-        googleCloudTaskId: taskId
-      }
-    });
+    await prisma.orderAutomaticCancellation.create({ data: { orderId: order.id, googleCloudTaskId: taskId } });
   } else {
     console.error("Error creating task");
   }

@@ -2,11 +2,12 @@
 
 import { CloudTasksClient, type protos } from "@google-cloud/tasks";
 import { credentials } from "@grpc/grpc-js";
+import { TaskKind } from "../types";
 
-type Args<T extends object> = { payload: T; url: string; delaySeconds: number };
+type Args<T extends object> = { payload: T; name: TaskKind; delaySeconds: number };
 
 export const createHttpTask = async <T extends object>({
-  url,
+  name,
   delaySeconds,
   payload
 }: Args<T>): Promise<string | null | undefined> => {
@@ -27,6 +28,8 @@ export const createHttpTask = async <T extends object>({
   if (!project || !queue || !location) throw new Error("Environment variables are required");
 
   if (Object.keys(payload).length === 0 || !payload) throw new Error("Arguments are required");
+
+  const url = `${process.env.NEXT_PUBLIC_DOCKER_HOST_URL ?? process.env.NEXT_PUBLIC_HOST_URL}/api/cloud-tasks/${name}`;
 
   try {
     const request: protos.google.cloud.tasks.v2.ICreateTaskRequest = {
