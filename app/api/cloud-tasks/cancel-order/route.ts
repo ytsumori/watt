@@ -13,6 +13,7 @@ export async function POST(request: NextRequest) {
   const order = await prisma.order.findUnique({ where: { id: body.orderId } });
   if (!order) return NextResponse.json({ message: "order not found" }, { status: 404 });
   if (order.status === "CANCELLED") return NextResponse.json({ message: "already canncelled" }, { status: 403 });
+  if (order.status === "COMPLETE") return NextResponse.json({ message: "already completed" }, { status: 403 });
 
   await prisma.order.update({
     where: { id: body.orderId },
