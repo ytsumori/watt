@@ -5,7 +5,6 @@ import {
   AlertDescription,
   AlertIcon,
   AlertTitle,
-  Badge,
   Box,
   Button,
   Divider,
@@ -29,6 +28,7 @@ import { transformSupabaseImage } from "@/utils/image/transformSupabaseImage";
 import { completeOrder } from "../../_actions/complete-order";
 import { CompleteConfirmModal } from "../PaymentConfirmModal";
 import { CancelConfirmModal } from "../CancelConfirmModal";
+import { PhoneIcon } from "@chakra-ui/icons";
 
 type Props = {
   order: Prisma.OrderGetPayload<{
@@ -80,6 +80,20 @@ export function OrderPage({ order }: Props) {
           <VStack alignItems="start" spacing={8} p={4}>
             <VStack alignItems="start" spacing={4}>
               <Heading>注文を確定</Heading>
+              <Alert
+                status="warning"
+                flexDirection="column"
+                alignItems="center"
+                justifyContent="center"
+                textAlign="center"
+                borderRadius={4}
+              >
+                <AlertIcon as={PhoneIcon} />
+                <AlertDescription>
+                  お店の空き状況を確認しております。 1分ほどで確認が取れますので、ページを更新してください。
+                </AlertDescription>
+                <Button variant="ghost">ページを更新する</Button>
+              </Alert>
               <VStack alignItems="start">
                 <Heading size="md">店舗</Heading>
                 <Heading size="sm">{order.meal.restaurant.name}</Heading>

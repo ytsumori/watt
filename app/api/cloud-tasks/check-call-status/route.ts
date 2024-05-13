@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma/client";
-import { checkCallStatus } from "@/lib/xoxzo";
+import { checkCallStatus, sendMessage } from "@/lib/xoxzo";
 import { createHttpTask } from "@/lib/googleTasks/createHttpTask";
 
 export async function POST(request: NextRequest) {
@@ -11,10 +11,18 @@ export async function POST(request: NextRequest) {
 
   const body: { orderId: string } = await request.json();
 
-  const order = await prisma.order.findUnique({ where: { id: body.orderId }, include: { notificationCall: true } });
+  const order = await prisma.order.findUnique({
+    where: { id: body.orderId },
+    include: { notificationCall: true, user: { select: { phoneNumber: true } } }
+  });
   if (!order || !order.notificationCall) return NextResponse.json({ message: "order not found" }, { status: 404 });
   if (order.notificationCall.status !== "IN_PROGRESS")
     return NextResponse.json({ message: "call not in progress" }, { status: 200 });
+
+  if (order.status === "CANCELLED") return NextResponse.json({ message: "order already cancelled" }, { status: 200 });
+  if (order.status === "COMPLETE") return NextResponse.json({ message: "order already completed" }, { status: 200 });
+
+  if (!order.user.phoneNumber) return NextResponse.json({ message: "user has no phone number" }, { status: 500 });
 
   try {
     const { status: callStatus } = await checkCallStatus(order.notificationCall.callId);
@@ -24,22 +32,29 @@ export async function POST(request: NextRequest) {
           where: { orderId: order.id },
           data: { status: "ANSWERED" }
         });
+        await sendMessage(
+          order.user.phoneNumber,
+          "お店に確認が取れましたので、お店に向かってください。詳しくはWattをご確認ください。"
+        );
         break;
       case "FAILED":
-        await prisma.orderNotificationCall.update({
-          where: { orderId: order.id },
-          data: { status: "NO_ANSWER" }
+      case "NO ANSWER":
+        await prisma.order.update({
+          where: { id: order.id },
+          data: {
+            status: "CANCELLED",
+            notificationCall: { update: { status: "NO_ANSWER" } },
+            cancellation: { create: { reason: "FULL", cancelledBy: "STAFF" } }
+          }
         });
+        await sendMessage(
+          order.user.phoneNumber,
+          "お店が満席のため、注文がキャンセルされました。詳しくはWattをご確認ください。"
+        );
         break;
       case "IN PROGRESS":
         await createHttpTask({ name: "check-call-status", delaySeconds: 30, payload: { orderId: order.id } });
         return NextResponse.json({ message: "call still in progress" });
-      case "NO ANSWER":
-        await prisma.orderNotificationCall.update({
-          where: { orderId: order.id },
-          data: { status: "NO_ANSWER" }
-        });
-        break;
       default:
         return NextResponse.json({ message: "call status not found" }, { status: 500 });
     }
