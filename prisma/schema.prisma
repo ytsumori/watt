@@ -180,9 +180,20 @@ model Order {
   cancellation          OrderCancellation?
   automaticCancellation OrderAutomaticCancellation?
   payment               Payment?
+  notificationCall      OrderNotificationCall?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   meal Meal @relation(fields: [mealId], references: [id], onDelete: Cascade)
+}
+
+model OrderNotificationCall {
+  id        String                      @id @default(cuid())
+  orderId   String                      @unique
+  callId    String
+  status    OrderNotificationCallStatus 
+  createdAt DateTime                    @default(now())
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
 }
 
 model OrderCancellation {
@@ -295,4 +306,10 @@ enum SmokingOption {
   NON_SMOKING
   SEPARATED
   SEPARATED_ONLY_E_CIGARETTE
+}
+
+enum OrderNotificationCallStatus {
+  IN_PROGRESS
+  ANSWERED
+  NO_ANSWER
 }
