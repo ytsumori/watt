@@ -56,7 +56,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata | u
   if (meal) {
     const url = transformSupabaseImage("meals", meal.imagePath);
     return {
-      title: meal.title,
+      title: `${meal.title} | Watt`,
       description: meal.description,
       openGraph: { images: [url] }
     };
