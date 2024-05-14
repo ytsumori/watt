@@ -1,5 +1,5 @@
 export function isValidPhoneNumber(phoneNumber: string): boolean {
-  const isValid = /^\d{10,11}$/.test(phoneNumber);
+  const isValid = phoneNumber.match(/^\d{9,10}$/) !== null;
   return isValid;
 }
 

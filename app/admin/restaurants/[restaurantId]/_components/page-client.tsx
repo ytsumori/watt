@@ -11,15 +11,15 @@ import {
   Input,
   InputGroup,
   InputLeftAddon,
-  Button
+  Button,
+  Text
 } from "@chakra-ui/react";
 import { PaymentOption, Prisma, SmokingOption } from "@prisma/client";
-
 import { MealList } from "@/components/meal/MealList";
 import { RestaurantBankAccount } from "./restaurant-bank-account";
 import { translatePaymentOption, translateSmokingOption } from "@/lib/prisma/translate-enum";
 import { useState } from "react";
-import { formatPhoneNumber, isValidPhoneNumber } from "@/utils/phone-number";
+import { formatPhoneNumber } from "@/utils/phone-number";
 import { updatePhoneNumber } from "../_actions/update-phone-number";
 import { updatePaymentOptions } from "../_actions/update-payment-options";
 import { updateSmokingOptions } from "../_actions/update-smoking-option";
@@ -48,26 +48,43 @@ export function RestaurantDetailPage({ restaurant }: Props) {
 
   const handleSmokingOptionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const option = event.target.value as SmokingOption;
-    updateSmokingOptions({ restaurantId: restaurant.id, option }).then((restaurant) => {
-      toast({ title: "喫煙情報を更新しました", status: "success", duration: 3000 });
-      setSmokingOption(restaurant.smokingOption ?? undefined);
-    });
+    updateSmokingOptions({ restaurantId: restaurant.id, option })
+      .then((restaurant) => {
+        toast({ title: "喫煙情報を更新しました", status: "success", duration: 3000 });
+        setSmokingOption(restaurant.smokingOption ?? undefined);
+      })
+      .catch(() => {
+        toast({ title: "喫煙情報の更新に失敗しました", status: "error", duration: 3000 });
+      });
   };
 
   const handlePaymentOptionChange = (options: PaymentOption[]) => {
-    updatePaymentOptions({ restaurantId: restaurant.id, options }).then((restaurant) => {
-      toast({ title: "決済方法を更新しました", status: "success", duration: 3000 });
-      setPaymentOptions(restaurant.paymentOptions.map((option) => option.option));
-    });
+    updatePaymentOptions({ restaurantId: restaurant.id, options })
+      .then((restaurant) => {
+        toast({ title: "決済方法を更新しました", status: "success", duration: 3000 });
+        setPaymentOptions(restaurant.paymentOptions.map((option) => option.option));
+      })
+      .catch(() => {
+        toast({ title: "決済方法の更新に失敗しました", status: "error", duration: 3000 });
+      });
+  };
+
+  const isValidPhoneNumberInput = (phoneNumber: string): boolean => {
+    const isValid = phoneNumber.match(/^\d{9,11}$/) !== null;
+    return isValid;
   };
 
   const handlePhoneNumberSubmit = () => {
-    if (isValidPhoneNumber(phoneNumber)) {
+    if (isValidPhoneNumberInput(phoneNumber)) {
       const formattedPhoneNumber = formatPhoneNumber(phoneNumber);
-      updatePhoneNumber({ restaurantId: restaurant.id, phoneNumber: formattedPhoneNumber }).then((restaurant) => {
-        toast({ title: "電話番号を更新しました", status: "success", duration: 3000 });
-        setPhoneNumber(restaurant.phoneNumber ?? "");
-      });
+      updatePhoneNumber({ restaurantId: restaurant.id, phoneNumber: formattedPhoneNumber })
+        .then((restaurant) => {
+          toast({ title: "電話番号を更新しました", status: "success", duration: 3000 });
+          setPhoneNumber(restaurant.phoneNumber ?? "");
+        })
+        .catch(() => {
+          toast({ title: "電話番号の更新に失敗しました", status: "error", duration: 3000 });
+        });
     }
   };
 
@@ -105,6 +122,7 @@ export function RestaurantDetailPage({ restaurant }: Props) {
       </VStack>
       <VStack alignItems="start">
         <Heading size="md">電話番号</Heading>
+        <Text fontSize="xs">数字のみで入力してください</Text>
         <HStack>
           <InputGroup>
             <InputLeftAddon>+81</InputLeftAddon>
@@ -116,7 +134,7 @@ export function RestaurantDetailPage({ restaurant }: Props) {
             />
           </InputGroup>
           <Button
-            isDisabled={!isValidPhoneNumber(phoneNumber) || restaurant.phoneNumber === phoneNumber}
+            isDisabled={!isValidPhoneNumberInput(phoneNumber) || restaurant.phoneNumber === phoneNumber}
             onClick={handlePhoneNumberSubmit}
           >
             保存する
