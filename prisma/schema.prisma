@@ -165,17 +165,14 @@ model Meal {
 }
 
 model Order {
-  id                    String      @id @default(cuid())
-  orderNumber           Int         @unique @default(autoincrement())
-  userId                String
-  mealId                String
-  status                OrderStatus @default(PREORDERED)
-  providerPaymentId     String? // DEPRECATED: Do not use this field
-  price                 Int? // DEPRECATED: Do not use this field
-  restaurantProfitPrice Int? // DEPRECATED: Do not use this field
-  isDownloaded          Boolean     @default(false) // DEPRECATED: Do not use this field
-  createdAt             DateTime    @default(now())
-  updatedAt             DateTime    @default(now()) @updatedAt
+  id                     String      @id @default(cuid())
+  orderNumber            Int         @unique @default(autoincrement())
+  userId                 String
+  mealId                 String
+  status                 OrderStatus @default(PREORDERED)
+  approvedByRestaurantAt DateTime?
+  createdAt              DateTime    @default(now())
+  updatedAt              DateTime    @default(now()) @updatedAt
 
   cancellation          OrderCancellation?
   automaticCancellation OrderAutomaticCancellation?
@@ -190,7 +187,7 @@ model OrderNotificationCall {
   id        String                      @id @default(cuid())
   orderId   String                      @unique
   callId    String
-  status    OrderNotificationCallStatus 
+  status    OrderNotificationCallStatus
   createdAt DateTime                    @default(now())
 
   order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
