@@ -170,7 +170,7 @@ export function BankAccountForm({ isSubmitting, onSubmit }: Props) {
                 value={holderName ?? ""}
                 onChange={(e) => setHolderName(e.target.value === "" ? undefined : e.target.value)}
               />
-              <FormHelperText>半角英(大文字)数カナで入力してください</FormHelperText>
+              <FormHelperText>半角カナで入力してください</FormHelperText>
               <FormErrorMessage></FormErrorMessage>
             </FormControl>
             <Button isLoading={isSubmitting} size="lg" mt={4} isDisabled={!isValid} onClick={handleSubmit}>
