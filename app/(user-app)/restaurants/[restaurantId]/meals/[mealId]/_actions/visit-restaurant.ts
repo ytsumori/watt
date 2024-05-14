@@ -37,6 +37,8 @@ export async function visitRestaurant({ mealId, userId }: { mealId: string; user
     console.error("Error notifying staff", e);
   }
 
+  let isPhoneCalling = false;
+
   if (meal.restaurant.phoneNumber) {
     try {
       const { callid } = await sendVoiceCall(
@@ -44,6 +46,7 @@ export async function visitRestaurant({ mealId, userId }: { mealId: string; user
         "http://tognimzvzoyiykenqufx.supabase.co/storage/v1/object/public/notification-audio/visiting-notificaion.mp3"
       );
       await prisma.orderNotificationCall.create({ data: { orderId: order.id, callId: callid, status: "IN_PROGRESS" } });
+      isPhoneCalling = true;
       await createHttpTask({ name: "check-call-status", delaySeconds: 60, payload: { orderId: order.id } });
     } catch (e) {
       console.error("Error sending voice call", e);

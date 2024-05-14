@@ -12,6 +12,11 @@ import {
   Heading,
   Icon,
   Image,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalHeader,
+  ModalOverlay,
   Spacer,
   Text,
   VStack,
@@ -19,7 +24,7 @@ import {
 } from "@chakra-ui/react";
 import { Prisma } from "@prisma/client";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaMapMarkedAlt } from "react-icons/fa";
 import NextLink from "next/link";
 import { ConfirmModal } from "@/components/confirm-modal";
@@ -35,6 +40,7 @@ type Props = {
     include: {
       meal: { include: { restaurant: { include: { googleMapPlaceInfo: { select: { url: true } } } } } };
       payment: true;
+      notificationCall: true;
     };
   }>;
 };
@@ -47,6 +53,21 @@ export function OrderPage({ order }: Props) {
   const [isCancelling, setIsCancelling] = useState(false);
   const [errorMessage, setErrorMessage] = useState<{ title: string; description: string }>();
   const publicUrl = transformSupabaseImage("meals", order.meal.imagePath);
+
+  useEffect(() => {
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible") {
+        router.refresh();
+      }
+    });
+    return () => {
+      document.removeEventListener("visibilitychange", () => {
+        if (document.visibilityState === "visible") {
+          router.refresh();
+        }
+      });
+    };
+  }, [router]);
 
   const handleCompleteConfirm = () => {
     setIsConfirming(true);
@@ -211,6 +232,15 @@ export function OrderPage({ order }: Props) {
           >
             {errorMessage?.description ?? ""}
           </ConfirmModal>
+          <Modal isOpen={order.notificationCall !== null} isCentered onClose={() => undefined}>
+            <ModalOverlay />
+            <ModalContent>
+              <ModalHeader>注文の確定</ModalHeader>
+              <ModalBody>
+                お店の空き状況を確認しております。 1分ほどで確認が取れますので、ページを更新してください。
+              </ModalBody>
+            </ModalContent>
+          </Modal>
         </>
       );
     case "CANCELLED":
