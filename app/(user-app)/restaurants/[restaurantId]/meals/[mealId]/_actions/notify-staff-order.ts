@@ -132,6 +132,7 @@ export async function notifyStaffOrder({ orderId }: { orderId: string }) {
             footer: {
               type: "box",
               layout: "vertical",
+              spacing: "sm",
               contents: [
                 {
                   type: "button",
