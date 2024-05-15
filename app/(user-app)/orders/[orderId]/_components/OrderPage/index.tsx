@@ -34,7 +34,6 @@ type Props = {
     include: {
       meal: { include: { restaurant: { include: { googleMapPlaceInfo: { select: { url: true } } } } } };
       payment: true;
-      notificationCall: true;
     };
   }>;
 };
@@ -47,21 +46,6 @@ export function OrderPage({ order }: Props) {
   const [isCancelling, setIsCancelling] = useState(false);
   const [errorMessage, setErrorMessage] = useState<{ title: string; description: string }>();
   const publicUrl = transformSupabaseImage("meals", order.meal.imagePath);
-
-  useEffect(() => {
-    document.addEventListener("visibilitychange", () => {
-      if (document.visibilityState === "visible") {
-        router.refresh();
-      }
-    });
-    return () => {
-      document.removeEventListener("visibilitychange", () => {
-        if (document.visibilityState === "visible") {
-          router.refresh();
-        }
-      });
-    };
-  }, [router]);
 
   const handleCompleteConfirm = () => {
     setIsConfirming(true);
