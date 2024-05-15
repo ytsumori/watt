@@ -25,7 +25,8 @@ export default async function Order({ params }: { params: Params }) {
             include: { googleMapPlaceInfo: { select: { url: true } } }
           }
         }
-      }
+      },
+      notificationCall: true
     }
   });
 

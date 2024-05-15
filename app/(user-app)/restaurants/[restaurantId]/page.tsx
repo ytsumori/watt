@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata | u
   if (restaurant && restaurant.meals.length > 0) {
     const url = transformSupabaseImage("meals", restaurant.meals[0].imagePath);
     return {
-      title: restaurant.name,
+      title: `${restaurant.name} | Watt`,
       openGraph: { images: [url] }
     };
   }

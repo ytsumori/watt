@@ -4,7 +4,6 @@ import { notifyStaffOrder } from "./notify-staff-order";
 import prisma from "@/lib/prisma/client";
 import { createHttpTask } from "@/lib/googleTasks/createHttpTask";
 import { findPreorder } from "@/actions/order";
-import { sendVoiceCall } from "@/lib/xoxzo";
 
 export async function visitRestaurant({ mealId, userId }: { mealId: string; userId: string }) {
   const meal = await prisma.meal.findUnique({
@@ -37,16 +36,7 @@ export async function visitRestaurant({ mealId, userId }: { mealId: string; user
     console.error("Error notifying staff", e);
   }
 
-  if (meal.restaurant.phoneNumber) {
-    try {
-      await sendVoiceCall(
-        meal.restaurant.phoneNumber,
-        "http://tognimzvzoyiykenqufx.supabase.co/storage/v1/object/public/notification-audio/visiting-notificaion.mp3"
-      );
-    } catch (e) {
-      console.error("Error sending voice call", e);
-    }
-  }
+  await createHttpTask({ name: "call-restaurant", delaySeconds: 60 * 3, payload: { orderId: order.id } });
 
   return order;
 }

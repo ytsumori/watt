@@ -50,13 +50,13 @@ export default async function Meal({ params }: Params) {
 export async function generateMetadata({ params }: Params): Promise<Metadata | undefined> {
   const meal = await prisma.meal.findUnique({
     where: { id: params.mealId, restaurantId: params.restaurantId },
-    select: { title: true, description: true, imagePath: true }
+    select: { title: true, description: true, imagePath: true, restaurant: { select: { name: true } } }
   });
 
   if (meal) {
     const url = transformSupabaseImage("meals", meal.imagePath);
     return {
-      title: meal.title,
+      title: `${meal.restaurant.name} ${meal.title} | Watt`,
       description: meal.description,
       openGraph: { images: [url] }
     };

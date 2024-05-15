@@ -166,7 +166,7 @@ export default function MealPage({ meal, isRestaurantActive, preauthorizedOrder,
               isDisabled: isVisitRequesting
             }}
           >
-            向かっていることをお店に通知します。30分以内にお店に向かってください。
+            向かっていることをお店に通知します。注文を確定するまで調理は開始されません。
           </ConfirmModal>
         </VStack>
       </VStack>

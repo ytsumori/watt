@@ -136,6 +136,16 @@ export async function notifyStaffOrder({ orderId }: { orderId: string }) {
                 {
                   type: "button",
                   action: {
+                    type: "postback",
+                    label: "注文を承諾する",
+                    data: "action=approve-order&orderId=" + orderId,
+                    displayText: "注文を承諾する"
+                  },
+                  style: "primary"
+                },
+                {
+                  type: "button",
+                  action: {
                     type: "uri",
                     label: "店内が満席であることを知らせる",
                     uri: `${process.env.NEXT_PUBLIC_LIFF_URL}/reject-order/${orderId}`
