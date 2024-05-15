@@ -5,7 +5,7 @@ const token = process.env.SLACK_BOT_TOKEN;
 const slackClient = new WebClient(token);
 
 const SLACK_CHANNELS = {
-  partnerSuccess: "C074664FJ8Y"
+  partnerSuccess: process.env.SLACK_PARTNER_SUCCESS_CHANNEL_ID!
 } as const;
 
 export async function sendSlackMessage({
