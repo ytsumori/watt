@@ -39,7 +39,7 @@ export function RestaurantInfo({ restaurant }: Props) {
             Googleマップでお店情報を見る
           </Button>
         )}
-        <SimpleGrid columns={2} spacingY={2} fontSize="sm" fontWeight="bold">
+        <SimpleGrid columns={2} spacingY={2} fontSize="sm" fontWeight="bold" spacingX={4}>
           {restaurant.smokingOption && (
             <>
               <Text>喫煙・禁煙</Text>
