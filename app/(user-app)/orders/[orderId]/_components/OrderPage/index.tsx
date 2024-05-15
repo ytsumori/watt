@@ -322,11 +322,6 @@ export function OrderPage({ order }: Props) {
               <VStack spacing={0} alignItems="start">
                 <Text size="md">推しメシ料金 ¥{order.meal.price.toLocaleString("ja-JP")}</Text>
                 <Text size="md">追加料金 ¥{order.payment!!.additionalAmount.toLocaleString("ja-JP")}</Text>
-                {order.meal.price + order.payment!!.additionalAmount !== order.payment!!.totalAmount && (
-                  <Text size="md" textColor="red.400">
-                    Watt割引 -¥{order.meal.price + order.payment!!.additionalAmount - order.payment!!.totalAmount}
-                  </Text>
-                )}
               </VStack>
             )}
             <Heading size="sm">
