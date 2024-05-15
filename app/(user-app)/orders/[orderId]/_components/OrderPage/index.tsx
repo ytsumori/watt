@@ -12,11 +12,6 @@ import {
   Heading,
   Icon,
   Image,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalHeader,
-  ModalOverlay,
   Spacer,
   Text,
   VStack,
@@ -33,7 +28,6 @@ import { transformSupabaseImage } from "@/utils/image/transformSupabaseImage";
 import { completeOrder } from "../../_actions/complete-order";
 import { CompleteConfirmModal } from "../PaymentConfirmModal";
 import { CancelConfirmModal } from "../CancelConfirmModal";
-import { PhoneIcon } from "@chakra-ui/icons";
 
 type Props = {
   order: Prisma.OrderGetPayload<{
@@ -102,18 +96,17 @@ export function OrderPage({ order }: Props) {
             <VStack alignItems="start" spacing={4}>
               <Heading>注文を確定</Heading>
               <Alert
-                status="warning"
+                status="info"
                 flexDirection="column"
                 alignItems="center"
                 justifyContent="center"
                 textAlign="center"
                 borderRadius={4}
               >
-                <AlertIcon as={PhoneIcon} />
+                <AlertIcon />
                 <AlertDescription>
-                  お店の空き状況を確認しております。 1分ほどで確認が取れますので、ページを更新してください。
+                  入店後お店の人に「Wattでの注文で」と伝え、こちらの画面を見せて注文を確定してください
                 </AlertDescription>
-                <Button variant="ghost">ページを更新する</Button>
               </Alert>
               <VStack alignItems="start">
                 <Heading size="md">店舗</Heading>
@@ -173,26 +166,14 @@ export function OrderPage({ order }: Props) {
                   </Heading>
                 </VStack>
               </VStack>
-              <Alert
-                status="info"
-                flexDirection="column"
-                alignItems="center"
-                justifyContent="center"
-                textAlign="center"
-                borderRadius={4}
-              >
-                <AlertIcon />
-                <AlertDescription>
-                  入店後お店の人に「Wattでの注文で」と伝え、こちらの画面を見せて注文を確定してください
-                </AlertDescription>
-              </Alert>
               <VStack w="full">
                 <Button
                   size="md"
                   w="full"
                   maxW="full"
                   onClick={onCompleteModalOpen}
-                  isDisabled={isConfirming || isCancelling}
+                  isDisabled={isCancelling}
+                  isLoading={isConfirming}
                 >
                   注文を確定する
                 </Button>
@@ -202,7 +183,8 @@ export function OrderPage({ order }: Props) {
                   w="full"
                   maxW="full"
                   onClick={onCancelModalOpen}
-                  isDisabled={isConfirming || isCancelling}
+                  isDisabled={isConfirming}
+                  isLoading={isCancelling}
                 >
                   キャンセル
                 </Button>
@@ -232,15 +214,6 @@ export function OrderPage({ order }: Props) {
           >
             {errorMessage?.description ?? ""}
           </ConfirmModal>
-          <Modal isOpen={order.notificationCall !== null} isCentered onClose={() => undefined}>
-            <ModalOverlay />
-            <ModalContent>
-              <ModalHeader>注文の確定</ModalHeader>
-              <ModalBody>
-                お店の空き状況を確認しております。 1分ほどで確認が取れますので、ページを更新してください。
-              </ModalBody>
-            </ModalContent>
-          </Modal>
         </>
       );
     case "CANCELLED":

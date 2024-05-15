@@ -1,1 +1,1 @@
-export type TaskKind = "cancel-order" | "check-call-status";
+export type TaskKind = "cancel-order" | "check-call-status" | "call-restaurant";
