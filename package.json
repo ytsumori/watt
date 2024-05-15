@@ -31,6 +31,7 @@
     "@next-auth/prisma-adapter": "^1.0.7",
     "@next/third-parties": "^14.2.3",
     "@paypayopa/paypayopa-sdk-node": "^2.1.0",
+    "@slack/web-api": "^7.0.4",
     "@stripe/react-stripe-js": "^2.7.1",
     "@stripe/stripe-js": "^2.4.0",
     "@supabase/ssr": "^0.1.0",
