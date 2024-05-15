@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma/client";
 import { checkCallStatus, sendMessage } from "@/lib/xoxzo";
 import { createHttpTask } from "@/lib/googleTasks/createHttpTask";
+import { updateIsOpen } from "@/actions/restaurant";
+import { notifyStaffUnansweredCancellation } from "./_actions/notify-staff-unanswered-cancellation";
 
 export async function POST(request: NextRequest) {
   const authHeader = request.headers.get("authorization");
@@ -13,7 +15,11 @@ export async function POST(request: NextRequest) {
 
   const order = await prisma.order.findUnique({
     where: { id: body.orderId },
-    include: { notificationCall: true, user: { select: { phoneNumber: true } } }
+    include: {
+      meal: { select: { restaurantId: true } },
+      notificationCall: true,
+      user: { select: { phoneNumber: true } }
+    }
   });
   if (!order || !order.notificationCall) return NextResponse.json({ message: "order not found" }, { status: 404 });
   if (!order.user.phoneNumber) return NextResponse.json({ message: "user has no phone number" }, { status: 500 });
@@ -40,13 +46,15 @@ export async function POST(request: NextRequest) {
           data: {
             status: "CANCELLED",
             notificationCall: { update: { status: "NO_ANSWER" } },
-            cancellation: { create: { reason: "FULL", cancelledBy: "STAFF" } }
+            cancellation: { create: { reason: "CALL_NO_ANSWER", cancelledBy: "STAFF" } }
           }
         });
+        await updateIsOpen({ id: order.meal.restaurantId, isOpen: false });
         await sendMessage(
           order.user.phoneNumber,
           "お店が満席のため、注文がキャンセルされました。詳しくはWattをご確認ください。"
         );
+        await notifyStaffUnansweredCancellation({ orderId: order.id });
         break;
       case "IN PROGRESS":
         await createHttpTask({ name: "check-call-status", delaySeconds: 30, payload: { orderId: order.id } });

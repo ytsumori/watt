@@ -20,13 +20,13 @@ export async function POST(request: NextRequest) {
   });
 
   if (!order) return NextResponse.json({ message: "order not found" }, { status: 404 });
-  if (!order.meal.restaurant.phoneNumber)
-    return NextResponse.json({ message: "restaurant phone number not found" }, { status: 404 });
 
   if (order.status === "CANCELLED") return NextResponse.json({ message: "order already cancelled" }, { status: 200 });
   if (order.status === "COMPLETE") return NextResponse.json({ message: "order already completed" }, { status: 200 });
   if (order.approvedByRestaurantAt !== null)
     return NextResponse.json({ message: "order already approved" }, { status: 200 });
+  if (!order.meal.restaurant.phoneNumber)
+    return NextResponse.json({ message: "restaurant phone number not found" }, { status: 404 });
 
   try {
     const { callid } = await sendVoiceCall(
