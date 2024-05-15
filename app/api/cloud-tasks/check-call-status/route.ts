@@ -16,13 +16,13 @@ export async function POST(request: NextRequest) {
     include: { notificationCall: true, user: { select: { phoneNumber: true } } }
   });
   if (!order || !order.notificationCall) return NextResponse.json({ message: "order not found" }, { status: 404 });
+  if (!order.user.phoneNumber) return NextResponse.json({ message: "user has no phone number" }, { status: 500 });
+
   if (order.notificationCall.status !== "IN_PROGRESS")
     return NextResponse.json({ message: "call not in progress" }, { status: 200 });
-
+  if (order.approvedByRestaurantAt) return NextResponse.json({ message: "order already approved" }, { status: 200 });
   if (order.status === "CANCELLED") return NextResponse.json({ message: "order already cancelled" }, { status: 200 });
   if (order.status === "COMPLETE") return NextResponse.json({ message: "order already completed" }, { status: 200 });
-
-  if (!order.user.phoneNumber) return NextResponse.json({ message: "user has no phone number" }, { status: 500 });
 
   try {
     const { status: callStatus } = await checkCallStatus(order.notificationCall.callId);
@@ -32,10 +32,6 @@ export async function POST(request: NextRequest) {
           where: { orderId: order.id },
           data: { status: "ANSWERED" }
         });
-        await sendMessage(
-          order.user.phoneNumber,
-          "お店に確認が取れましたので、お店に向かってください。詳しくはWattをご確認ください。"
-        );
         break;
       case "FAILED":
       case "NO ANSWER":
