@@ -2,13 +2,13 @@
 
 import Map from "@/components/map";
 import { useEffect, useState } from "react";
-import { Box, HStack, Heading, Badge, VStack } from "@chakra-ui/react";
+import { Box, HStack, Heading, Badge, VStack, Spinner, Flex, Text } from "@chakra-ui/react";
 import { InView } from "react-intersection-observer";
 import { Prisma } from "@prisma/client";
 import { MealPreviewBox } from "@/components/meal/MealPreviewBox";
 import { useRouter } from "next/navigation";
 import NextLink from "next/link";
-import { calculateDistance } from "@/utils/distance";
+import { calculateDistance } from "../../_util/calculateDistance";
 
 export default function HomePage({
   restaurants
@@ -19,9 +19,13 @@ export default function HomePage({
 }) {
   const router = useRouter();
   const [inViewRestaurantIds, setInViewRestaurantIds] = useState<string[]>([]);
+  const [isGrantGeolocation, setIsGrantGeolocation] = useState<boolean>(false);
   const [currentPosition, setCurrentPosition] = useState<GeolocationPosition | null>(null);
 
   useEffect(() => {
+    navigator.permissions
+      .query({ name: "geolocation" })
+      .then((permissionStatus) => setIsGrantGeolocation("granted" === permissionStatus.state));
     navigator.geolocation.getCurrentPosition((position) => setCurrentPosition(position));
   }, []);
 
@@ -88,21 +92,36 @@ export default function HomePage({
                       × 今は入れません
                     </Badge>
                   )}
-
-                  {restaurant.googleMapPlaceInfo?.latitude &&
-                    restaurant.googleMapPlaceInfo?.longitude &&
-                    currentPosition?.coords.latitude &&
-                    currentPosition?.coords.longitude && (
-                      <Badge border="GrayText" variant="solid">
-                        {calculateDistance({
-                          origin: { lat: currentPosition.coords.latitude, lng: currentPosition.coords.longitude },
-                          destination: {
-                            lat: restaurant.googleMapPlaceInfo.latitude,
-                            lng: restaurant.googleMapPlaceInfo.longitude
-                          }
-                        })}
-                      </Badge>
-                    )}
+                  {isGrantGeolocation && (
+                    <>
+                      {currentPosition?.coords.latitude && currentPosition?.coords.longitude ? (
+                        <>
+                          {restaurant.googleMapPlaceInfo?.latitude && restaurant.googleMapPlaceInfo?.longitude && (
+                            <Badge border="GrayText" variant="solid" textTransform="none">
+                              現在地から
+                              {calculateDistance({
+                                origin: {
+                                  lat: restaurant.googleMapPlaceInfo.latitude,
+                                  lng: restaurant.googleMapPlaceInfo.longitude
+                                },
+                                destination: {
+                                  lat: currentPosition.coords.latitude,
+                                  lng: currentPosition.coords.longitude
+                                }
+                              })}
+                            </Badge>
+                          )}
+                        </>
+                      ) : (
+                        <Flex>
+                          <Spinner size="sm" alignItems="center" />
+                          <Text fontSize="sm" ml={2} color="gray.500">
+                            現在位置を取得中
+                          </Text>
+                        </Flex>
+                      )}
+                    </>
+                  )}
                 </VStack>
               </NextLink>
             </InView>
