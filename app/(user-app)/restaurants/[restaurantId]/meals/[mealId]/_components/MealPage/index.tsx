@@ -127,7 +127,11 @@ export default function MealPage({ meal, isRestaurantActive, preauthorizedOrder,
                       合計 ¥{meal.price.toLocaleString("ja-JP")}
                     </Heading>
                     <Divider borderColor="black" />
-                    <Text fontSize="xs">お店に到着後に次の画面で注文を確定するまで、調理は開始されません。</Text>
+                    <Text fontSize="xs">
+                      お店に到着後に次の画面で注文を確定するまで、調理は開始されません。
+                      <br />
+                      30分以内にお店に向かってください。
+                    </Text>
                     <Button isLoading={isVisitRequesting} onClick={handleVisitingClick} w="full" maxW="full" size="md">
                       お店に向かう
                     </Button>
@@ -166,7 +170,9 @@ export default function MealPage({ meal, isRestaurantActive, preauthorizedOrder,
               isDisabled: isVisitRequesting
             }}
           >
-            向かっていることをお店に通知します。注文を確定するまで調理は開始されません。
+            向かっていることをお店に通知します。30分以内にお店に向かってください。
+            <br />
+            注文を確定するまで調理は開始されません。
           </ConfirmModal>
         </VStack>
       </VStack>
