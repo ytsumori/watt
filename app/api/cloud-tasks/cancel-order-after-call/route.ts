@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
 
   await prisma.order.update({
     where: { id: body.orderId },
-    data: { status: "CANCELLED", cancellation: { create: { reason: "LATE", cancelledBy: "USER" } } }
+    data: { status: "CANCELLED", cancellation: { create: { reason: "CALL_NO_ANSWER", cancelledBy: "STAFF" } } }
   });
   await updateIsOpen({ id: order.meal.restaurantId, isOpen: false });
   await sendMessage(
