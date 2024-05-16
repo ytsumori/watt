@@ -24,3 +24,16 @@ export async function pushMessage({ to, messages }: { to: string; messages: line
     }
   );
 }
+
+export async function multicastMessage({ to, messages }: { to: string[]; messages: line.Message[] }) {
+  const retryKey = crypto.randomUUID();
+  await retry(
+    async () => {
+      await client.multicast({ to, messages }, retryKey);
+    },
+    {
+      retries: 3,
+      onRetry: (e, attempt) => console.error(`Error multicasting message to ${to} (attempt ${attempt}): ${e.message}`)
+    }
+  );
+}

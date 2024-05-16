@@ -45,7 +45,11 @@ export async function GET(request: NextRequest) {
           const isClosedBeforeOneDayAgo =
             new Date().getTime() - unopenClosedAlert.closedAt.getTime() > 24 * 60 * 60 * 1000;
           if (!unopenClosedAlert.notifiedAt && isClosedBeforeOneDayAgo) {
-            await notifyRestaurantToOpen({ restaurantId: restaurant.id });
+            try {
+              await notifyRestaurantToOpen({ restaurantId: restaurant.id });
+            } catch (e) {
+              console.error("Error notifying restaurant to open", e);
+            }
             await prisma.restaurantClosedAlert.update({
               where: { id: unopenClosedAlert.id },
               data: { notifiedAt: new Date() }

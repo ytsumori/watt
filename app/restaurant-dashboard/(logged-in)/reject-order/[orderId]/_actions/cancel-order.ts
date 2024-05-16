@@ -1,13 +1,13 @@
 "use server";
 
 import prisma from "@/lib/prisma/client";
-import { notifyCancel } from "./notify-cancel";
 import { updateIsOpen } from "@/actions/restaurant";
+import { sendMessage } from "@/lib/xoxzo";
 
 export async function cancelOrder(orderId: string) {
   const order = await prisma.order.findUnique({
     where: { id: orderId },
-    include: { meal: { select: { restaurantId: true } } }
+    include: { meal: { select: { restaurantId: true } }, user: true }
   });
 
   if (!order) {
@@ -20,8 +20,13 @@ export async function cancelOrder(orderId: string) {
   });
   await updateIsOpen({ id: order.meal.restaurantId, isOpen: false });
 
+  if (!order.user.phoneNumber) throw new Error("User has no phone number");
+
   try {
-    await notifyCancel(order.userId);
+    await sendMessage(
+      order.user.phoneNumber,
+      `お店が満席のため、注文がキャンセルされました。詳しくはWattをご確認ください。`
+    );
   } catch (e) {
     console.error("Error notifying user", e);
   }

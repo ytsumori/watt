@@ -2,9 +2,10 @@
 
 import { orderPaymentOptions } from "@/lib/prisma/order-enum";
 import { translatePaymentOption, translateSmokingOption } from "@/lib/prisma/translate-enum";
-import { Box, Heading, VStack, Text, Divider, Button, Icon, SimpleGrid } from "@chakra-ui/react";
+import { Box, Heading, VStack, Text, Button, Icon, SimpleGrid } from "@chakra-ui/react";
 import { Prisma } from "@prisma/client";
 import NextLink from "next/link";
+import { Fragment } from "react";
 import { FaMapMarkedAlt } from "react-icons/fa";
 
 type Props = {
@@ -38,7 +39,7 @@ export function RestaurantInfo({ restaurant }: Props) {
             Googleマップでお店情報を見る
           </Button>
         )}
-        <SimpleGrid columns={2} spacingY={2} fontSize="sm" fontWeight="bold">
+        <SimpleGrid columns={2} spacingY={2} fontSize="sm" fontWeight="bold" spacingX={4}>
           {restaurant.smokingOption && (
             <>
               <Text>喫煙・禁煙</Text>
@@ -51,10 +52,10 @@ export function RestaurantInfo({ restaurant }: Props) {
               <Text>
                 {orderPaymentOptions(restaurant.paymentOptions.map((paymentOption) => paymentOption.option)).map(
                   (option) => (
-                    <>
+                    <Fragment key={option}>
                       {translatePaymentOption(option)}
                       <br />
-                    </>
+                    </Fragment>
                   )
                 )}
               </Text>

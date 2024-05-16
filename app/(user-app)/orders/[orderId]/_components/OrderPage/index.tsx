@@ -5,7 +5,6 @@ import {
   AlertDescription,
   AlertIcon,
   AlertTitle,
-  Badge,
   Box,
   Button,
   Divider,
@@ -20,7 +19,7 @@ import {
 } from "@chakra-ui/react";
 import { Prisma } from "@prisma/client";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaMapMarkedAlt } from "react-icons/fa";
 import NextLink from "next/link";
 import { ConfirmModal } from "@/components/confirm-modal";
@@ -80,6 +79,19 @@ export function OrderPage({ order }: Props) {
           <VStack alignItems="start" spacing={8} p={4}>
             <VStack alignItems="start" spacing={4}>
               <Heading>注文を確定</Heading>
+              <Alert
+                status="info"
+                flexDirection="column"
+                alignItems="center"
+                justifyContent="center"
+                textAlign="center"
+                borderRadius={4}
+              >
+                <AlertIcon />
+                <AlertDescription>
+                  入店後お店の人に「Wattでの注文で」と伝え、こちらの画面を見せて注文を確定してください
+                </AlertDescription>
+              </Alert>
               <VStack alignItems="start">
                 <Heading size="md">店舗</Heading>
                 <Heading size="sm">{order.meal.restaurant.name}</Heading>
@@ -138,26 +150,14 @@ export function OrderPage({ order }: Props) {
                   </Heading>
                 </VStack>
               </VStack>
-              <Alert
-                status="info"
-                flexDirection="column"
-                alignItems="center"
-                justifyContent="center"
-                textAlign="center"
-                borderRadius={4}
-              >
-                <AlertIcon />
-                <AlertDescription>
-                  入店後お店の人に「Wattでの注文で」と伝え、こちらの画面を見せて注文を確定してください
-                </AlertDescription>
-              </Alert>
               <VStack w="full">
                 <Button
                   size="md"
                   w="full"
                   maxW="full"
                   onClick={onCompleteModalOpen}
-                  isDisabled={isConfirming || isCancelling}
+                  isDisabled={isCancelling}
+                  isLoading={isConfirming}
                 >
                   注文を確定する
                 </Button>
@@ -167,7 +167,8 @@ export function OrderPage({ order }: Props) {
                   w="full"
                   maxW="full"
                   onClick={onCancelModalOpen}
-                  isDisabled={isConfirming || isCancelling}
+                  isDisabled={isConfirming}
+                  isLoading={isCancelling}
                 >
                   キャンセル
                 </Button>
@@ -274,19 +275,16 @@ export function OrderPage({ order }: Props) {
             </AlertDescription>
           </Alert>
           {!isPaymentCompleted && (
-            <VStack w="full">
-              <Text fontSize="small">Watt上で支払いを済ませると、注文金額から¥100割引されます</Text>
-              <Button
-                as={NextLink}
-                size="lg"
-                w="full"
-                maxW="full"
-                href={`/orders/${order.id}/payments/new`}
-                isDisabled={isConfirming || isCancelling}
-              >
-                Wattで会計する
-              </Button>
-            </VStack>
+            <Button
+              as={NextLink}
+              size="lg"
+              w="full"
+              maxW="full"
+              href={`/orders/${order.id}/payments/new`}
+              isDisabled={isConfirming || isCancelling}
+            >
+              Wattで会計する
+            </Button>
           )}
           <Heading>注文情報</Heading>
           <VStack alignItems="start">
@@ -308,11 +306,6 @@ export function OrderPage({ order }: Props) {
               <VStack spacing={0} alignItems="start">
                 <Text size="md">推しメシ料金 ¥{order.meal.price.toLocaleString("ja-JP")}</Text>
                 <Text size="md">追加料金 ¥{order.payment!!.additionalAmount.toLocaleString("ja-JP")}</Text>
-                {order.meal.price + order.payment!!.additionalAmount !== order.payment!!.totalAmount && (
-                  <Text size="md" textColor="red.400">
-                    Watt割引 -¥{order.meal.price + order.payment!!.additionalAmount - order.payment!!.totalAmount}
-                  </Text>
-                )}
               </VStack>
             )}
             <Heading size="sm">

@@ -7,20 +7,16 @@ export async function sendOtpCode(to: string, code: string) {
     recipient: `+81${to}`,
     sender: "Watt"
   };
-  try {
-    const response = await fetch("https://api.xoxzo.com/sms/messages/", {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Basic ${btoa(`${process.env.XOXZO_API_SID}:${process.env.XOXZO_API_TOKEN}`)}`
-      },
-      method: "POST",
-      body: JSON.stringify(data)
-    });
-    return response.status;
-  } catch (e) {
-    console.error(e);
-    return 500;
-  }
+
+  const response = await fetch("https://api.xoxzo.com/sms/messages/", {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Basic ${btoa(`${process.env.XOXZO_API_SID}:${process.env.XOXZO_API_TOKEN}`)}`
+    },
+    method: "POST",
+    body: JSON.stringify(data)
+  });
+  return response.status;
 }
 
 export async function sendMessage(to: string, message: string) {
@@ -29,18 +25,52 @@ export async function sendMessage(to: string, message: string) {
     recipient: `+81${to}`,
     sender: "Watt"
   };
-  try {
-    const response = await fetch("https://api.xoxzo.com/sms/messages/", {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Basic ${btoa(`${process.env.XOXZO_API_SID}:${process.env.XOXZO_API_TOKEN}`)}`
-      },
-      method: "POST",
-      body: JSON.stringify(data)
-    });
-    return response.status;
-  } catch (e) {
-    console.error(e);
-    return 500;
-  }
+
+  const response = await fetch("https://api.xoxzo.com/sms/messages/", {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Basic ${btoa(`${process.env.XOXZO_API_SID}:${process.env.XOXZO_API_TOKEN}`)}`
+    },
+    method: "POST",
+    body: JSON.stringify(data)
+  });
+  return response.status;
+}
+
+type VoiceCallResult = {
+  callid: string;
+};
+
+export async function sendVoiceCall(to: string, audioUrl: string) {
+  const data = {
+    caller: "+81665332030",
+    recipient: `+81${to}`,
+    recording_url: audioUrl
+  };
+
+  const response = await fetch("https://api.xoxzo.com/voice/simple/playbacks/", {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Basic ${btoa(`${process.env.XOXZO_API_SID}:${process.env.XOXZO_API_TOKEN}`)}`
+    },
+    method: "POST",
+    body: JSON.stringify(data)
+  });
+  const responseJson = (await response.json()) as VoiceCallResult[];
+  return responseJson[0];
+}
+
+type CheckStatusResult = {
+  status: "ANSWERED" | "FAILED" | "IN PROGRESS" | "NO ANSWER";
+};
+
+export async function checkCallStatus(callId: string) {
+  const response = await fetch(`https://api.xoxzo.com/voice/calls/${callId}/`, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Basic ${btoa(`${process.env.XOXZO_API_SID}:${process.env.XOXZO_API_TOKEN}`)}`
+    },
+    method: "GET"
+  });
+  return response.json() as Promise<CheckStatusResult>;
 }

@@ -2,10 +2,10 @@
 
 import { activateMeal, discardMeal, getMeals } from "@/actions/meal";
 import { MealCard } from "@/components/meal/MealCard";
-import { NewMealModal } from "@/components/meal/NewMealModal";
-import { Button, Flex, Heading, VStack, useDisclosure } from "@chakra-ui/react";
+import { Button, Flex, HStack, Heading, VStack, useDisclosure } from "@chakra-ui/react";
 import { Meal } from "@prisma/client";
 import { useState } from "react";
+import { MealFormModal } from "../MealFormModal";
 
 type Props = {
   restaurantId: string;
@@ -17,12 +17,18 @@ export function MealList({ restaurantId, defaultMeals }: Props) {
 
   const [meals, setMeals] = useState<Meal[]>(defaultMeals?.filter((meal) => !meal.isDiscarded) ?? []);
   const [discardedMeals, setDiscardedMeals] = useState<Meal[]>(defaultMeals?.filter((meal) => meal.isDiscarded) ?? []);
+  const [editingMeal, setEditingMeal] = useState<Meal>();
 
   const revalidateMeals = () => {
     getMeals({ where: { restaurantId } }).then((meals) => {
       setMeals(meals.filter((meal) => !meal.isDiscarded));
       setDiscardedMeals(meals.filter((meal) => meal.isDiscarded));
     });
+  };
+
+  const handleClickEdit = (meal: Meal) => {
+    setEditingMeal(meal);
+    onNewFormOpen();
   };
 
   const handleClickDiscard = async (mealId: string) => {
@@ -51,9 +57,14 @@ export function MealList({ restaurantId, defaultMeals }: Props) {
               key={meal.id}
               meal={meal}
               button={
-                <Button variant="solid" colorScheme="red" onClick={() => handleClickDiscard(meal.id)}>
-                  取り消す
-                </Button>
+                <HStack>
+                  <Button variant="outline" onClick={() => handleClickEdit(meal)}>
+                    編集する
+                  </Button>
+                  <Button variant="solid" colorScheme="red" onClick={() => handleClickDiscard(meal.id)}>
+                    取り消す
+                  </Button>
+                </HStack>
               }
             />
           ))}
@@ -67,17 +78,26 @@ export function MealList({ restaurantId, defaultMeals }: Props) {
               key={meal.id}
               meal={meal}
               button={
-                <Button variant="ghost" colorScheme="orange" onClick={() => handleClickReopen(meal.id)}>
-                  提供再開
-                </Button>
+                <HStack>
+                  <Button variant="outline" onClick={() => handleClickEdit(meal)}>
+                    編集する
+                  </Button>
+                  <Button variant="ghost" colorScheme="orange" onClick={() => handleClickReopen(meal.id)}>
+                    提供再開
+                  </Button>
+                </HStack>
               }
             />
           ))}
         </Flex>
       </VStack>
-      <NewMealModal
+      <MealFormModal
+        editingMeal={editingMeal}
         isOpen={isNewFormOpen}
-        onClose={onNewFormClose}
+        onClose={() => {
+          onNewFormClose();
+          setEditingMeal(undefined);
+        }}
         onSubmitComplete={revalidateMeals}
         restaurantId={restaurantId}
       />

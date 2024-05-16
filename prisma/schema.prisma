@@ -73,6 +73,7 @@ model Restaurant {
   googleMapPlaceId String         @unique
   password         String         @unique @default(uuid())
   smokingOption    SmokingOption?
+  phoneNumber      String?
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @default(now()) @updatedAt
 
@@ -150,6 +151,7 @@ model Meal {
   id           String   @id @default(cuid())
   restaurantId String
   imagePath    String
+  listPrice    Int?
   price        Int
   title        String
   description  String?
@@ -163,24 +165,32 @@ model Meal {
 }
 
 model Order {
-  id                    String      @id @default(cuid())
-  orderNumber           Int         @unique @default(autoincrement())
-  userId                String
-  mealId                String
-  status                OrderStatus @default(PREORDERED)
-  providerPaymentId     String? // DEPRECATED: Do not use this field
-  price                 Int? // DEPRECATED: Do not use this field
-  restaurantProfitPrice Int? // DEPRECATED: Do not use this field
-  isDownloaded          Boolean     @default(false) // DEPRECATED: Do not use this field
-  createdAt             DateTime    @default(now())
-  updatedAt             DateTime    @default(now()) @updatedAt
+  id                     String      @id @default(cuid())
+  orderNumber            Int         @unique @default(autoincrement())
+  userId                 String
+  mealId                 String
+  status                 OrderStatus @default(PREORDERED)
+  approvedByRestaurantAt DateTime?
+  createdAt              DateTime    @default(now())
+  updatedAt              DateTime    @default(now()) @updatedAt
 
   cancellation          OrderCancellation?
   automaticCancellation OrderAutomaticCancellation?
   payment               Payment?
+  notificationCall      OrderNotificationCall?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   meal Meal @relation(fields: [mealId], references: [id], onDelete: Cascade)
+}
+
+model OrderNotificationCall {
+  id        String                      @id @default(cuid())
+  orderId   String                      @unique
+  callId    String
+  status    OrderNotificationCallStatus
+  createdAt DateTime                    @default(now())
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
 }
 
 model OrderCancellation {
@@ -279,6 +289,7 @@ enum CancellationReason {
   USER_DEMAND
   CLOSED
   LATE
+  CALL_NO_ANSWER
 }
 
 enum PaymentOption {
@@ -293,4 +304,10 @@ enum SmokingOption {
   NON_SMOKING
   SEPARATED
   SEPARATED_ONLY_E_CIGARETTE
+}
+
+enum OrderNotificationCallStatus {
+  IN_PROGRESS
+  ANSWERED
+  NO_ANSWER
 }
