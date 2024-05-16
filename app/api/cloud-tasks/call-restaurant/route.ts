@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
   try {
     const { callid } = await sendVoiceCall(
       order.meal.restaurant.phoneNumber,
-      "http://tognimzvzoyiykenqufx.supabase.co/storage/v1/object/public/notification-audio/visiting-notificaion.mp3"
+      "http://tognimzvzoyiykenqufx.supabase.co/storage/v1/object/public/notification-audio/visiting-call-notification.mp3"
     );
     await prisma.orderNotificationCall.create({ data: { orderId: order.id, callId: callid, status: "IN_PROGRESS" } });
     await createHttpTask({ name: "check-call-status", delaySeconds: 60, payload: { orderId: order.id } });
