@@ -77,7 +77,7 @@ export async function notifyStaffUnansweredCancellation({ orderId }: { orderId: 
               },
               {
                 type: "text",
-                text: "電話通知に対応がなかったため、自動的にキャンセルされました。",
+                text: "電話通知が繋がらなかったため、自動的にキャンセルされ営業ステータスが「入店不可」に切り替わりました。",
                 wrap: true,
                 margin: "lg",
                 color: "#DC3444",
