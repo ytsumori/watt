@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
           where: { orderId: order.id },
           data: { status: "ANSWERED" }
         });
-        createHttpTask({ name: "cancel-order-after-call", delaySeconds: 60 * 3, payload: { orderId: order.id } });
+        await createHttpTask({ name: "cancel-order-after-call", delaySeconds: 60 * 3, payload: { orderId: order.id } });
         break;
       case "FAILED":
       case "NO ANSWER":
