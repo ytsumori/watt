@@ -106,7 +106,7 @@ export default function HomePage({
                           )}
                         </>
                       ) : (
-                        <Skeleton height="12px" w="full" />
+                        <Skeleton height="12px" w="50%" />
                       )}
                     </>
                   )}
