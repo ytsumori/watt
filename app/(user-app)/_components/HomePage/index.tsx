@@ -2,13 +2,14 @@
 
 import Map from "@/components/map";
 import { useEffect, useState } from "react";
-import { Box, HStack, Heading, Badge, VStack, Spinner, Flex, Text } from "@chakra-ui/react";
+import { Box, HStack, Heading, Badge, VStack, Text, Skeleton, Icon } from "@chakra-ui/react";
 import { InView } from "react-intersection-observer";
 import { Prisma } from "@prisma/client";
 import { MealPreviewBox } from "@/components/meal/MealPreviewBox";
 import { useRouter } from "next/navigation";
 import NextLink from "next/link";
 import { calculateDistance } from "../../_util/calculateDistance";
+import { FaMapMarkerAlt } from "react-icons/fa";
 
 export default function HomePage({
   restaurants
@@ -83,21 +84,13 @@ export default function HomePage({
                   <Heading size="sm" color={restaurant.isOpen ? "black" : "gray"}>
                     {restaurant.name}
                   </Heading>
-                  {restaurant.isOpen ? (
-                    <Badge backgroundColor="orange.400" variant="solid">
-                      ○ 今すぐ入れます！
-                    </Badge>
-                  ) : (
-                    <Badge backgroundColor="blackAlpha.700" variant="solid">
-                      × 今は入れません
-                    </Badge>
-                  )}
                   {isGrantGeolocation && (
                     <>
                       {currentPosition?.coords.latitude && currentPosition?.coords.longitude ? (
                         <>
                           {restaurant.googleMapPlaceInfo?.latitude && restaurant.googleMapPlaceInfo?.longitude && (
-                            <Badge border="GrayText" variant="solid" textTransform="none">
+                            <Text fontSize="xs" opacity={0.6}>
+                              <Icon as={FaMapMarkerAlt} mr={1} />
                               現在地から
                               {calculateDistance({
                                 origin: {
@@ -109,18 +102,22 @@ export default function HomePage({
                                   lng: currentPosition.coords.longitude
                                 }
                               })}
-                            </Badge>
+                            </Text>
                           )}
                         </>
                       ) : (
-                        <Flex>
-                          <Spinner size="sm" alignItems="center" />
-                          <Text fontSize="sm" ml={2} color="gray.500">
-                            現在位置を取得中
-                          </Text>
-                        </Flex>
+                        <Skeleton height="12px" w="full" />
                       )}
                     </>
+                  )}
+                  {restaurant.isOpen ? (
+                    <Badge backgroundColor="orange.400" variant="solid" fontSize="sm">
+                      ○ 今すぐ入れます！
+                    </Badge>
+                  ) : (
+                    <Badge backgroundColor="blackAlpha.700" variant="solid" fontSize="sm">
+                      × 今は入れません
+                    </Badge>
                   )}
                 </VStack>
               </NextLink>
