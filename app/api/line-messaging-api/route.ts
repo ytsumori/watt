@@ -12,12 +12,14 @@ export async function POST(request: NextRequest) {
   if (request.headers.get("x-line-signature") !== signature)
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
 
-  const body: { events: { source: { userId?: string }; postback: { data: string; params: any } }[] } =
+  const body: { events: { source: { userId?: string }; postback?: { data: string; params: any } }[] } =
     JSON.parse(requestBodyText);
 
   if (body.events.length > 0) {
-    const postbackData = querystring.parse(body.events[0].postback.data);
+    const postback = body.events[0].postback;
+    if (!postback) return NextResponse.json({ message: "Unsupported Request" });
 
+    const postbackData = querystring.parse(postback.data);
     const lineId = body.events[0].source.userId;
     if (!lineId) return NextResponse.json({ message: "lineId not found" }, { status: 404 });
 

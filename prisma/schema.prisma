@@ -290,6 +290,7 @@ enum CancellationReason {
   CLOSED
   LATE
   CALL_NO_ANSWER
+  NO_ACTION_AFTER_CALL
 }
 
 enum PaymentOption {

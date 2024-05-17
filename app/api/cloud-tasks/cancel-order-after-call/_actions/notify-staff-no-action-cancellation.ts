@@ -3,7 +3,7 @@
 import { multicastMessage } from "@/lib/line-messaging-api";
 import prisma from "@/lib/prisma/client";
 
-export async function notifyStaffUnansweredCancellation({ orderId }: { orderId: string }) {
+export async function notifyStaffNoActionCancellation({ orderId }: { orderId: string }) {
   const order = await prisma.order.findUnique({
     where: {
       id: orderId
@@ -26,6 +26,7 @@ export async function notifyStaffUnansweredCancellation({ orderId }: { orderId: 
     }
   });
   if (!order) throw new Error("Order not found");
+
   await multicastMessage({
     to: order.meal.restaurant.staffs.map((staff) => staff.lineId),
     messages: [
@@ -77,7 +78,7 @@ export async function notifyStaffUnansweredCancellation({ orderId }: { orderId: 
               },
               {
                 type: "text",
-                text: "電話通知が繋がらなかったため、自動的にキャンセルされ営業ステータスが「入店不可」に切り替わりました。",
+                text: "電話通知から3分以内に対応がなかったため、自動的にキャンセルされ営業ステータスが「入店不可」に切り替わりました。",
                 wrap: true,
                 margin: "lg",
                 color: "#DC3444",

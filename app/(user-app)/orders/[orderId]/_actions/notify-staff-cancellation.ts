@@ -164,7 +164,7 @@ export async function notifyStaffFullCancellation({ orderId }: { orderId: string
               },
               {
                 type: "text",
-                text: "満席の報告があったため、営業ステータスが「入店不可」に切り替わりました。",
+                text: "お客さんから入店不可の報告があったため、営業ステータスが「入店不可」に切り替わりました。",
                 wrap: true,
                 margin: "lg",
                 color: "#DC3444",
