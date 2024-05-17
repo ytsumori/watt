@@ -6,15 +6,15 @@
     },
     {
       "path": "/api/cron/update-opening-hours",
-      "schedule": "15 6 * * *"
+      "schedule": "15 21 * * *"
     },
     {
       "path": "/api/cron/update-map-place-detail",
-      "schedule": "15 6 1 * *"
+      "schedule": "15 21 1 * *"
     },
     {
       "path": "/api/cron/notify-closing-restaurants",
-      "schedule": "30 9 * * *"
+      "schedule": "0 3 * * *"
     }
   ]
 }

@@ -20,6 +20,10 @@ export async function GET(request: NextRequest) {
     select: { restaurant: { select: { name: true } } }
   });
 
+  if (restaurants.length === 0) {
+    return NextResponse.json({ success: true });
+  }
+
   await notifySlack({ restaurantNames: restaurants.map((r) => r.restaurant.name) });
 
   return NextResponse.json({ success: true });
