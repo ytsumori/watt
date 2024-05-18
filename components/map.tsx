@@ -22,14 +22,19 @@ const CENTER_POSITION: google.maps.LatLngLiteral = {
 export default function Map({ restaurants, activeRestaurantIds, availableRestaurantIds, onRestaurantSelect }: Props) {
   const [zoom, setZoom] = useState(16);
   const [currentLocation, setCurrentLocation] = useState<google.maps.LatLngLiteral>();
+  const [center, setCenter] = useState<google.maps.LatLngLiteral>(CENTER_POSITION);
 
   const handleIdle = useCallback(
     (map: google.maps.Map) => {
       if (zoom !== map.getZoom()) {
         setZoom(map.getZoom()!);
       }
+      const currentCenter = map.getCenter();
+      if (currentCenter && center !== currentCenter.toJSON()) {
+        setCenter(currentCenter.toJSON());
+      }
     },
-    [zoom]
+    [center, zoom]
   );
 
   const handleRestaurantSelect = useCallback(
@@ -39,29 +44,28 @@ export default function Map({ restaurants, activeRestaurantIds, availableRestaur
     [onRestaurantSelect]
   );
 
-  // get current location
   useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position: GeolocationPosition) => {
-          setCurrentLocation({
-            lat: position.coords.latitude,
-            lng: position.coords.longitude
-          });
-        },
-        () => {
-          console.error("Error getting current location");
-        }
-      );
-    } else {
-      console.error("Geolocation is not supported by this browser");
-    }
+    const id = navigator.geolocation.watchPosition(
+      (position) => {
+        setCurrentLocation({
+          lat: position.coords.latitude,
+          lng: position.coords.longitude
+        });
+      },
+      (error) => {
+        console.error(error);
+      }
+    );
+
+    return () => {
+      navigator.geolocation.clearWatch(id);
+    };
   }, []);
 
   return (
     <Wrapper apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY ?? ""} render={render} libraries={["places"]}>
       <MapComponent
-        center={CENTER_POSITION}
+        center={center}
         onIdle={handleIdle}
         zoom={zoom}
         disableDefaultUI
