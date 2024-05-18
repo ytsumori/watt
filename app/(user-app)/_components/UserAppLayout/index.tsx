@@ -11,7 +11,6 @@ import {
   Box,
   Flex,
   HStack,
-  Heading,
   Menu,
   MenuButton,
   MenuItem,
