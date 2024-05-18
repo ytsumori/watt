@@ -1,7 +1,9 @@
 "use client";
 
 import { Wrapper, Status } from "@googlemaps/react-wrapper";
-import { Children, cloneElement, isValidElement, useCallback, useEffect, useRef, useState } from "react";
+import { createCustomEqual } from "fast-equals";
+import { isLatLngLiteral } from "@googlemaps/typescript-guards";
+import { Children, cloneElement, isValidElement, useEffect, useRef, useState } from "react";
 
 const render = (status: Status) => {
   return <h1>{status}</h1>;
@@ -24,25 +26,14 @@ export default function Map({ restaurants, activeRestaurantIds, availableRestaur
   const [currentLocation, setCurrentLocation] = useState<google.maps.LatLngLiteral>();
   const [center, setCenter] = useState<google.maps.LatLngLiteral>(CENTER_POSITION);
 
-  const handleIdle = useCallback(
-    (map: google.maps.Map) => {
-      if (zoom !== map.getZoom()) {
-        setZoom(map.getZoom()!);
-      }
-      const currentCenter = map.getCenter();
-      if (currentCenter && center !== currentCenter.toJSON()) {
-        setCenter(currentCenter.toJSON());
-      }
-    },
-    [center, zoom]
-  );
+  const handleIdle = (map: google.maps.Map) => {
+    setZoom(map.getZoom()!);
+    setCenter(map.getCenter()!.toJSON());
+  };
 
-  const handleRestaurantSelect = useCallback(
-    (restaurantID: string) => {
-      if (onRestaurantSelect) onRestaurantSelect(restaurantID);
-    },
-    [onRestaurantSelect]
-  );
+  const handleRestaurantSelect = (restaurantID: string) => {
+    if (onRestaurantSelect) onRestaurantSelect(restaurantID);
+  };
 
   useEffect(() => {
     const id = navigator.geolocation.watchPosition(
@@ -106,7 +97,7 @@ function MapComponent({ onIdle, children, style, currentPlaceId, ...options }: M
     }
   }, [ref, map]);
 
-  useEffect(() => {
+  useDeepCompareEffectForMaps(() => {
     if (map) {
       map.setOptions(options);
     }
@@ -115,7 +106,9 @@ function MapComponent({ onIdle, children, style, currentPlaceId, ...options }: M
   useEffect(() => {
     if (map) {
       google.maps.event.clearListeners(map, "idle");
-      map.addListener("idle", () => onIdle(map));
+      if (onIdle) {
+        map.addListener("idle", () => onIdle(map));
+      }
     }
   }, [map, onIdle]);
 
@@ -264,4 +257,35 @@ function RestaurantMarker({ location, active, available, onClick, ...options }: 
     }
   }, [marker, location]);
   return null;
+}
+
+const deepCompareEqualsForMaps = createCustomEqual({
+  createInternalComparator: (deepEqual) => (a, b, _indexOrKeyA, _indexOrKeyB, _parentA, _parentB, state) => {
+    if (
+      isLatLngLiteral(a) ||
+      a instanceof google.maps.LatLng ||
+      isLatLngLiteral(b) ||
+      b instanceof google.maps.LatLng
+    ) {
+      return new google.maps.LatLng(a).equals(new google.maps.LatLng(b));
+    }
+
+    // use fast-equals for other objects
+    return deepEqual(a, b, state);
+  }
+});
+
+function useDeepCompareMemoize(value: any) {
+  const ref = useRef();
+
+  if (!deepCompareEqualsForMaps(value, ref.current)) {
+    ref.current = value;
+  }
+
+  return ref.current;
+}
+
+function useDeepCompareEffectForMaps(callback: React.EffectCallback, dependencies: any[]) {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(callback, dependencies.map(useDeepCompareMemoize));
 }
