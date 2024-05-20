@@ -2,6 +2,7 @@
 
 import { capturePaymentIntent } from "@/actions/payment-intent";
 import { ConfirmModal } from "@/components/confirm-modal";
+import { ArrowBackIcon } from "@chakra-ui/icons";
 import { Badge, Box, Button, Center, Flex, Heading, Spacer, Text, VStack, useDisclosure } from "@chakra-ui/react";
 import { Prisma } from "@prisma/client";
 import { useRouter } from "next/navigation";
@@ -65,6 +66,9 @@ export function PaymentPage({ payment }: Props) {
 
   return (
     <>
+      <Button leftIcon={<ArrowBackIcon />} onClick={router.back} variant="ghost" alignSelf="baseline" size="lg">
+        金額を変更する
+      </Button>
       <Flex direction="column" h="full" p={4}>
         <Box h="40%" transform={isPriceFlipped ? "rotateZ(180deg)" : ""} transitionDuration="0.5s">
           <Heading size="md">{payment.order.meal.restaurant.name}</Heading>
