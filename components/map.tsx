@@ -152,9 +152,9 @@ function CurrentLocationMarker({ position, ...options }: CurrentLocationMarkerPr
       marker.setIcon({
         path: google.maps.SymbolPath.CIRCLE,
         scale: 10,
-        fillColor: "#FF5850",
+        fillColor: "#0080FF",
         fillOpacity: 1,
-        strokeColor: "#FF5850",
+        strokeColor: "#0080FF",
         strokeOpacity: 0.3,
         strokeWeight: 15
       });
