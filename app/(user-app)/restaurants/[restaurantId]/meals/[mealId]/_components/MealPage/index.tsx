@@ -80,22 +80,29 @@ export default function MealPage({ meal, isRestaurantActive, preauthorizedOrder,
           <Text fontSize="xs">食べたい推しメシを選択してください</Text>
         </Box>
         <HStack overflowX="auto" maxW="full" className="hidden-scrollbar">
-          <MealPreviewBox key={meal.id} meal={meal} borderWidth={4} borderColor="orange.400">
-            <CheckIcon
-              position="absolute"
-              top={0}
-              right={0}
-              backgroundColor="orange.400"
-              color="white"
-              boxSize={6}
-              borderRadius={6}
-              m={1}
-              p={1}
-              aria-label="checked"
-            />
-          </MealPreviewBox>
           {meal.restaurant.meals.map((currentMeal) => (
-            <MealPreviewBox key={currentMeal.id} meal={currentMeal} href={`${currentMeal.id}`} />
+            <MealPreviewBox
+              key={currentMeal.id}
+              meal={currentMeal}
+              href={currentMeal.id}
+              borderWidth={meal.id === currentMeal.id ? 4 : 0}
+              borderColor="orange.400"
+            >
+              {meal.id === currentMeal.id && (
+                <CheckIcon
+                  position="absolute"
+                  top={0}
+                  right={0}
+                  backgroundColor="orange.400"
+                  color="white"
+                  boxSize={6}
+                  borderRadius={6}
+                  m={1}
+                  p={1}
+                  aria-label="checked"
+                />
+              )}
+            </MealPreviewBox>
           ))}
         </HStack>
         <Box borderWidth="1px" w="full" p={1}>

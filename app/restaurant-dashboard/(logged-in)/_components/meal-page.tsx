@@ -13,7 +13,7 @@ export function MealPage() {
   const [meals, setMeals] = useState<Meal[]>();
 
   useEffect(() => {
-    getMeals({ where: { restaurantId } }).then((meals) => setMeals(meals));
+    getMeals({ where: { restaurantId }, orderBy: { price: "asc" } }).then((meals) => setMeals(meals));
   }, [restaurantId]);
 
   if (!meals)

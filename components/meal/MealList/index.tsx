@@ -20,7 +20,7 @@ export function MealList({ restaurantId, defaultMeals }: Props) {
   const [editingMeal, setEditingMeal] = useState<Meal>();
 
   const revalidateMeals = () => {
-    getMeals({ where: { restaurantId } }).then((meals) => {
+    getMeals({ where: { restaurantId }, orderBy: { price: "asc" } }).then((meals) => {
       setMeals(meals.filter((meal) => !meal.isDiscarded));
       setDiscardedMeals(meals.filter((meal) => meal.isDiscarded));
     });
