@@ -20,6 +20,7 @@ import { signIn } from "next-auth/react";
 import { CheckIcon } from "@chakra-ui/icons";
 import { useRouter } from "next/navigation";
 import NextLink from "next/link";
+import Image from "next/image";
 import { ConfirmModal } from "@/components/confirm-modal";
 import { MealPreviewBox } from "@/components/meal/MealPreviewBox";
 import { visitRestaurant } from "../../_actions/visit-restaurant";
@@ -115,13 +116,44 @@ export default function MealPage({ meal, isRestaurantActive, preauthorizedOrder,
                 {userId ? (
                   <>
                     <Heading size="md">ご注文内容の確認</Heading>
-                    <Flex w="full">
-                      <Text>{meal.title}</Text>
-                      <Spacer />
-                      <Text as="p" fontSize="sm" fontWeight="bold" mr={1}>
-                        ¥{meal.price.toLocaleString("ja-JP")}
-                      </Text>
-                    </Flex>
+                    <VStack w="full">
+                      {meal.listPrice ? (
+                        <>
+                          <Flex w="full">
+                            <Text>{meal.title}</Text>
+                            <Spacer />
+                            <Text as="p" fontSize="sm">
+                              <Text as="span" mr="2">
+                                単品合計価格
+                              </Text>
+                              <Text as="span" textDecorationLine="line-through">
+                                ¥{meal.listPrice.toLocaleString("ja-JP")}
+                              </Text>
+                            </Text>
+                          </Flex>
+                          <Flex w="full" alignItems="flex-start">
+                            <Spacer />
+                            <HStack spacing={0} mr={2}>
+                              <Image src="/watt-logo.png" alt="Watt" width={40} height={31} />
+                              <Text fontSize="sm" fontWeight="bold" as="span">
+                                価格
+                              </Text>
+                            </HStack>
+                            <Text as="p" fontSize="sm" fontWeight="bold">
+                              ¥{meal.price.toLocaleString("ja-JP")}
+                            </Text>
+                          </Flex>
+                        </>
+                      ) : (
+                        <Flex w="full">
+                          <Text>{meal.title}</Text>
+                          <Spacer />
+                          <Text as="p" fontSize="sm" fontWeight="bold">
+                            ¥{meal.price.toLocaleString("ja-JP")}
+                          </Text>
+                        </Flex>
+                      )}
+                    </VStack>
                     <Divider />
                     <Heading size="sm" alignSelf="self-end">
                       合計 ¥{meal.price.toLocaleString("ja-JP")}
