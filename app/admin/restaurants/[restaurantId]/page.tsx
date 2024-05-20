@@ -10,7 +10,9 @@ export default async function RestaurantPage({ params }: PageProps) {
       id: true,
       name: true,
       bankAccount: true,
-      meals: true,
+      meals: {
+        orderBy: { price: "asc" }
+      },
       smokingOption: true,
       paymentOptions: true,
       phoneNumber: true

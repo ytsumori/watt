@@ -19,7 +19,7 @@ export default async function Meal({ params }: Params) {
     include: {
       restaurant: {
         include: {
-          meals: { where: { NOT: { id: params.mealId }, isDiscarded: false } },
+          meals: { where: { isDiscarded: false }, orderBy: { price: "asc" } },
           googleMapPlaceInfo: { select: { url: true } },
           paymentOptions: true
         }
