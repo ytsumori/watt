@@ -3,7 +3,7 @@
 import { capturePaymentIntent } from "@/actions/payment-intent";
 import { ConfirmModal } from "@/components/confirm-modal";
 import { ArrowBackIcon } from "@chakra-ui/icons";
-import { Badge, Box, Button, Center, Flex, Heading, Spacer, Text, VStack, useDisclosure } from "@chakra-ui/react";
+import { Badge, Box, Button, Center, Flex, Heading, Text, VStack, useDisclosure } from "@chakra-ui/react";
 import { Prisma } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -53,7 +53,7 @@ export function PaymentPage({ payment }: Props) {
               円
             </Text>
           </Heading>
-          <Badge colorScheme="orange" variant="solid" borderRadius={16} fontSize="1em" p={2}>
+          <Badge colorScheme="brand" variant="solid" borderRadius={16} fontSize="1em" p={2}>
             支払い完了
           </Badge>
         </VStack>

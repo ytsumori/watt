@@ -110,7 +110,7 @@ export function NewPaymentPage({ order, paymentMethods }: Props) {
                 {paymentMethods.map((paymentMethod) => (
                   <Tr key={paymentMethod.id} onClick={() => setSelectedPaymentMethod(paymentMethod.id)}>
                     <Td>
-                      {selectedPaymentMethod === paymentMethod.id && <CheckCircleIcon color="orange.400" boxSize={5} />}
+                      {selectedPaymentMethod === paymentMethod.id && <CheckCircleIcon color="brand.400" boxSize={5} />}
                     </Td>
                     <Td>{paymentMethod.card?.brand}</Td>
                     <Td>**** **** **** {paymentMethod.card?.last4}</Td>

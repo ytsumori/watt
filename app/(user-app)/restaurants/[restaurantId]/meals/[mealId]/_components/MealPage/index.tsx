@@ -86,14 +86,14 @@ export default function MealPage({ meal, isRestaurantActive, preauthorizedOrder,
               meal={currentMeal}
               href={currentMeal.id}
               borderWidth={meal.id === currentMeal.id ? 4 : 0}
-              borderColor="orange.400"
+              borderColor="brand.400"
             >
               {meal.id === currentMeal.id && (
                 <CheckIcon
                   position="absolute"
                   top={0}
                   right={0}
-                  backgroundColor="orange.400"
+                  backgroundColor="brand.400"
                   color="white"
                   boxSize={6}
                   borderRadius={6}
@@ -142,7 +142,7 @@ export default function MealPage({ meal, isRestaurantActive, preauthorizedOrder,
                             <Spacer />
                             <HStack spacing={0} mr={2}>
                               <Image src="/watt-logo.png" alt="Watt" width={40} height={31} />
-                              <Text fontSize="sm" fontWeight="bold" as="span">
+                              <Text fontSize="sm" fontWeight="bold" as="span" ml={1}>
                                 価格
                               </Text>
                             </HStack>

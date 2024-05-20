@@ -5,8 +5,21 @@ import { createMultiStyleConfigHelpers } from "@chakra-ui/react";
 const { definePartsStyle, defineMultiStyleConfig } = createMultiStyleConfigHelpers(menuAnatomy.keys);
 
 export const theme = extendTheme(
+  {
+    colors: {
+      brand: {
+        50: "#FFFAF5",
+        100: "#FFE5D0",
+        200: "#FFD7B8",
+        300: "#FFC8A0",
+        400: "#FF5850", // main
+        500: "#FF4D4D",
+        600: "#DC3444"
+      }
+    }
+  },
   withDefaultColorScheme({
-    colorScheme: "orange"
+    colorScheme: "brand"
   }),
   {
     components: {
@@ -20,7 +33,7 @@ export const theme = extendTheme(
           size: "xl"
         },
         baseStyle: {
-          color: "orange.500"
+          color: "brand.400"
         }
       }),
       Menu: defineMultiStyleConfig({

@@ -19,7 +19,7 @@ import {
 } from "@chakra-ui/react";
 import { Prisma } from "@prisma/client";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { FaMapMarkedAlt } from "react-icons/fa";
 import NextLink from "next/link";
 import { ConfirmModal } from "@/components/confirm-modal";
@@ -28,6 +28,7 @@ import { transformSupabaseImage } from "@/utils/image/transformSupabaseImage";
 import { completeOrder } from "../../_actions/complete-order";
 import { CompleteConfirmModal } from "../PaymentConfirmModal";
 import { CancelConfirmModal } from "../CancelConfirmModal";
+import NextImage from "next/image";
 
 type Props = {
   order: Prisma.OrderGetPayload<{
@@ -283,7 +284,7 @@ export function OrderPage({ order }: Props) {
               href={`/orders/${order.id}/payments/new`}
               isDisabled={isConfirming || isCancelling}
             >
-              Wattで会計する
+              <NextImage src="/watt-logo-secondary.png" alt="Watt" width={67} height={36} /> で会計する
             </Button>
           )}
           <Heading>注文情報</Heading>
