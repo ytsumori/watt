@@ -82,7 +82,7 @@ export function MealList({ restaurantId, defaultMeals }: Props) {
                   <Button variant="outline" onClick={() => handleClickEdit(meal)}>
                     編集する
                   </Button>
-                  <Button variant="ghost" colorScheme="orange" onClick={() => handleClickReopen(meal.id)}>
+                  <Button variant="ghost" colorScheme="brand" onClick={() => handleClickReopen(meal.id)}>
                     提供再開
                   </Button>
                 </HStack>

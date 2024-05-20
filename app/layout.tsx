@@ -5,7 +5,7 @@ import "./global.css";
 export const metadata = {
   metadataBase: new URL("https://watt-kiizan-kiizan.vercel.app/"),
   title: "Watt",
-  description: "今入れるお店が見つかる！"
+  description: "今すぐ入れるお店が見つかる！"
 };
 
 export const revalidate = 0;

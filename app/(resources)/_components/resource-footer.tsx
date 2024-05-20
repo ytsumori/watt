@@ -6,7 +6,7 @@ import Image from "next/image";
 
 export function ResourceFooter() {
   return (
-    <Box p={4} backgroundColor="orange.100" color="orange.400">
+    <Box p={4} color="brand.400">
       <NextLink href="/">
         <Image src="/watt-logo.png" alt="Watt" width={100} height={40} />
       </NextLink>

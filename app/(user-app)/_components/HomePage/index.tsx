@@ -53,7 +53,7 @@ export default function HomePage({
           onRestaurantSelect={handleRestaurantSelect}
         />
       </Box>
-      <Box h="320px" overflowY="auto" pb={4} className="hidden-scrollbar" backgroundColor="blackAlpha.100">
+      <Box h="300px" overflowY="auto" pb={4} className="hidden-scrollbar" backgroundColor="blackAlpha.100">
         {restaurants.map((restaurant, index) => (
           <Box
             key={restaurant.id}
@@ -64,7 +64,7 @@ export default function HomePage({
           >
             <InView
               initialInView={index < 2}
-              threshold={1}
+              threshold={0.8}
               onChange={(inView) => {
                 if (inView) {
                   router.prefetch(`/restaurants/${restaurant.id}`);
@@ -111,7 +111,7 @@ export default function HomePage({
                     </>
                   )}
                   {restaurant.isOpen ? (
-                    <Badge backgroundColor="orange.400" variant="solid" fontSize="sm">
+                    <Badge backgroundColor="brand.400" variant="solid" fontSize="sm">
                       ○ 今すぐ入れます！
                     </Badge>
                   ) : (

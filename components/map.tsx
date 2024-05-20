@@ -152,9 +152,9 @@ function CurrentLocationMarker({ position, ...options }: CurrentLocationMarkerPr
       marker.setIcon({
         path: google.maps.SymbolPath.CIRCLE,
         scale: 10,
-        fillColor: "#0080FF",
+        fillColor: "#FF5850",
         fillOpacity: 1,
-        strokeColor: "#0080FF",
+        strokeColor: "#FF5850",
         strokeOpacity: 0.3,
         strokeWeight: 15
       });
@@ -199,7 +199,7 @@ function RestaurantMarker({ location, active, available, onClick, ...options }: 
         if (active) {
           const activeIcon: google.maps.Symbol = {
             path: "M-1.547 12l6.563-6.609-1.406-1.406-5.156 5.203-2.063-2.109-1.406 1.406zM0 0q2.906 0 4.945 2.039t2.039 4.945q0 1.453-0.727 3.328t-1.758 3.516-2.039 3.070-1.711 2.273l-0.75 0.797q-0.281-0.328-0.75-0.867t-1.688-2.156-2.133-3.141-1.664-3.445-0.75-3.375q0-2.906 2.039-4.945t4.945-2.039z",
-            fillColor: "#EFA039",
+            fillColor: "#FF5850",
             fillOpacity: 1,
             strokeWeight: 1,
             strokeColor: "white",
@@ -214,7 +214,7 @@ function RestaurantMarker({ location, active, available, onClick, ...options }: 
             fillColor: "white",
             fillOpacity: 1,
             strokeWeight: 1,
-            strokeColor: "#EFA039",
+            strokeColor: "#FF5850",
             scale: 2,
             anchor: new google.maps.Point(0, 20)
           };
