@@ -3,7 +3,7 @@
 import { checkOneTimePassword, generateOneTimePassword } from "@/actions/one-time-password";
 import { updateUser } from "@/actions/user";
 import { ConfirmModal } from "@/components/confirm-modal";
-import { isValidPhoneNumber } from "@/utils/phone-number";
+import { isValidPhoneNumberInput } from "@/utils/phone-number";
 import { CheckIcon } from "@chakra-ui/icons";
 import {
   Button,
@@ -41,7 +41,7 @@ export function ProfilePage({ me, redirectedFrom }: Props) {
 
   const isInputUnchanged = username === me.name && phoneNumber === me.phoneNumber;
 
-  const isPhoneNumberValid = isValidPhoneNumber(phoneNumber);
+  const isPhoneNumberValid = isValidPhoneNumberInput(phoneNumber);
 
   const isPhoneNumberVerified = !!(verifiedPhoneNumber && verifiedPhoneNumber === phoneNumber);
 
