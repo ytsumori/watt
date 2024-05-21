@@ -25,7 +25,7 @@ export async function cancelOrder(orderId: string) {
   try {
     await sendMessage(
       order.user.phoneNumber,
-      `お店が満席のため、注文がキャンセルされました。詳しくはWattをご確認ください。`
+      `お店が満席のため、注文(#${order.orderNumber})がキャンセルされました。詳しくはWattをご確認ください。`
     );
   } catch (e) {
     console.error("Error notifying user", e);
