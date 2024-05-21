@@ -19,7 +19,7 @@ import { MealList } from "@/components/meal/MealList";
 import { RestaurantBankAccount } from "./restaurant-bank-account";
 import { translatePaymentOption, translateSmokingOption } from "@/lib/prisma/translate-enum";
 import { useState } from "react";
-import { formatPhoneNumber } from "@/utils/phone-number";
+import { formatPhoneNumber, isValidPhoneNumberInput } from "@/utils/phone-number";
 import { updatePhoneNumber } from "../_actions/update-phone-number";
 import { updatePaymentOptions } from "../_actions/update-payment-options";
 import { updateSmokingOptions } from "../_actions/update-smoking-option";
@@ -67,11 +67,6 @@ export function RestaurantDetailPage({ restaurant }: Props) {
       .catch(() => {
         toast({ title: "決済方法の更新に失敗しました", status: "error", duration: 3000 });
       });
-  };
-
-  const isValidPhoneNumberInput = (phoneNumber: string): boolean => {
-    const isValid = phoneNumber.match(/^\d{9,11}$/) !== null;
-    return isValid;
   };
 
   const handlePhoneNumberSubmit = () => {
