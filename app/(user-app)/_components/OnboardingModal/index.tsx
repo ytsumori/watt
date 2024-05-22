@@ -22,23 +22,27 @@ import {
 } from "@chakra-ui/react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import onboarding1Image from "@/public/onboarding/1.png";
+import onboarding2Image from "@/public/onboarding/2.png";
+import onboarding3Image from "@/public/onboarding/3.png";
+import onboarding4Image from "@/public/onboarding/4.png";
 
 const ONBOARDING_STEPS = [
   {
     text: "今すぐ入れるお店から\n行きたいお店を探す",
-    image: "https://via.placeholder.com/300"
+    imageSrc: onboarding1Image
   },
   {
     text: "「お店に向かうボタン」を\n押してお店に来店",
-    image: "https://via.placeholder.com/300"
+    imageSrc: onboarding2Image
   },
   {
     text: "お得なセットで\n食事をする",
-    image: "https://via.placeholder.com/300"
+    imageSrc: onboarding3Image
   },
   {
     text: "Wattでカード決済\n現金支払いも可能",
-    image: "https://via.placeholder.com/300"
+    imageSrc: onboarding4Image
   }
 ];
 
@@ -76,11 +80,16 @@ export function OnboardingModal() {
               <Heading whiteSpace="pre-line" textAlign="center">
                 {ONBOARDING_STEPS[currentStep].text}
               </Heading>
-              <img src={ONBOARDING_STEPS[currentStep].image} alt="" />
+              <Image
+                src={ONBOARDING_STEPS[currentStep].imageSrc}
+                alt={`ステップ${currentStep + 1}`}
+                width="400"
+                height="400"
+              />
             </VStack>
           </Center>
         </ModalBody>
-        <ModalFooter as={VStack} spacing={4}>
+        <ModalFooter as={VStack} spacing={10}>
           <Box w="full" position="relative" display="flex" h="32px">
             <Button
               onClick={() => setCurrentStep(currentStep - 1)}
