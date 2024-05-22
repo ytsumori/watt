@@ -17,7 +17,6 @@ import {
   MenuList,
   Spacer,
   Text,
-  VStack,
   useDisclosure
 } from "@chakra-ui/react";
 import { signIn, signOut } from "next-auth/react";
@@ -27,6 +26,7 @@ import NextLink from "next/link";
 import Image from "next/image";
 import { findPreorder } from "@/actions/order";
 import { User } from "@prisma/client";
+import { OnboardingModal } from "../OnboardingModal";
 
 type Props = {
   children: React.ReactNode;
@@ -154,6 +154,7 @@ export default function UserAppLayout({ children, defaultPreauthorizedOrderId, u
           お店に向かってください。
         </Text>
       </ConfirmModal>
+      <OnboardingModal />
     </>
   );
 }
