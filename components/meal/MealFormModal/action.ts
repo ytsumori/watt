@@ -1,9 +1,9 @@
 "use server";
 
-import { createServerSupabase } from "@/lib/supabase/server";
 import { z } from "zod";
 import { randomUUID } from "crypto";
 import prisma from "@/lib/prisma/client";
+import { createOriginClient } from "@/lib/supabase/createOriginClient";
 
 const FormSchema = z
   .object({
@@ -73,7 +73,7 @@ export async function onSubmit(_prev: State, formData: FormData): Promise<State>
       path: string;
     } | null = null;
     if (validatedFields.data.image.size > 0) {
-      const supabase = createServerSupabase();
+      const supabase = createOriginClient();
       const { data, error } = await supabase.storage
         .from("meals")
         .upload(`${validatedFields.data.restaurantId}/${randomUUID()}`, validatedFields.data.image);
@@ -92,7 +92,7 @@ export async function onSubmit(_prev: State, formData: FormData): Promise<State>
       }
     });
   } else {
-    const supabase = createServerSupabase();
+    const supabase = createOriginClient();
     const { data, error } = await supabase.storage
       .from("meals")
       .upload(`${validatedFields.data.restaurantId}/${randomUUID()}`, validatedFields.data.image);
