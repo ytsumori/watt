@@ -19,6 +19,7 @@ export async function POST(request: NextRequest) {
       id: true,
       status: true,
       approvedByRestaurantAt: true,
+      orderNumber: true,
       meal: { select: { restaurantId: true, restaurant: { select: { name: true } } } },
       user: { select: { phoneNumber: true } }
     }
@@ -37,7 +38,7 @@ export async function POST(request: NextRequest) {
   await updateIsOpen({ id: order.meal.restaurantId, isOpen: false });
   await sendMessage(
     order.user.phoneNumber,
-    "お店が満席のため、注文がキャンセルされました。詳しくはWattをご確認ください。"
+    `お店が満席のため、注文(#${order.orderNumber})がキャンセルされました。詳しくはWattをご確認ください。`
   );
 
   try {

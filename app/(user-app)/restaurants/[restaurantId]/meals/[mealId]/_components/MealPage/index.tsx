@@ -20,6 +20,7 @@ import { signIn } from "next-auth/react";
 import { CheckIcon } from "@chakra-ui/icons";
 import { useRouter } from "next/navigation";
 import NextLink from "next/link";
+import Image from "next/image";
 import { ConfirmModal } from "@/components/confirm-modal";
 import { MealPreviewBox } from "@/components/meal/MealPreviewBox";
 import { visitRestaurant } from "../../_actions/visit-restaurant";
@@ -79,22 +80,29 @@ export default function MealPage({ meal, isRestaurantActive, preauthorizedOrder,
           <Text fontSize="xs">食べたい推しメシを選択してください</Text>
         </Box>
         <HStack overflowX="auto" maxW="full" className="hidden-scrollbar">
-          <MealPreviewBox key={meal.id} meal={meal} borderWidth={4} borderColor="orange.400">
-            <CheckIcon
-              position="absolute"
-              top={0}
-              right={0}
-              backgroundColor="orange.400"
-              color="white"
-              boxSize={6}
-              borderRadius={6}
-              m={1}
-              p={1}
-              aria-label="checked"
-            />
-          </MealPreviewBox>
           {meal.restaurant.meals.map((currentMeal) => (
-            <MealPreviewBox key={currentMeal.id} meal={currentMeal} href={`${currentMeal.id}`} />
+            <MealPreviewBox
+              key={currentMeal.id}
+              meal={currentMeal}
+              href={currentMeal.id}
+              borderWidth={meal.id === currentMeal.id ? 4 : 0}
+              borderColor="brand.400"
+            >
+              {meal.id === currentMeal.id && (
+                <CheckIcon
+                  position="absolute"
+                  top={0}
+                  right={0}
+                  backgroundColor="brand.400"
+                  color="white"
+                  boxSize={6}
+                  borderRadius={6}
+                  m={1}
+                  p={1}
+                  aria-label="checked"
+                />
+              )}
+            </MealPreviewBox>
           ))}
         </HStack>
         <Box borderWidth="1px" w="full" p={1}>
@@ -115,13 +123,44 @@ export default function MealPage({ meal, isRestaurantActive, preauthorizedOrder,
                 {userId ? (
                   <>
                     <Heading size="md">ご注文内容の確認</Heading>
-                    <Flex w="full">
-                      <Text>{meal.title}</Text>
-                      <Spacer />
-                      <Text as="p" fontSize="sm" fontWeight="bold" mr={1}>
-                        ¥{meal.price.toLocaleString("ja-JP")}
-                      </Text>
-                    </Flex>
+                    <VStack w="full">
+                      {meal.listPrice ? (
+                        <>
+                          <Flex w="full">
+                            <Text>{meal.title}</Text>
+                            <Spacer />
+                            <Text as="p" fontSize="sm">
+                              <Text as="span" mr="2">
+                                単品合計価格
+                              </Text>
+                              <Text as="span" textDecorationLine="line-through">
+                                ¥{meal.listPrice.toLocaleString("ja-JP")}
+                              </Text>
+                            </Text>
+                          </Flex>
+                          <Flex w="full" alignItems="flex-start">
+                            <Spacer />
+                            <HStack spacing={0} mr={2}>
+                              <Image src="/watt-logo.png" alt="Watt" width={40} height={31} />
+                              <Text fontSize="sm" fontWeight="bold" as="span" ml={1}>
+                                価格
+                              </Text>
+                            </HStack>
+                            <Text as="p" fontSize="sm" fontWeight="bold">
+                              ¥{meal.price.toLocaleString("ja-JP")}
+                            </Text>
+                          </Flex>
+                        </>
+                      ) : (
+                        <Flex w="full">
+                          <Text>{meal.title}</Text>
+                          <Spacer />
+                          <Text as="p" fontSize="sm" fontWeight="bold">
+                            ¥{meal.price.toLocaleString("ja-JP")}
+                          </Text>
+                        </Flex>
+                      )}
+                    </VStack>
                     <Divider />
                     <Heading size="sm" alignSelf="self-end">
                       合計 ¥{meal.price.toLocaleString("ja-JP")}

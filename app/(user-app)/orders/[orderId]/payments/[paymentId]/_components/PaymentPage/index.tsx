@@ -2,7 +2,8 @@
 
 import { capturePaymentIntent } from "@/actions/payment-intent";
 import { ConfirmModal } from "@/components/confirm-modal";
-import { Badge, Box, Button, Center, Flex, Heading, Spacer, Text, VStack, useDisclosure } from "@chakra-ui/react";
+import { ArrowBackIcon } from "@chakra-ui/icons";
+import { Badge, Box, Button, Center, Flex, Heading, Text, VStack, useDisclosure } from "@chakra-ui/react";
 import { Prisma } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -52,7 +53,7 @@ export function PaymentPage({ payment }: Props) {
               円
             </Text>
           </Heading>
-          <Badge colorScheme="orange" variant="solid" borderRadius={16} fontSize="1em" p={2}>
+          <Badge colorScheme="brand" variant="solid" borderRadius={16} fontSize="1em" p={2}>
             支払い完了
           </Badge>
         </VStack>
@@ -65,6 +66,9 @@ export function PaymentPage({ payment }: Props) {
 
   return (
     <>
+      <Button leftIcon={<ArrowBackIcon />} onClick={router.back} variant="ghost" alignSelf="baseline" size="lg">
+        金額を変更する
+      </Button>
       <Flex direction="column" h="full" p={4}>
         <Box h="40%" transform={isPriceFlipped ? "rotateZ(180deg)" : ""} transitionDuration="0.5s">
           <Heading size="md">{payment.order.meal.restaurant.name}</Heading>

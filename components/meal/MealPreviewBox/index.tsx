@@ -17,7 +17,7 @@ export function MealPreviewBox({ meal, href, children, ...boxProps }: Props) {
     <Box
       maxW="150px"
       minW="150px"
-      borderRadius={8}
+      borderRadius={12}
       position="relative"
       {...boxProps}
       {...(href ? { as: Link, href: href } : {})}

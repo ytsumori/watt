@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
         await updateIsOpen({ id: order.meal.restaurantId, isOpen: false });
         await sendMessage(
           order.user.phoneNumber,
-          "お店が満席のため、注文がキャンセルされました。詳しくはWattをご確認ください。"
+          `お店が満席のため、注文(#${order.orderNumber})がキャンセルされました。詳しくはWattをご確認ください。`
         );
         await notifyStaffUnansweredCancellation({ orderId: order.id });
         break;

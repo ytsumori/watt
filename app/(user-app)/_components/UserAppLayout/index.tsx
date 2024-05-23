@@ -11,14 +11,12 @@ import {
   Box,
   Flex,
   HStack,
-  Heading,
   Menu,
   MenuButton,
   MenuItem,
   MenuList,
   Spacer,
   Text,
-  VStack,
   useDisclosure
 } from "@chakra-ui/react";
 import { signIn, signOut } from "next-auth/react";
@@ -28,6 +26,7 @@ import NextLink from "next/link";
 import Image from "next/image";
 import { findPreorder } from "@/actions/order";
 import { User } from "@prisma/client";
+import { OnboardingModal } from "../OnboardingModal";
 
 type Props = {
   children: React.ReactNode;
@@ -69,18 +68,16 @@ export default function UserAppLayout({ children, defaultPreauthorizedOrderId, u
 
   return (
     <>
-      <Flex h="100vh" w="100vw" direction="column">
+      <Flex h="100svh" w="100vw" direction="column">
         <Flex px={4} py={2} w="full" backgroundColor="white">
           <Box w="full">
-            <HStack spacing={2} alignItems="end">
+            <HStack spacing={4} alignItems="center">
               <NextLink href="/">
                 <Image src="/watt-logo.png" alt="Watt" width={80} height={31} />
               </NextLink>
-              <VStack alignItems="start" spacing={0}>
-                <Text fontSize="xs" color="orange" fontWeight="bold" lineHeight="12px" mt="1px">
-                  今入れるお店が見つかる！
-                </Text>
-              </VStack>
+              <Text fontSize="sm" color="brand.400" fontWeight="bold">
+                今すぐ入れるお店が見つかる！
+              </Text>
             </HStack>
           </Box>
           <Spacer />
@@ -157,6 +154,7 @@ export default function UserAppLayout({ children, defaultPreauthorizedOrderId, u
           お店に向かってください。
         </Text>
       </ConfirmModal>
+      <OnboardingModal />
     </>
   );
 }

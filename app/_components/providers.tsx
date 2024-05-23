@@ -11,7 +11,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
       <CacheProvider>
         <ChakraProvider theme={theme}>{children}</ChakraProvider>
       </CacheProvider>
-      <ProgressBar height="4px" color="#EFA039" shallowRouting options={{ showSpinner: false }} />
+      <ProgressBar height="4px" color="#FF5850" shallowRouting options={{ showSpinner: false }} />
     </>
   );
 }
