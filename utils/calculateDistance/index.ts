@@ -3,7 +3,7 @@ type Args = {
   destination: { lat: number; lng: number };
 };
 
-export const calculateDistance = ({ origin, destination }: Args): string => {
+export const calculateDistance = ({ origin, destination }: Args): { raw: number; formated: string } => {
   const R = 6378137.0;
   const rad = (deg: number) => (deg * Math.PI) / 180;
   const rawDistance =
@@ -15,5 +15,5 @@ export const calculateDistance = ({ origin, destination }: Args): string => {
 
   const m = Math.floor(rawDistance);
 
-  return m >= 1000 ? `${(m / 1000).toFixed(1)}km` : `${m}m`;
+  return { raw: rawDistance, formated: m >= 1000 ? `${(m / 1000).toFixed(1)}km` : `${m}m` };
 };
