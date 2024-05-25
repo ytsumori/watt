@@ -8,17 +8,17 @@ import { Prisma } from "@prisma/client";
 import { MealPreviewBox } from "@/components/meal/MealPreviewBox";
 import { useRouter } from "next/navigation";
 import NextLink from "next/link";
-import { calculateDistance } from "../../_util/calculateDistance";
+import { calculateDistance } from "@/utils/calculateDistance";
 import { FaMapMarkerAlt } from "react-icons/fa";
+import { sortRestaurants } from "./_actions/sortRestaurants";
 
-export default function HomePage({
-  restaurants
-}: {
-  restaurants: Prisma.RestaurantGetPayload<{
-    include: { meals: true; googleMapPlaceInfo: { select: { latitude: true; longitude: true } } };
-  }>[];
-}) {
+type Restaurants = Prisma.RestaurantGetPayload<{
+  include: { meals: true; googleMapPlaceInfo: { select: { latitude: true; longitude: true } } };
+}>[];
+
+export default function HomePage({ restaurants }: { restaurants: Restaurants }) {
   const router = useRouter();
+  const [sortedRestaurants, setSortedRestaurants] = useState<Restaurants>(restaurants);
   const [inViewRestaurantIds, setInViewRestaurantIds] = useState<string[]>([]);
   const [isGrantGeolocation, setIsGrantGeolocation] = useState<boolean>(false);
   const [currentPosition, setCurrentPosition] = useState<GeolocationPosition | null>(null);
@@ -27,8 +27,14 @@ export default function HomePage({
     navigator.permissions
       .query({ name: "geolocation" })
       .then((permissionStatus) => setIsGrantGeolocation("granted" === permissionStatus.state));
-    navigator.geolocation.getCurrentPosition((position) => setCurrentPosition(position));
-  }, []);
+
+    navigator.geolocation.getCurrentPosition(async (position) => {
+      setCurrentPosition(position);
+      setSortedRestaurants(
+        await sortRestaurants({ lat: position.coords.latitude, lng: position.coords.longitude }, restaurants)
+      );
+    });
+  }, [restaurants]);
 
   const handleRestaurantSelect = (restaurantId: string) => {
     const element = document.getElementById(restaurantId);
@@ -39,7 +45,7 @@ export default function HomePage({
     <>
       <Box flex="1">
         <Map
-          restaurants={restaurants.flatMap((restaurant) => {
+          restaurants={sortedRestaurants.flatMap((restaurant) => {
             if (!restaurant.googleMapPlaceInfo) return [];
 
             return {
@@ -49,12 +55,12 @@ export default function HomePage({
             };
           })}
           activeRestaurantIds={inViewRestaurantIds}
-          availableRestaurantIds={restaurants.flatMap((restaurant) => (restaurant.isOpen ? [restaurant.id] : []))}
+          availableRestaurantIds={sortedRestaurants.flatMap((restaurant) => (restaurant.isOpen ? [restaurant.id] : []))}
           onRestaurantSelect={handleRestaurantSelect}
         />
       </Box>
       <Box h="300px" overflowY="auto" pb={4} className="hidden-scrollbar" backgroundColor="blackAlpha.100">
-        {restaurants.map((restaurant, index) => (
+        {sortedRestaurants.map((restaurant, index) => (
           <Box
             key={restaurant.id}
             id={restaurant.id}
@@ -92,16 +98,18 @@ export default function HomePage({
                             <Text fontSize="xs" opacity={0.6}>
                               <Icon as={FaMapMarkerAlt} mr={1} />
                               現在地から
-                              {calculateDistance({
-                                origin: {
-                                  lat: restaurant.googleMapPlaceInfo.latitude,
-                                  lng: restaurant.googleMapPlaceInfo.longitude
-                                },
-                                destination: {
-                                  lat: currentPosition.coords.latitude,
-                                  lng: currentPosition.coords.longitude
-                                }
-                              })}
+                              {
+                                calculateDistance({
+                                  origin: {
+                                    lat: restaurant.googleMapPlaceInfo.latitude,
+                                    lng: restaurant.googleMapPlaceInfo.longitude
+                                  },
+                                  destination: {
+                                    lat: currentPosition.coords.latitude,
+                                    lng: currentPosition.coords.longitude
+                                  }
+                                }).formated
+                              }
                             </Text>
                           )}
                         </>
