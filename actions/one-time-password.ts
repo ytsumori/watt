@@ -2,7 +2,7 @@
 
 import prisma from "@/lib/prisma/client";
 import { sendOtpCode } from "@/lib/xoxzo";
-import { formatPhoneNumber, isValidPhoneNumber } from "@/utils/phone-number";
+import { formatPhoneNumber, isValidPhoneNumber, isValidPhoneNumberInput } from "@/utils/phone-number";
 
 function generateOtpCode() {
   let digits = "0123456789";
@@ -14,10 +14,13 @@ function generateOtpCode() {
 }
 
 export async function generateOneTimePassword(phoneNumber: string) {
-  if (!isValidPhoneNumber(phoneNumber)) {
+  if (!isValidPhoneNumberInput(phoneNumber)) {
     throw new Error("Invalid phone number");
   }
   phoneNumber = formatPhoneNumber(phoneNumber);
+  if (!isValidPhoneNumber(phoneNumber)) {
+    throw new Error("Invalid phone number");
+  }
   const code = generateOtpCode();
 
   await prisma.oneTimePassword.upsert({
