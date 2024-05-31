@@ -3,7 +3,9 @@ import { z } from "zod";
 const mealItemFormSchema = z.object({
   id: z.optional(z.string()),
   title: z.string({ invalid_type_error: "商品名を入力してください", required_error: "商品名を入力してください" }),
-  description: z.string({ invalid_type_error: "説明を入力してください", required_error: "説明を入力してください" }),
+  description: z.optional(
+    z.string({ invalid_type_error: "説明を入力してください", required_error: "説明を入力してください" })
+  ),
   price: z
     .number({ invalid_type_error: "単価を入力してください", required_error: "単価を入力してください" })
     .min(0, "単価は0以上で入力してください")

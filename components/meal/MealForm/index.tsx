@@ -147,7 +147,7 @@ export function MealForm({ restaurantId, editingMeal, onSubmit }: Props) {
                   </InputGroup>
                   <FormErrorMessage>{itemFields.price.errors?.join("、") ?? ""}</FormErrorMessage>
                 </FormControl>
-                <FormControl isRequired isInvalid={!!itemFields.description.errors} mt={1}>
+                <FormControl isInvalid={!!itemFields.description.errors} mt={1}>
                   <FormLabel>説明</FormLabel>
                   <Textarea
                     name={itemFields.description.name}
