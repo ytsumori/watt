@@ -13,7 +13,7 @@ type Props = {
 };
 
 export function MealList({ restaurantId, defaultMeals }: Props) {
-  const { isOpen: isNewFormOpen, onOpen: onNewFormOpen, onClose: onNewFormClose } = useDisclosure();
+  const { isOpen: isMealFormOpen, onOpen: onMealFormOpen, onClose: onMealFormClose } = useDisclosure();
 
   const [meals, setMeals] = useState<Meal[]>(defaultMeals?.filter((meal) => !meal.isDiscarded) ?? []);
   const [discardedMeals, setDiscardedMeals] = useState<Meal[]>(defaultMeals?.filter((meal) => meal.isDiscarded) ?? []);
@@ -28,7 +28,7 @@ export function MealList({ restaurantId, defaultMeals }: Props) {
 
   const handleClickEdit = (meal: Meal) => {
     setEditingMeal(meal);
-    onNewFormOpen();
+    onMealFormOpen();
   };
 
   const handleClickDiscard = async (mealId: string) => {
@@ -48,7 +48,7 @@ export function MealList({ restaurantId, defaultMeals }: Props) {
       <VStack width="full" alignItems="baseline" spacing={6}>
         <Flex gap={3} alignItems="center">
           <Heading size="md">推しメシ</Heading>
-          <Button onClick={onNewFormOpen}>登録する</Button>
+          <Button onClick={onMealFormOpen}>登録する</Button>
         </Flex>
         <Heading size="sm">提供中</Heading>
         <Flex wrap="wrap" justify="space-evenly" gap={4}>
@@ -93,12 +93,12 @@ export function MealList({ restaurantId, defaultMeals }: Props) {
       </VStack>
       <MealFormModal
         editingMeal={editingMeal}
-        isOpen={isNewFormOpen}
+        isOpen={isMealFormOpen}
         onClose={() => {
-          onNewFormClose();
+          onMealFormClose();
           setEditingMeal(undefined);
         }}
-        onSubmitComplete={revalidateMeals}
+        onSubmit={revalidateMeals}
         restaurantId={restaurantId}
       />
     </>
