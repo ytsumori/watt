@@ -154,14 +154,27 @@ model Meal {
   listPrice    Int?
   price        Int
   title        String
-  description  String?
+  description  String
   isDiscarded  Boolean  @default(false)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @default(now()) @updatedAt
 
   orders Order[]
+  items  MealItem[]
 
   restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+}
+
+model MealItem {
+  id          String   @id @default(cuid())
+  mealId      String
+  price       Int
+  title       String
+  description String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
+
+  meal Meal @relation(fields: [mealId], references: [id], onDelete: Cascade)
 }
 
 model Order {
