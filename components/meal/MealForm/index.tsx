@@ -10,6 +10,7 @@ import {
   Input,
   InputGroup,
   InputLeftElement,
+  Text,
   Textarea
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
@@ -18,7 +19,7 @@ import { submit } from "./action";
 import { useFormStatus } from "react-dom";
 import { transformSupabaseImage } from "@/utils/image/transformSupabaseImage";
 import { Meal } from "@prisma/client";
-import { AddIcon } from "@chakra-ui/icons";
+import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
 import { SubmissionResult, useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
 import { mealFormSchema } from "./schema";
@@ -69,6 +70,13 @@ export function MealForm({ restaurantId, editingMeal, onSubmit }: Props) {
       validated: false
     });
   };
+  const handleDeleteItem = (index: number) => {
+    form.update({
+      name: "items",
+      value: items.map((item, i) => (i === index ? undefined : item.value)).filter(Boolean),
+      validated: false
+    });
+  };
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     try {
       event.preventDefault();
@@ -115,10 +123,10 @@ export function MealForm({ restaurantId, editingMeal, onSubmit }: Props) {
       <FormControl isRequired my={3} isInvalid={!!fields.items.errors}>
         <FormLabel>セット内容</FormLabel>
         <Box px={3}>
-          {items.map((item) => {
+          {items.map((item, index) => {
             const itemFields = item.getFieldset();
             return (
-              <Box key={item.key} borderWidth={1} p={1} mb={2}>
+              <Box key={item.key} borderWidth={1} p={1} mb={2} borderColor="black">
                 <FormControl isRequired isInvalid={!!itemFields.title.errors}>
                   <FormLabel>商品名</FormLabel>
                   <Input name={itemFields.title.name} defaultValue={itemFields.title.initialValue} />
@@ -128,9 +136,14 @@ export function MealForm({ restaurantId, editingMeal, onSubmit }: Props) {
                   <FormLabel>単価</FormLabel>
                   <InputGroup>
                     <InputLeftElement pointerEvents="none" color="gray.300" fontSize="1.2em">
-                      $
+                      ¥
                     </InputLeftElement>
-                    <Input name={itemFields.price.name} type="number" defaultValue={itemFields.price.initialValue} />
+                    <Input
+                      name={itemFields.price.name}
+                      min={0}
+                      type="number"
+                      defaultValue={itemFields.price.initialValue}
+                    />
                   </InputGroup>
                   <FormErrorMessage>{itemFields.price.errors?.join("、") ?? ""}</FormErrorMessage>
                 </FormControl>
@@ -144,6 +157,11 @@ export function MealForm({ restaurantId, editingMeal, onSubmit }: Props) {
                   />
                   <FormErrorMessage>{itemFields.description.errors?.join("、") ?? ""}</FormErrorMessage>
                 </FormControl>
+                <Box w="full" textAlign="right" mt={2}>
+                  <Button rightIcon={<DeleteIcon />} colorScheme="red" onClick={() => handleDeleteItem(index)}>
+                    この商品を削除
+                  </Button>
+                </Box>
               </Box>
             );
           })}
@@ -158,10 +176,16 @@ export function MealForm({ restaurantId, editingMeal, onSubmit }: Props) {
         <FormLabel>セット金額(税込)</FormLabel>
         <InputGroup>
           <InputLeftElement pointerEvents="none" color="gray.300" fontSize="1.2em">
-            $
+            ¥
           </InputLeftElement>
-          <Input name={fields.price.name} type="number" defaultValue={fields.price.initialValue} />
+          <Input name={fields.price.name} type="number" min={0} defaultValue={fields.price.initialValue} />
         </InputGroup>
+        <Text fontSize="sm" mt={1}>
+          割引金額(自動計算)：¥
+          {(
+            items.reduce((sum, item) => sum + Number(item.value?.price ?? 0), 0) - Number(fields.price.value ?? 0)
+          ).toLocaleString("ja-JP")}
+        </Text>
         <FormErrorMessage>{fields.price.errors?.join("、") ?? ""}</FormErrorMessage>
       </FormControl>
       <SubmitButton isDisabled={!form.valid} />
