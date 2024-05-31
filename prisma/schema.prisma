@@ -170,7 +170,7 @@ model MealItem {
   mealId      String
   price       Int
   title       String
-  description String
+  description String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @default(now()) @updatedAt
 
