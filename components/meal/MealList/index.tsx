@@ -1,32 +1,36 @@
 "use client";
 
-import { activateMeal, discardMeal, getMeals } from "@/actions/meal";
 import { MealCard } from "@/components/meal/MealCard";
 import { Button, Flex, HStack, Heading, VStack, useDisclosure } from "@chakra-ui/react";
-import { Meal } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { useState } from "react";
 import { MealFormModal } from "../MealFormModal";
+import { activateMeal, discardMeal, getMeals } from "./action";
+
+type MealProp = Prisma.MealGetPayload<{ include: { items: true } }>;
 
 type Props = {
   restaurantId: string;
-  defaultMeals?: Meal[];
+  defaultMeals?: MealProp[];
 };
 
 export function MealList({ restaurantId, defaultMeals }: Props) {
   const { isOpen: isMealFormOpen, onOpen: onMealFormOpen, onClose: onMealFormClose } = useDisclosure();
 
-  const [meals, setMeals] = useState<Meal[]>(defaultMeals?.filter((meal) => !meal.isDiscarded) ?? []);
-  const [discardedMeals, setDiscardedMeals] = useState<Meal[]>(defaultMeals?.filter((meal) => meal.isDiscarded) ?? []);
-  const [editingMeal, setEditingMeal] = useState<Meal>();
+  const [meals, setMeals] = useState<MealProp[]>(defaultMeals?.filter((meal) => !meal.isDiscarded) ?? []);
+  const [discardedMeals, setDiscardedMeals] = useState<MealProp[]>(
+    defaultMeals?.filter((meal) => meal.isDiscarded) ?? []
+  );
+  const [editingMeal, setEditingMeal] = useState<MealProp>();
 
   const revalidateMeals = () => {
-    getMeals({ where: { restaurantId }, orderBy: { price: "asc" } }).then((meals) => {
+    getMeals(restaurantId).then((meals) => {
       setMeals(meals.filter((meal) => !meal.isDiscarded));
       setDiscardedMeals(meals.filter((meal) => meal.isDiscarded));
     });
   };
 
-  const handleClickEdit = (meal: Meal) => {
+  const handleClickEdit = (meal: MealProp) => {
     setEditingMeal(meal);
     onMealFormOpen();
   };

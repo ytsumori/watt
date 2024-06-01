@@ -11,7 +11,12 @@ export default async function RestaurantPage({ params }: PageProps) {
       name: true,
       bankAccount: true,
       meals: {
-        orderBy: { price: "asc" }
+        orderBy: { price: "asc" },
+        include: {
+          items: {
+            orderBy: { position: "asc" }
+          }
+        }
       },
       smokingOption: true,
       paymentOptions: true,

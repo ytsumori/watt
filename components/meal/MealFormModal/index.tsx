@@ -2,12 +2,12 @@
 
 import { Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader } from "@chakra-ui/react";
 import { Meal } from "@prisma/client";
-import React from "react";
+import React, { ComponentProps } from "react";
 import { MealForm } from "../MealForm";
 
 type Props = {
   restaurantId: string;
-  editingMeal?: Meal;
+  editingMeal?: ComponentProps<typeof MealForm>["editingMeal"];
   isOpen: boolean;
   onClose: () => void;
   onSubmit: () => void;

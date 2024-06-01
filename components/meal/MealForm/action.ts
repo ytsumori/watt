@@ -36,12 +36,14 @@ export async function submit(formData: FormData) {
         description: submission.value.description,
         ...(imageData ? { imagePath: imageData.path } : {}),
         items: {
+          deleteMany: {},
           createMany: {
-            data: submission.value.items.map((item) => {
+            data: submission.value.items.map((item, index) => {
               return {
                 title: item.title,
                 description: item.description,
-                price: item.price
+                price: item.price,
+                position: index
               };
             })
           }

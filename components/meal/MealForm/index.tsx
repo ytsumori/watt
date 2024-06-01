@@ -19,7 +19,7 @@ import { useFormState } from "react-dom";
 import { submit } from "./action";
 import { useFormStatus } from "react-dom";
 import { transformSupabaseImage } from "@/utils/image/transformSupabaseImage";
-import { Meal } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
 import { SubmissionResult, useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
@@ -27,7 +27,7 @@ import { mealFormSchema } from "./schema";
 
 type Props = {
   restaurantId: string;
-  editingMeal?: Meal;
+  editingMeal?: Prisma.MealGetPayload<{ include: { items: true } }>;
   onSubmit: () => void;
 };
 
@@ -48,6 +48,8 @@ export function MealForm({ restaurantId, editingMeal, onSubmit }: Props) {
     },
     undefined
   );
+  console.log(editingMeal);
+  console.log(editingMeal?.items);
   const [form, fields] = useForm({
     id: `meal-form-${editingMeal?.id ?? "new"}`,
     lastResult,
@@ -90,8 +92,6 @@ export function MealForm({ restaurantId, editingMeal, onSubmit }: Props) {
     }
   };
 
-  console.log(fields.price.value);
-  console.log(typeof fields.price.value);
   return (
     <form id={form.id} onSubmit={form.onSubmit} action={action} noValidate>
       <Input name="id" defaultValue={fields.id.initialValue} hidden />
