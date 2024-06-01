@@ -17,8 +17,8 @@ type Props = {
 };
 
 const CENTER_POSITION: google.maps.LatLngLiteral = {
-  lat: 34.70726721576163,
-  lng: 135.51175158248128
+  lat: 34.67936936944665,
+  lng: 135.4961399413188
 };
 
 export default function Map({ restaurants, activeRestaurantIds, availableRestaurantIds, onRestaurantSelect }: Props) {

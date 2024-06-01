@@ -24,7 +24,9 @@ export async function notifyStaffOrder({ orderId }: { orderId: string }) {
                 }
               }
             }
-          }
+          },
+          price: true,
+          title: true
         }
       },
       user: {
@@ -114,16 +116,16 @@ export async function notifyStaffOrder({ orderId }: { orderId: string }) {
                       { type: "span", text: order.orderNumber.toString(), size: "xxl", weight: "bold" }
                     ]
                   },
-                  { type: "text", text: "注文予定の推しメシ", weight: "bold" },
+                  { type: "text", text: `注文セット：${order.meal.title}` },
                   {
                     type: "image",
                     url: transformSupabaseImage("meals", order.meal.imagePath),
-                    size: "xl",
                     aspectRatio: "1:1",
                     aspectMode: "cover",
                     align: "start"
                   },
-                  { type: "text", text: order.meal.description ?? "", wrap: true, size: "xxs" }
+                  { type: "text", text: order.meal.description ?? "", wrap: true, size: "xxs" },
+                  { type: "text", text: `価格：${order.meal.price.toLocaleString("ja-JP")}円`, wrap: true }
                 ]
               }
             ]
