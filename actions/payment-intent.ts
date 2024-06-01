@@ -7,12 +7,13 @@ import prisma from "@/lib/prisma/client";
 export async function createPaymentIntent({
   orderId,
   paymentMethodId,
-  additionalAmount
+  amount
 }: {
   orderId: string;
   paymentMethodId: string;
-  additionalAmount: number;
+  amount: number;
 }) {
+  if (amount <= 0) throw new Error("Invalid amount");
   const myId = await getMyId();
 
   const order = await prisma.order.findUnique({
@@ -41,7 +42,7 @@ export async function createPaymentIntent({
   }
 
   const paymentIntent = await stripe.paymentIntents.create({
-    amount: order.meal.price + additionalAmount,
+    amount: amount,
     currency: "jpy",
     customer: user.stripeCustomer.stripeCustomerId,
     payment_method: paymentMethod.id,
@@ -53,9 +54,9 @@ export async function createPaymentIntent({
     data: {
       orderId,
       stripePaymentId: paymentIntent.id,
-      additionalAmount: additionalAmount,
-      totalAmount: order.meal.price + additionalAmount,
-      restaurantProfitPrice: order.meal.price + additionalAmount
+      additionalAmount: amount - order.meal.price,
+      totalAmount: amount,
+      restaurantProfitPrice: amount
     }
   });
   return payment.id;
