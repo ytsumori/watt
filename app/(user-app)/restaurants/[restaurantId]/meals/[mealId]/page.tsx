@@ -23,7 +23,8 @@ export default async function Meal({ params }: Params) {
           googleMapPlaceInfo: { select: { url: true } },
           paymentOptions: true
         }
-      }
+      },
+      items: true
     }
   });
   if (!restaurant || !meal) redirect("/");
