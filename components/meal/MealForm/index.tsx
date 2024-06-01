@@ -7,9 +7,10 @@ import {
   FormControl,
   FormErrorMessage,
   FormLabel,
+  HStack,
   Input,
-  InputGroup,
-  InputLeftElement,
+  NumberInput,
+  NumberInputField,
   Text,
   Textarea
 } from "@chakra-ui/react";
@@ -89,6 +90,8 @@ export function MealForm({ restaurantId, editingMeal, onSubmit }: Props) {
     }
   };
 
+  console.log(fields.price.value);
+  console.log(typeof fields.price.value);
   return (
     <form id={form.id} onSubmit={form.onSubmit} action={action} noValidate>
       <Input name="id" defaultValue={fields.id.initialValue} hidden />
@@ -134,17 +137,17 @@ export function MealForm({ restaurantId, editingMeal, onSubmit }: Props) {
                 </FormControl>
                 <FormControl isRequired isInvalid={!!itemFields.price.errors} mt={1}>
                   <FormLabel>単価</FormLabel>
-                  <InputGroup>
-                    <InputLeftElement pointerEvents="none" color="gray.300" fontSize="1.2em">
-                      ¥
-                    </InputLeftElement>
-                    <Input
+                  <HStack maxW="full">
+                    <NumberInput
+                      allowMouseWheel={false}
                       name={itemFields.price.name}
                       min={0}
-                      type="number"
                       defaultValue={itemFields.price.initialValue}
-                    />
-                  </InputGroup>
+                    >
+                      <NumberInputField />
+                    </NumberInput>
+                    <Text>円</Text>
+                  </HStack>
                   <FormErrorMessage>{itemFields.price.errors?.join("、") ?? ""}</FormErrorMessage>
                 </FormControl>
                 <FormControl isInvalid={!!itemFields.description.errors} mt={1}>
@@ -174,12 +177,17 @@ export function MealForm({ restaurantId, editingMeal, onSubmit }: Props) {
       <Divider />
       <FormControl isRequired my={3} isInvalid={!!fields.price.errors}>
         <FormLabel>セット金額(税込)</FormLabel>
-        <InputGroup>
-          <InputLeftElement pointerEvents="none" color="gray.300" fontSize="1.2em">
-            ¥
-          </InputLeftElement>
-          <Input name={fields.price.name} type="number" min={0} defaultValue={fields.price.initialValue} />
-        </InputGroup>
+        <HStack maxW="full">
+          <NumberInput
+            allowMouseWheel={false}
+            name={fields.price.name}
+            min={0}
+            defaultValue={fields.price.initialValue}
+          >
+            <NumberInputField />
+          </NumberInput>
+          <Text>円</Text>
+        </HStack>
         <Text fontSize="sm" mt={1}>
           割引金額(自動計算)：¥
           {(

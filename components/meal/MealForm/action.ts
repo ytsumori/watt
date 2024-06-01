@@ -34,7 +34,18 @@ export async function submit(formData: FormData) {
         title: submission.value.title,
         price: submission.value.price,
         description: submission.value.description,
-        ...(imageData ? { imagePath: imageData.path } : {})
+        ...(imageData ? { imagePath: imageData.path } : {}),
+        items: {
+          createMany: {
+            data: submission.value.items.map((item) => {
+              return {
+                title: item.title,
+                description: item.description,
+                price: item.price
+              };
+            })
+          }
+        }
       }
     });
   } else {
