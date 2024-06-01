@@ -66,7 +66,7 @@ export function PaymentPage({ payment }: Props) {
 
   return (
     <>
-      <Button leftIcon={<ArrowBackIcon />} onClick={router.back} variant="ghost" alignSelf="baseline" size="lg">
+      <Button leftIcon={<ArrowBackIcon />} onClick={router.back} variant="ghost" alignSelf="baseline" size="md">
         金額を変更する
       </Button>
       <Flex direction="column" h="full" p={4}>

@@ -19,14 +19,17 @@ import {
   Spacer,
   Flex,
   Divider,
-  useDisclosure
+  useDisclosure,
+  InputGroup,
+  InputRightElement,
+  Input
 } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { Prisma } from "@prisma/client";
 import { usePathname, useRouter } from "next/navigation";
 import { CheckCircleIcon } from "@chakra-ui/icons";
 import Stripe from "stripe";
-import { useState } from "react";
+import { ChangeEventHandler, useState } from "react";
 import { createPaymentIntent } from "@/actions/payment-intent";
 import { ConfirmModal } from "@/components/confirm-modal";
 
@@ -41,22 +44,26 @@ export function NewPaymentPage({ order, paymentMethods }: Props) {
   );
   const router = useRouter();
   const pathname = usePathname();
-  const [additionalPrice, setAdditionalPrice] = useState<number>();
+  const [price, setPrice] = useState(0);
   const [isPosting, setIsPosting] = useState(false);
   const { isOpen: isErrorMessageOpen, onOpen: onErrorMessageOpen, onClose: onErrorMessageClose } = useDisclosure();
 
-  const handleAdditionalPriceChange = (value: string) => {
-    const numberValue = Number(value);
-    if (isNaN(numberValue) || numberValue === 0) setAdditionalPrice(undefined);
-    setAdditionalPrice(numberValue);
+  const handlePriceChange: ChangeEventHandler<HTMLInputElement> = (e) => {
+    if (e.target.value === "") {
+      setPrice(0);
+      return;
+    }
+    const numberValue = Number(e.target.value);
+    if (isNaN(numberValue) || numberValue === 0) return;
+    setPrice(numberValue);
   };
 
   const handleClickNext = () => {
-    if (!selectedPaymentMethod) return;
+    if (!selectedPaymentMethod || price <= 0) return;
     setIsPosting(true);
     createPaymentIntent({
       orderId: order.id,
-      additionalAmount: additionalPrice ?? 0,
+      amount: price,
       paymentMethodId: selectedPaymentMethod
     })
       .then((paymentId) => {
@@ -75,22 +82,23 @@ export function NewPaymentPage({ order, paymentMethods }: Props) {
         <VStack alignItems="start" spacing={4}>
           <Heading>支払い金額の入力</Heading>
           <Heading size="md">{order.meal.restaurant.name}</Heading>
-          <Text>推しメシ代金</Text>
-          <Heading size="md">{order.meal.price.toLocaleString("ja-JP")}円</Heading>
-          <Text size="md">追加料金</Text>
+          <Text>支払い金額（税込）を入力 </Text>
           <HStack w="full">
-            <NumberInput
-              size="lg"
-              min={0}
-              onChange={handleAdditionalPriceChange}
-              value={additionalPrice ? additionalPrice.toLocaleString("ja-JP") : ""}
-            >
-              <NumberInputField />
-            </NumberInput>
-            <Text>円</Text>
+            <InputGroup>
+              <Input
+                variant="flushed"
+                size="lg"
+                onInput={handlePriceChange}
+                value={price}
+                textAlign="right"
+                fontSize="xx-large"
+                fontWeight="bold"
+                min={0}
+                autoFocus
+              />
+              <InputRightElement alignItems="self-end">円</InputRightElement>
+            </InputGroup>
           </HStack>
-          <Text size="md">合計金額</Text>
-          <Heading size="lg">{(order.meal.price + (additionalPrice ?? 0)).toLocaleString("ja-JP")}円</Heading>
           <Divider />
           <Box>
             <Text>支払い方法</Text>
@@ -127,7 +135,13 @@ export function NewPaymentPage({ order, paymentMethods }: Props) {
           </Button>
         </VStack>
         <Spacer />
-        <Button size="lg" w="full" onClick={handleClickNext} isLoading={isPosting}>
+        <Button
+          size="lg"
+          w="full"
+          onClick={handleClickNext}
+          isLoading={isPosting}
+          isDisabled={price <= 0 || selectedPaymentMethod === undefined}
+        >
           次へ
         </Button>
       </Flex>
