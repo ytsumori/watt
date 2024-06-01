@@ -48,8 +48,6 @@ export function MealForm({ restaurantId, editingMeal, onSubmit }: Props) {
     },
     undefined
   );
-  console.log(editingMeal);
-  console.log(editingMeal?.items);
   const [form, fields] = useForm({
     id: `meal-form-${editingMeal?.id ?? "new"}`,
     lastResult,
