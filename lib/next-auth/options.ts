@@ -10,7 +10,6 @@ export const options: AuthOptions = {
       clientSecret: process.env.LINE_CLIENT_SECRET!,
       authorization: { params: { scope: "profile openid email" } },
       profile(profile) {
-        console.log(profile);
         return {
           id: profile.sub,
           name: profile.name,

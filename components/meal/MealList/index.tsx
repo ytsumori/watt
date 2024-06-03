@@ -102,7 +102,11 @@ export function MealList({ restaurantId, defaultMeals }: Props) {
           onMealFormClose();
           setEditingMeal(undefined);
         }}
-        onSubmit={revalidateMeals}
+        onSubmit={() => {
+          onMealFormClose();
+          setEditingMeal(undefined);
+          setTimeout(revalidateMeals, 500);
+        }}
         restaurantId={restaurantId}
       />
     </>
