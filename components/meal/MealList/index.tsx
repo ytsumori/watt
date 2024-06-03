@@ -1,34 +1,38 @@
 "use client";
 
-import { activateMeal, discardMeal, getMeals } from "@/actions/meal";
 import { MealCard } from "@/components/meal/MealCard";
 import { Button, Flex, HStack, Heading, VStack, useDisclosure } from "@chakra-ui/react";
-import { Meal } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { useState } from "react";
 import { MealFormModal } from "../MealFormModal";
+import { activateMeal, discardMeal, getMeals } from "./action";
+
+type MealProp = Prisma.MealGetPayload<{ include: { items: true } }>;
 
 type Props = {
   restaurantId: string;
-  defaultMeals?: Meal[];
+  defaultMeals?: MealProp[];
 };
 
 export function MealList({ restaurantId, defaultMeals }: Props) {
-  const { isOpen: isNewFormOpen, onOpen: onNewFormOpen, onClose: onNewFormClose } = useDisclosure();
+  const { isOpen: isMealFormOpen, onOpen: onMealFormOpen, onClose: onMealFormClose } = useDisclosure();
 
-  const [meals, setMeals] = useState<Meal[]>(defaultMeals?.filter((meal) => !meal.isDiscarded) ?? []);
-  const [discardedMeals, setDiscardedMeals] = useState<Meal[]>(defaultMeals?.filter((meal) => meal.isDiscarded) ?? []);
-  const [editingMeal, setEditingMeal] = useState<Meal>();
+  const [meals, setMeals] = useState<MealProp[]>(defaultMeals?.filter((meal) => !meal.isDiscarded) ?? []);
+  const [discardedMeals, setDiscardedMeals] = useState<MealProp[]>(
+    defaultMeals?.filter((meal) => meal.isDiscarded) ?? []
+  );
+  const [editingMeal, setEditingMeal] = useState<MealProp>();
 
   const revalidateMeals = () => {
-    getMeals({ where: { restaurantId }, orderBy: { price: "asc" } }).then((meals) => {
+    getMeals(restaurantId).then((meals) => {
       setMeals(meals.filter((meal) => !meal.isDiscarded));
       setDiscardedMeals(meals.filter((meal) => meal.isDiscarded));
     });
   };
 
-  const handleClickEdit = (meal: Meal) => {
+  const handleClickEdit = (meal: MealProp) => {
     setEditingMeal(meal);
-    onNewFormOpen();
+    onMealFormOpen();
   };
 
   const handleClickDiscard = async (mealId: string) => {
@@ -48,7 +52,7 @@ export function MealList({ restaurantId, defaultMeals }: Props) {
       <VStack width="full" alignItems="baseline" spacing={6}>
         <Flex gap={3} alignItems="center">
           <Heading size="md">推しメシ</Heading>
-          <Button onClick={onNewFormOpen}>登録する</Button>
+          <Button onClick={onMealFormOpen}>登録する</Button>
         </Flex>
         <Heading size="sm">提供中</Heading>
         <Flex wrap="wrap" justify="space-evenly" gap={4}>
@@ -93,12 +97,16 @@ export function MealList({ restaurantId, defaultMeals }: Props) {
       </VStack>
       <MealFormModal
         editingMeal={editingMeal}
-        isOpen={isNewFormOpen}
+        isOpen={isMealFormOpen}
         onClose={() => {
-          onNewFormClose();
+          onMealFormClose();
           setEditingMeal(undefined);
         }}
-        onSubmitComplete={revalidateMeals}
+        onSubmit={() => {
+          onMealFormClose();
+          setEditingMeal(undefined);
+          setTimeout(revalidateMeals, 500);
+        }}
         restaurantId={restaurantId}
       />
     </>

@@ -30,7 +30,9 @@ type Props = {
       id: true;
       name: true;
       bankAccount: true;
-      meals: true;
+      meals: {
+        include: { items: true };
+      };
       smokingOption: true;
       paymentOptions: true;
       phoneNumber: true;

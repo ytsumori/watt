@@ -2,7 +2,7 @@
 
 import { orderPaymentOptions } from "@/lib/prisma/order-enum";
 import { translatePaymentOption, translateSmokingOption } from "@/lib/prisma/translate-enum";
-import { Box, Heading, VStack, Text, Button, Icon, SimpleGrid } from "@chakra-ui/react";
+import { Heading, VStack, Text, Button, Icon, SimpleGrid } from "@chakra-ui/react";
 import { Prisma } from "@prisma/client";
 import NextLink from "next/link";
 import { Fragment } from "react";
@@ -17,16 +17,6 @@ type Props = {
 export function RestaurantInfo({ restaurant }: Props) {
   return (
     <VStack w="full" alignItems="start" spacing={4}>
-      <Box h="20vh" w="full">
-        <iframe
-          width="100%"
-          height="100%"
-          style={{ border: 0 }}
-          loading="lazy"
-          referrerPolicy="no-referrer-when-downgrade"
-          src={`https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY}&q=place_id:${restaurant.googleMapPlaceId}`}
-        />
-      </Box>
       <VStack alignItems="start" spacing={2}>
         <Heading size="lg">{restaurant.name}</Heading>
         {restaurant.googleMapPlaceInfo && (

@@ -1,19 +1,19 @@
 "use client";
 
-import { getMeals } from "@/actions/meal";
-import { Meal } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { useContext, useEffect, useState } from "react";
 import { RestaurantIdContext } from "./restaurant-id-provider";
 import { MealList } from "@/components/meal/MealList";
 import { Center, Spinner, Text, VStack } from "@chakra-ui/react";
+import { getMeals } from "../_actions/getMeals";
 
 export function MealPage() {
   const restaurantId = useContext(RestaurantIdContext);
 
-  const [meals, setMeals] = useState<Meal[]>();
+  const [meals, setMeals] = useState<Prisma.MealGetPayload<{ include: { items: true } }>[]>();
 
   useEffect(() => {
-    getMeals({ where: { restaurantId }, orderBy: { price: "asc" } }).then((meals) => setMeals(meals));
+    getMeals(restaurantId).then((meals) => setMeals(meals));
   }, [restaurantId]);
 
   if (!meals)

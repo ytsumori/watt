@@ -30,6 +30,7 @@ type Props = {
   meal: Prisma.MealGetPayload<{
     include: {
       restaurant: { include: { meals: true; googleMapPlaceInfo: { select: { url: true } }; paymentOptions: true } };
+      items: true;
     };
   }>;
   isRestaurantActive: boolean;
@@ -87,6 +88,7 @@ export default function MealPage({ meal, isRestaurantActive, preauthorizedOrder,
               href={currentMeal.id}
               borderWidth={meal.id === currentMeal.id ? 4 : 0}
               borderColor="brand.400"
+              isLabelHidden={meal.id === currentMeal.id}
             >
               {meal.id === currentMeal.id && (
                 <CheckIcon
@@ -105,11 +107,27 @@ export default function MealPage({ meal, isRestaurantActive, preauthorizedOrder,
             </MealPreviewBox>
           ))}
         </HStack>
-        <Box borderWidth="1px" w="full" p={1}>
-          <Text fontSize="xs" whiteSpace="pre-wrap">
+        <Box w="full">
+          <Heading size="md">{meal.title}</Heading>
+          <Heading size="md">¥{meal.price.toLocaleString("ja-JP")}</Heading>
+          <Text fontSize="sm" whiteSpace="pre-wrap" mt={2}>
             {meal.description}
           </Text>
         </Box>
+        <Divider borderColor="black" />
+        <Heading size="md">セット内容</Heading>
+        <VStack alignItems="start" spacing={1} w="full">
+          {meal.items.map((item) => (
+            <Box key={item.id}>
+              <Text fontSize="md" as="b">
+                {item.title}
+              </Text>
+              <Text whiteSpace="pre-wrap" fontSize="xs" color="blackAlpha.700">
+                {item.description}
+              </Text>
+            </Box>
+          ))}
+        </VStack>
         <VStack alignItems="baseline" spacing={4} w="full">
           {isRestaurantActive ? (
             preauthorizedOrder ? (
@@ -124,47 +142,43 @@ export default function MealPage({ meal, isRestaurantActive, preauthorizedOrder,
                   <>
                     <Heading size="md">ご注文内容の確認</Heading>
                     <VStack w="full">
-                      {meal.listPrice ? (
-                        <>
-                          <Flex w="full">
-                            <Text>{meal.title}</Text>
+                      <Flex w="full">
+                        <Text>{meal.title}</Text>
+                      </Flex>
+                      <Box width="full">
+                        {meal.items.map((item) => (
+                          <Flex w="full" alignItems="flex-start" fontSize="sm" key={item.id}>
+                            <Text>{item.title}</Text>
                             <Spacer />
-                            <Text as="p" fontSize="sm">
-                              <Text as="span" mr="2">
-                                単品合計価格
-                              </Text>
-                              <Text as="span" textDecorationLine="line-through">
-                                ¥{meal.listPrice.toLocaleString("ja-JP")}
-                              </Text>
-                            </Text>
+                            <Text>¥{item.price.toLocaleString("ja-JP")}</Text>
                           </Flex>
-                          <Flex w="full" alignItems="flex-start">
-                            <Spacer />
-                            <HStack spacing={0} mr={2}>
-                              <Image src="/watt-logo.png" alt="Watt" width={40} height={31} />
-                              <Text fontSize="sm" fontWeight="bold" as="span" ml={1}>
-                                価格
-                              </Text>
-                            </HStack>
-                            <Text as="p" fontSize="sm" fontWeight="bold">
-                              ¥{meal.price.toLocaleString("ja-JP")}
-                            </Text>
-                          </Flex>
-                        </>
-                      ) : (
-                        <Flex w="full">
-                          <Text>{meal.title}</Text>
-                          <Spacer />
-                          <Text as="p" fontSize="sm" fontWeight="bold">
-                            ¥{meal.price.toLocaleString("ja-JP")}
-                          </Text>
-                        </Flex>
-                      )}
+                        ))}
+                      </Box>
                     </VStack>
-                    <Divider />
-                    <Heading size="sm" alignSelf="self-end">
-                      合計 ¥{meal.price.toLocaleString("ja-JP")}
-                    </Heading>
+                    <Divider borderColor="blackAlpha.400" />
+                    <Box w="full">
+                      <Flex>
+                        <Spacer />
+                        <Text as="p" fontSize="sm">
+                          <Text as="span" mr="2">
+                            単品合計価格
+                          </Text>
+                          <Text as="span" textDecorationLine="line-through">
+                            ¥{meal.items.reduce((acc, item) => acc + item.price, 0).toLocaleString("ja-JP")}
+                          </Text>
+                        </Text>
+                      </Flex>
+                      <Flex fontWeight="bold" textColor="brand.400" mt={1}>
+                        <Spacer />
+                        <HStack spacing={0} mr={2}>
+                          <Image src="/watt-logo.png" alt="Watt" width={40} height={31} />
+                          <Text fontSize="sm" as="span" ml={1}>
+                            価格
+                          </Text>
+                        </HStack>
+                        <Text as="span">¥{meal.price.toLocaleString("ja-JP")}</Text>
+                      </Flex>
+                    </Box>
                     <Divider borderColor="black" />
                     <Text fontSize="xs">
                       お店に到着後に次の画面で注文を確定するまで、調理は開始されません。
