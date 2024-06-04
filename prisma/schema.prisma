@@ -182,15 +182,16 @@ model MealItem {
 }
 
 model Order {
-  id                     String      @id @default(cuid())
-  orderNumber            Int         @unique @default(autoincrement())
+  id                     String    @id @default(cuid())
+  orderNumber            Int       @unique @default(autoincrement())
   userId                 String
   restaurantId           String
-  status                 OrderStatus @default(PREORDERED)
   peopleCount            Int
+  completedAt            DateTime?
+  canceledAt             DateTime?
   approvedByRestaurantAt DateTime?
-  createdAt              DateTime    @default(now())
-  updatedAt              DateTime    @default(now()) @updatedAt
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @default(now()) @updatedAt
 
   cancellation          OrderCancellation?
   automaticCancellation OrderAutomaticCancellation?
@@ -302,12 +303,6 @@ enum BankAccountType {
   SAVINGS
   CHECKING
   DEPOSIT
-}
-
-enum OrderStatus {
-  PREORDERED
-  COMPLETE
-  CANCELLED
 }
 
 enum CancellationUserType {
