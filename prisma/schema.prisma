@@ -85,6 +85,7 @@ model Restaurant {
   staffs             Staff[]
   paymentOptions     RestaurantPaymentOption[]
   menuImages         RestaurantMenuImage[]
+  orders             Order[]
 }
 
 model RestaurantPaymentOption {
@@ -159,7 +160,7 @@ model Meal {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @default(now()) @updatedAt
 
-  orders Order[]
+  orders OrderMeal[]
   items  MealItem[]
 
   restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
@@ -184,8 +185,9 @@ model Order {
   id                     String      @id @default(cuid())
   orderNumber            Int         @unique @default(autoincrement())
   userId                 String
-  mealId                 String
+  restaurantId           String
   status                 OrderStatus @default(PREORDERED)
+  peopleCount            Int
   approvedByRestaurantAt DateTime?
   createdAt              DateTime    @default(now())
   updatedAt              DateTime    @default(now()) @updatedAt
@@ -194,9 +196,22 @@ model Order {
   automaticCancellation OrderAutomaticCancellation?
   payment               Payment?
   notificationCall      OrderNotificationCall?
+  meals                 OrderMeal[]
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  meal Meal @relation(fields: [mealId], references: [id], onDelete: Cascade)
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+}
+
+model OrderMeal {
+  id        String   @id @default(cuid())
+  orderId   String
+  mealId    String
+  quantity  Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  meal  Meal  @relation(fields: [mealId], references: [id], onDelete: Cascade)
 }
 
 model OrderNotificationCall {
