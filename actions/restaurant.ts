@@ -11,8 +11,8 @@ export async function findRestaurant<T extends Prisma.RestaurantFindUniqueArgs>(
   });
 }
 
-export async function updateIsOpen({ id, isOpen }: { id: string; isOpen: boolean }) {
-  return await prisma.restaurant.update({
+export function updateIsOpenDelegate({ id, isOpen }: { id: string; isOpen: boolean }) {
+  return prisma.restaurant.update({
     where: {
       id
     },
@@ -34,4 +34,8 @@ export async function updateIsOpen({ id, isOpen }: { id: string; isOpen: boolean
       }
     }
   });
+}
+
+export async function updateIsOpen({ id, isOpen }: { id: string; isOpen: boolean }) {
+  return await updateIsOpenDelegate({ id, isOpen });
 }

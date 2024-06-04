@@ -2,42 +2,26 @@
 
 import { useContext, useEffect, useState } from "react";
 import { RestaurantIdContext } from "../../_components/restaurant-id-provider";
-import { findOrder } from "@/actions/order";
-import { Meal, Order } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { Alert, Button, Center, useDisclosure, Text, VStack, Spinner, Box, Heading, effect } from "@chakra-ui/react";
 import { ConfirmModal } from "@/components/confirm-modal";
-import { cancelOrder } from "./_actions/cancel-order";
 import { MealPreviewImage } from "@/components/meal/MealPreviewImage";
-import { findMeal } from "@/actions/meal";
 import { transformSupabaseImage } from "@/utils/image/transformSupabaseImage";
+import { cancelOrder, findOrder } from "./_actions";
 
 export default function RejectOrder({ params }: { params: { orderId: string } }) {
   const restaurantId = useContext(RestaurantIdContext);
-  const [order, setOrder] = useState<Order>();
-  const [meal, setMeal] = useState<Meal>();
+  const [order, setOrder] = useState<Prisma.OrderGetPayload<{ include: { meals: { include: { meal: true } } } }>>();
   const [isPosting, setIsPosting] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   useEffect(() => {
-    findOrder({
-      where: { id: params.orderId, meal: { restaurantId: restaurantId } },
-      include: { meal: true }
-    }).then((order) => {
+    findOrder({ orderId: params.orderId, restaurantId }).then((order) => {
       if (order) {
         setOrder(order);
       }
     });
   }, [params.orderId, restaurantId]);
-
-  useEffect(() => {
-    if (order) {
-      findMeal(order.mealId).then((meal) => {
-        if (meal) {
-          setMeal(meal);
-        }
-      });
-    }
-  }, [order]);
 
   if (!order) {
     return (
@@ -61,7 +45,11 @@ export default function RejectOrder({ params }: { params: { orderId: string } })
     });
   };
 
-  if (order.status === "CANCELLED") {
+  if (order.completedAt) {
+    return <Alert status="success">こちらの注文はすでに完了しています</Alert>;
+  }
+
+  if (order.canceledAt) {
     return <Alert status="error">こちらの注文はすでにキャンセルされています</Alert>;
   }
 
@@ -69,25 +57,22 @@ export default function RejectOrder({ params }: { params: { orderId: string } })
     <>
       <VStack spacing={5} px={2} w="full" alignItems="start" p={4}>
         <Heading>注文情報</Heading>
-        {meal && (
-          <>
-            <Text>
-              注文番号:
-              <Heading as="span" ml={2}>
-                {order.orderNumber}
-              </Heading>
-            </Text>
-            <Heading size="md">注文商品</Heading>
-            <Box w="50%">
-              <MealPreviewImage src={transformSupabaseImage("meals", meal.imagePath)} alt={meal.title} />
-            </Box>
-            <Box borderWidth="1px" w="full" p={1}>
-              <Text fontSize="xs" whiteSpace="pre-wrap">
-                {meal.description}
-              </Text>
-            </Box>
-          </>
-        )}
+        <Text>
+          注文番号:
+          <Heading as="span" ml={2}>
+            {order.orderNumber}
+          </Heading>
+        </Text>
+        <Heading size="md">注文商品</Heading>
+        {order.meals.map((orderMeal) => (
+          <Box key={orderMeal.id} w="full">
+            <MealPreviewImage
+              src={transformSupabaseImage("meals", orderMeal.meal.imagePath)}
+              alt={orderMeal.meal.title}
+            />
+            <Text>{orderMeal.meal.title}</Text>
+          </Box>
+        ))}
         <Button colorScheme="red" onClick={onOpen} w="full" size="md">
           店内が満席であることを伝える
         </Button>

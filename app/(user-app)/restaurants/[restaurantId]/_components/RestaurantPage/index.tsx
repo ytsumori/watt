@@ -35,11 +35,11 @@ type Props = {
       paymentOptions: true;
     };
   }>;
-  preorderId?: string;
+  inProgressOrderId?: string;
   userId?: string;
 };
 
-export function RestaurantPage({ restaurant, preorderId, userId }: Props) {
+export function RestaurantPage({ restaurant, inProgressOrderId, userId }: Props) {
   const router = useRouter();
   const [isVisitRequesting, setIsVisitRequesting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<{ title: string; description: string }>();
@@ -98,8 +98,8 @@ export function RestaurantPage({ restaurant, preorderId, userId }: Props) {
           <>
             <MealInfo meal={firstPersonMeal} />
             {restaurant.isOpen ? (
-              preorderId ? (
-                <Alert status="warning" as={NextLink} href={`/orders/${preorderId}`}>
+              inProgressOrderId ? (
+                <Alert status="warning" as={NextLink} href={`/orders/${inProgressOrderId}`}>
                   <AlertIcon />
                   既に選択済みの推しメシがあります
                 </Alert>

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React from "react";
 import {
   Accordion,
   AccordionButton,
@@ -16,49 +16,22 @@ import {
   MenuItem,
   MenuList,
   Spacer,
-  Text,
-  useDisclosure
+  Text
 } from "@chakra-ui/react";
 import { signIn, signOut } from "next-auth/react";
-import { usePathname, useRouter } from "next/navigation";
-import { ConfirmModal } from "@/components/confirm-modal";
+import { usePathname } from "next/navigation";
 import NextLink from "next/link";
 import Image from "next/image";
-import { findPreorder } from "@/actions/order";
 import { User } from "@prisma/client";
 import { OnboardingModal } from "../OnboardingModal";
 
 type Props = {
   children: React.ReactNode;
-  defaultPreauthorizedOrderId?: string;
   user?: User;
 };
 
-export default function UserAppLayout({ children, defaultPreauthorizedOrderId, user }: Props) {
-  const router = useRouter();
+export default function UserAppLayout({ children, user }: Props) {
   const pathname = usePathname();
-  const {
-    isOpen: isOrderModalOpen,
-    onOpen: onOrderModalOpen,
-    onClose: onOrderModalClose
-  } = useDisclosure({
-    defaultIsOpen: !!defaultPreauthorizedOrderId && !pathname.startsWith("/orders")
-  });
-  const [preauthorizedOrderId, setPreauthorizedOrderId] = React.useState(defaultPreauthorizedOrderId);
-
-  useEffect(() => {
-    if (user) {
-      if (!user.phoneNumber && pathname !== "/profile") router.push(`/profile?redirectedFrom=${pathname}`);
-      if (!pathname.startsWith("/orders")) {
-        findPreorder(user.id).then((preauthorizedOrder) => {
-          if (!!preauthorizedOrder) {
-            setPreauthorizedOrderId(preauthorizedOrder.id);
-            onOrderModalOpen();
-          }
-        });
-      }
-    }
-  }, [pathname, onOrderModalOpen, user, router]);
 
   if (pathname === "/signin") return <>{children}</>;
 
@@ -136,24 +109,6 @@ export default function UserAppLayout({ children, defaultPreauthorizedOrderId, u
         </Flex>
         {children}
       </Flex>
-      <ConfirmModal
-        isOpen={isOrderModalOpen}
-        onClose={onOrderModalClose}
-        title="すでに注文した推しメシがあります"
-        confirmButton={{
-          label: "注文ページに移動する",
-          onClick: () => {
-            router.push(`/orders/${preauthorizedOrderId}`);
-            onOrderModalClose();
-          }
-        }}
-      >
-        <Text>
-          注文した推しメシがあります。
-          <br />
-          お店に向かってください。
-        </Text>
-      </ConfirmModal>
       <OnboardingModal />
     </>
   );

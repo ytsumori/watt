@@ -37,7 +37,7 @@ export function OrdersPage({ orders }: Props) {
               <Text fontSize="x-small">
                 {(() => {
                   switch (status) {
-                    case "PENDING":
+                    case "IN PROGRESS":
                       return `作成日時: ${order.createdAt.toLocaleString("ja-JP")}`;
                     case "COMPLETE":
                       return `完了日時: ${order.completedAt?.toLocaleString("ja-JP")}`;
@@ -71,7 +71,7 @@ export function OrdersPage({ orders }: Props) {
 
 function getBadgeColor(status: OrderStatus) {
   switch (status) {
-    case "PENDING":
+    case "IN PROGRESS":
       return "yellow";
     case "COMPLETE":
       return "green";

@@ -3,8 +3,8 @@
 import { notifyStaffOrder } from "./notify-staff-order";
 import prisma from "@/lib/prisma/client";
 import { createHttpTask } from "@/lib/googleTasks/createHttpTask";
-import { findPreorder } from "@/actions/order";
 import { Order } from "@prisma/client";
+import { findInProgressOrder } from "@/app/(user-app)/_actions/findInProgressOrder";
 
 type Args = {
   userId: string;
@@ -15,8 +15,8 @@ type Args = {
 };
 
 export async function visitRestaurant({ userId, restaurantId, firstMealId, secondMealId, peopleCount }: Args) {
-  const existingOrder = await findPreorder(userId);
-  if (existingOrder) {
+  const inProgressOrder = await findInProgressOrder(userId);
+  if (inProgressOrder) {
     throw new Error("Active order already exists");
   }
 

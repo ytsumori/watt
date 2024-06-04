@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { RestaurantPage } from "./_components/RestaurantPage";
 import { transformSupabaseImage } from "@/utils/image/transformSupabaseImage";
 import { Metadata } from "next";
-import { findPreorder } from "@/actions/order";
+import { findInProgressOrder } from "../../_actions/findInProgressOrder";
 
 type Params = { params: { restaurantId: string } };
 
@@ -24,9 +24,9 @@ export default async function Restaurant({ params }: Params) {
   if (session) {
     // logged in
     const userId = session.user.id;
-    const order = await findPreorder(userId);
+    const order = await findInProgressOrder(userId);
 
-    return <RestaurantPage restaurant={restaurant} preorderId={order?.id ?? undefined} userId={userId} />;
+    return <RestaurantPage restaurant={restaurant} inProgressOrderId={order?.id ?? undefined} userId={userId} />;
   }
 
   return <RestaurantPage restaurant={restaurant} />;
