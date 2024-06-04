@@ -11,7 +11,6 @@ import {
   Flex,
   Heading,
   Icon,
-  Image,
   Spacer,
   Text,
   VStack,
@@ -24,7 +23,6 @@ import { FaMapMarkedAlt } from "react-icons/fa";
 import NextLink from "next/link";
 import { ConfirmModal } from "@/components/confirm-modal";
 import { cancelOrder } from "../../_actions/cancel-order";
-import { transformSupabaseImage } from "@/utils/image/transformSupabaseImage";
 import { completeOrder } from "../../_actions/complete-order";
 import { CompleteConfirmModal } from "../PaymentConfirmModal";
 import { CancelConfirmModal } from "../CancelConfirmModal";
@@ -33,7 +31,8 @@ import NextImage from "next/image";
 type Props = {
   order: Prisma.OrderGetPayload<{
     include: {
-      meal: { include: { restaurant: { include: { googleMapPlaceInfo: { select: { url: true } } } } } };
+      restaurant: { include: { googleMapPlaceInfo: { select: { url: true } } } };
+      meals: { include: { meal: { select: { title: true; price: true } } } };
       payment: true;
     };
   }>;
@@ -46,7 +45,6 @@ export function OrderPage({ order }: Props) {
   const [isConfirming, setIsConfirming] = useState(false);
   const [isCancelling, setIsCancelling] = useState(false);
   const [errorMessage, setErrorMessage] = useState<{ title: string; description: string }>();
-  const publicUrl = transformSupabaseImage("meals", order.meal.imagePath);
 
   const handleCompleteConfirm = () => {
     setIsConfirming(true);
@@ -60,7 +58,7 @@ export function OrderPage({ order }: Props) {
   const handleCancelConfirm = (isFull: boolean) => {
     setIsCancelling(true);
 
-    cancelOrder({ orderId: order.id, restaurantId: order.meal.restaurant.id, isFull })
+    cancelOrder({ orderId: order.id, restaurantId: order.restaurant.id, isFull })
       .then(() => {
         router.push("/");
         router.refresh();
@@ -95,13 +93,13 @@ export function OrderPage({ order }: Props) {
               </Alert>
               <VStack alignItems="start">
                 <Heading size="md">店舗</Heading>
-                <Heading size="sm">{order.meal.restaurant.name}</Heading>
-                {order.meal.restaurant.googleMapPlaceInfo && (
+                <Heading size="sm">{order.restaurant.name}</Heading>
+                {order.restaurant.googleMapPlaceInfo && (
                   <Button
                     w="full"
                     leftIcon={<Icon as={FaMapMarkedAlt} />}
                     as={NextLink}
-                    href={order.meal.restaurant.googleMapPlaceInfo.url}
+                    href={order.restaurant.googleMapPlaceInfo.url}
                     target="_blank"
                   >
                     Googleマップでお店情報を見る
@@ -114,7 +112,7 @@ export function OrderPage({ order }: Props) {
                     style={{ border: 0 }}
                     loading="lazy"
                     referrerPolicy="no-referrer-when-downgrade"
-                    src={`https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY}&q=place_id:${order.meal.restaurant.googleMapPlaceId}`}
+                    src={`https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY}&q=place_id:${order.restaurant.googleMapPlaceId}`}
                   />
                 </Box>
               </VStack>
@@ -124,34 +122,26 @@ export function OrderPage({ order }: Props) {
                   {order.orderNumber}
                 </Heading>
               </Text>
-              <VStack alignItems="start" spacing={4} w="full">
-                <VStack alignItems="start" w="full">
-                  <Heading size="md">注文商品</Heading>
-                  <Heading size="sm">{order.meal.title}</Heading>
-                  <Image w="50vw" src={publicUrl} alt={`meal-${order.meal.id}`} objectFit="cover" aspectRatio={1 / 1} />
-                  <Box borderWidth="1px" w="full" p={1}>
-                    <Text fontSize="xs" whiteSpace="pre-wrap">
-                      {order.meal.description}
-                    </Text>
-                  </Box>
-                </VStack>
-                <Divider borderColor="black" />
-                <VStack alignItems="start" w="full">
-                  <Heading size="md">金額</Heading>
-                  <Flex w="full">
-                    <Text>{order.meal.title}</Text>
+              <VStack alignItems="start" w="full">
+                <Heading size="md">注文内容</Heading>
+                {order.meals.map((orderMeal) => (
+                  <Flex w="full" key={orderMeal.id}>
+                    <Text>{orderMeal.meal.title}</Text>
                     <Spacer />
                     <Text as="p" fontWeight="bold">
-                      ¥{order.meal.price.toLocaleString("ja-JP")}
+                      ¥{orderMeal.meal.price.toLocaleString("ja-JP")} × {orderMeal.quantity}
                     </Text>
                   </Flex>
-                  <Divider />
-                  <Heading size="sm" alignSelf="self-end">
-                    合計 ¥{order.meal.price.toLocaleString("ja-JP")}
-                  </Heading>
-                </VStack>
+                ))}
+                <Divider />
+                <Heading size="sm" alignSelf="self-end">
+                  合計 ¥
+                  {order.meals
+                    .reduce((acc, orderMeal) => acc + orderMeal.meal.price * orderMeal.quantity, 0)
+                    .toLocaleString("ja-JP")}
+                </Heading>
               </VStack>
-              <VStack w="full">
+              <VStack w="full" mt={10}>
                 <Button
                   size="md"
                   w="full"
@@ -225,25 +215,7 @@ export function OrderPage({ order }: Props) {
           <Heading>注文情報</Heading>
           <VStack alignItems="start">
             <Heading size="md">店舗</Heading>
-            <Heading size="sm">{order.meal.restaurant.name}</Heading>
-          </VStack>
-          <VStack alignItems="start" w="full">
-            <Heading size="md">注文商品</Heading>
-            <Image w="50vw" src={publicUrl} alt={`meal-${order.meal.id}`} objectFit="cover" aspectRatio={1 / 1} />
-            <Box borderWidth="1px" w="full" p={1}>
-              <Text fontSize="xs" whiteSpace="pre-wrap">
-                {order.meal.description}
-              </Text>
-            </Box>
-          </VStack>
-          <VStack alignItems="start">
-            <Heading size="md">金額</Heading>
-            <Heading size="sm">
-              合計{" "}
-              <Text as="span" fontWeight="bold">
-                ¥{order.meal.price.toLocaleString("ja-JP")}
-              </Text>
-            </Heading>
+            <Heading size="sm">{order.restaurant.name}</Heading>
           </VStack>
           <Button variant="outline" size="md" colorScheme="gray" w="full" maxW="full" as={NextLink} href="/">
             ホーム画面に戻る
@@ -290,28 +262,39 @@ export function OrderPage({ order }: Props) {
           <Heading>注文情報</Heading>
           <VStack alignItems="start">
             <Heading size="md">店舗</Heading>
-            <Heading size="sm">{order.meal.restaurant.name}</Heading>
+            <Heading size="sm">{order.restaurant.name}</Heading>
           </VStack>
           <VStack alignItems="start" w="full">
-            <Heading size="md">注文商品</Heading>
-            <Image w="50vw" src={publicUrl} alt={`meal-${order.meal.id}`} objectFit="cover" aspectRatio={1 / 1} />
-            <Box borderWidth="1px" w="full" p={1}>
-              <Text fontSize="xs" whiteSpace="pre-wrap">
-                {order.meal.description}
-              </Text>
-            </Box>
-          </VStack>
-          <VStack alignItems="start">
             <Heading size="md">金額</Heading>
-            {isPaymentCompleted && (
-              <VStack spacing={0} alignItems="start">
-                <Text size="md">推しメシ料金 ¥{order.meal.price.toLocaleString("ja-JP")}</Text>
-                <Text size="md">追加料金 ¥{order.payment!!.additionalAmount.toLocaleString("ja-JP")}</Text>
-              </VStack>
-            )}
-            <Heading size="sm">
-              ¥{(isPaymentCompleted ? order.payment!!.totalAmount : order.meal.price).toLocaleString("ja-JP")}
-            </Heading>
+            <VStack spacing={0} alignItems="start" w="full">
+              {order.meals.map((orderMeal) => (
+                <Flex w="full" key={orderMeal.id} justifyContent="space-between">
+                  <Text>{orderMeal.meal.title}</Text>
+                  <Text as="p" fontWeight="bold">
+                    ¥{orderMeal.meal.price.toLocaleString("ja-JP")} × {orderMeal.quantity}
+                  </Text>
+                </Flex>
+              ))}
+              {isPaymentCompleted && order.payment?.additionalAmount && (
+                <Flex w="full" justifyContent="space-between">
+                  <Text>追加料金</Text>
+                  <Text as="p" fontWeight="bold">
+                    ¥{order.payment.additionalAmount.toLocaleString("ja-JP")}
+                  </Text>
+                </Flex>
+              )}
+            </VStack>
+            <Divider />
+            <Flex w="full" justifyContent="space-between">
+              <Text>合計</Text>
+              <Text fontWeight="bold">
+                ¥
+                {(isPaymentCompleted
+                  ? order.payment!!.totalAmount
+                  : order.meals.reduce((acc, orderMeal) => acc + orderMeal.meal.price * orderMeal.quantity, 0)
+                ).toLocaleString("ja-JP")}
+              </Text>
+            </Flex>
           </VStack>
           <Button variant="outline" size="md" colorScheme="gray" w="full" maxW="full" as={NextLink} href="/">
             ホーム画面に戻る
