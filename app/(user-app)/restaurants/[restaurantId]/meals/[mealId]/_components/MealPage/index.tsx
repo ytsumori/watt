@@ -12,7 +12,9 @@ import {
   Spacer,
   Box,
   useDisclosure,
-  HStack
+  HStack,
+  Select,
+  Center
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { Order, Prisma } from "@prisma/client";
@@ -38,6 +40,8 @@ type Props = {
   userId?: string;
 };
 
+const NO_ORDER = "NO ORDER";
+
 export default function MealPage({ meal, isRestaurantActive, preauthorizedOrder, userId }: Props) {
   const router = useRouter();
   const [isVisitRequesting, setIsVisitRequesting] = useState(false);
@@ -47,6 +51,8 @@ export default function MealPage({ meal, isRestaurantActive, preauthorizedOrder,
     onOpen: onVisitConfirmModalOpen,
     onClose: onVisitConfirmModalClose
   } = useDisclosure();
+  const [peopleCount, setPeopleCount] = useState<"1" | "2">("1");
+  const [secondPersonOrder, setSecondPersonOrder] = useState<string>();
 
   const handleVisitingClick = async () => {
     if (!userId) return;
@@ -80,6 +86,7 @@ export default function MealPage({ meal, isRestaurantActive, preauthorizedOrder,
           <Heading size="md">推しメシ</Heading>
           <Text fontSize="xs">食べたい推しメシを選択してください</Text>
         </Box>
+        {peopleCount === "2" && <Heading size="sm">1人目の注文</Heading>}
         <HStack overflowX="auto" maxW="full" className="hidden-scrollbar">
           {meal.restaurant.meals.map((currentMeal) => (
             <MealPreviewBox
@@ -140,6 +147,73 @@ export default function MealPage({ meal, isRestaurantActive, preauthorizedOrder,
                 <Divider borderColor="black" />
                 {userId ? (
                   <>
+                    <Heading size="md">来店人数を選択</Heading>
+                    <Select value={peopleCount} onChange={(e) => setPeopleCount(e.target.value as "1" | "2")}>
+                      <option value="1">1人</option>
+                      <option value="2">2人</option>
+                    </Select>
+                    <Divider borderColor="black" />
+                    {peopleCount === "2" && (
+                      <>
+                        <Heading size="sm">2人目の注文</Heading>
+                        <HStack overflowX="auto" maxW="full" className="hidden-scrollbar">
+                          {meal.restaurant.meals.map((currentMeal) => (
+                            <MealPreviewBox
+                              key={currentMeal.id}
+                              meal={currentMeal}
+                              onClick={() => setSecondPersonOrder(currentMeal.id)}
+                              borderWidth={secondPersonOrder === currentMeal.id ? 4 : 0}
+                              borderColor="brand.400"
+                            >
+                              {secondPersonOrder === currentMeal.id && (
+                                <CheckIcon
+                                  position="absolute"
+                                  top={0}
+                                  right={0}
+                                  backgroundColor="brand.400"
+                                  color="white"
+                                  boxSize={6}
+                                  borderRadius={6}
+                                  m={1}
+                                  p={1}
+                                  aria-label="checked"
+                                />
+                              )}
+                            </MealPreviewBox>
+                          ))}
+                          <Center
+                            minW="150px"
+                            w="150px"
+                            h="150px"
+                            borderRadius={12}
+                            position="relative"
+                            borderWidth={secondPersonOrder === NO_ORDER ? 4 : 0}
+                            borderColor="brand.400"
+                            backgroundColor="gray.100"
+                            onClick={() => setSecondPersonOrder(NO_ORDER)}
+                          >
+                            <Text fontSize="xs" color="brand.400">
+                              1人目の注文をシェアする
+                            </Text>
+                            {secondPersonOrder === NO_ORDER && (
+                              <CheckIcon
+                                position="absolute"
+                                top={0}
+                                right={0}
+                                backgroundColor="brand.400"
+                                color="white"
+                                boxSize={6}
+                                borderRadius={6}
+                                m={1}
+                                p={1}
+                                aria-label="checked"
+                              />
+                            )}
+                          </Center>
+                        </HStack>
+                        <Divider borderColor="black" />
+                      </>
+                    )}
                     <Heading size="md">ご注文内容の確認</Heading>
                     <VStack w="full">
                       <Flex w="full">
