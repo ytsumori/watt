@@ -14,8 +14,8 @@ export default async function Orders() {
   const orders = await prisma.order.findMany({
     where: { userId: user.id },
     include: {
-      meal: { include: { restaurant: true } },
-      payment: true
+      restaurant: { select: { name: true } },
+      payment: { select: { totalAmount: true } }
     },
     orderBy: { createdAt: "desc" }
   });

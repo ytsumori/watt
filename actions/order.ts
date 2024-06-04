@@ -11,7 +11,8 @@ export async function findPreorder(userId: string) {
   return await prisma.order.findFirst({
     where: {
       userId,
-      status: "PREORDERED"
+      completedAt: null,
+      canceledAt: null
     }
   });
 }
