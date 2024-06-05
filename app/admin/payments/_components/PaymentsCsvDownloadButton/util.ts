@@ -5,9 +5,9 @@ import { BankAccountType } from "@prisma/client";
 
 export const isValidPayment = (payment: DownloadablePayment): boolean => {
   return (
-    payment.order.meal.restaurant.bankAccount !== null &&
+    payment.order.restaurant.bankAccount !== null &&
     !payment.isCsvDownloaded &&
-    isValidHolderName(payment.order.meal.restaurant.bankAccount.holderName)
+    isValidHolderName(payment.order.restaurant.bankAccount.holderName)
   );
 };
 

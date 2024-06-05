@@ -29,7 +29,7 @@ describe("[OrdersCsvDownloadButton / util]", () => {
       const order = createOrderMock();
       const downloadableOrderMock: DownloadablePayment = {
         id: restaurant.id,
-        order: { meal: { restaurant: { bankAccount: bankAccount, ...restaurant } }, ...order },
+        order: { restaurant: { bankAccount: bankAccount, ...restaurant }, ...order },
         ...payment
       };
 
@@ -42,7 +42,7 @@ describe("[OrdersCsvDownloadButton / util]", () => {
       const order = createOrderMock();
       const downloadableOrderMock: DownloadablePayment = {
         id: restaurant.id,
-        order: { meal: { restaurant: { bankAccount: null, ...restaurant } }, ...order },
+        order: { restaurant: { bankAccount: null, ...restaurant }, ...order },
         ...payment
       };
 
@@ -56,7 +56,7 @@ describe("[OrdersCsvDownloadButton / util]", () => {
       const order = createOrderMock();
       const downloadableOrderMock: DownloadablePayment = {
         id: restaurant.id,
-        order: { meal: { restaurant: { bankAccount: bankAccount, ...restaurant } }, ...order },
+        order: { restaurant: { bankAccount: bankAccount, ...restaurant }, ...order },
         ...payment,
         isCsvDownloaded: true
       };
@@ -72,7 +72,7 @@ describe("[OrdersCsvDownloadButton / util]", () => {
       const downloadableOrderMock: DownloadablePayment = {
         id: restaurant.id,
         order: {
-          meal: { restaurant: { bankAccount: { ...bankAccount, holderName: "invalid" }, ...restaurant } },
+          restaurant: { bankAccount: { ...bankAccount, holderName: "invalid" }, ...restaurant },
           ...order
         },
         ...payment

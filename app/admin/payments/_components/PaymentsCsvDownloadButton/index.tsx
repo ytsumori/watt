@@ -40,12 +40,12 @@ export const PaymentsCsvDownloadButton: FC<PaymentsCsvDownloadButtonProps> = ({ 
           const completedAt = payment.completedAt;
           if (completedAt) {
             const currentIndex = groupedOrders.findIndex(
-              (groupedOrder) => groupedOrder.restaurantId === payment.order.meal.restaurant.id
+              (groupedOrder) => groupedOrder.restaurantId === payment.order.restaurant.id
             );
-            if (currentIndex === -1 && payment.order.meal.restaurant.bankAccount) {
+            if (currentIndex === -1 && payment.order.restaurant.bankAccount) {
               groupedOrders.push({
-                restaurantId: payment.order.meal.restaurant.id,
-                bankAccount: payment.order.meal.restaurant.bankAccount,
+                restaurantId: payment.order.restaurant.id,
+                bankAccount: payment.order.restaurant.bankAccount,
                 payments: [{ ...payment, completedAt }]
               });
             } else {

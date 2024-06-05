@@ -7,10 +7,12 @@ export const createOrderMock = (order?: Partial<Order>): Order => {
   return {
     id: createRandomStr(),
     orderNumber: 1,
-    mealId: createRandomStr(),
+    restaurantId: createRandomStr(),
     userId: createRandomStr(),
-    status: "COMPLETE",
+    peopleCount: 1,
     approvedByRestaurantAt: new Date(),
+    completedAt: new Date(),
+    canceledAt: null,
     createdAt: new Date(),
     updatedAt: new Date(),
     ...order
