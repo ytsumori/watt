@@ -5,7 +5,6 @@ import prisma from "@/lib/prisma/client";
 export async function getOrders(restaurantId: string) {
   return await prisma.order.findMany({
     include: {
-      meal: true,
       payment: {
         where: {
           completedAt: {
@@ -15,9 +14,7 @@ export async function getOrders(restaurantId: string) {
       }
     },
     where: {
-      meal: {
-        restaurantId
-      }
+      restaurantId
     },
     orderBy: {
       createdAt: "desc"
