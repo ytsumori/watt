@@ -27,6 +27,8 @@ import { VisitingSection } from "../VisitingSection";
 import { ConfirmModal } from "@/components/confirm-modal";
 import { visitRestaurant } from "../../_actions/visit-restaurant";
 
+type MealWithItems = Prisma.MealGetPayload<{ include: { items: true } }>;
+
 type Props = {
   restaurant: Prisma.RestaurantGetPayload<{
     include: {
@@ -37,9 +39,10 @@ type Props = {
   }>;
   inProgressOrderId?: string;
   userId?: string;
+  defaultMeal?: MealWithItems;
 };
 
-export function RestaurantPage({ restaurant, inProgressOrderId, userId }: Props) {
+export function RestaurantPage({ restaurant, inProgressOrderId, userId, defaultMeal }: Props) {
   const router = useRouter();
   const [isVisitRequesting, setIsVisitRequesting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<{ title: string; description: string }>();
@@ -49,10 +52,8 @@ export function RestaurantPage({ restaurant, inProgressOrderId, userId }: Props)
     onClose: onVisitConfirmModalClose
   } = useDisclosure();
   const [peopleCount, setPeopleCount] = useState<1 | 2>(1);
-  const [firstPersonMeal, setFirstPersonMeal] = useState<Prisma.MealGetPayload<{ include: { items: true } }>>();
-  const [secondPersonMeal, setSecondPersonMeal] = useState<
-    Prisma.MealGetPayload<{ include: { items: true } }> | undefined | null
-  >();
+  const [firstPersonMeal, setFirstPersonMeal] = useState<MealWithItems | undefined>(defaultMeal);
+  const [secondPersonMeal, setSecondPersonMeal] = useState<MealWithItems | null>();
 
   const handleVisitingClick = async () => {
     if (!userId) return;
@@ -176,7 +177,7 @@ export function RestaurantPage({ restaurant, inProgressOrderId, userId }: Props)
                               </Center>
                             }
                           />
-                          {secondPersonMeal !== undefined && (
+                          {secondPersonMeal !== undefined ? (
                             <>
                               {secondPersonMeal !== null && (
                                 <>
@@ -194,6 +195,8 @@ export function RestaurantPage({ restaurant, inProgressOrderId, userId }: Props)
                               <Divider borderColor="black" my={6} />
                               <VisitingSection isLoading={isVisitRequesting} onClick={handleVisitingClick} />
                             </>
+                          ) : (
+                            <Box h="80px" />
                           )}
                         </>
                       )}

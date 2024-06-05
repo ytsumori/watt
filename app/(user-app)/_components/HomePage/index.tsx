@@ -76,7 +76,7 @@ export default function HomePage({
             >
               <HStack px={4} overflowX="auto" className="hidden-scrollbar" mt={3}>
                 {restaurant.meals.map((meal) => (
-                  <MealPreviewBox key={meal.id} meal={meal} href={`restaurants/${restaurant.id}/meals/${meal.id}`} />
+                  <MealPreviewBox key={meal.id} meal={meal} href={`restaurants/${restaurant.id}?mealId=${meal.id}`} />
                 ))}
               </HStack>
               <NextLink href={`/restaurants/${restaurant.id}`}>

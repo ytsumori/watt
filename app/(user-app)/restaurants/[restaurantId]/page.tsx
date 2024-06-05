@@ -7,9 +7,9 @@ import { transformSupabaseImage } from "@/utils/image/transformSupabaseImage";
 import { Metadata } from "next";
 import { findInProgressOrder } from "../../_actions/findInProgressOrder";
 
-type Params = { params: { restaurantId: string } };
+type Params = { params: { restaurantId: string }; searchParams: { mealId?: string } };
 
-export default async function Restaurant({ params }: Params) {
+export default async function Restaurant({ params, searchParams }: Params) {
   const restaurant = await prisma.restaurant.findUnique({
     where: { id: params.restaurantId },
     include: {
@@ -20,16 +20,25 @@ export default async function Restaurant({ params }: Params) {
   });
   if (!restaurant) redirect("/");
 
+  const defaultMeal = restaurant.meals.find((meal) => meal.id === searchParams.mealId);
+
   const session = await getServerSession(options);
   if (session) {
     // logged in
     const userId = session.user.id;
     const order = await findInProgressOrder(userId);
 
-    return <RestaurantPage restaurant={restaurant} inProgressOrderId={order?.id ?? undefined} userId={userId} />;
+    return (
+      <RestaurantPage
+        restaurant={restaurant}
+        inProgressOrderId={order?.id ?? undefined}
+        userId={userId}
+        defaultMeal={defaultMeal}
+      />
+    );
   }
 
-  return <RestaurantPage restaurant={restaurant} />;
+  return <RestaurantPage restaurant={restaurant} defaultMeal={defaultMeal} />;
 }
 
 export async function generateMetadata({ params }: Params): Promise<Metadata | undefined> {
