@@ -1,7 +1,7 @@
 "use server";
 
+import { updateIsOpen } from "@/actions/restaurant";
 import prisma from "@/lib/prisma/client";
-import { updateIsOpenDelegate } from "@/actions/restaurant";
 import { sendMessage } from "@/lib/xoxzo";
 
 export async function findOrder({ orderId, restaurantId }: { orderId: string; restaurantId: string }) {
@@ -21,13 +21,11 @@ export async function cancelOrder(orderId: string) {
     throw new Error("Order not found");
   }
 
-  await prisma.$transaction([
-    prisma.order.update({
-      where: { id: orderId },
-      data: { canceledAt: new Date(), cancellation: { create: { reason: "FULL", cancelledBy: "STAFF" } } }
-    }),
-    updateIsOpenDelegate({ id: order.restaurantId, isOpen: false })
-  ]);
+  await prisma.order.update({
+    where: { id: orderId },
+    data: { canceledAt: new Date(), cancellation: { create: { reason: "FULL", cancelledBy: "STAFF" } } }
+  });
+  await updateIsOpen({ id: order.restaurantId, isOpen: false });
 
   if (!order.user.phoneNumber) throw new Error("User has no phone number");
 

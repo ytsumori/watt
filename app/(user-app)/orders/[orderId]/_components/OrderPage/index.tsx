@@ -27,6 +27,7 @@ import { completeOrder } from "../../_actions/complete-order";
 import { CompleteConfirmModal } from "../PaymentConfirmModal";
 import { CancelConfirmModal } from "../CancelConfirmModal";
 import NextImage from "next/image";
+import { getOrderStatus } from "@/lib/prisma/order-status";
 
 type Props = {
   order: Prisma.OrderGetPayload<{
@@ -71,8 +72,8 @@ export function OrderPage({ order }: Props) {
       });
   };
 
-  switch (order.status) {
-    case "PREORDERED":
+  switch (getOrderStatus(order)) {
+    case "IN PROGRESS":
       return (
         <>
           <VStack alignItems="start" spacing={8} p={4}>
@@ -191,7 +192,7 @@ export function OrderPage({ order }: Props) {
           </ConfirmModal>
         </>
       );
-    case "CANCELLED":
+    case "CANCELED":
       return (
         <VStack alignItems="start" p={4} spacing={4}>
           <Heading>キャンセル済み</Heading>

@@ -3,7 +3,7 @@
 import { useContext, useEffect, useState } from "react";
 import { RestaurantIdContext } from "../../_components/restaurant-id-provider";
 import { Prisma } from "@prisma/client";
-import { Alert, Button, Center, useDisclosure, Text, VStack, Spinner, Box, Heading, effect } from "@chakra-ui/react";
+import { Alert, Button, Center, useDisclosure, Text, VStack, Spinner, Box, Heading } from "@chakra-ui/react";
 import { ConfirmModal } from "@/components/confirm-modal";
 import { MealPreviewImage } from "@/components/meal/MealPreviewImage";
 import { transformSupabaseImage } from "@/utils/image/transformSupabaseImage";

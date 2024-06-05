@@ -10,16 +10,16 @@ type Args = { orderId: string; restaurantId: string; isFull: boolean };
 export const cancelOrder = async ({ orderId, restaurantId, isFull }: Args) => {
   const order = await prisma.order.findUnique({
     where: { id: orderId },
-    select: { status: true, meal: { select: { restaurant: { select: { name: true } } } } }
+    select: { completedAt: true, canceledAt: true }
   });
   if (!order) throw new Error("Order not found");
-  if (order.status === "CANCELLED") throw new Error("Order already cancelled");
-  if (order.status === "COMPLETE") throw new Error("Order already completed");
+  if (order.completedAt) throw new Error("Order already completed");
+  if (order.canceledAt) throw new Error("Order already cancelled");
 
   await prisma.order.update({
     where: { id: orderId },
     data: {
-      status: "CANCELLED",
+      canceledAt: new Date(),
       cancellation: { create: { reason: isFull ? "FULL" : "USER_DEMAND", cancelledBy: "USER" } }
     }
   });

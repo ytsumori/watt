@@ -13,12 +13,12 @@ export async function POST(request: NextRequest) {
   const order = await prisma.order.findUnique({ where: { id: body.orderId } });
   if (!order) return NextResponse.json({ message: "order not found" }, { status: 404 });
 
-  if (order.status === "CANCELLED") return NextResponse.json({ message: "already canncelled" });
-  if (order.status === "COMPLETE") return NextResponse.json({ message: "already completed" });
+  if (order.canceledAt) return NextResponse.json({ message: "already cancelled" });
+  if (order.completedAt) return NextResponse.json({ message: "already completed" });
 
   await prisma.order.update({
     where: { id: body.orderId },
-    data: { status: "CANCELLED", cancellation: { create: { reason: "LATE", cancelledBy: "USER" } } }
+    data: { canceledAt: new Date(), cancellation: { create: { reason: "LATE", cancelledBy: "USER" } } }
   });
 
   try {
