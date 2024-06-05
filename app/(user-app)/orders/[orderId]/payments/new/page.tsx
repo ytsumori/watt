@@ -19,14 +19,10 @@ export default async function NewPayment({ params }: { params: Params }) {
 
   const order = await prisma.order.findUnique({
     where: { id: params.orderId },
-    include: {
-      meal: {
-        include: {
-          restaurant: {
-            include: { googleMapPlaceInfo: { select: { url: true } } }
-          }
-        }
-      },
+    select: {
+      id: true,
+      userId: true,
+      restaurant: { select: { name: true } },
       payment: { select: { completedAt: true } }
     }
   });
