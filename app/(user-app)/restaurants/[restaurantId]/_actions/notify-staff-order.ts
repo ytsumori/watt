@@ -10,6 +10,7 @@ export async function notifyStaffOrder({ orderId }: { orderId: string }) {
     },
     select: {
       orderNumber: true,
+      peopleCount: true,
       meals: {
         select: {
           meal: {
@@ -59,7 +60,13 @@ export async function notifyStaffOrder({ orderId }: { orderId: string }) {
             type: "box",
             layout: "vertical",
             contents: [
-              { type: "text", text: "来店予定通知", weight: "bold", color: "#1DB446", size: "sm" },
+              {
+                type: "text",
+                text: "来店予定通知",
+                weight: "bold",
+                color: "#1DB446",
+                size: "sm"
+              },
               {
                 type: "box",
                 layout: "vertical",
@@ -78,17 +85,33 @@ export async function notifyStaffOrder({ orderId }: { orderId: string }) {
                     contents: [
                       {
                         type: "text",
+                        size: "xs",
                         contents: [
-                          { type: "span", text: "ニックネーム：" },
-                          { type: "span", text: order.user.name ?? "", weight: "bold" }
-                        ] as { type: "span"; text: string; weight: "bold" }[]
+                          {
+                            type: "span",
+                            text: "ニックネーム："
+                          },
+                          {
+                            type: "span",
+                            text: order.user.name ?? ""
+                          }
+                        ],
+                        color: "#aaaaaa"
                       },
                       {
                         type: "text",
                         contents: [
-                          { type: "span", text: "過去来店回数：" },
-                          { type: "span", text: count.toString(), weight: "bold" }
-                        ] as { type: "span"; text: string; weight: "bold" }[]
+                          {
+                            type: "span",
+                            text: "過去来店回数："
+                          },
+                          {
+                            type: "span",
+                            text: count.toString()
+                          }
+                        ],
+                        size: "xs",
+                        color: "#aaaaaa"
                       }
                     ],
                     margin: "sm"
@@ -96,58 +119,26 @@ export async function notifyStaffOrder({ orderId }: { orderId: string }) {
                 ]
               },
               {
-                type: "separator",
-                margin: "lg"
-              },
-              {
                 type: "box",
                 layout: "vertical",
-                margin: "xxl",
-                spacing: "sm",
+                spacing: "lg",
                 contents: [
                   {
-                    type: "text",
+                    type: "box",
+                    layout: "horizontal",
                     contents: [
-                      { type: "span", text: "注文番号：" },
-                      { type: "span", text: order.orderNumber.toString(), size: "xxl", weight: "bold" }
-                    ]
-                  },
-                  ...order.meals.map((orderMeal) => {
-                    return {
-                      type: "box",
-                      layout: "horizontal",
-                      contents: [
-                        {
-                          type: "text",
-                          text: orderMeal.meal.title,
-                          size: "sm",
-                          color: "#555555",
-                          flex: 0
-                        },
-                        {
-                          type: "text",
-                          text: `¥${orderMeal.meal.price.toLocaleString("ja-JP")} × ${orderMeal.quantity}`,
-                          size: "sm",
-                          color: "#111111",
-                          align: "end"
-                        }
-                      ]
-                    } as {
-                      type: "box";
-                      layout: "horizontal";
-                      contents: {
-                        type: "text";
-                        text: string;
-                        size: "sm";
-                        color: string;
-                        flex: 0;
-                        align?: "end";
-                      }[];
-                    };
-                  }),
-                  {
-                    type: "separator",
-                    margin: "xxl"
+                      {
+                        type: "text",
+                        text: "注文番号"
+                      },
+                      {
+                        type: "text",
+                        text: `#${order.orderNumber}`,
+                        align: "end",
+                        weight: "bold"
+                      }
+                    ],
+                    spacing: "none"
                   },
                   {
                     type: "box",
@@ -155,21 +146,91 @@ export async function notifyStaffOrder({ orderId }: { orderId: string }) {
                     contents: [
                       {
                         type: "text",
-                        text: "合計",
-                        size: "sm",
-                        color: "#555555",
-                        flex: 0
+                        text: "人数"
                       },
                       {
                         type: "text",
-                        text: `¥${order.meals.reduce((acc, cur) => acc + cur.meal.price * cur.quantity, 0).toLocaleString("ja-JP")}`,
-                        size: "sm",
-                        color: "#111111",
+                        text: `${order.peopleCount}人`,
+                        weight: "bold",
                         align: "end"
+                      }
+                    ],
+                    spacing: "none"
+                  },
+                  {
+                    type: "box",
+                    layout: "vertical",
+                    contents: [
+                      {
+                        type: "box",
+                        layout: "vertical",
+                        contents: [
+                          ...(order.meals.map((mealOrder) => {
+                            return {
+                              type: "box",
+                              layout: "horizontal",
+                              contents: [
+                                {
+                                  type: "text",
+                                  text: mealOrder.meal.title,
+                                  size: "sm",
+                                  color: "#555555",
+                                  flex: 0
+                                },
+                                {
+                                  type: "text",
+                                  text: `¥${mealOrder.meal.price.toLocaleString("ja-JP")} × ${mealOrder.quantity}`,
+                                  size: "sm",
+                                  color: "#111111",
+                                  align: "end"
+                                }
+                              ],
+                              margin: "md"
+                            };
+                          }) as {
+                            type: "box";
+                            layout: "horizontal";
+                            contents: {
+                              type: "text";
+                              text: string;
+                              size: "sm";
+                              color: string;
+                              flex?: 0;
+                              align?: "end";
+                            }[];
+                          }[]),
+                          {
+                            type: "separator",
+                            margin: "sm"
+                          },
+                          {
+                            type: "box",
+                            layout: "horizontal",
+                            contents: [
+                              {
+                                type: "text",
+                                text: "合計",
+                                size: "sm",
+                                color: "#555555",
+                                flex: 0
+                              },
+                              {
+                                type: "text",
+                                text: `¥${order.meals.reduce((sum, meal) => sum + meal.meal.price * meal.quantity, 0).toLocaleString("ja-JP")}`,
+                                size: "sm",
+                                color: "#111111",
+                                align: "end",
+                                weight: "bold"
+                              }
+                            ],
+                            margin: "sm"
+                          }
+                        ]
                       }
                     ]
                   }
-                ]
+                ],
+                margin: "lg"
               }
             ]
           },
@@ -200,7 +261,11 @@ export async function notifyStaffOrder({ orderId }: { orderId: string }) {
               }
             ]
           },
-          styles: { footer: { separator: true } }
+          styles: {
+            footer: {
+              separator: true
+            }
+          }
         }
       }
     ]

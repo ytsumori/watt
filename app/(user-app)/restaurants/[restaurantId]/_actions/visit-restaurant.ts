@@ -59,21 +59,21 @@ export async function visitRestaurant({ userId, restaurantId, firstMealId, secon
     });
   }
 
-  // const taskId = await createHttpTask({ name: "cancel-order", delaySeconds: 60 * 30, payload: { orderId: order.id } });
+  const taskId = await createHttpTask({ name: "cancel-order", delaySeconds: 60 * 30, payload: { orderId: order.id } });
 
-  // if (taskId) {
-  //   await prisma.orderAutomaticCancellation.create({ data: { orderId: order.id, googleCloudTaskId: taskId } });
-  // } else {
-  //   console.error("Error creating task");
-  // }
+  if (taskId) {
+    await prisma.orderAutomaticCancellation.create({ data: { orderId: order.id, googleCloudTaskId: taskId } });
+  } else {
+    console.error("Error creating task");
+  }
 
-  // try {
-  //   await notifyStaffOrder({ orderId: order.id });
-  // } catch (e) {
-  //   console.error("Error notifying staff", e);
-  // }
+  try {
+    await notifyStaffOrder({ orderId: order.id });
+  } catch (e) {
+    console.error("Error notifying staff", e);
+  }
 
-  // await createHttpTask({ name: "call-restaurant", delaySeconds: 60 * 3, payload: { orderId: order.id } });
+  await createHttpTask({ name: "call-restaurant", delaySeconds: 60 * 3, payload: { orderId: order.id } });
 
   return order;
 }
