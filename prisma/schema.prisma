@@ -152,7 +152,6 @@ model Meal {
   id           String   @id @default(cuid())
   restaurantId String
   imagePath    String
-  listPrice    Int?
   price        Int
   title        String
   description  String
