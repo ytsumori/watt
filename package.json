@@ -14,7 +14,8 @@
     "create-migration": "dotenv -e .env.local -- prisma migrate dev --create-only",
     "format-schema": "dotenv -e .env.local -- prisma validate & prisma format",
     "cloud-tasks-up": "cd docker && docker-compose up -d",
-    "cloud-tasks-down": "cd docker && docker-compose down"
+    "cloud-tasks-down": "cd docker && docker-compose down",
+    "type-check": "tsc --noEmit"
   },
   "prisma": {},
   "dependencies": {

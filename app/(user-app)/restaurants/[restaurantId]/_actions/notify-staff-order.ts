@@ -2,7 +2,6 @@
 
 import { multicastMessage } from "@/lib/line-messaging-api";
 import prisma from "@/lib/prisma/client";
-import { transformSupabaseImage } from "@/utils/image/transformSupabaseImage";
 
 export async function notifyStaffOrder({ orderId }: { orderId: string }) {
   const order = await prisma.order.findUnique({
@@ -45,7 +44,7 @@ export async function notifyStaffOrder({ orderId }: { orderId: string }) {
     where: {
       userId: order.user.id,
       restaurantId: order.restaurant.id,
-      status: "COMPLETE"
+      completedAt: { not: null }
     }
   });
   await multicastMessage({
