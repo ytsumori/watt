@@ -2,7 +2,7 @@
 
 import { OrderStatus, getOrderStatus, translateOrderStatus } from "@/lib/prisma/order-status";
 import { ChevronRightIcon } from "@chakra-ui/icons";
-import { Badge, Heading, Text, VStack } from "@chakra-ui/react";
+import { Badge, Flex, Heading, Text, VStack } from "@chakra-ui/react";
 import { Prisma } from "@prisma/client";
 import Link from "next/link";
 
@@ -48,7 +48,10 @@ export function OrdersPage({ orders }: Props) {
                   }
                 })()}
               </Text>
-              <Text fontSize="medium">{order.restaurant.name}</Text>
+              <Flex w="full" justifyContent="space-between" fontSize="medium">
+                <Text>{order.restaurant.name}</Text>
+                <ChevronRightIcon boxSize={6} />
+              </Flex>
               {order.payment && (
                 <Text fontSize="small">
                   合計 ¥
@@ -60,7 +63,6 @@ export function OrdersPage({ orders }: Props) {
               <Badge position="absolute" top={0} right={0} m={2} colorScheme={getBadgeColor(status)}>
                 {translateOrderStatus(status)}
               </Badge>
-              <ChevronRightIcon position="absolute" right={0} top="50%" transform="translateY(-50%)" boxSize={8} />
             </VStack>
           );
         })}
