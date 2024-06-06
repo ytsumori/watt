@@ -80,6 +80,7 @@ model Restaurant {
   bankAccount        RestaurantBankAccount?
   googleMapPlaceInfo RestaurantGoogleMapPlaceInfo?
   closedAlerts       RestaurantClosedAlert[]
+  coordinates         RestaurantCoordinates?
   openingHours       RestaurantGoogleMapOpeningHour[]
   meals              Meal[]
   staffs             Staff[]
@@ -120,6 +121,15 @@ model RestaurantGoogleMapPlaceInfo {
   updatedAt    DateTime @default(now()) @updatedAt
 
   restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+}
+
+model RestaurantCoordinates {
+  id           String                   @id @default(cuid())
+  restaurantId String                   @unique
+  point        Unsupported("geometry(POINT,4326)")?
+  createdAt    DateTime                 @default(now())
+  updatedAt    DateTime                 @default(now())
+  Restaurant   Restaurant               @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
 }
 
 model RestaurantGoogleMapOpeningHour {
