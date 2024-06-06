@@ -2,7 +2,8 @@ import { options } from "@/lib/next-auth/options";
 import { getServerSession } from "next-auth";
 import prisma from "@/lib/prisma/client";
 import { findInProgressOrder } from "./_actions/findInProgressOrder";
-import { InProgressOrderModalProvider } from "./_components/InProgressOrderModalProvider";
+import { InProgressOrderModal } from "./_components/InProgressOrderModal";
+import { ProfileRedirect } from "./_components/ProfileRedirect";
 
 export default async function UserApp({ children }: { children: React.ReactNode }) {
   const session = await getServerSession(options);
@@ -15,8 +16,10 @@ export default async function UserApp({ children }: { children: React.ReactNode 
   const inProgressOrder = await findInProgressOrder(user.id);
 
   return (
-    <InProgressOrderModalProvider inProgressOrderId={inProgressOrder?.id ?? undefined}>
+    <>
       {children}
-    </InProgressOrderModalProvider>
+      <InProgressOrderModal inProgressOrderId={inProgressOrder?.id ?? undefined} />
+      <ProfileRedirect isPhoneNumberNotRegistered={!user.phoneNumber} />
+    </>
   );
 }
