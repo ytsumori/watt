@@ -11,15 +11,18 @@ import {
   Card,
   CardBody,
   CardFooter,
+  Flex,
   Heading,
+  ListItem,
   Text,
+  UnorderedList,
   VStack
 } from "@chakra-ui/react";
 import { Prisma } from "@prisma/client";
 import { ReactNode } from "react";
 
 type Props = {
-  meal: Prisma.MealGetPayload<{ include: { items: true } }>;
+  meal: Prisma.MealGetPayload<{ include: { items: { include: { options: true } } } }>;
   button: ReactNode;
 };
 
@@ -50,11 +53,37 @@ export function MealCard({ meal, button }: Props) {
                     </Text>
                     {item.description && <AccordionIcon />}
                   </AccordionButton>
-                  {item.description && (
+                  {(item.description || item.options.length > 0) && (
                     <AccordionPanel p={1}>
-                      <Text fontSize="xs" whiteSpace="pre-line">
-                        {item.description}
-                      </Text>
+                      {item.description && (
+                        <Text fontSize="xs" whiteSpace="pre-line">
+                          {item.description}
+                        </Text>
+                      )}
+                      {item.options.length > 0 && (
+                        <>
+                          <Text
+                            fontSize="xs"
+                            whiteSpace="pre-line"
+                            color="blackAlpha.500"
+                            mt={item.description ? 2 : 0}
+                          >
+                            選択肢
+                          </Text>
+                          <UnorderedList>
+                            {item.options.map((option) => (
+                              <ListItem key={option.id}>
+                                <Flex justifyContent="space-between" fontSize="xs">
+                                  <Text as="div">{option.title}</Text>
+                                  <Text as="div" align="end">
+                                    +¥{option.extraPrice.toLocaleString("ja-JP")}
+                                  </Text>
+                                </Flex>
+                              </ListItem>
+                            ))}
+                          </UnorderedList>
+                        </>
+                      )}
                     </AccordionPanel>
                   )}
                 </AccordionItem>
