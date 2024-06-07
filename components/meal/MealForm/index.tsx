@@ -29,7 +29,7 @@ import { mealFormSchema } from "./schema";
 
 type Props = {
   restaurantId: string;
-  editingMeal?: Prisma.MealGetPayload<{ include: { items: true } }>;
+  editingMeal?: Prisma.MealGetPayload<{ include: { items: { include: { options: true } } } }>;
   onSubmit: () => void;
 };
 

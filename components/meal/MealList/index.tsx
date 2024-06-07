@@ -7,7 +7,9 @@ import { useState } from "react";
 import { MealFormModal } from "../MealFormModal";
 import { activateMeal, discardMeal, getMeals } from "./action";
 
-type MealProp = Prisma.MealGetPayload<{ include: { items: true; orders: { select: { id: true } } } }>;
+type MealProp = Prisma.MealGetPayload<{
+  include: { items: { include: { options: true } }; orders: { select: { id: true } } };
+}>;
 
 type Props = {
   restaurantId: string;

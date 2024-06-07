@@ -6,7 +6,10 @@ export async function getMeals(restaurantId: string) {
   return await prisma.meal.findMany({
     include: {
       items: {
-        orderBy: { position: "asc" }
+        orderBy: { position: "asc" },
+        include: {
+          options: { orderBy: { position: "asc" } }
+        }
       },
       orders: {
         select: {
