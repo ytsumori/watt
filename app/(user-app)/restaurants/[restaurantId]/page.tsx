@@ -13,7 +13,11 @@ export default async function Restaurant({ params, searchParams }: Params) {
   const restaurant = await prisma.restaurant.findUnique({
     where: { id: params.restaurantId },
     include: {
-      meals: { where: { isDiscarded: false }, orderBy: { price: "asc" }, include: { items: true } },
+      meals: {
+        where: { isDiscarded: false },
+        orderBy: { price: "asc" },
+        include: { items: { include: { options: true } } }
+      },
       googleMapPlaceInfo: { select: { url: true } },
       paymentOptions: true
     }

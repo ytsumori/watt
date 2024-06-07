@@ -26,13 +26,12 @@ import { PriceSection } from "../PriceSection";
 import { VisitingSection } from "../VisitingSection";
 import { ConfirmModal } from "@/components/confirm-modal";
 import { visitRestaurant } from "../../_actions/visit-restaurant";
-
-type MealWithItems = Prisma.MealGetPayload<{ include: { items: true } }>;
+import { MealWithItems } from "../../_types/MealWithItems";
 
 type Props = {
   restaurant: Prisma.RestaurantGetPayload<{
     include: {
-      meals: { include: { items: true } };
+      meals: { include: { items: { include: { options: true } } } };
       googleMapPlaceInfo: { select: { url: true } };
       paymentOptions: true;
     };
@@ -181,10 +180,7 @@ export function RestaurantPage({ restaurant, inProgressOrderId, userId, defaultM
                             <>
                               {secondPersonMeal !== null && (
                                 <>
-                                  <MealInfo
-                                    meal={secondPersonMeal}
-                                    isItemsHidden={secondPersonMeal.id === firstPersonMeal.id}
-                                  />
+                                  <MealInfo meal={secondPersonMeal} />
                                   <Divider borderColor="black" my={6} />
                                 </>
                               )}
