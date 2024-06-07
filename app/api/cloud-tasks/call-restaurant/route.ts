@@ -15,22 +15,22 @@ export async function POST(request: NextRequest) {
     where: { id: body.orderId },
     include: {
       user: { select: { phoneNumber: true } },
-      meal: { select: { restaurant: { select: { phoneNumber: true } } } }
+      restaurant: { select: { phoneNumber: true } }
     }
   });
 
   if (!order) return NextResponse.json({ message: "order not found" }, { status: 404 });
 
-  if (order.status === "CANCELLED") return NextResponse.json({ message: "order already cancelled" }, { status: 200 });
-  if (order.status === "COMPLETE") return NextResponse.json({ message: "order already completed" }, { status: 200 });
+  if (order.canceledAt) return NextResponse.json({ message: "order already cancelled" }, { status: 200 });
+  if (order.completedAt) return NextResponse.json({ message: "order already completed" }, { status: 200 });
   if (order.approvedByRestaurantAt !== null)
     return NextResponse.json({ message: "order already approved" }, { status: 200 });
-  if (!order.meal.restaurant.phoneNumber)
+  if (!order.restaurant.phoneNumber)
     return NextResponse.json({ message: "restaurant phone number not found" }, { status: 404 });
 
   try {
     const { callid } = await sendVoiceCall(
-      order.meal.restaurant.phoneNumber,
+      order.restaurant.phoneNumber,
       "http://tognimzvzoyiykenqufx.supabase.co/storage/v1/object/public/notification-audio/visiting-call-notification.mp3"
     );
     await prisma.orderNotificationCall.create({ data: { orderId: order.id, callId: callid, status: "IN_PROGRESS" } });

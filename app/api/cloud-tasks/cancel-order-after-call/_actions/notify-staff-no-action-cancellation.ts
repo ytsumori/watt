@@ -10,15 +10,11 @@ export async function notifyStaffNoActionCancellation({ orderId }: { orderId: st
     },
     select: {
       orderNumber: true,
-      meal: {
+      restaurant: {
         select: {
-          restaurant: {
+          staffs: {
             select: {
-              staffs: {
-                select: {
-                  lineId: true
-                }
-              }
+              lineId: true
             }
           }
         }
@@ -28,7 +24,7 @@ export async function notifyStaffNoActionCancellation({ orderId }: { orderId: st
   if (!order) throw new Error("Order not found");
 
   await multicastMessage({
-    to: order.meal.restaurant.staffs.map((staff) => staff.lineId),
+    to: order.restaurant.staffs.map((staff) => staff.lineId),
     messages: [
       {
         type: "flex",

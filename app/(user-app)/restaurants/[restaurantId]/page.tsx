@@ -1,23 +1,44 @@
 import prisma from "@/lib/prisma/client";
+import { options } from "@/lib/next-auth/options";
+import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { RestaurantPage } from "./_components/RestaurantPage";
 import { transformSupabaseImage } from "@/utils/image/transformSupabaseImage";
 import { Metadata } from "next";
+import { findInProgressOrder } from "../../_actions/findInProgressOrder";
 
-type Params = { params: { restaurantId: string } };
+type Params = { params: { restaurantId: string }; searchParams: { mealId?: string } };
 
-export default async function Restaurant({ params }: Params) {
+export default async function Restaurant({ params, searchParams }: Params) {
   const restaurant = await prisma.restaurant.findUnique({
     where: { id: params.restaurantId },
     include: {
-      meals: { where: { isDiscarded: false }, orderBy: { price: "asc" } },
+      meals: { where: { isDiscarded: false }, orderBy: { price: "asc" }, include: { items: true } },
       googleMapPlaceInfo: { select: { url: true } },
       paymentOptions: true
     }
   });
   if (!restaurant) redirect("/");
 
-  return <RestaurantPage restaurant={restaurant} />;
+  const defaultMeal = restaurant.meals.find((meal) => meal.id === searchParams.mealId);
+
+  const session = await getServerSession(options);
+  if (session) {
+    // logged in
+    const userId = session.user.id;
+    const order = await findInProgressOrder(userId);
+
+    return (
+      <RestaurantPage
+        restaurant={restaurant}
+        inProgressOrderId={order?.id ?? undefined}
+        userId={userId}
+        defaultMeal={defaultMeal}
+      />
+    );
+  }
+
+  return <RestaurantPage restaurant={restaurant} defaultMeal={defaultMeal} />;
 }
 
 export async function generateMetadata({ params }: Params): Promise<Metadata | undefined> {

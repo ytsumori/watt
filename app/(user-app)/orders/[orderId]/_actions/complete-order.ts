@@ -6,7 +6,7 @@ import prisma from "@/lib/prisma/client";
 export async function completeOrder(orderId: string) {
   const order = await prisma.order.update({
     where: { id: orderId },
-    data: { status: "COMPLETE" }
+    data: { completedAt: new Date() }
   });
 
   await deleteHttpTask(order.id);

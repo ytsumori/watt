@@ -17,25 +17,27 @@ export async function POST(request: NextRequest) {
     where: { id: body.orderId },
     select: {
       id: true,
-      status: true,
+      completedAt: true,
+      canceledAt: true,
       approvedByRestaurantAt: true,
       orderNumber: true,
-      meal: { select: { restaurantId: true, restaurant: { select: { name: true } } } },
+      restaurantId: true,
+      restaurant: { select: { name: true } },
       user: { select: { phoneNumber: true } }
     }
   });
   if (!order) return NextResponse.json({ message: "order not found" }, { status: 404 });
   if (!order.user.phoneNumber) return NextResponse.json({ message: "user has no phone number" }, { status: 500 });
 
-  if (order.status === "CANCELLED") return NextResponse.json({ message: "already canncelled" });
-  if (order.status === "COMPLETE") return NextResponse.json({ message: "already completed" });
+  if (order.canceledAt) return NextResponse.json({ message: "already canncelled" });
+  if (order.completedAt) return NextResponse.json({ message: "already completed" });
   if (order.approvedByRestaurantAt) return NextResponse.json({ message: "already approved" });
 
   await prisma.order.update({
     where: { id: body.orderId },
-    data: { status: "CANCELLED", cancellation: { create: { reason: "CALL_NO_ANSWER", cancelledBy: "STAFF" } } }
+    data: { canceledAt: new Date(), cancellation: { create: { reason: "CALL_NO_ANSWER", cancelledBy: "STAFF" } } }
   });
-  await updateIsOpen({ id: order.meal.restaurantId, isOpen: false });
+  await updateIsOpen({ id: order.restaurantId, isOpen: false });
   await sendMessage(
     order.user.phoneNumber,
     `お店が満席のため、注文(#${order.orderNumber})がキャンセルされました。詳しくはWattをご確認ください。`
@@ -48,7 +50,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ message: "Error cancelling order" }, { status: 500 });
   }
   try {
-    await notifySlack({ restaurantName: order.meal.restaurant.name });
+    await notifySlack({ restaurantName: order.restaurant.name });
   } catch (e) {
     console.error("Error notifying slack", e);
     return NextResponse.json({ message: "Error notifying slack" }, { status: 500 });

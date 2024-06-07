@@ -19,13 +19,8 @@ export default async function Order({ params }: { params: Params }) {
     where: { id: params.orderId },
     include: {
       payment: true,
-      meal: {
-        include: {
-          restaurant: {
-            include: { googleMapPlaceInfo: { select: { url: true } } }
-          }
-        }
-      }
+      restaurant: { include: { googleMapPlaceInfo: { select: { url: true } } } },
+      meals: { include: { meal: { select: { title: true, price: true } } } }
     }
   });
 

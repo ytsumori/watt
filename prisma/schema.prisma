@@ -85,6 +85,7 @@ model Restaurant {
   staffs             Staff[]
   paymentOptions     RestaurantPaymentOption[]
   menuImages         RestaurantMenuImage[]
+  orders             Order[]
 }
 
 model RestaurantPaymentOption {
@@ -151,7 +152,6 @@ model Meal {
   id           String   @id @default(cuid())
   restaurantId String
   imagePath    String
-  listPrice    Int?
   price        Int
   title        String
   description  String
@@ -159,7 +159,7 @@ model Meal {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @default(now()) @updatedAt
 
-  orders Order[]
+  orders OrderMeal[]
   items  MealItem[]
 
   restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
@@ -181,22 +181,37 @@ model MealItem {
 }
 
 model Order {
-  id                     String      @id @default(cuid())
-  orderNumber            Int         @unique @default(autoincrement())
+  id                     String    @id @default(cuid())
+  orderNumber            Int       @unique @default(autoincrement())
   userId                 String
-  mealId                 String
-  status                 OrderStatus @default(PREORDERED)
+  restaurantId           String
+  peopleCount            Int
+  completedAt            DateTime?
+  canceledAt             DateTime?
   approvedByRestaurantAt DateTime?
-  createdAt              DateTime    @default(now())
-  updatedAt              DateTime    @default(now()) @updatedAt
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @default(now()) @updatedAt
 
   cancellation          OrderCancellation?
   automaticCancellation OrderAutomaticCancellation?
   payment               Payment?
   notificationCall      OrderNotificationCall?
+  meals                 OrderMeal[]
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  meal Meal @relation(fields: [mealId], references: [id], onDelete: Cascade)
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+}
+
+model OrderMeal {
+  id        String   @id @default(cuid())
+  orderId   String
+  mealId    String
+  quantity  Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  meal  Meal  @relation(fields: [mealId], references: [id], onDelete: Cascade)
 }
 
 model OrderNotificationCall {
@@ -287,12 +302,6 @@ enum BankAccountType {
   SAVINGS
   CHECKING
   DEPOSIT
-}
-
-enum OrderStatus {
-  PREORDERED
-  COMPLETE
-  CANCELLED
 }
 
 enum CancellationUserType {

@@ -8,8 +8,7 @@ export async function approveOrder({ orderId, lineId }: { orderId: string; lineI
   if (!staff) throw new Error("staff not found");
 
   const order = await prisma.order.findUnique({
-    where: { id: orderId, meal: { restaurantId: staff.restaurantId } },
-    include: { meal: true }
+    where: { id: orderId, restaurantId: staff.restaurantId }
   });
   if (!order) throw new Error("order not found");
 
@@ -29,10 +28,8 @@ export async function approveOrder({ orderId, lineId }: { orderId: string; lineI
     }
   };
 
-  if (order.status === "CANCELLED")
-    return await notifyStaff(`注文(注文番号:${order.orderNumber})はすでにキャンセルされています。`);
-  if (order.status === "COMPLETE")
-    return await notifyStaff(`注文(注文番号:${order.orderNumber})はすでに完了しています。`);
+  if (order.canceledAt) return await notifyStaff(`注文(注文番号:${order.orderNumber})はすでにキャンセルされています。`);
+  if (order.completedAt) return await notifyStaff(`注文(注文番号:${order.orderNumber})はすでに完了しています。`);
   if (order.approvedByRestaurantAt)
     return await notifyStaff(`注文(注文番号:${order.orderNumber})はすでに承諾されています。`);
 

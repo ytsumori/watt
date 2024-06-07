@@ -17,7 +17,12 @@ export default async function Payment({ params }: { params: Params }) {
 
   const payment = await prisma.payment.findUnique({
     where: { id: params.paymentId },
-    include: { order: { select: { userId: true, meal: { select: { restaurant: { select: { name: true } } } } } } }
+    select: {
+      id: true,
+      completedAt: true,
+      totalAmount: true,
+      order: { select: { userId: true, restaurant: { select: { name: true } } } }
+    }
   });
 
   if (!payment || payment.order.userId !== user.id) {

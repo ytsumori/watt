@@ -10,7 +10,12 @@ import { useEffect, useState } from "react";
 
 type Props = {
   payment: Prisma.PaymentGetPayload<{
-    include: { order: { select: { meal: { select: { restaurant: { select: { name: true } } } } } } };
+    select: {
+      id: true;
+      completedAt: true;
+      totalAmount: true;
+      order: { select: { restaurant: { select: { name: true } } } };
+    };
   }>;
 };
 
@@ -45,7 +50,7 @@ export function PaymentPage({ payment }: Props) {
     return (
       <Center h="full" p={4} flexDirection="column">
         <VStack my="auto">
-          <Heading size="md">{payment.order.meal.restaurant.name}に支払い</Heading>
+          <Heading size="md">{payment.order.restaurant.name}に支払い</Heading>
           <Text>{payment.completedAt.toLocaleString("ja-JP")}</Text>
           <Heading fontSize="80px">
             {payment.totalAmount.toLocaleString("ja-JP")}
@@ -71,7 +76,7 @@ export function PaymentPage({ payment }: Props) {
       </Button>
       <Flex direction="column" h="full" p={4}>
         <Box h="40%" transform={isPriceFlipped ? "rotateZ(180deg)" : ""} transitionDuration="0.5s">
-          <Heading size="md">{payment.order.meal.restaurant.name}</Heading>
+          <Heading size="md">{payment.order.restaurant.name}</Heading>
           <Center h="full">
             <Heading fontSize="80px">
               {payment.totalAmount.toLocaleString("ja-JP")}

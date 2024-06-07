@@ -4,7 +4,7 @@
   "scripts": {
     "dev": "dotenv -e .env.local -- pnpx supabase start -x realtime,inbucket,edge-runtime,logflare,vector,pg_prove && prisma generate && pnpm cloud-tasks-up && next dev",
     "dev/down": "dotenv -e .env.local -- pnpx supabase stop && pnpm cloud-tasks-down",
-    "build": "prisma generate && prisma db push --accept-data-loss && next build",
+    "build": "prisma generate && prisma db push --force-reset && next build",
     "start": "next start",
     "test": "vitest",
     "e2e": "playwright test",
@@ -14,7 +14,8 @@
     "create-migration": "dotenv -e .env.local -- prisma migrate dev --create-only",
     "format-schema": "dotenv -e .env.local -- prisma validate & prisma format",
     "cloud-tasks-up": "cd docker && docker-compose up -d",
-    "cloud-tasks-down": "cd docker && docker-compose down"
+    "cloud-tasks-down": "cd docker && docker-compose down",
+    "type-check": "tsc --noEmit"
   },
   "prisma": {},
   "dependencies": {

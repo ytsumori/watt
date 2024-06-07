@@ -1,4 +1,4 @@
-import { BankAccountType, OrderStatus, PaymentOption, SmokingOption } from "@prisma/client";
+import { BankAccountType, PaymentOption, SmokingOption } from "@prisma/client";
 
 export const translateBankAccountType = (accountType: BankAccountType): string => {
   switch (accountType) {
@@ -10,19 +10,6 @@ export const translateBankAccountType = (accountType: BankAccountType): string =
       return "貯蓄";
     default:
       throw new Error("Invalid bank account type");
-  }
-};
-
-export const translateOrderStatus = (status: OrderStatus): string => {
-  switch (status) {
-    case OrderStatus.PREORDERED:
-      return "仮注文";
-    case OrderStatus.CANCELLED:
-      return "キャンセル済み";
-    case OrderStatus.COMPLETE:
-      return "注文完了";
-    default:
-      throw new Error("Invalid order status");
   }
 };
 

@@ -16,7 +16,6 @@ export async function POST(request: NextRequest) {
   const order = await prisma.order.findUnique({
     where: { id: body.orderId },
     include: {
-      meal: { select: { restaurantId: true } },
       notificationCall: true,
       user: { select: { phoneNumber: true } }
     }
@@ -27,8 +26,8 @@ export async function POST(request: NextRequest) {
   if (order.notificationCall.status !== "IN_PROGRESS")
     return NextResponse.json({ message: "call not in progress" }, { status: 200 });
   if (order.approvedByRestaurantAt) return NextResponse.json({ message: "order already approved" }, { status: 200 });
-  if (order.status === "CANCELLED") return NextResponse.json({ message: "order already cancelled" }, { status: 200 });
-  if (order.status === "COMPLETE") return NextResponse.json({ message: "order already completed" }, { status: 200 });
+  if (order.canceledAt) return NextResponse.json({ message: "order already cancelled" }, { status: 200 });
+  if (order.completedAt) return NextResponse.json({ message: "order already completed" }, { status: 200 });
 
   try {
     const { status: callStatus } = await checkCallStatus(order.notificationCall.callId);
@@ -45,12 +44,12 @@ export async function POST(request: NextRequest) {
         await prisma.order.update({
           where: { id: order.id },
           data: {
-            status: "CANCELLED",
+            canceledAt: new Date(),
             notificationCall: { update: { status: "NO_ANSWER" } },
             cancellation: { create: { reason: "CALL_NO_ANSWER", cancelledBy: "STAFF" } }
           }
         });
-        await updateIsOpen({ id: order.meal.restaurantId, isOpen: false });
+        await updateIsOpen({ id: order.restaurantId, isOpen: false });
         await sendMessage(
           order.user.phoneNumber,
           `お店が満席のため、注文(#${order.orderNumber})がキャンセルされました。詳しくはWattをご確認ください。`

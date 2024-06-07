@@ -42,11 +42,11 @@ export function PaymentsPage({ payments, dateRange }: Props) {
                 <Td>{format(payment.completedAt!!, "yyyy/MM/dd HH:mm")}</Td>
                 <Td>{payment.stripePaymentId}</Td>
                 <Td>
-                  <Link as={NextLink} href={`restaurants/${payment.order.meal.restaurant.id}`}>
-                    {payment.order.meal.restaurant.name}
+                  <Link as={NextLink} href={`restaurants/${payment.order.restaurant.id}`}>
+                    {payment.order.restaurant.name}
                   </Link>
                 </Td>
-                <Td>{payment.order.meal.restaurant.bankAccount?.holderName ?? "未登録"}</Td>
+                <Td>{payment.order.restaurant.bankAccount?.holderName ?? "未登録"}</Td>
                 <Td>{payment.totalAmount.toLocaleString("ja-JP")}円</Td>
                 <Td>{payment.restaurantProfitPrice.toLocaleString("ja-JP")}円</Td>
                 <Td>{payment.isCsvDownloaded ? "済" : "未"}</Td>

@@ -22,7 +22,7 @@ import { EditIcon } from "@chakra-ui/icons";
 import { RestaurantIdContext } from "./_components/restaurant-id-provider";
 import { SchedulePage } from "./_components/schedule-page";
 import { MealPage } from "./_components/meal-page";
-import { PaymentsPage } from "./_components/payments-page";
+import { OrdersPage } from "./_components/OrdersPage";
 
 export default function Dashboard() {
   const restaurantId = useContext(RestaurantIdContext);
@@ -73,7 +73,7 @@ export default function Dashboard() {
             <MealPage />
           </TabPanel>
           <TabPanel>
-            <PaymentsPage />
+            <OrdersPage />
           </TabPanel>
         </TabPanels>
       </Tabs>

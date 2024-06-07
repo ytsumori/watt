@@ -4,8 +4,6 @@ import {
   Box,
   HStack,
   Heading,
-  NumberInput,
-  NumberInputField,
   Table,
   TableContainer,
   Text,
@@ -34,7 +32,7 @@ import { createPaymentIntent } from "@/actions/payment-intent";
 import { ConfirmModal } from "@/components/confirm-modal";
 
 type Props = {
-  order: Prisma.OrderGetPayload<{ include: { meal: { include: { restaurant: true } } } }>;
+  order: Prisma.OrderGetPayload<{ select: { id: true; restaurant: { select: { name: true } } } }>;
   paymentMethods: Stripe.PaymentMethod[];
 };
 
@@ -81,7 +79,7 @@ export function NewPaymentPage({ order, paymentMethods }: Props) {
       <Flex direction="column" h="full" p={4}>
         <VStack alignItems="start" spacing={4}>
           <Heading>支払い金額の入力</Heading>
-          <Heading size="md">{order.meal.restaurant.name}</Heading>
+          <Heading size="md">{order.restaurant.name}</Heading>
           <Text>支払い金額（税込）を入力 </Text>
           <HStack w="full">
             <InputGroup>

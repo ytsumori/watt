@@ -17,12 +17,12 @@ export async function createPaymentIntent({
   const myId = await getMyId();
 
   const order = await prisma.order.findUnique({
-    include: { meal: true, payment: true },
+    include: { payment: true, meals: { select: { meal: { select: { price: true } }, quantity: true } } },
     where: { id: orderId, userId: myId }
   });
 
   if (!order) throw new Error("Order not found");
-  if (order.status !== "COMPLETE") throw new Error("Invalid order status");
+  if (!order.completedAt) throw new Error("Order not completed");
 
   const user = await prisma.user.findUnique({ where: { id: myId }, include: { stripeCustomer: true } });
   if (!user || !user.stripeCustomer) throw new Error("User not found");
@@ -54,7 +54,7 @@ export async function createPaymentIntent({
     data: {
       orderId,
       stripePaymentId: paymentIntent.id,
-      additionalAmount: amount - order.meal.price,
+      additionalAmount: amount - order.meals.reduce((acc, meal) => acc + meal.meal.price * meal.quantity, 0),
       totalAmount: amount,
       restaurantProfitPrice: amount
     }
@@ -69,7 +69,7 @@ export async function capturePaymentIntent({ paymentId }: { paymentId: string })
   if (!payment) throw new Error("Payment not found");
 
   if (payment.order.userId !== myId) throw new Error("Invalid User");
-  if (payment.order.status !== "COMPLETE") throw new Error("Invalid order status");
+  if (!payment.order.completedAt) throw new Error("Order not completed");
 
   const paymentIntent = await stripe.paymentIntents.capture(payment.stripePaymentId);
   if (paymentIntent.status === "succeeded") {

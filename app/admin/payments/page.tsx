@@ -14,13 +14,9 @@ export default async function Payments({ searchParams }: { searchParams: { [key:
     include: {
       order: {
         include: {
-          meal: {
+          restaurant: {
             include: {
-              restaurant: {
-                include: {
-                  bankAccount: true
-                }
-              }
+              bankAccount: true
             }
           }
         }

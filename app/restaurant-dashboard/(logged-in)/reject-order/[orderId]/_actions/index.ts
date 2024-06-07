@@ -1,13 +1,20 @@
 "use server";
 
-import prisma from "@/lib/prisma/client";
 import { updateIsOpen } from "@/actions/restaurant";
+import prisma from "@/lib/prisma/client";
 import { sendMessage } from "@/lib/xoxzo";
+
+export async function findOrder({ orderId, restaurantId }: { orderId: string; restaurantId: string }) {
+  return await prisma.order.findUnique({
+    where: { id: orderId, restaurantId },
+    include: { meals: { include: { meal: true } } }
+  });
+}
 
 export async function cancelOrder(orderId: string) {
   const order = await prisma.order.findUnique({
     where: { id: orderId },
-    include: { meal: { select: { restaurantId: true } }, user: true }
+    include: { user: true }
   });
 
   if (!order) {
@@ -16,9 +23,9 @@ export async function cancelOrder(orderId: string) {
 
   await prisma.order.update({
     where: { id: orderId },
-    data: { status: "CANCELLED", cancellation: { create: { reason: "FULL", cancelledBy: "STAFF" } } }
+    data: { canceledAt: new Date(), cancellation: { create: { reason: "FULL", cancelledBy: "STAFF" } } }
   });
-  await updateIsOpen({ id: order.meal.restaurantId, isOpen: false });
+  await updateIsOpen({ id: order.restaurantId, isOpen: false });
 
   if (!order.user.phoneNumber) throw new Error("User has no phone number");
 
@@ -32,6 +39,7 @@ export async function cancelOrder(orderId: string) {
   }
 
   return await prisma.order.findUnique({
-    where: { id: orderId }
+    where: { id: orderId },
+    include: { meals: { include: { meal: true } } }
   });
 }

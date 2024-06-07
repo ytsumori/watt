@@ -1,4 +1,4 @@
-import { BankAccountType, OrderStatus, Prisma } from "@prisma/client";
+import { BankAccountType, Prisma } from "@prisma/client";
 
 export type DownloadablePayment = Prisma.PaymentGetPayload<{
   select: {
@@ -10,22 +10,18 @@ export type DownloadablePayment = Prisma.PaymentGetPayload<{
     completedAt: true;
     order: {
       select: {
-        meal: {
+        restaurant: {
           select: {
-            restaurant: {
+            id: true;
+            name: true;
+            bankAccount: {
               select: {
-                id: true;
-                name: true;
-                bankAccount: {
-                  select: {
-                    bankCode: true;
-                    branchCode: true;
-                    accountType: true;
-                    accountNo: true;
-                    holderName: true;
-                    clientCode: true;
-                  };
-                };
+                bankCode: true;
+                branchCode: true;
+                accountType: true;
+                accountNo: true;
+                holderName: true;
+                clientCode: true;
               };
             };
           };
