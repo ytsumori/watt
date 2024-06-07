@@ -51,7 +51,7 @@ export function MealList({ restaurantId, defaultMeals }: Props) {
     <>
       <VStack width="full" alignItems="baseline" spacing={6}>
         <Flex gap={3} alignItems="center">
-          <Heading size="md">推しメシ</Heading>
+          <Heading size="md">セットメニュー</Heading>
           <Button onClick={onMealFormOpen}>登録する</Button>
         </Flex>
         <Heading size="sm">提供中</Heading>

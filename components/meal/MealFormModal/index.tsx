@@ -1,7 +1,6 @@
 "use client";
 
 import { Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader } from "@chakra-ui/react";
-import { Meal } from "@prisma/client";
 import React, { ComponentProps } from "react";
 import { MealForm } from "../MealForm";
 
@@ -17,7 +16,7 @@ export function MealFormModal({ restaurantId, isOpen, onClose, onSubmit, editing
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="full">
       <ModalContent>
-        <ModalHeader>推しメシを{editingMeal ? "編集" : "登録"}</ModalHeader>
+        <ModalHeader>セットメニューを{editingMeal ? "編集" : "登録"}</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <MealForm restaurantId={restaurantId} editingMeal={editingMeal} onSubmit={onSubmit} />

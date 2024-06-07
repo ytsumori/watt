@@ -21,7 +21,7 @@ export function MealPage() {
       <Center h="full" w="full">
         <VStack>
           <Spinner />
-          <Text>推しメシを取得中</Text>
+          <Text>注文をを取得中</Text>
         </VStack>
       </Center>
     );

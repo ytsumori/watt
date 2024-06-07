@@ -102,7 +102,7 @@ export function RestaurantPage({ restaurant, inProgressOrderId, userId, defaultM
               inProgressOrderId ? (
                 <Alert status="warning" as={NextLink} href={`/orders/${inProgressOrderId}`}>
                   <AlertIcon />
-                  既に選択済みの推しメシがあります
+                  既にお店に向かっているの注文があります
                 </Alert>
               ) : (
                 <>
