@@ -31,7 +31,7 @@ type Props = {
       name: true;
       bankAccount: true;
       meals: {
-        include: { items: true };
+        include: { items: true; orders: { select: { id: true } } };
       };
       smokingOption: true;
       paymentOptions: true;

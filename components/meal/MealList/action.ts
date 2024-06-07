@@ -7,6 +7,11 @@ export async function getMeals(restaurantId: string) {
     include: {
       items: {
         orderBy: { position: "asc" }
+      },
+      orders: {
+        select: {
+          id: true
+        }
       }
     },
     where: {

@@ -10,7 +10,8 @@ import { getMeals } from "../_actions/getMeals";
 export function MealPage() {
   const restaurantId = useContext(RestaurantIdContext);
 
-  const [meals, setMeals] = useState<Prisma.MealGetPayload<{ include: { items: true } }>[]>();
+  const [meals, setMeals] =
+    useState<Prisma.MealGetPayload<{ include: { items: true; orders: { select: { id: true } } } }>[]>();
 
   useEffect(() => {
     getMeals(restaurantId).then((meals) => setMeals(meals));
