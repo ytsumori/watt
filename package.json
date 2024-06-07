@@ -4,7 +4,7 @@
   "scripts": {
     "dev": "dotenv -e .env.local -- pnpx supabase start -x realtime,inbucket,edge-runtime,logflare,vector,pg_prove && prisma generate && pnpm cloud-tasks-up && next dev",
     "dev/down": "dotenv -e .env.local -- pnpx supabase stop && pnpm cloud-tasks-down",
-    "build": "prisma generate && prisma db push --force-reset && next build",
+    "build": "prisma generate && prisma migrate deploy && next build",
     "start": "next start",
     "test": "vitest",
     "e2e": "playwright test",
@@ -67,7 +67,8 @@
     "stripe": "^14.25.0",
     "ts-node": "^10.9.2",
     "typescript": "5.3.3",
-    "zod": "^3.23.8"
+    "zod": "^3.23.8",
+    "prisma": "^5.14.0"
   },
   "devDependencies": {
     "@playwright/test": "^1.44.0",
@@ -79,7 +80,6 @@
     "@vitejs/plugin-react": "^4.2.1",
     "jsdom": "^24.0.0",
     "prettier": "3.2.5",
-    "prisma": "^5.13.0",
     "vitest": "^1.6.0"
   },
   "packageManager": "pnpm@9.0.4+sha256.caa915eaae9d9aefccf50ee8aeda25a2f8684d8f9d5c6e367eaf176d97c1f89e"

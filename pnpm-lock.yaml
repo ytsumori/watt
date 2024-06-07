@@ -125,6 +125,9 @@ importers:
       papaparse:
         specifier: ^5.4.1
         version: 5.4.1
+      prisma:
+        specifier: ^5.14.0
+        version: 5.14.0
       react:
         specifier: 18.2.0
         version: 18.2.0
@@ -183,9 +186,6 @@ importers:
       prettier:
         specifier: 3.2.5
         version: 3.2.5
-      prisma:
-        specifier: ^5.13.0
-        version: 5.14.0
       vitest:
         specifier: ^1.6.0
         version: 1.6.0(@types/node@20.11.13)(jsdom@24.0.0)
