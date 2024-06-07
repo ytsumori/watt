@@ -4,10 +4,12 @@ import {
   Box,
   Button,
   Divider,
+  Flex,
   FormControl,
   FormErrorMessage,
   FormLabel,
   HStack,
+  IconButton,
   Input,
   NumberInput,
   NumberInputField,
@@ -63,18 +65,12 @@ export function MealForm({ restaurantId, editingMeal, onSubmit }: Props) {
     onSubmit
   });
 
-  const items = fields.items.getFieldList();
+  const items = fields.items;
+  const itemsFieldList = items.getFieldList();
   const handleAddItem = () => {
     form.update({
-      name: "items",
-      value: [...items.map((item) => item.value), {}],
-      validated: false
-    });
-  };
-  const handleDeleteItem = (index: number) => {
-    form.update({
-      name: "items",
-      value: items.map((item, i) => (i === index ? undefined : item.value)).filter(Boolean),
+      name: items.name,
+      value: [...itemsFieldList.map((item) => item.value), {}],
       validated: false
     });
   };
@@ -124,10 +120,27 @@ export function MealForm({ restaurantId, editingMeal, onSubmit }: Props) {
       <FormControl isRequired my={3} isInvalid={!!fields.items.errors}>
         <FormLabel>セット内容</FormLabel>
         <Box px={3}>
-          {items.map((item, index) => {
+          {itemsFieldList.map((item, index) => {
             const itemFields = item.getFieldset();
+
+            const handleDeleteItem = () => {
+              form.update({
+                name: items.name,
+                value: itemsFieldList.map((item, i) => (i === index ? undefined : item.value)).filter(Boolean),
+                validated: false
+              });
+            };
+            const handleAddOption = () => {
+              const options = itemFields.options;
+              form.update({
+                name: options.name,
+                value: [...options.getFieldList().map((option) => option.value), { extraPrice: 0 }],
+                validated: false
+              });
+            };
+
             return (
-              <Box key={item.key} borderWidth={1} p={1} mb={2} borderColor="black">
+              <Box key={item.key} borderWidth={1} p={1} mb={2} borderColor="black" borderRadius={8}>
                 <FormControl isRequired isInvalid={!!itemFields.title.errors}>
                   <FormLabel>商品名</FormLabel>
                   <Input name={itemFields.title.name} defaultValue={itemFields.title.initialValue} />
@@ -158,8 +171,71 @@ export function MealForm({ restaurantId, editingMeal, onSubmit }: Props) {
                   />
                   <FormErrorMessage>{itemFields.description.errors?.join("、") ?? ""}</FormErrorMessage>
                 </FormControl>
+                <FormControl mt={1} isInvalid={!!itemFields.options.errors}>
+                  <FormLabel>選択肢</FormLabel>
+                  <Flex px={3} flexWrap="wrap" gap={4}>
+                    {itemFields.options.getFieldList().map((option, optionIndex) => {
+                      const optionFields = option.getFieldset();
+
+                      const handleDeleteOption = () => {
+                        form.update({
+                          name: itemFields.options.name,
+                          value: itemFields.options
+                            .getFieldList()
+                            .map((option, i) => (i === optionIndex ? undefined : option.value))
+                            .filter(Boolean),
+                          validated: false
+                        });
+                      };
+                      return (
+                        <Box
+                          key={option.key}
+                          borderWidth={1}
+                          p={1}
+                          mb={2}
+                          borderColor="blackAlpha.500"
+                          borderRadius={8}
+                        >
+                          <FormControl isRequired isInvalid={!!optionFields.title.errors}>
+                            <FormLabel>選択肢名</FormLabel>
+                            <Input name={optionFields.title.name} defaultValue={optionFields.title.initialValue} />
+                            <FormErrorMessage>{optionFields.title.errors?.join("、") ?? ""}</FormErrorMessage>
+                          </FormControl>
+                          <FormControl isRequired isInvalid={!!optionFields.extraPrice.errors} mt={1}>
+                            <FormLabel>追加料金</FormLabel>
+                            <HStack maxW="full">
+                              <NumberInput
+                                allowMouseWheel={false}
+                                name={optionFields.extraPrice.name}
+                                min={0}
+                                defaultValue={optionFields.extraPrice.initialValue}
+                              >
+                                <NumberInputField />
+                              </NumberInput>
+                              <Text>円</Text>
+                            </HStack>
+                            <FormErrorMessage>{optionFields.extraPrice.errors?.join("、") ?? ""}</FormErrorMessage>
+                          </FormControl>
+                          <Box w="full" textAlign="right" mt={2}>
+                            <IconButton
+                              colorScheme="red"
+                              icon={<DeleteIcon />}
+                              aria-label="Delete Option"
+                              onClick={handleDeleteOption}
+                              variant="ghost"
+                            />
+                          </Box>
+                        </Box>
+                      );
+                    })}
+                    <Button rightIcon={<AddIcon />} variant="outline" onClick={handleAddOption}>
+                      選択肢を追加
+                    </Button>
+                  </Flex>
+                  <FormErrorMessage>{itemFields.options.errors?.join("、") ?? ""}</FormErrorMessage>
+                </FormControl>
                 <Box w="full" textAlign="right" mt={2}>
-                  <Button rightIcon={<DeleteIcon />} colorScheme="red" onClick={() => handleDeleteItem(index)}>
+                  <Button rightIcon={<DeleteIcon />} colorScheme="red" onClick={handleDeleteItem} variant="ghost">
                     この商品を削除
                   </Button>
                 </Box>
@@ -188,9 +264,11 @@ export function MealForm({ restaurantId, editingMeal, onSubmit }: Props) {
         </HStack>
         <Text fontSize="sm" mt={1}>
           単品合計金額(割引金額)：¥
-          {items.reduce((sum, item) => sum + Number(item.value?.price ?? 0), 0).toLocaleString("ja-JP")}(¥
+          {itemsFieldList.reduce((sum, item) => sum + Number(item.value?.price ?? 0), 0).toLocaleString("ja-JP")}
+          (¥
           {(
-            items.reduce((sum, item) => sum + Number(item.value?.price ?? 0), 0) - Number(fields.price.value ?? 0)
+            itemsFieldList.reduce((sum, item) => sum + Number(item.value?.price ?? 0), 0) -
+            Number(fields.price.value ?? 0)
           ).toLocaleString("ja-JP")}
           )
         </Text>
