@@ -27,6 +27,7 @@ import {
 import { useState } from "react";
 import { copySignUpURL } from "../../_util/clipboard-text";
 import { createRestaurant } from "../_actions/create-restaurant";
+import { createRestaurantCoordinates } from "../_actions/create-restaurant-coordinates";
 
 export function NewRestaurantPageClient() {
   const [selectedPlace, setSelectedPlace] = useState<PlaceDetailResult>();
@@ -54,8 +55,13 @@ export function NewRestaurantPageClient() {
       longitude: selectedPlace.location.longitude,
       url: selectedPlace.googleMapsUri
     })
-      .then((result) => {
+      .then(async (result) => {
         setSubmitResult({ id: result.id, password: result.password });
+        await createRestaurantCoordinates({
+          restaurantId: result.id,
+          lat: selectedPlace.location.latitude,
+          lng: selectedPlace.location.longitude
+        });
       })
       .catch((error) => {
         console.error(error);
