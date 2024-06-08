@@ -1,8 +1,0 @@
--- AlterEnum
-ALTER TYPE "OrderStatus" RENAME VALUE 'PREAUTHORIZED' TO 'PREORDERED';
-
--- AlterTable
-ALTER TABLE "Order" ALTER COLUMN "status" SET DEFAULT 'PREORDERED';
-
--- AlterTable
-ALTER TABLE "Payment" ADD COLUMN     "completedAt" TIMESTAMP(3);
