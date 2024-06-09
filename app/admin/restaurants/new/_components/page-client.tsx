@@ -28,44 +28,46 @@ import { useState } from "react";
 import { copySignUpURL } from "../../_util/clipboard-text";
 import { createRestaurant } from "../_actions/create-restaurant";
 import { createRestaurantCoordinates } from "../_actions/create-restaurant-coordinates";
+import { deleteRestaurant } from "../_actions/deleteRestaurant";
+import { logger } from "@/utils/logger";
 
 export function NewRestaurantPageClient() {
   const [selectedPlace, setSelectedPlace] = useState<PlaceDetailResult>();
   const [searchText, setSearchText] = useState<string>();
   const [searchResults, setSearchResults] = useState<PlaceDetailResult[]>();
-  const [submitResult, setSubmitResult] = useState<{
-    id: string;
-    password: string;
-  }>();
+  const [submitResult, setSubmitResult] = useState<{ id: string; password: string }>();
   const { isOpen: isCopiedOpen, onToggle: onCopiedToggle, onClose: onCopiedClose } = useDisclosure();
 
   const handleSearchClick = () => {
     if (!searchText) return;
-    searchPlaces({ text: searchText }).then((result) => {
-      setSearchResults(result.places);
-    });
+    searchPlaces({ text: searchText }).then((result) => setSearchResults(result.places));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!selectedPlace) return;
-    createRestaurant({
+    const restaurant = await createRestaurant({
       name: selectedPlace.displayName.text,
       googleMapPlaceId: selectedPlace.id,
       latitude: selectedPlace.location.latitude,
       longitude: selectedPlace.location.longitude,
       url: selectedPlace.googleMapsUri
-    })
-      .then(async (result) => {
-        setSubmitResult({ id: result.id, password: result.password });
-        await createRestaurantCoordinates({
-          restaurantId: result.id,
-          lat: selectedPlace.location.latitude,
-          lng: selectedPlace.location.longitude
-        });
-      })
-      .catch((error) => {
-        console.error(error);
+    });
+
+    try {
+      await createRestaurantCoordinates({
+        restaurantId: restaurant.id,
+        lat: selectedPlace.location.latitude,
+        lng: selectedPlace.location.longitude
       });
+      setSubmitResult({ id: restaurant.id, password: restaurant.password });
+    } catch (e) {
+      await deleteRestaurant({ restaurantId: restaurant.id });
+      logger({
+        severity: "ERROR",
+        message: "Failed to create RestaurantCoordinates",
+        payload: { error: JSON.stringify(e) }
+      });
+    }
   };
 
   const handleCopy = () => {
@@ -151,7 +153,7 @@ export function NewRestaurantPageClient() {
                       </PopoverContent>
                     </Popover>
                   ) : (
-                    <Button onClick={handleSubmit} mr={3}>
+                    <Button onClick={async () => await handleSubmit()} mr={3}>
                       登録する
                     </Button>
                   )}
