@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
 
   if (restaurantError) {
     logger({ severity: "ERROR", message: "Failed to fetch Restaurant", payload: { ...restaurantError } });
-    return NextResponse.json({ success: false });
+    return NextResponse.json({ success: false }, { status: Number(restaurantError.code) });
   }
 
   const upsertData = await Promise.all(
@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
 
   if (coordinatesError) {
     logger({ severity: "ERROR", message: "Failed to create RestaurantGeometry", payload: { ...coordinatesError } });
-    return NextResponse.json({ success: false });
+    return NextResponse.json({ success: false }, { status: Number(coordinatesError.code) });
   }
 
   return NextResponse.json({ success: true });
