@@ -140,12 +140,12 @@ export function RestaurantPage({ restaurant, inProgressOrderId, userId, defaultM
                 </Alert>
               ) : (
                 <>
-                  <Divider borderColor="blackAlpha.400" />
                   {userId ? (
                     firstPersonMeal.items.every(
                       (item, index) => item.options.length === 0 || firstMealSelectedOptions[index] !== null
                     ) ? (
                       <>
+                        <Divider borderColor="blackAlpha.400" />
                         <Heading size="md">来店人数を選択</Heading>
                         <Select
                           value={peopleCount}
@@ -168,8 +168,10 @@ export function RestaurantPage({ restaurant, inProgressOrderId, userId, defaultM
                         {peopleCount === 1 ? (
                           <>
                             <Divider borderColor="black" my={6} />
-                            <PriceSection firstPersonMeal={firstPersonMeal} />
-                            <Divider borderColor="black" my={6} />
+                            <PriceSection
+                              firstPersonMeal={firstPersonMeal}
+                              firstSelectedOptions={firstMealSelectedOptions}
+                            />
                             <VisitingSection isLoading={isVisitRequesting} onClick={handleVisitingClick} />
                           </>
                         ) : (
@@ -216,22 +218,40 @@ export function RestaurantPage({ restaurant, inProgressOrderId, userId, defaultM
                             />
                             {secondPersonMeal !== undefined ? (
                               <>
-                                {secondPersonMeal !== null && (
+                                {secondPersonMeal !== null ? (
                                   <>
                                     <MealInfo
                                       meal={secondPersonMeal}
                                       selectedOptions={secondMealSelectedOptions}
                                       onOptionChange={handleSecondMealOptionChange}
                                     />
-                                    <Divider borderColor="black" my={6} />
+                                    {secondPersonMeal.items.every(
+                                      (item, index) =>
+                                        item.options.length === 0 || secondMealSelectedOptions[index] !== null
+                                    ) ? (
+                                      <>
+                                        <Divider borderColor="black" my={6} />
+                                        <PriceSection
+                                          firstPersonMeal={firstPersonMeal}
+                                          firstSelectedOptions={firstMealSelectedOptions}
+                                          secondPersonMeal={secondPersonMeal ?? undefined}
+                                          secondSelectedOptions={secondMealSelectedOptions}
+                                        />
+                                        <VisitingSection isLoading={isVisitRequesting} onClick={handleVisitingClick} />
+                                      </>
+                                    ) : (
+                                      <Box h="80px" />
+                                    )}
+                                  </>
+                                ) : (
+                                  <>
+                                    <PriceSection
+                                      firstPersonMeal={firstPersonMeal}
+                                      firstSelectedOptions={firstMealSelectedOptions}
+                                    />
+                                    <VisitingSection isLoading={isVisitRequesting} onClick={handleVisitingClick} />
                                   </>
                                 )}
-                                <PriceSection
-                                  firstPersonMeal={firstPersonMeal}
-                                  secondPersonMeal={secondPersonMeal ?? undefined}
-                                />
-                                <Divider borderColor="black" my={6} />
-                                <VisitingSection isLoading={isVisitRequesting} onClick={handleVisitingClick} />
                               </>
                             ) : (
                               <Box h="80px" />
@@ -240,7 +260,7 @@ export function RestaurantPage({ restaurant, inProgressOrderId, userId, defaultM
                         )}
                       </>
                     ) : (
-                      <></>
+                      <Box h="80px" />
                     )
                   ) : (
                     <>

@@ -2,19 +2,45 @@
 
 import { Heading, Divider, Text, Flex, Spacer } from "@chakra-ui/react";
 import { MealPrice } from "../MealPrice";
-import { Prisma } from "@prisma/client";
+import { MealWithItems } from "../../_types/MealWithItems";
 
 type Props = {
-  firstPersonMeal: Prisma.MealGetPayload<{ include: { items: true } }>;
-  secondPersonMeal?: Prisma.MealGetPayload<{ include: { items: true } }>;
+  firstPersonMeal: MealWithItems;
+  firstSelectedOptions: (string | null)[];
+  secondPersonMeal?: MealWithItems;
+  secondSelectedOptions?: (string | null)[];
 };
 
-export function PriceSection({ firstPersonMeal, secondPersonMeal }: Props) {
+export function PriceSection({
+  firstPersonMeal,
+  firstSelectedOptions,
+  secondPersonMeal,
+  secondSelectedOptions
+}: Props) {
+  const firstMealExtraPrice = firstPersonMeal.items.reduce((acc, item, itemIndex) => {
+    const selectedOption = item.options.find((option) => option.id === firstSelectedOptions[itemIndex]);
+    return acc + (selectedOption?.extraPrice ?? 0);
+  }, 0);
+  const firstMealPrice = firstPersonMeal.price + firstMealExtraPrice;
+  let secondMealPrice: number = 0;
+  if (secondPersonMeal && secondSelectedOptions) {
+    const secondMealExtraPrice = secondPersonMeal.items.reduce((acc, item, itemIndex) => {
+      const selectedOption = item.options.find((option) => option.id === secondSelectedOptions[itemIndex]);
+      return acc + (selectedOption?.extraPrice ?? 0);
+    }, 0);
+    secondMealPrice = secondPersonMeal.price + secondMealExtraPrice;
+  }
   return (
     <>
       <Heading size="lg">ご注文内容の確認</Heading>
-      <MealPrice meal={firstPersonMeal} titlePrefix={secondPersonMeal ? "1人目: " : undefined} />
-      {secondPersonMeal && <MealPrice meal={secondPersonMeal} titlePrefix="2人目: " />}
+      <MealPrice
+        meal={firstPersonMeal}
+        titlePrefix={secondPersonMeal ? "1人目: " : undefined}
+        selectedOptions={firstSelectedOptions}
+      />
+      {secondPersonMeal && secondSelectedOptions && (
+        <MealPrice meal={secondPersonMeal} titlePrefix="2人目: " selectedOptions={secondSelectedOptions} />
+      )}
       <Divider borderColor="blackAlpha.400" />
       <Flex w="full">
         <Spacer />
@@ -22,7 +48,7 @@ export function PriceSection({ firstPersonMeal, secondPersonMeal }: Props) {
           <Text as="span" mr="2">
             合計金額
           </Text>
-          <Text as="span">¥{(firstPersonMeal.price + (secondPersonMeal?.price ?? 0)).toLocaleString("ja-JP")}</Text>
+          <Text as="span">¥{(firstMealPrice + secondMealPrice).toLocaleString("ja-JP")}</Text>
         </Text>
       </Flex>
     </>

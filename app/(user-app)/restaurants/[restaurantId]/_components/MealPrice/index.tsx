@@ -1,15 +1,20 @@
 "use client";
 
 import { VStack, Text, Flex, Spacer, Box, HStack } from "@chakra-ui/react";
-import { Prisma } from "@prisma/client";
 import NextImage from "next/image";
+import { MealWithItems } from "../../_types/MealWithItems";
 
 type Props = {
-  meal: Prisma.MealGetPayload<{ include: { items: true } }>;
+  meal: MealWithItems;
+  selectedOptions: (string | null)[];
   titlePrefix?: string;
 };
 
-export function MealPrice({ meal, titlePrefix }: Props) {
+export function MealPrice({ meal, selectedOptions, titlePrefix }: Props) {
+  const totalExtraPrice = meal.items.reduce((acc, item, itemIndex) => {
+    const selectedOption = item.options.find((option) => option.id === selectedOptions[itemIndex]);
+    return acc + (selectedOption?.extraPrice ?? 0);
+  }, 0);
   return (
     <VStack w="full" spacing={0}>
       <Flex w="full">
@@ -19,13 +24,24 @@ export function MealPrice({ meal, titlePrefix }: Props) {
         </Text>
       </Flex>
       <Box width="full">
-        {meal.items.map((item) => (
-          <Flex w="full" alignItems="flex-start" fontSize="sm" key={item.id}>
-            <Text>{item.title}</Text>
-            <Spacer />
-            <Text>¥{item.price.toLocaleString("ja-JP")}</Text>
-          </Flex>
-        ))}
+        {meal.items.map((item, itemIndex) => {
+          const selectedOption = item.options.find((option) => option.id === selectedOptions[itemIndex]);
+          return (
+            <Flex w="full" alignItems="flex-start" fontSize="sm" key={item.id}>
+              <Text>
+                {item.title}
+                {selectedOption && ` (${selectedOption.title})`}
+              </Text>
+              <Spacer />
+              <Text>
+                ¥{item.price.toLocaleString("ja-JP")}
+                {selectedOption &&
+                  selectedOption.extraPrice > 0 &&
+                  ` + ¥${selectedOption.extraPrice.toLocaleString("ja-JP")}`}
+              </Text>
+            </Flex>
+          );
+        })}
       </Box>
       <Box w="full">
         <Flex>
@@ -35,7 +51,7 @@ export function MealPrice({ meal, titlePrefix }: Props) {
               単品合計価格
             </Text>
             <Text as="span" textDecorationLine="line-through">
-              ¥{meal.items.reduce((acc, item) => acc + item.price, 0).toLocaleString("ja-JP")}
+              ¥{(meal.items.reduce((acc, item) => acc + item.price, 0) + totalExtraPrice).toLocaleString("ja-JP")}
             </Text>
           </Text>
         </Flex>
@@ -47,7 +63,7 @@ export function MealPrice({ meal, titlePrefix }: Props) {
               価格
             </Text>
           </HStack>
-          <Text as="span">¥{meal.price.toLocaleString("ja-JP")}</Text>
+          <Text as="span">¥{(meal.price + totalExtraPrice).toLocaleString("ja-JP")}</Text>
         </Flex>
       </Box>
     </VStack>

@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Divider, Heading, Radio, RadioGroup, Text, VStack, useRadioGroup } from "@chakra-ui/react";
+import { Box, Divider, Heading, Text, VStack } from "@chakra-ui/react";
 import { MealWithItems } from "../../_types/MealWithItems";
 import { MealItemInfo } from "../MealItemInfo";
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Text } from "@chakra-ui/react";
+import { Button, Divider, Text } from "@chakra-ui/react";
 
 type Props = {
   isLoading: boolean;
@@ -10,6 +10,7 @@ type Props = {
 export function VisitingSection({ isLoading, onClick }: Props) {
   return (
     <>
+      <Divider borderColor="black" my={6} />
       <Text fontSize="xs">
         お店に到着後に次の画面で注文を確定するまで、調理は開始されません。
         <br />
