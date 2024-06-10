@@ -52,7 +52,33 @@ export function RestaurantPage({ restaurant, inProgressOrderId, userId, defaultM
   } = useDisclosure();
   const [peopleCount, setPeopleCount] = useState<1 | 2>(1);
   const [firstPersonMeal, setFirstPersonMeal] = useState<MealWithItems | undefined>(defaultMeal);
+  const [firstMealSelectedOptions, setFirstMealSelectedOptions] = useState<(string | null)[]>(
+    defaultMeal ? new Array(defaultMeal.items.length).fill(null) : []
+  );
   const [secondPersonMeal, setSecondPersonMeal] = useState<MealWithItems | null>();
+  const [secondMealSelectedOptions, setSecondMealSelectedOptions] = useState<(string | null)[]>([]);
+
+  const handleFirstMealSelected = (selectedMeal: MealWithItems) => {
+    setFirstMealSelectedOptions(new Array(selectedMeal.items.length).fill(null));
+    setFirstPersonMeal(selectedMeal);
+  };
+
+  const handleSecondMealSelected = (selectedMeal: MealWithItems) => {
+    setSecondMealSelectedOptions(new Array(selectedMeal.items.length).fill(null));
+    setSecondPersonMeal(selectedMeal);
+  };
+
+  const handleFirstMealOptionChange = (index: number, value: string) => {
+    const newOptions = [...firstMealSelectedOptions];
+    newOptions[index] = value;
+    setFirstMealSelectedOptions(newOptions);
+  };
+
+  const handleSecondMealOptionChange = (index: number, value: string) => {
+    const newOptions = [...secondMealSelectedOptions];
+    newOptions[index] = value;
+    setSecondMealSelectedOptions(newOptions);
+  };
 
   const handleVisitingClick = async () => {
     if (!userId) return;
@@ -76,6 +102,7 @@ export function RestaurantPage({ restaurant, inProgressOrderId, userId, defaultM
         router.push(`/orders/${order.id}`);
       })
       .catch(() => {
+        setIsVisitRequesting(false);
         setErrorMessage({
           title: "エラー",
           description: "エラーが発生しました。もう一度お試しください。"
@@ -93,10 +120,18 @@ export function RestaurantPage({ restaurant, inProgressOrderId, userId, defaultM
           <Text fontSize="xs">食べたいセットを選択してください</Text>
         </Box>
         {peopleCount === 2 && <Heading size="md">1人目の注文を選択</Heading>}
-        <MealCarousel meals={restaurant.meals} selectedMealId={firstPersonMeal?.id} onSelectMeal={setFirstPersonMeal} />
+        <MealCarousel
+          meals={restaurant.meals}
+          selectedMealId={firstPersonMeal?.id}
+          onSelectMeal={handleFirstMealSelected}
+        />
         {firstPersonMeal && (
           <>
-            <MealInfo meal={firstPersonMeal} />
+            <MealInfo
+              meal={firstPersonMeal}
+              selectedOptions={firstMealSelectedOptions}
+              onOptionChange={handleFirstMealOptionChange}
+            />
             {restaurant.isOpen ? (
               inProgressOrderId ? (
                 <Alert status="warning" as={NextLink} href={`/orders/${inProgressOrderId}`}>
@@ -107,96 +142,106 @@ export function RestaurantPage({ restaurant, inProgressOrderId, userId, defaultM
                 <>
                   <Divider borderColor="blackAlpha.400" />
                   {userId ? (
-                    <>
-                      <Heading size="md">来店人数を選択</Heading>
-                      <Select
-                        value={peopleCount}
-                        onChange={(e) => {
-                          const convertedValue = Number(e.target.value);
-                          switch (convertedValue) {
-                            case 2:
-                              setPeopleCount(2);
-                              break;
-                            case 1:
-                              setSecondPersonMeal(undefined);
-                              setPeopleCount(1);
-                              break;
-                          }
-                        }}
-                      >
-                        <option value="1">1人</option>
-                        <option value="2">2人</option>
-                      </Select>
-                      {peopleCount === 1 ? (
-                        <>
-                          <Divider borderColor="black" my={6} />
-                          <PriceSection firstPersonMeal={firstPersonMeal} />
-                          <Divider borderColor="black" my={6} />
-                          <VisitingSection isLoading={isVisitRequesting} onClick={handleVisitingClick} />
-                        </>
-                      ) : (
-                        <>
-                          <Divider borderColor="blackAlpha.400" />
-                          <Heading size="md">2人目の注文を選択</Heading>
-                          <MealCarousel
-                            meals={restaurant.meals}
-                            selectedMealId={secondPersonMeal?.id}
-                            onSelectMeal={setSecondPersonMeal}
-                            additionalBox={
-                              <Center
-                                minW="150px"
-                                w="150px"
-                                h="150px"
-                                borderRadius={12}
-                                position="relative"
-                                borderWidth={secondPersonMeal === null ? 4 : 0}
-                                borderColor="brand.400"
-                                backgroundColor="gray.100"
-                                onClick={() => setSecondPersonMeal(null)}
-                              >
-                                <Text fontSize="sm" as="b" color="brand.400">
-                                  1人目の注文を
-                                  <br />
-                                  シェアする
-                                </Text>
-                                {secondPersonMeal === null && (
-                                  <CheckIcon
-                                    position="absolute"
-                                    top={0}
-                                    right={0}
-                                    backgroundColor="brand.400"
-                                    color="white"
-                                    boxSize={6}
-                                    borderRadius={6}
-                                    m={1}
-                                    p={1}
-                                    aria-label="checked"
-                                  />
-                                )}
-                              </Center>
+                    firstPersonMeal.items.every(
+                      (item, index) => item.options.length === 0 || firstMealSelectedOptions[index] !== null
+                    ) ? (
+                      <>
+                        <Heading size="md">来店人数を選択</Heading>
+                        <Select
+                          value={peopleCount}
+                          onChange={(e) => {
+                            const convertedValue = Number(e.target.value);
+                            switch (convertedValue) {
+                              case 2:
+                                setPeopleCount(2);
+                                break;
+                              case 1:
+                                setSecondPersonMeal(undefined);
+                                setPeopleCount(1);
+                                break;
                             }
-                          />
-                          {secondPersonMeal !== undefined ? (
-                            <>
-                              {secondPersonMeal !== null && (
-                                <>
-                                  <MealInfo meal={secondPersonMeal} />
-                                  <Divider borderColor="black" my={6} />
-                                </>
-                              )}
-                              <PriceSection
-                                firstPersonMeal={firstPersonMeal}
-                                secondPersonMeal={secondPersonMeal ?? undefined}
-                              />
-                              <Divider borderColor="black" my={6} />
-                              <VisitingSection isLoading={isVisitRequesting} onClick={handleVisitingClick} />
-                            </>
-                          ) : (
-                            <Box h="80px" />
-                          )}
-                        </>
-                      )}
-                    </>
+                          }}
+                        >
+                          <option value="1">1人</option>
+                          <option value="2">2人</option>
+                        </Select>
+                        {peopleCount === 1 ? (
+                          <>
+                            <Divider borderColor="black" my={6} />
+                            <PriceSection firstPersonMeal={firstPersonMeal} />
+                            <Divider borderColor="black" my={6} />
+                            <VisitingSection isLoading={isVisitRequesting} onClick={handleVisitingClick} />
+                          </>
+                        ) : (
+                          <>
+                            <Divider borderColor="blackAlpha.400" />
+                            <Heading size="md">2人目の注文を選択</Heading>
+                            <MealCarousel
+                              meals={restaurant.meals}
+                              selectedMealId={secondPersonMeal?.id}
+                              onSelectMeal={handleSecondMealSelected}
+                              additionalBox={
+                                <Center
+                                  minW="150px"
+                                  w="150px"
+                                  h="150px"
+                                  borderRadius={12}
+                                  position="relative"
+                                  borderWidth={secondPersonMeal === null ? 4 : 0}
+                                  borderColor="brand.400"
+                                  backgroundColor="gray.100"
+                                  onClick={() => setSecondPersonMeal(null)}
+                                >
+                                  <Text fontSize="sm" as="b" color="brand.400">
+                                    1人目の注文を
+                                    <br />
+                                    シェアする
+                                  </Text>
+                                  {secondPersonMeal === null && (
+                                    <CheckIcon
+                                      position="absolute"
+                                      top={0}
+                                      right={0}
+                                      backgroundColor="brand.400"
+                                      color="white"
+                                      boxSize={6}
+                                      borderRadius={6}
+                                      m={1}
+                                      p={1}
+                                      aria-label="checked"
+                                    />
+                                  )}
+                                </Center>
+                              }
+                            />
+                            {secondPersonMeal !== undefined ? (
+                              <>
+                                {secondPersonMeal !== null && (
+                                  <>
+                                    <MealInfo
+                                      meal={secondPersonMeal}
+                                      selectedOptions={secondMealSelectedOptions}
+                                      onOptionChange={handleSecondMealOptionChange}
+                                    />
+                                    <Divider borderColor="black" my={6} />
+                                  </>
+                                )}
+                                <PriceSection
+                                  firstPersonMeal={firstPersonMeal}
+                                  secondPersonMeal={secondPersonMeal ?? undefined}
+                                />
+                                <Divider borderColor="black" my={6} />
+                                <VisitingSection isLoading={isVisitRequesting} onClick={handleVisitingClick} />
+                              </>
+                            ) : (
+                              <Box h="80px" />
+                            )}
+                          </>
+                        )}
+                      </>
+                    ) : (
+                      <></>
+                    )
                   ) : (
                     <>
                       <Heading size="md">ログインして食事に進む</Heading>
@@ -243,7 +288,10 @@ export function RestaurantPage({ restaurant, inProgressOrderId, userId, defaultM
         title={errorMessage?.title ?? ""}
         confirmButton={{
           label: "OK",
-          onClick: () => router.refresh()
+          onClick: () => {
+            setErrorMessage(undefined);
+            router.refresh();
+          }
         }}
         onClose={() => undefined}
       >

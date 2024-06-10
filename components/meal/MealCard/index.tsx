@@ -51,7 +51,7 @@ export function MealCard({ meal, button }: Props) {
                       <b>{item.title}</b>
                       <br />¥{item.price.toLocaleString("ja-JP")}
                     </Text>
-                    {item.description && <AccordionIcon />}
+                    {(item.description || item.options.length > 0) && <AccordionIcon />}
                   </AccordionButton>
                   {(item.description || item.options.length > 0) && (
                     <AccordionPanel p={1}>

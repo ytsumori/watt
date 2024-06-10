@@ -1,13 +1,19 @@
 "use client";
 
-import { Box, Divider, Heading, Radio, RadioGroup, Text, VStack } from "@chakra-ui/react";
+import { Box, Divider, Heading, Radio, RadioGroup, Text, VStack, useRadioGroup } from "@chakra-ui/react";
 import { MealWithItems } from "../../_types/MealWithItems";
+import { MealItemInfo } from "../MealItemInfo";
 
 type Props = {
   meal: MealWithItems;
+  selectedOptions: (string | null)[];
+  onOptionChange: (index: number, value: string) => void;
 };
 
-export function MealInfo({ meal }: Props) {
+export function MealInfo({ meal, selectedOptions, onOptionChange }: Props) {
+  const optionSelectingIndex = meal.items.findIndex(
+    (item, index) => item.options.length > 0 && !selectedOptions[index]
+  );
   return (
     <VStack w="full" alignItems="start" spacing={2}>
       <Box w="full">
@@ -20,32 +26,18 @@ export function MealInfo({ meal }: Props) {
       <Divider borderColor="blackAlpha.400" />
       <Heading size="sm">セット内容</Heading>
       <VStack alignItems="start" spacing={1} w="full">
-        {meal.items.flatMap((item) => {
+        {meal.items.map((item, index) => {
+          const handleChange = (value: string) => {
+            onOptionChange(index, value);
+          };
           return (
-            <Box key={item.id}>
-              <Text fontSize="sm" as="b">
-                {item.title}
-              </Text>
-              <Text whiteSpace="pre-wrap" fontSize="xs" color="blackAlpha.700">
-                {item.description}
-              </Text>
-              <RadioGroup>
-                <VStack alignItems="start" spacing={0}>
-                  {item.options.map((option) => {
-                    return (
-                      <Radio key={option.id} value={option.id}>
-                        <Text fontSize="xs" as="span" color="blackAlpha.700">
-                          {option.title}
-                        </Text>
-                        <Text fontSize="xs" as="span" color="blackAlpha.500" ml={1}>
-                          +¥{option.extraPrice.toLocaleString("ja-JP")}
-                        </Text>
-                      </Radio>
-                    );
-                  })}
-                </VStack>
-              </RadioGroup>
-            </Box>
+            <MealItemInfo
+              key={item.id}
+              mealItem={item}
+              selectedOption={selectedOptions[index]}
+              isSelecting={optionSelectingIndex === index}
+              onOptionChange={handleChange}
+            />
           );
         })}
       </VStack>
