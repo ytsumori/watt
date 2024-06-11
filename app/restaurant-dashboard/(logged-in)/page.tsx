@@ -62,7 +62,7 @@ export default function Dashboard() {
       <Tabs isFitted>
         <TabList>
           <Tab>営業時間</Tab>
-          <Tab>推しメシ</Tab>
+          <Tab>セットメニュー</Tab>
           <Tab>決済履歴</Tab>
         </TabList>
         <TabPanels>

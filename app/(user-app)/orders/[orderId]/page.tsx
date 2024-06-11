@@ -20,7 +20,24 @@ export default async function Order({ params }: { params: Params }) {
     include: {
       payment: true,
       restaurant: { include: { googleMapPlaceInfo: { select: { url: true } } } },
-      meals: { include: { meal: { select: { title: true, price: true } } } }
+      meals: {
+        include: {
+          meal: { select: { title: true, price: true } },
+          options: {
+            select: {
+              id: true,
+              mealItemOption: { select: { title: true, extraPrice: true, mealItem: { select: { title: true } } } }
+            },
+            orderBy: {
+              mealItemOption: {
+                mealItem: {
+                  position: "asc"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   });
 

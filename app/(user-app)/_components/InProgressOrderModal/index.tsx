@@ -17,7 +17,7 @@ export function InProgressOrderModal({ inProgressOrderId }: Props) {
     <ConfirmModal
       isOpen={isOpen}
       onClose={onClose}
-      title="すでに注文した推しメシがあります"
+      title="すでにお店に向かっている注文があります"
       confirmButton={{
         label: "注文ページに移動する",
         onClick: () => {
@@ -27,7 +27,7 @@ export function InProgressOrderModal({ inProgressOrderId }: Props) {
       }}
     >
       <Text>
-        注文した推しメシがあります。
+        既にお店に向かってる注文があります。
         <br />
         お店に向かってください。
       </Text>

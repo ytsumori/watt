@@ -3,6 +3,7 @@
 import { getMyId } from "@/actions/me";
 import stripe from "@/lib/stripe";
 import prisma from "@/lib/prisma/client";
+import { getOrderTotalPrice } from "@/lib/prisma/order-total-price";
 
 export async function createPaymentIntent({
   orderId,
@@ -17,7 +18,16 @@ export async function createPaymentIntent({
   const myId = await getMyId();
 
   const order = await prisma.order.findUnique({
-    include: { payment: true, meals: { select: { meal: { select: { price: true } }, quantity: true } } },
+    include: {
+      payment: true,
+      meals: {
+        select: {
+          meal: { select: { price: true } },
+          quantity: true,
+          options: { select: { mealItemOption: { select: { extraPrice: true } } } }
+        }
+      }
+    },
     where: { id: orderId, userId: myId }
   });
 
@@ -54,7 +64,7 @@ export async function createPaymentIntent({
     data: {
       orderId,
       stripePaymentId: paymentIntent.id,
-      additionalAmount: amount - order.meals.reduce((acc, meal) => acc + meal.meal.price * meal.quantity, 0),
+      additionalAmount: amount - getOrderTotalPrice(order),
       totalAmount: amount,
       restaurantProfitPrice: amount
     }

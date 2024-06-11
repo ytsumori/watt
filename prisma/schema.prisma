@@ -156,17 +156,32 @@ model Meal {
 }
 
 model MealItem {
-  id          String   @id @default(cuid())
+  id          String           @id @default(cuid())
   mealId      String
   price       Int
   title       String
   description String?
-  position    Int      @default(autoincrement())
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @default(now()) @updatedAt
-  meal        Meal     @relation(fields: [mealId], references: [id], onDelete: Cascade)
+  position    Int
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @default(now()) @updatedAt
+  meal        Meal             @relation(fields: [mealId], references: [id], onDelete: Cascade)
+  options     MealItemOption[]
 
   @@unique([mealId, position])
+}
+
+model MealItemOption {
+  id         String            @id @default(cuid())
+  mealItemId String
+  title      String
+  extraPrice Int
+  position   Int
+  createdAt  DateTime          @default(now())
+  updatedAt  DateTime          @default(now()) @updatedAt
+  mealItem   MealItem          @relation(fields: [mealItemId], references: [id], onDelete: Cascade)
+  orders     OrderMealOption[]
+
+  @@unique([mealItemId, position])
 }
 
 model Order {
@@ -190,14 +205,24 @@ model Order {
 }
 
 model OrderMeal {
-  id        String   @id @default(cuid())
+  id        String            @id @default(cuid())
   orderId   String
   mealId    String
   quantity  Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
-  meal      Meal     @relation(fields: [mealId], references: [id], onDelete: Cascade)
-  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @default(now()) @updatedAt
+  order     Order             @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  meal      Meal              @relation(fields: [mealId], references: [id], onDelete: Cascade)
+  options   OrderMealOption[]
+}
+
+model OrderMealOption {
+  id               String         @id @default(cuid())
+  orderMealId      String
+  mealItemOptionId String
+  createdAt        DateTime       @default(now())
+  orderMeal        OrderMeal      @relation(fields: [orderMealId], references: [id], onDelete: Cascade)
+  mealItemOption   MealItemOption @relation(fields: [mealItemOptionId], references: [id], onDelete: Cascade)
 }
 
 model OrderNotificationCall {
