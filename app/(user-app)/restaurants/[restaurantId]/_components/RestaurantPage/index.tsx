@@ -56,7 +56,7 @@ export function RestaurantPage({ restaurant, inProgressOrderId, userId, defaultM
     defaultMeal ? new Array(defaultMeal.items.length).fill(null) : []
   );
   const [secondPersonMeal, setSecondPersonMeal] = useState<MealWithItems | null>();
-  const [secondMealSelectedOptions, setSecondMealSelectedOptions] = useState<(string | null)[]>([]);
+  const [secondMealSelectedOptions, setSecondMealSelectedOptions] = useState<(string | null)[]>();
 
   const handleFirstMealSelected = (selectedMeal: MealWithItems) => {
     setFirstMealSelectedOptions(new Array(selectedMeal.items.length).fill(null));
@@ -75,6 +75,7 @@ export function RestaurantPage({ restaurant, inProgressOrderId, userId, defaultM
   };
 
   const handleSecondMealOptionChange = (index: number, value: string) => {
+    if (secondMealSelectedOptions === undefined) return;
     const newOptions = [...secondMealSelectedOptions];
     newOptions[index] = value;
     setSecondMealSelectedOptions(newOptions);
@@ -95,7 +96,9 @@ export function RestaurantPage({ restaurant, inProgressOrderId, userId, defaultM
       userId,
       restaurantId: restaurant.id,
       firstMealId: firstPersonMeal.id,
+      firstOptionIds: firstMealSelectedOptions,
       secondMealId: secondPersonMeal?.id,
+      secondOptionIds: secondMealSelectedOptions,
       peopleCount
     })
       .then((order) => {
@@ -157,6 +160,7 @@ export function RestaurantPage({ restaurant, inProgressOrderId, userId, defaultM
                                 break;
                               case 1:
                                 setSecondPersonMeal(undefined);
+                                setSecondMealSelectedOptions(undefined);
                                 setPeopleCount(1);
                                 break;
                             }
@@ -218,7 +222,7 @@ export function RestaurantPage({ restaurant, inProgressOrderId, userId, defaultM
                             />
                             {secondPersonMeal !== undefined ? (
                               <>
-                                {secondPersonMeal !== null ? (
+                                {secondPersonMeal !== null && secondMealSelectedOptions ? (
                                   <>
                                     <MealInfo
                                       meal={secondPersonMeal}

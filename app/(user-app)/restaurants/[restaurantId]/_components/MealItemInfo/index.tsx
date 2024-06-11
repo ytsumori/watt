@@ -7,17 +7,15 @@ import { OptionRadioCard } from "../OptionRadioCard";
 type Props = {
   mealItem: MealWithItems["items"][number];
   selectedOption: string | null;
-  isSelecting: boolean;
   onOptionChange: (value: string) => void;
 };
 
-export function MealItemInfo({ mealItem, selectedOption, isSelecting, onOptionChange }: Props) {
+export function MealItemInfo({ mealItem, selectedOption, onOptionChange }: Props) {
   const { getRootProps, getRadioProps } = useRadioGroup({
     onChange: onOptionChange,
     value: selectedOption ?? ""
   });
   const group = getRootProps();
-  const isOptionVisible = !!selectedOption || isSelecting;
   return (
     <Box key={mealItem.id} w="full">
       <Text fontSize="sm" as="b">
@@ -26,7 +24,7 @@ export function MealItemInfo({ mealItem, selectedOption, isSelecting, onOptionCh
       <Text whiteSpace="pre-wrap" fontSize="xs" color="blackAlpha.700">
         {mealItem.description}
       </Text>
-      {isOptionVisible && (
+      {mealItem.options.length > 0 && (
         <>
           {!selectedOption && (
             <Text fontSize="xs" color="brand.400" fontWeight="bold">

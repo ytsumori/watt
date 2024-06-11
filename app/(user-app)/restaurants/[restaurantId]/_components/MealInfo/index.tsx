@@ -11,9 +11,6 @@ type Props = {
 };
 
 export function MealInfo({ meal, selectedOptions, onOptionChange }: Props) {
-  const optionSelectingIndex = meal.items.findIndex(
-    (item, index) => item.options.length > 0 && !selectedOptions[index]
-  );
   return (
     <VStack w="full" alignItems="start" spacing={2}>
       <Box w="full">
@@ -35,7 +32,6 @@ export function MealInfo({ meal, selectedOptions, onOptionChange }: Props) {
               key={item.id}
               mealItem={item}
               selectedOption={selectedOptions[index]}
-              isSelecting={optionSelectingIndex === index}
               onOptionChange={handleChange}
             />
           );
