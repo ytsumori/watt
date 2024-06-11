@@ -2,6 +2,7 @@
 
 import { multicastMessage } from "@/lib/line-messaging-api";
 import prisma from "@/lib/prisma/client";
+import { getOrderTotalPrice } from "@/lib/prisma/order-total-price";
 
 export async function notifyStaffOrder({ orderId }: { orderId: string }) {
   const order = await prisma.order.findUnique({
@@ -196,7 +197,7 @@ export async function notifyStaffOrder({ orderId }: { orderId: string }) {
                                 contents: [
                                   {
                                     type: "text",
-                                    text: mealOrder.meal.title,
+                                    text: `${mealOrder.meal.title} × ${mealOrder.quantity}`,
                                     size: "sm",
                                     color: "#555555",
                                     flex: 0
@@ -218,38 +219,21 @@ export async function notifyStaffOrder({ orderId }: { orderId: string }) {
                                   contents: [
                                     {
                                       type: "text",
-                                      text: `${option.mealItemOption.mealItem.title} ${option.mealItemOption.title}`,
+                                      text: `・${option.mealItemOption.mealItem.title} ${option.mealItemOption.title}`,
                                       size: "sm",
                                       color: "#555555",
                                       flex: 0
                                     },
-                                    ...(option.mealItemOption.extraPrice > 0
-                                      ? [
-                                          {
-                                            type: "text",
-                                            text: `+¥${option.mealItemOption.extraPrice.toLocaleString("ja-JP")}`,
-                                            size: "sm",
-                                            color: "#111111",
-                                            align: "end"
-                                          }
-                                        ]
-                                      : [])
+                                    {
+                                      type: "text",
+                                      text: `+¥${option.mealItemOption.extraPrice.toLocaleString("ja-JP")}`,
+                                      size: "sm",
+                                      color: "#111111",
+                                      align: "end"
+                                    }
                                   ]
                                 };
-                              }),
-                              {
-                                type: "box",
-                                layout: "horizontal",
-                                contents: [
-                                  {
-                                    type: "text",
-                                    text: `× ${mealOrder.quantity}`,
-                                    size: "sm",
-                                    color: "#555555",
-                                    align: "end"
-                                  }
-                                ]
-                              }
+                              })
                             ];
                           }) as {
                             type: "box";
@@ -280,19 +264,7 @@ export async function notifyStaffOrder({ orderId }: { orderId: string }) {
                               },
                               {
                                 type: "text",
-                                text: `¥${order.meals
-                                  .reduce(
-                                    (sum, meal) =>
-                                      sum +
-                                      (meal.meal.price +
-                                        meal.options.reduce(
-                                          (sum, option) => sum + option.mealItemOption.extraPrice,
-                                          0
-                                        )) *
-                                        meal.quantity,
-                                    0
-                                  )
-                                  .toLocaleString("ja-JP")}`,
+                                text: `¥${getOrderTotalPrice(order).toLocaleString("ja-JP")}`,
                                 size: "sm",
                                 color: "#111111",
                                 align: "end",
