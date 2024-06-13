@@ -45,7 +45,7 @@ export function NewRestaurantPageClient() {
 
   const handleSubmit = async () => {
     if (!selectedPlace) return;
-    const restaurant = await createRestaurant({
+    const { data, errors } = await createRestaurant({
       name: selectedPlace.displayName.text,
       googleMapPlaceId: selectedPlace.id,
       latitude: selectedPlace.location.latitude,
@@ -53,21 +53,12 @@ export function NewRestaurantPageClient() {
       url: selectedPlace.googleMapsUri
     });
 
-    try {
-      await createRestaurantCoordinates({
-        restaurantId: restaurant.id,
-        lat: selectedPlace.location.latitude,
-        lng: selectedPlace.location.longitude
-      });
-      setSubmitResult({ id: restaurant.id, password: restaurant.password });
-    } catch (e) {
-      await deleteRestaurant({ restaurantId: restaurant.id });
-      logger({
-        severity: "ERROR",
-        message: "Failed to create RestaurantCoordinates",
-        payload: { error: JSON.stringify(e) }
-      });
+    if (errors) {
+      logger({ severity: "ERROR", message: "Failed to create Restaurant", payload: { errors } });
+      return;
     }
+
+    if (data) setSubmitResult({ id: data.id, password: data.password });
   };
 
   const handleCopy = () => {
