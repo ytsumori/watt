@@ -15,6 +15,10 @@
     {
       "path": "/api/cron/notify-closing-restaurants",
       "schedule": "0 3 * * *"
+    },
+    {
+      "path": "/api/cron/update-restaurant-coordinates",
+      "schedule": "15 21 1 * *"
     }
   ]
 }
