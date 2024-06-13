@@ -16,6 +16,19 @@ export async function submit(formData: FormData) {
   }
 
   if (submission.value.id) {
+    const meal = await prisma.meal.findUnique({
+      where: { id: submission.value.id },
+      select: {
+        orders: {
+          select: {
+            id: true
+          }
+        }
+      }
+    });
+    if (!meal) throw new Error("meal not found");
+    if (meal.orders.length > 0) throw new Error("meal has orders");
+
     let imageData: {
       path: string;
     } | null = null;
@@ -37,16 +50,27 @@ export async function submit(formData: FormData) {
         ...(imageData ? { imagePath: imageData.path } : {}),
         items: {
           deleteMany: {},
-          createMany: {
-            data: submission.value.items.map((item, index) => {
-              return {
-                title: item.title,
-                description: item.description,
-                price: item.price,
-                position: index
-              };
-            })
-          }
+          create: submission.value.items.map((item, index) => {
+            return {
+              title: item.title,
+              description: item.description,
+              price: item.price,
+              position: index,
+              ...(item.options && {
+                options: {
+                  createMany: {
+                    data: item.options.map((option, optionIndex) => {
+                      return {
+                        title: option.title,
+                        position: optionIndex,
+                        extraPrice: option.extraPrice
+                      };
+                    })
+                  }
+                }
+              })
+            };
+          })
         }
       }
     });
@@ -68,16 +92,27 @@ export async function submit(formData: FormData) {
         description: submission.value.description,
         imagePath: data.path,
         items: {
-          createMany: {
-            data: submission.value.items.map((item, index) => {
-              return {
-                title: item.title,
-                description: item.description,
-                price: item.price,
-                position: index
-              };
-            })
-          }
+          create: submission.value.items.map((item, index) => {
+            return {
+              title: item.title,
+              description: item.description,
+              price: item.price,
+              position: index,
+              ...(item.options && {
+                options: {
+                  createMany: {
+                    data: item.options.map((option, optionIndex) => {
+                      return {
+                        title: option.title,
+                        position: optionIndex,
+                        extraPrice: option.extraPrice
+                      };
+                    })
+                  }
+                }
+              })
+            };
+          })
         }
       }
     });

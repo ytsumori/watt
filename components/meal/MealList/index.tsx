@@ -7,7 +7,9 @@ import { useState } from "react";
 import { MealFormModal } from "../MealFormModal";
 import { activateMeal, discardMeal, getMeals } from "./action";
 
-type MealProp = Prisma.MealGetPayload<{ include: { items: true } }>;
+type MealProp = Prisma.MealGetPayload<{
+  include: { items: { include: { options: true } }; orders: { select: { id: true } } };
+}>;
 
 type Props = {
   restaurantId: string;
@@ -51,48 +53,58 @@ export function MealList({ restaurantId, defaultMeals }: Props) {
     <>
       <VStack width="full" alignItems="baseline" spacing={6}>
         <Flex gap={3} alignItems="center">
-          <Heading size="md">推しメシ</Heading>
+          <Heading size="md">セットメニュー</Heading>
           <Button onClick={onMealFormOpen}>登録する</Button>
         </Flex>
         <Heading size="sm">提供中</Heading>
         <Flex wrap="wrap" justify="space-evenly" gap={4}>
-          {meals.map((meal) => (
-            <MealCard
-              key={meal.id}
-              meal={meal}
-              button={
-                <HStack>
-                  <Button variant="outline" onClick={() => handleClickEdit(meal)}>
-                    編集する
-                  </Button>
-                  <Button variant="solid" colorScheme="red" onClick={() => handleClickDiscard(meal.id)}>
-                    取り消す
-                  </Button>
-                </HStack>
-              }
-            />
-          ))}
+          {meals.map((meal) => {
+            const isEditable = meal.orders.length === 0;
+            return (
+              <MealCard
+                key={meal.id}
+                meal={meal}
+                button={
+                  <HStack>
+                    {isEditable && (
+                      <Button variant="outline" onClick={() => handleClickEdit(meal)}>
+                        編集する
+                      </Button>
+                    )}
+                    <Button variant="solid" colorScheme="red" onClick={() => handleClickDiscard(meal.id)}>
+                      取り消す
+                    </Button>
+                  </HStack>
+                }
+              />
+            );
+          })}
         </Flex>
         <Heading size="sm" textColor="gray">
           取り消し済み
         </Heading>
         <Flex wrap="wrap" justify="space-evenly" gap={4}>
-          {discardedMeals.map((meal) => (
-            <MealCard
-              key={meal.id}
-              meal={meal}
-              button={
-                <HStack>
-                  <Button variant="outline" onClick={() => handleClickEdit(meal)}>
-                    編集する
-                  </Button>
-                  <Button variant="ghost" colorScheme="brand" onClick={() => handleClickReopen(meal.id)}>
-                    提供再開
-                  </Button>
-                </HStack>
-              }
-            />
-          ))}
+          {discardedMeals.map((meal) => {
+            const isEditable = meal.orders.length === 0;
+            return (
+              <MealCard
+                key={meal.id}
+                meal={meal}
+                button={
+                  <HStack>
+                    {isEditable && (
+                      <Button variant="outline" onClick={() => handleClickEdit(meal)}>
+                        編集する
+                      </Button>
+                    )}
+                    <Button variant="ghost" colorScheme="brand" onClick={() => handleClickReopen(meal.id)}>
+                      提供再開
+                    </Button>
+                  </HStack>
+                }
+              />
+            );
+          })}
         </Flex>
       </VStack>
       <MealFormModal

@@ -4,11 +4,12 @@ import { HStack } from "@chakra-ui/react";
 import { MealPreviewBox } from "@/components/meal/MealPreviewBox";
 import { Prisma } from "@prisma/client";
 import { CheckIcon } from "@chakra-ui/icons";
+import { MealWithItems } from "../../_types/MealWithItems";
 
 type Props = {
-  meals: Prisma.MealGetPayload<{ include: { items: true } }>[];
+  meals: MealWithItems[];
   selectedMealId?: string;
-  onSelectMeal: (meal: Prisma.MealGetPayload<{ include: { items: true } }>) => void;
+  onSelectMeal: (meal: MealWithItems) => void;
   additionalBox?: JSX.Element;
 };
 

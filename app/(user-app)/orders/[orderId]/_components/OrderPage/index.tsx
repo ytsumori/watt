@@ -7,11 +7,8 @@ import {
   AlertTitle,
   Box,
   Button,
-  Divider,
-  Flex,
   Heading,
   Icon,
-  Spacer,
   Text,
   VStack,
   useDisclosure
@@ -28,12 +25,29 @@ import { CompleteConfirmModal } from "../PaymentConfirmModal";
 import { CancelConfirmModal } from "../CancelConfirmModal";
 import NextImage from "next/image";
 import { getOrderStatus } from "@/lib/prisma/order-status";
+import { PriceSection } from "../PriceSection";
 
 type Props = {
   order: Prisma.OrderGetPayload<{
     include: {
       restaurant: { include: { googleMapPlaceInfo: { select: { url: true } } } };
-      meals: { include: { meal: { select: { title: true; price: true } } } };
+      meals: {
+        include: {
+          meal: { select: { title: true; price: true } };
+          options: {
+            select: {
+              id: true;
+              mealItemOption: {
+                select: {
+                  title: true;
+                  extraPrice: true;
+                  mealItem: { select: { title: true } };
+                };
+              };
+            };
+          };
+        };
+      };
       payment: true;
     };
   }>;
@@ -123,25 +137,7 @@ export function OrderPage({ order }: Props) {
                   {order.orderNumber}
                 </Heading>
               </Text>
-              <VStack alignItems="start" w="full">
-                <Heading size="md">注文内容</Heading>
-                {order.meals.map((orderMeal) => (
-                  <Flex w="full" key={orderMeal.id}>
-                    <Text>{orderMeal.meal.title}</Text>
-                    <Spacer />
-                    <Text as="p" fontWeight="bold">
-                      ¥{orderMeal.meal.price.toLocaleString("ja-JP")} × {orderMeal.quantity}
-                    </Text>
-                  </Flex>
-                ))}
-                <Divider />
-                <Heading size="sm" alignSelf="self-end">
-                  合計 ¥
-                  {order.meals
-                    .reduce((acc, orderMeal) => acc + orderMeal.meal.price * orderMeal.quantity, 0)
-                    .toLocaleString("ja-JP")}
-                </Heading>
-              </VStack>
+              <PriceSection order={order} />
               <VStack w="full" mt={10}>
                 <Button
                   size="md"
@@ -265,38 +261,13 @@ export function OrderPage({ order }: Props) {
             <Heading size="md">店舗</Heading>
             <Heading size="sm">{order.restaurant.name}</Heading>
           </VStack>
-          <VStack alignItems="start" w="full">
-            <Heading size="md">金額</Heading>
-            <VStack spacing={0} alignItems="start" w="full">
-              {order.meals.map((orderMeal) => (
-                <Flex w="full" key={orderMeal.id} justifyContent="space-between">
-                  <Text>{orderMeal.meal.title}</Text>
-                  <Text as="p" fontWeight="bold">
-                    ¥{orderMeal.meal.price.toLocaleString("ja-JP")} × {orderMeal.quantity}
-                  </Text>
-                </Flex>
-              ))}
-              {isPaymentCompleted && order.payment?.additionalAmount && (
-                <Flex w="full" justifyContent="space-between">
-                  <Text>追加料金</Text>
-                  <Text as="p" fontWeight="bold">
-                    ¥{order.payment.additionalAmount.toLocaleString("ja-JP")}
-                  </Text>
-                </Flex>
-              )}
+          <PriceSection order={order} />
+          {isPaymentCompleted && order.payment && (
+            <VStack alignItems="start" w="full">
+              <Heading size="md">Wattでの支払い代金</Heading>
+              <Heading size="sm">¥{order.payment.totalAmount.toLocaleString("ja-JP")}</Heading>
             </VStack>
-            <Divider />
-            <Flex w="full" justifyContent="space-between">
-              <Text>合計</Text>
-              <Text fontWeight="bold">
-                ¥
-                {(isPaymentCompleted
-                  ? order.payment!!.totalAmount
-                  : order.meals.reduce((acc, orderMeal) => acc + orderMeal.meal.price * orderMeal.quantity, 0)
-                ).toLocaleString("ja-JP")}
-              </Text>
-            </Flex>
-          </VStack>
+          )}
           <Button variant="outline" size="md" colorScheme="gray" w="full" maxW="full" as={NextLink} href="/">
             ホーム画面に戻る
           </Button>

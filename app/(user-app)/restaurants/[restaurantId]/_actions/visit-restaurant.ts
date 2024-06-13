@@ -10,11 +10,21 @@ type Args = {
   userId: string;
   restaurantId: string;
   firstMealId: string;
+  firstOptionIds: (string | null)[];
   secondMealId?: string;
+  secondOptionIds?: (string | null)[];
   peopleCount: 1 | 2;
 };
 
-export async function visitRestaurant({ userId, restaurantId, firstMealId, secondMealId, peopleCount }: Args) {
+export async function visitRestaurant({
+  userId,
+  restaurantId,
+  firstMealId,
+  firstOptionIds,
+  secondMealId,
+  secondOptionIds,
+  peopleCount
+}: Args) {
   const inProgressOrder = await findInProgressOrder(userId);
   if (inProgressOrder) {
     throw new Error("Active order already exists");
@@ -22,19 +32,77 @@ export async function visitRestaurant({ userId, restaurantId, firstMealId, secon
 
   const firstMeal = await prisma.meal.findUnique({
     where: { id: firstMealId, restaurantId },
-    select: { id: true, price: true, isDiscarded: true, restaurant: { select: { phoneNumber: true } } }
+    select: {
+      id: true,
+      price: true,
+      isDiscarded: true,
+      restaurant: { select: { phoneNumber: true } },
+      items: { select: { options: { select: { id: true } } } }
+    }
   });
   if (!firstMeal) {
     throw new Error("First meal not found");
   } else if (firstMeal.isDiscarded) {
     throw new Error("First meal is discarded");
+  } else if (
+    firstMeal.items.some((item, index) => {
+      const optionId = firstOptionIds[index];
+      const isNoOptionSelected = item.options.length === 0 && optionId !== null;
+      const isInvalidOptionSelected =
+        item.options.length > 0 && (optionId === null || !item.options.map((option) => option.id).includes(optionId));
+      return isNoOptionSelected || isInvalidOptionSelected;
+    })
+  ) {
+    throw new Error("First meal options do not match");
   }
 
   let order: Order;
   if (secondMealId) {
-    if (secondMealId === firstMealId) {
+    if (!secondOptionIds) throw new Error("Second meal options are required");
+
+    const secondMeal = await prisma.meal.findUnique({
+      where: { id: secondMealId, restaurantId },
+      select: { id: true, isDiscarded: true, items: { select: { options: { select: { id: true } } } } }
+    });
+    if (!secondMeal) {
+      throw new Error("Second meal not found");
+    } else if (secondMeal.isDiscarded) {
+      throw new Error("Second meal is discarded");
+    } else if (
+      secondMeal.items.some((item, index) => {
+        const optionId = secondOptionIds[index];
+        const isNoOptionSelected = item.options.length === 0 && optionId !== null;
+        const isInvalidOptionSelected =
+          item.options.length > 0 && (optionId === null || !item.options.map((option) => option.id).includes(optionId));
+        return isNoOptionSelected || isInvalidOptionSelected;
+      })
+    ) {
+      throw new Error("Second meal options do not match");
+    }
+
+    if (
+      secondMealId === firstMealId &&
+      secondOptionIds.every((optionId, index) => optionId === firstOptionIds[index])
+    ) {
       order = await prisma.order.create({
-        data: { userId, restaurantId, peopleCount, meals: { create: [{ mealId: firstMealId, quantity: 2 }] } }
+        data: {
+          userId,
+          restaurantId,
+          peopleCount,
+          meals: {
+            create: [
+              {
+                mealId: firstMealId,
+                quantity: 2,
+                options: {
+                  createMany: {
+                    data: [...firstOptionIds.flatMap((optionId) => (optionId ? { mealItemOptionId: optionId } : []))]
+                  }
+                }
+              }
+            ]
+          }
+        }
       });
     } else {
       order = await prisma.order.create({
@@ -43,19 +111,50 @@ export async function visitRestaurant({ userId, restaurantId, firstMealId, secon
           restaurantId,
           peopleCount,
           meals: {
-            createMany: {
-              data: [
-                { mealId: firstMealId, quantity: 1 },
-                { mealId: secondMealId, quantity: 1 }
-              ]
-            }
+            create: [
+              {
+                mealId: firstMealId,
+                quantity: 1,
+                options: {
+                  createMany: {
+                    data: [...firstOptionIds.flatMap((optionId) => (optionId ? { mealItemOptionId: optionId } : []))]
+                  }
+                }
+              },
+              {
+                mealId: secondMealId,
+                quantity: 1,
+                options: {
+                  createMany: {
+                    data: [...secondOptionIds.flatMap((optionId) => (optionId ? { mealItemOptionId: optionId } : []))]
+                  }
+                }
+              }
+            ]
           }
         }
       });
     }
   } else {
     order = await prisma.order.create({
-      data: { userId, restaurantId, peopleCount, meals: { create: [{ mealId: firstMealId, quantity: 1 }] } }
+      data: {
+        userId,
+        restaurantId,
+        peopleCount,
+        meals: {
+          create: [
+            {
+              mealId: firstMealId,
+              quantity: 1,
+              options: {
+                createMany: {
+                  data: [...firstOptionIds.flatMap((optionId) => (optionId ? { mealItemOptionId: optionId } : []))]
+                }
+              }
+            }
+          ]
+        }
+      }
     });
   }
 

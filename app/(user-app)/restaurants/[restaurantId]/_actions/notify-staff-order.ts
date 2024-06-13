@@ -2,6 +2,7 @@
 
 import { multicastMessage } from "@/lib/line-messaging-api";
 import prisma from "@/lib/prisma/client";
+import { getOrderTotalPrice } from "@/lib/prisma/order-total-price";
 
 export async function notifyStaffOrder({ orderId }: { orderId: string }) {
   const order = await prisma.order.findUnique({
@@ -19,7 +20,30 @@ export async function notifyStaffOrder({ orderId }: { orderId: string }) {
               price: true
             }
           },
-          quantity: true
+          quantity: true,
+          options: {
+            select: {
+              mealItemOption: {
+                select: {
+                  title: true,
+                  extraPrice: true,
+                  mealItem: {
+                    select: {
+                      title: true,
+                      position: true
+                    }
+                  }
+                }
+              }
+            },
+            orderBy: {
+              mealItemOption: {
+                mealItem: {
+                  position: "asc"
+                }
+              }
+            }
+          }
         }
       },
       restaurant: {
@@ -165,28 +189,52 @@ export async function notifyStaffOrder({ orderId }: { orderId: string }) {
                         type: "box",
                         layout: "vertical",
                         contents: [
-                          ...(order.meals.map((mealOrder) => {
-                            return {
-                              type: "box",
-                              layout: "horizontal",
-                              contents: [
-                                {
-                                  type: "text",
-                                  text: mealOrder.meal.title,
-                                  size: "sm",
-                                  color: "#555555",
-                                  flex: 0
-                                },
-                                {
-                                  type: "text",
-                                  text: `¥${mealOrder.meal.price.toLocaleString("ja-JP")} × ${mealOrder.quantity}`,
-                                  size: "sm",
-                                  color: "#111111",
-                                  align: "end"
-                                }
-                              ],
-                              margin: "md"
-                            };
+                          ...(order.meals.flatMap((mealOrder) => {
+                            return [
+                              {
+                                type: "box",
+                                layout: "horizontal",
+                                contents: [
+                                  {
+                                    type: "text",
+                                    text: `${mealOrder.meal.title} × ${mealOrder.quantity}`,
+                                    size: "sm",
+                                    color: "#555555",
+                                    flex: 0
+                                  },
+                                  {
+                                    type: "text",
+                                    text: `¥${mealOrder.meal.price.toLocaleString("ja-JP")}`,
+                                    size: "sm",
+                                    color: "#111111",
+                                    align: "end"
+                                  }
+                                ],
+                                margin: "md"
+                              },
+                              ...mealOrder.options.map((option) => {
+                                return {
+                                  type: "box",
+                                  layout: "horizontal",
+                                  contents: [
+                                    {
+                                      type: "text",
+                                      text: `・${option.mealItemOption.mealItem.title} ${option.mealItemOption.title}`,
+                                      size: "sm",
+                                      color: "#555555",
+                                      flex: 0
+                                    },
+                                    {
+                                      type: "text",
+                                      text: `+¥${option.mealItemOption.extraPrice.toLocaleString("ja-JP")}`,
+                                      size: "sm",
+                                      color: "#111111",
+                                      align: "end"
+                                    }
+                                  ]
+                                };
+                              })
+                            ];
                           }) as {
                             type: "box";
                             layout: "horizontal";
@@ -216,7 +264,7 @@ export async function notifyStaffOrder({ orderId }: { orderId: string }) {
                               },
                               {
                                 type: "text",
-                                text: `¥${order.meals.reduce((sum, meal) => sum + meal.meal.price * meal.quantity, 0).toLocaleString("ja-JP")}`,
+                                text: `¥${getOrderTotalPrice(order).toLocaleString("ja-JP")}`,
                                 size: "sm",
                                 color: "#111111",
                                 align: "end",
