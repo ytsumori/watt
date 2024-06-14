@@ -29,7 +29,7 @@ export function PaymentsPage({ payments, dateRange }: Props) {
             <Tr>
               <Th>決済日時</Th>
               <Th>Stripe 決済ID</Th>
-              <Th>レストラン名</Th>
+              <Th>店名</Th>
               <Th>振込先名義</Th>
               <Th>決済金額</Th>
               <Th>振込金額</Th>

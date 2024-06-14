@@ -40,7 +40,7 @@ export function RestaurantsPage({ restaurants }: Props) {
           <Thead>
             <Tr>
               <Th>ID</Th>
-              <Th>レストラン名</Th>
+              <Th>店名</Th>
               <Th textAlign="center">
                 登録用URL
                 <Tooltip label="飲食店が管理画面にログインするためのURLをコピーします">

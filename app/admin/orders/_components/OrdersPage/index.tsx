@@ -57,7 +57,7 @@ export function OrdersPage({ orders, page, maxPage }: Props) {
           <Thead>
             <Tr>
               <Th>注文番号</Th>
-              <Th>飲食店</Th>
+              <Th>店名</Th>
               <Th>人数</Th>
               <Th>セット内容</Th>
               <Th>注文金額</Th>
