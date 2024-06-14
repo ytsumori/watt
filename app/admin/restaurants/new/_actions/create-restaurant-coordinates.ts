@@ -15,7 +15,7 @@ export const createRestaurantCoordinates = async ({ restaurantId, lat, lng }: Ar
   const { error } = await supabase.from("RestaurantCoordinates").insert({
     id: cuid(),
     restaurantId,
-    point: `SRID=4326;POINT(${lat} ${lng})`
+    point: `SRID=4326;POINT(${lng} ${lat})`
   });
 
   if (error) {

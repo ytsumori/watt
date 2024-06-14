@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
     const { error } = await supabase.from("RestaurantCoordinates").insert({
       id: cuid(),
       restaurantId: restaurant.id,
-      point: `SRID=4326;POINT(${result.location.latitude} ${result.location.longitude})`
+      point: `SRID=4326;POINT(${result.location.longitude} ${result.location.latitude})`
     });
     if (error) logger({ severity: "ERROR", message: "RestaurantCoordinatesの作成に失敗しました", payload: { error } });
   };
