@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
   });
 
   const updateOpeningHours = async (restaurant: Restaurant) => {
-    await prisma.restaurantGoogleMapOpeningHour.deleteMany({
+    const previousOpeningHours = await prisma.restaurantGoogleMapOpeningHour.findMany({
       where: {
         restaurantId: restaurant.id
       }
@@ -32,19 +32,48 @@ export async function GET(request: NextRequest) {
     const { currentOpeningHours } = await getOpeningHours({
       placeId: restaurant.googleMapPlaceId
     });
-    if (!currentOpeningHours || currentOpeningHours.periods.length === 0) return;
+    if (!currentOpeningHours) {
+      if (previousOpeningHours.length > 0) {
+        await prisma.restaurantGoogleMapOpeningHour.deleteMany({
+          where: {
+            restaurantId: restaurant.id
+          }
+        });
+      }
+      return;
+    }
 
-    await prisma.restaurantGoogleMapOpeningHour.createMany({
-      data: currentOpeningHours.periods.map((period) => ({
-        restaurantId: restaurant.id,
-        openDayOfWeek: dayNumberToDayOfWeek(period.open.day),
-        openHour: period.open.hour,
-        openMinute: period.open.minute,
-        closeDayOfWeek: dayNumberToDayOfWeek(period.close.day),
-        closeHour: period.close.hour,
-        closeMinute: period.close.minute
-      }))
-    });
+    const isSameOpeningHours =
+      previousOpeningHours.length === currentOpeningHours.periods.length &&
+      previousOpeningHours.every((previousOpeningHour) => {
+        const key = `${previousOpeningHour.openDayOfWeek}-${previousOpeningHour.openHour}-${previousOpeningHour.openMinute}-${previousOpeningHour.closeDayOfWeek}-${previousOpeningHour.closeHour}-${previousOpeningHour.closeMinute}`;
+        return currentOpeningHours.periods.some((period) => {
+          return (
+            `${dayNumberToDayOfWeek(period.open.day)}-${period.open.hour}-${period.open.minute}-${dayNumberToDayOfWeek(period.close.day)}-${period.close.hour}-${period.close.minute}` ===
+            key
+          );
+        });
+      });
+    if (isSameOpeningHours) return;
+
+    await prisma.$transaction([
+      prisma.restaurantGoogleMapOpeningHour.deleteMany({
+        where: {
+          restaurantId: restaurant.id
+        }
+      }),
+      prisma.restaurantGoogleMapOpeningHour.createMany({
+        data: currentOpeningHours.periods.map((period) => ({
+          restaurantId: restaurant.id,
+          openDayOfWeek: dayNumberToDayOfWeek(period.open.day),
+          openHour: period.open.hour,
+          openMinute: period.open.minute,
+          closeDayOfWeek: dayNumberToDayOfWeek(period.close.day),
+          closeHour: period.close.hour,
+          closeMinute: period.close.minute
+        }))
+      })
+    ]);
   };
   await Promise.all(restaurants.map(updateOpeningHours));
 
