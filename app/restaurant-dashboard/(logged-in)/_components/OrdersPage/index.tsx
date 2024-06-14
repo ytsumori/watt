@@ -5,7 +5,7 @@ import { Prisma } from "@prisma/client";
 import { Table, TableContainer, Tbody, Td, Th, Thead, Tr } from "@chakra-ui/react";
 import { getOrderStatus, translateOrderStatus } from "@/lib/prisma/order-status";
 import { RestaurantIdContext } from "../restaurant-id-provider";
-import { getOrders } from "../../_actions/getOrders";
+import { getOrders } from "./actions";
 
 export function OrdersPage() {
   const restaurantId = useContext(RestaurantIdContext);
