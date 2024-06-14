@@ -2,10 +2,10 @@
 
 import { Prisma } from "@prisma/client";
 import { useContext, useEffect, useState } from "react";
-import { RestaurantIdContext } from "./restaurant-id-provider";
 import { MealList } from "@/components/meal/MealList";
 import { Center, Spinner, Text, VStack } from "@chakra-ui/react";
-import { getMeals } from "../_actions/getMeals";
+import { RestaurantIdContext } from "../restaurant-id-provider";
+import { getMeals } from "./actions";
 
 export function MealPage() {
   const restaurantId = useContext(RestaurantIdContext);
@@ -13,14 +13,7 @@ export function MealPage() {
   const [meals, setMeals] = useState<
     Prisma.MealGetPayload<{
       include: {
-        items: {
-          orderBy: { position: "asc" };
-          include: {
-            options: {
-              orderBy: { position: "asc" };
-            };
-          };
-        };
+        items: { include: { options: true } };
         orders: { select: { id: true } };
       };
     }>[]

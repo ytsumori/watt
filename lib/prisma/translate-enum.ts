@@ -1,4 +1,4 @@
-import { BankAccountType, PaymentOption, SmokingOption } from "@prisma/client";
+import { BankAccountType, DayOfWeek, PaymentOption, SmokingOption } from "@prisma/client";
 
 export const translateBankAccountType = (accountType: BankAccountType): string => {
   switch (accountType) {
@@ -40,5 +40,26 @@ export const translatePaymentOption = (paymentOption: PaymentOption): string => 
       return "QRコード決済";
     default:
       throw new Error("Invalid payment option");
+  }
+};
+
+export const translateDayOfWeek = (dayOfWeek: DayOfWeek): string => {
+  switch (dayOfWeek) {
+    case DayOfWeek.SUNDAY:
+      return "日";
+    case DayOfWeek.MONDAY:
+      return "月";
+    case DayOfWeek.TUESDAY:
+      return "火";
+    case DayOfWeek.WEDNESDAY:
+      return "水";
+    case DayOfWeek.THURSDAY:
+      return "木";
+    case DayOfWeek.FRIDAY:
+      return "金";
+    case DayOfWeek.SATURDAY:
+      return "土";
+    default:
+      throw new Error("Invalid day of week");
   }
 };

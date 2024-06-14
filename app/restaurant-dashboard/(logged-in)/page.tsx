@@ -20,9 +20,9 @@ import { findRestaurant } from "@/actions/restaurant";
 import { useRouter } from "next/navigation";
 import { EditIcon } from "@chakra-ui/icons";
 import { RestaurantIdContext } from "./_components/restaurant-id-provider";
-import { SchedulePage } from "./_components/schedule-page";
-import { MealPage } from "./_components/meal-page";
 import { OrdersPage } from "./_components/OrdersPage";
+import { SchedulePage } from "./_components/SchedulePage";
+import { MealPage } from "./_components/MealPage";
 
 export default function Dashboard() {
   const restaurantId = useContext(RestaurantIdContext);
