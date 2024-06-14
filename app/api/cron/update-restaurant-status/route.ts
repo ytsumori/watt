@@ -13,7 +13,14 @@ export async function GET(request: NextRequest) {
   }
 
   const restaurants = await prisma.restaurant.findMany({
-    include: { meals: true, openingHours: true },
+    include: {
+      meals: true,
+      openingHours: {
+        where: {
+          isAutomaticallyApplied: true
+        }
+      }
+    },
     where: {
       meals: {
         some: {
