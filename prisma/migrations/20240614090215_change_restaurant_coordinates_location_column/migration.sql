@@ -1,0 +1,1 @@
+ALTER TABLE "RestaurantCoordinates" ALTER COLUMN point TYPE GEOGRAPHY(POINT, 4326);
