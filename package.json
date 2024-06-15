@@ -5,6 +5,7 @@
     "dev": "supabase start -x realtime,inbucket,edge-runtime,logflare,vector,pg_prove && prisma generate && pnpm cloud-tasks-up && next dev",
     "dev/down": "supabase stop && pnpm cloud-tasks-down",
     "build": "prisma generate && prisma migrate deploy && next build",
+    "stg-build": "prisma generate && next build",
     "start": "next start",
     "test": "vitest",
     "e2e": "playwright test",
