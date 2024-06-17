@@ -1,4 +1,4 @@
-import { AdminDashboardLayout } from "./_components/layout-client";
+import { AdminDashboardLayout } from "./_components/AdminLayout";
 
 export const metadata = {
   title: "管理画面 | Watt",

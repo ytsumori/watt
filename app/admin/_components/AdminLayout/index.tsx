@@ -3,7 +3,7 @@
 import { HamburgerIcon } from "@chakra-ui/icons";
 import { Box, IconButton, Menu, MenuButton, MenuItem, MenuList } from "@chakra-ui/react";
 import Link from "next/link";
-import { FaShop, FaMoneyCheck } from "react-icons/fa6";
+import { ADMIN_PAGE_MENU } from "../../_constants/admin-page-menu";
 
 export function AdminDashboardLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -19,12 +19,11 @@ export function AdminDashboardLayout({ children }: { children: React.ReactNode }
           top={4}
         />
         <MenuList>
-          <MenuItem icon={<FaShop />} as={Link} href={"/admin/restaurants"}>
-            レストラン一覧
-          </MenuItem>
-          <MenuItem icon={<FaMoneyCheck />} as={Link} href={"/admin/payments"}>
-            決済一覧
-          </MenuItem>
+          {ADMIN_PAGE_MENU.map((page) => (
+            <MenuItem key={page.pathname} icon={page.icon} as={Link} href={page.pathname}>
+              {page.title}
+            </MenuItem>
+          ))}
         </MenuList>
       </Menu>
       {children}
