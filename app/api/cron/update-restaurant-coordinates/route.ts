@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
       return {
         id: restaurant.RestaurantCoordinates[0].id,
         restaurantId: restaurant.id,
-        point: `SRID=4326;POINT(${result.location.latitude} ${result.location.longitude})`,
+        point: `SRID=4326;POINT(${result.location.longitude} ${result.location.latitude})`,
         updatedAt: new Date().toISOString()
       };
     })

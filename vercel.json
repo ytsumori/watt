@@ -20,5 +20,6 @@
       "path": "/api/cron/update-restaurant-coordinates",
       "schedule": "15 21 1 * *"
     }
-  ]
+  ],
+  "buildCommand": "sh scripts/build.sh"
 }

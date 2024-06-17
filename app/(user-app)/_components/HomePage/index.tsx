@@ -2,33 +2,60 @@
 
 import Map from "@/components/map";
 import { useEffect, useState } from "react";
-import { Box, HStack, Heading, Badge, VStack, Text, Skeleton, Icon } from "@chakra-ui/react";
+import { Box, HStack, Heading, Badge, VStack } from "@chakra-ui/react";
 import { InView } from "react-intersection-observer";
 import { Prisma } from "@prisma/client";
 import { MealPreviewBox } from "@/components/meal/MealPreviewBox";
 import { useRouter } from "next/navigation";
 import NextLink from "next/link";
 import { calculateDistance } from "../../_util/calculateDistance";
-import { FaMapMarkerAlt } from "react-icons/fa";
+import { findNearbyRestaurants } from "./_actions/findNearByRestaurants";
+import { Distance } from "../Distance";
+import { logger } from "@/utils/logger";
 
-export default function HomePage({
-  restaurants
-}: {
-  restaurants: Prisma.RestaurantGetPayload<{
-    include: { meals: true; googleMapPlaceInfo: { select: { latitude: true; longitude: true } } };
-  }>[];
-}) {
+type NearbyRestaurant = Awaited<ReturnType<typeof findNearbyRestaurants>>;
+type Restaurant = Prisma.RestaurantGetPayload<{
+  include: { meals: true; googleMapPlaceInfo: { select: { latitude: true; longitude: true } } };
+}>;
+
+export default function HomePage({ restaurants }: { restaurants: Restaurant[] }) {
   const router = useRouter();
   const [inViewRestaurantIds, setInViewRestaurantIds] = useState<string[]>([]);
-  const [isGrantGeolocation, setIsGrantGeolocation] = useState<boolean>(false);
-  const [currentPosition, setCurrentPosition] = useState<GeolocationPosition | null>(null);
+  const [nearbyRestaurants, setNearbyRestaurants] = useState<NearbyRestaurant | (Restaurant & { distance?: string })[]>(
+    restaurants
+  );
 
   useEffect(() => {
-    navigator.permissions
-      .query({ name: "geolocation" })
-      .then((permissionStatus) => setIsGrantGeolocation("granted" === permissionStatus.state));
-    navigator.geolocation.getCurrentPosition((position) => setCurrentPosition(position));
-  }, []);
+    navigator.permissions.query({ name: "geolocation" }).then((permissionStatus) => {
+      navigator.geolocation.getCurrentPosition(async (position) => {
+        const { latitude: lat, longitude: long } = position.coords;
+        if (permissionStatus.state === "granted") {
+          try {
+            const sortedRestaurants = await findNearbyRestaurants({ long, lat, restaurants });
+            setNearbyRestaurants(sortedRestaurants);
+          } catch (error) {
+            setNearbyRestaurants(
+              restaurants.map((restaurant) => ({
+                ...restaurant,
+                distance: calculateDistance({
+                  origin: { lat, lng: long },
+                  destination: {
+                    lat: restaurant.googleMapPlaceInfo?.latitude,
+                    lng: restaurant.googleMapPlaceInfo?.longitude
+                  }
+                })
+              }))
+            );
+            logger({
+              severity: "ERROR",
+              message: "findNearbyRestaurantsの呼び出しに失敗しました",
+              payload: { error: JSON.stringify(error) }
+            });
+          }
+        }
+      });
+    });
+  }, [restaurants]);
 
   const handleRestaurantSelect = (restaurantId: string) => {
     const element = document.getElementById(restaurantId);
@@ -54,7 +81,7 @@ export default function HomePage({
         />
       </Box>
       <Box h="300px" overflowY="auto" pb={4} className="hidden-scrollbar" backgroundColor="blackAlpha.100">
-        {restaurants.map((restaurant, index) => (
+        {nearbyRestaurants.map((restaurant, index) => (
           <Box
             key={restaurant.id}
             id={restaurant.id}
@@ -84,32 +111,7 @@ export default function HomePage({
                   <Heading size="sm" color={restaurant.isOpen ? "black" : "gray"}>
                     {restaurant.name}
                   </Heading>
-                  {isGrantGeolocation && (
-                    <>
-                      {currentPosition?.coords.latitude && currentPosition?.coords.longitude ? (
-                        <>
-                          {restaurant.googleMapPlaceInfo?.latitude && restaurant.googleMapPlaceInfo?.longitude && (
-                            <Text fontSize="xs" opacity={0.6}>
-                              <Icon as={FaMapMarkerAlt} mr={1} />
-                              現在地から
-                              {calculateDistance({
-                                origin: {
-                                  lat: restaurant.googleMapPlaceInfo.latitude,
-                                  lng: restaurant.googleMapPlaceInfo.longitude
-                                },
-                                destination: {
-                                  lat: currentPosition.coords.latitude,
-                                  lng: currentPosition.coords.longitude
-                                }
-                              })}
-                            </Text>
-                          )}
-                        </>
-                      ) : (
-                        <Skeleton height="12px" w="50%" />
-                      )}
-                    </>
-                  )}
+                  {restaurant.distance ? <Distance distance={restaurant.distance} /> : <></>}
                   {restaurant.isOpen ? (
                     <Badge backgroundColor="brand.400" variant="solid" fontSize="sm">
                       ○ 今すぐ入れます！

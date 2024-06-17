@@ -27,8 +27,6 @@ import {
 import { useState } from "react";
 import { copySignUpURL } from "../../_util/clipboard-text";
 import { createRestaurant } from "../_actions/create-restaurant";
-import { createRestaurantCoordinates } from "../_actions/create-restaurant-coordinates";
-import { deleteRestaurant } from "../_actions/deleteRestaurant";
 import { logger } from "@/utils/logger";
 
 export function NewRestaurantPageClient() {

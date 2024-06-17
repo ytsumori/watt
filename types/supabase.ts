@@ -180,7 +180,7 @@ export type Database = {
           description?: string | null
           id: string
           mealId: string
-          position?: number
+          position: number
           price: number
           title: string
           updatedAt?: string
@@ -201,6 +201,44 @@ export type Database = {
             columns: ["mealId"]
             isOneToOne: false
             referencedRelation: "Meal"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      MealItemOption: {
+        Row: {
+          createdAt: string
+          extraPrice: number
+          id: string
+          mealItemId: string
+          position: number
+          title: string
+          updatedAt: string
+        }
+        Insert: {
+          createdAt?: string
+          extraPrice: number
+          id: string
+          mealItemId: string
+          position: number
+          title: string
+          updatedAt?: string
+        }
+        Update: {
+          createdAt?: string
+          extraPrice?: number
+          id?: string
+          mealItemId?: string
+          position?: number
+          title?: string
+          updatedAt?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "MealItemOption_mealItemId_fkey"
+            columns: ["mealItemId"]
+            isOneToOne: false
+            referencedRelation: "MealItem"
             referencedColumns: ["id"]
           },
         ]
@@ -376,6 +414,42 @@ export type Database = {
             columns: ["orderId"]
             isOneToOne: false
             referencedRelation: "Order"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      OrderMealOption: {
+        Row: {
+          createdAt: string
+          id: string
+          mealItemOptionId: string
+          orderMealId: string
+        }
+        Insert: {
+          createdAt?: string
+          id: string
+          mealItemOptionId: string
+          orderMealId: string
+        }
+        Update: {
+          createdAt?: string
+          id?: string
+          mealItemOptionId?: string
+          orderMealId?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "OrderMealOption_mealItemOptionId_fkey"
+            columns: ["mealItemOptionId"]
+            isOneToOne: false
+            referencedRelation: "MealItemOption"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "OrderMealOption_orderMealId_fkey"
+            columns: ["orderMealId"]
+            isOneToOne: false
+            referencedRelation: "OrderMeal"
             referencedColumns: ["id"]
           },
         ]
