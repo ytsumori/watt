@@ -1,1 +1,1 @@
-GRANT ALL ON "public"."RestaurantCoordinates" TO "service_role";
+GRANT ALL privileges ON "public"."RestaurantCoordinates" TO "service_role";
