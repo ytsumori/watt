@@ -1,6 +1,5 @@
 import HomePage from "@/app/(user-app)/_components/HomePage";
 import prisma from "@/lib/prisma/client";
-import { createServiceRoleClient } from "@/lib/supabase/createServiceRoleClient";
 
 export default async function Home() {
   const restaurants = await prisma.restaurant.findMany({

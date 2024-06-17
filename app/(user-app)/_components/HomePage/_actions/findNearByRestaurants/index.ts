@@ -1,5 +1,5 @@
 "use server";
-import { calculateDistance } from "@/app/(user-app)/_util/calculateDistance";
+
 import { formatDistance } from "@/app/(user-app)/_util/formatDistance";
 import { createServiceRoleClient } from "@/lib/supabase/createServiceRoleClient";
 import { logger } from "@/utils/logger";
