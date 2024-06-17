@@ -2,7 +2,7 @@
 
 import Map from "@/components/map";
 import { useEffect, useState } from "react";
-import { Box, HStack, Heading, Badge, VStack, Text, Skeleton, Icon, position } from "@chakra-ui/react";
+import { Box, HStack, Heading, Badge, VStack } from "@chakra-ui/react";
 import { InView } from "react-intersection-observer";
 import { Prisma } from "@prisma/client";
 import { MealPreviewBox } from "@/components/meal/MealPreviewBox";
