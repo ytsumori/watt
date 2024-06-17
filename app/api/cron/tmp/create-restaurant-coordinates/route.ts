@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma/client";
 import { Restaurant } from "@prisma/client";
-import cuid from "cuid";
+import { createId } from "@paralleldrive/cuid2";
 import { getPlaceDetail } from "@/lib/places-api";
 import { createServiceRoleClient } from "@/lib/supabase/createServiceRoleClient";
 import { logger } from "@/utils/logger";
@@ -17,9 +17,8 @@ export async function GET(request: NextRequest) {
   const createRestaurantCoordinates = async (restaurant: Restaurant) => {
     const result = await getPlaceDetail({ placeId: restaurant.googleMapPlaceId });
 
-    // cuid()は非推奨だが、prismaは内部でcuidを使っているので、(https://github.com/prisma/prisma/issues/17102)
     const { error } = await supabase.from("RestaurantCoordinates").insert({
-      id: cuid(),
+      id: createId(),
       restaurantId: restaurant.id,
       point: `SRID=4326;POINT(${result.location.longitude} ${result.location.latitude})`
     });
