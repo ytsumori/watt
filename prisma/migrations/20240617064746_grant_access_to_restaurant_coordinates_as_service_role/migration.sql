@@ -1,0 +1,1 @@
+GRANT ALL ON "public"."RestaurantCoordinates" TO "service_role";
