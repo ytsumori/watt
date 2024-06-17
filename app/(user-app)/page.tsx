@@ -1,5 +1,6 @@
 import HomePage from "@/app/(user-app)/_components/HomePage";
 import prisma from "@/lib/prisma/client";
+import { createServiceRoleClient } from "@/lib/supabase/createServiceRoleClient";
 
 export default async function Home() {
   const restaurants = await prisma.restaurant.findMany({
@@ -7,8 +8,7 @@ export default async function Home() {
       meals: { where: { isDiscarded: false }, orderBy: { price: "asc" } },
       googleMapPlaceInfo: { select: { latitude: true, longitude: true } }
     },
-    where: { meals: { some: { isDiscarded: false } } },
-    orderBy: { isOpen: "desc" }
+    where: { meals: { some: { isDiscarded: false } } }
   });
   return <HomePage restaurants={restaurants} />;
 }
