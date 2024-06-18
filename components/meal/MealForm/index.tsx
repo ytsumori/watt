@@ -207,7 +207,6 @@ export function MealForm({ restaurantId, editingMeal, onSubmit }: Props) {
                               <NumberInput
                                 allowMouseWheel={false}
                                 name={optionFields.extraPrice.name}
-                                min={0}
                                 defaultValue={optionFields.extraPrice.initialValue}
                               >
                                 <NumberInputField />

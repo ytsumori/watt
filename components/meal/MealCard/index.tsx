@@ -35,7 +35,7 @@ export function MealCard({ meal, button }: Props) {
           <VStack alignItems="start">
             <Heading size="md">{meal.title}</Heading>
             <Box>
-              <Text fontSize="sm">金額：¥{meal.price.toLocaleString("ja-JP")}</Text>
+              <Text fontSize="sm">金額：{meal.price.toLocaleString("ja-JP")}円</Text>
             </Box>
             <Text fontSize="xs" whiteSpace="pre-wrap">
               {meal.description}
@@ -75,9 +75,12 @@ export function MealCard({ meal, button }: Props) {
                               <ListItem key={option.id}>
                                 <Flex justifyContent="space-between" fontSize="xs">
                                   <Text as="div">{option.title}</Text>
-                                  <Text as="div" align="end">
-                                    +¥{option.extraPrice.toLocaleString("ja-JP")}
-                                  </Text>
+                                  {option.extraPrice !== 0 && (
+                                    <Text as="div" align="end">
+                                      {option.extraPrice > 0 && "+"}
+                                      {option.extraPrice.toLocaleString("ja-JP")}円
+                                    </Text>
+                                  )}
                                 </Flex>
                               </ListItem>
                             ))}
