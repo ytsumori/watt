@@ -1,0 +1,1 @@
+GRANT ALL ON "public"."Restaurant" TO "service_role";
