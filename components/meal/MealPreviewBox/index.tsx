@@ -26,24 +26,22 @@ export function MealPreviewBox({ meal, href, children, isLabelHidden = false, ..
       <MealPreviewImage src={meal.imagePath} alt={`meal-${meal.id}`} />
       {!isLabelHidden && (
         <>
-          <Box position="absolute" top={0} left={0} m={2} borderRadius={4} backgroundColor="blackAlpha.700" px={2}>
-            <Text color="white" noOfLines={1} fontSize="xs">
-              {meal.title}
-            </Text>
-          </Box>
-          <Box position="absolute" bottom={0} right={0} m={2} textAlign="center">
-            <Text
-              borderRadius={4}
-              backgroundColor="blackAlpha.700"
-              as="span"
-              color="white"
-              fontSize="xs"
-              px={2}
-              textAlign="center"
-              fontWeight="bold"
-            >
-              ¥{meal.price.toLocaleString("ja-JP")}
-            </Text>
+          <Box
+            position="absolute"
+            bottom={0}
+            left={0}
+            p={2}
+            textAlign="start"
+            backgroundColor="blackAlpha.700"
+            color="white"
+            fontSize="xs"
+            lineHeight="12px"
+            fontWeight="bold"
+            w="full"
+            borderBottomRadius={8}
+          >
+            <Text noOfLines={1}>{meal.title}</Text>
+            <Text>¥{meal.price.toLocaleString("ja-JP")}</Text>
           </Box>
         </>
       )}

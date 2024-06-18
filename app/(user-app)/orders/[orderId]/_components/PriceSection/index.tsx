@@ -39,17 +39,20 @@ export function PriceSection({ order }: Props) {
               {orderMeal.meal.title} × {orderMeal.quantity}
             </Text>
             <Spacer />
-            <Text fontWeight="bold">¥{orderMeal.meal.price.toLocaleString("ja-JP")}</Text>
+            <Text fontWeight="bold">{orderMeal.meal.price.toLocaleString("ja-JP")} 円</Text>
           </Flex>
           {orderMeal.options.map((option) => (
             <Flex w="full" key={option.id}>
               <Text>
                 ・{option.mealItemOption.mealItem.title} {option.mealItemOption.title}
               </Text>
-              {option.mealItemOption.extraPrice > 0 && (
+              {option.mealItemOption.extraPrice !== 0 && (
                 <>
                   <Spacer />
-                  <Text>+¥{option.mealItemOption.extraPrice.toLocaleString("ja-JP")}</Text>
+                  <Text>
+                    {option.mealItemOption.extraPrice > 0 && "+"}
+                    {option.mealItemOption.extraPrice.toLocaleString("ja-JP")}円
+                  </Text>
                 </>
               )}
             </Flex>
@@ -58,7 +61,7 @@ export function PriceSection({ order }: Props) {
       ))}
       <Divider />
       <Heading size="sm" alignSelf="self-end">
-        合計 ¥{getOrderTotalPrice(order).toLocaleString("ja-JP")}
+        合計 {getOrderTotalPrice(order).toLocaleString("ja-JP")}円
       </Heading>
     </VStack>
   );

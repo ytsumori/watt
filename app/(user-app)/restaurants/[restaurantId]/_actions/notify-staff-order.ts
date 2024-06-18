@@ -204,7 +204,7 @@ export async function notifyStaffOrder({ orderId }: { orderId: string }) {
                                   },
                                   {
                                     type: "text",
-                                    text: `¥${mealOrder.meal.price.toLocaleString("ja-JP")}`,
+                                    text: `${mealOrder.meal.price.toLocaleString("ja-JP")}円`,
                                     size: "sm",
                                     color: "#111111",
                                     align: "end"
@@ -226,7 +226,7 @@ export async function notifyStaffOrder({ orderId }: { orderId: string }) {
                                     },
                                     {
                                       type: "text",
-                                      text: `+¥${option.mealItemOption.extraPrice.toLocaleString("ja-JP")}`,
+                                      text: `${option.mealItemOption.extraPrice >= 0 ? "+" : ""}${option.mealItemOption.extraPrice.toLocaleString("ja-JP")}円`,
                                       size: "sm",
                                       color: "#111111",
                                       align: "end"
@@ -264,7 +264,7 @@ export async function notifyStaffOrder({ orderId }: { orderId: string }) {
                               },
                               {
                                 type: "text",
-                                text: `¥${getOrderTotalPrice(order).toLocaleString("ja-JP")}`,
+                                text: `${getOrderTotalPrice(order).toLocaleString("ja-JP")}円`,
                                 size: "sm",
                                 color: "#111111",
                                 align: "end",

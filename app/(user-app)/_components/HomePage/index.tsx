@@ -80,7 +80,7 @@ export default function HomePage({ restaurants }: { restaurants: Restaurant[] })
           onRestaurantSelect={handleRestaurantSelect}
         />
       </Box>
-      <Box h="300px" overflowY="auto" pb={4} className="hidden-scrollbar" backgroundColor="blackAlpha.100">
+      <Box minH="280px" h="50%" overflowY="auto" pb={4} className="hidden-scrollbar" backgroundColor="blackAlpha.100">
         {nearbyRestaurants.map((restaurant, index) => (
           <Box
             key={restaurant.id}
@@ -107,7 +107,7 @@ export default function HomePage({ restaurants }: { restaurants: Restaurant[] })
                 ))}
               </HStack>
               <NextLink href={`/restaurants/${restaurant.id}`}>
-                <VStack px={4} alignItems="start" pt={4}>
+                <VStack px={4} alignItems="start" pt={3} spacing={1}>
                   <Heading size="sm" color={restaurant.isOpen ? "black" : "gray"}>
                     {restaurant.name}
                   </Heading>

@@ -54,10 +54,11 @@ export function OrdersPage({ orders }: Props) {
               </Flex>
               {order.payment && (
                 <Text fontSize="small">
-                  合計 ¥
+                  合計
                   <Text fontSize="medium" as="b">
                     {order.payment.totalAmount.toLocaleString("ja-JP")}
                   </Text>
+                  円
                 </Text>
               )}
               <Badge position="absolute" top={0} right={0} m={2} colorScheme={getBadgeColor(status)}>

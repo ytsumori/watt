@@ -48,7 +48,7 @@ export function PriceSection({
           <Text as="span" mr="2">
             合計金額
           </Text>
-          <Text as="span">¥{(firstMealPrice + secondMealPrice).toLocaleString("ja-JP")}</Text>
+          <Text as="span">{(firstMealPrice + secondMealPrice).toLocaleString("ja-JP")}円</Text>
         </Text>
       </Flex>
     </>
