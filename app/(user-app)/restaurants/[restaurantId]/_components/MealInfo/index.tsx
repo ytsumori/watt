@@ -15,7 +15,7 @@ export function MealInfo({ meal, selectedOptions, onOptionChange }: Props) {
     <VStack w="full" alignItems="start" spacing={2}>
       <Box w="full">
         <Heading size="md">{meal.title}</Heading>
-        <Heading size="md">¥{meal.price.toLocaleString("ja-JP")}</Heading>
+        <Heading size="md">{meal.price.toLocaleString("ja-JP")}円</Heading>
         <Text fontSize="sm" whiteSpace="pre-wrap" mt={2}>
           {meal.description}
         </Text>

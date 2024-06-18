@@ -49,7 +49,8 @@ export function MealCard({ meal, button }: Props) {
                   <AccordionButton p={1}>
                     <Text as="span" flex="1" textAlign="left" fontSize="xs">
                       <b>{item.title}</b>
-                      <br />¥{item.price.toLocaleString("ja-JP")}
+                      <br />
+                      {item.price.toLocaleString("ja-JP")}円
                     </Text>
                     {(item.description || item.options.length > 0) && <AccordionIcon />}
                   </AccordionButton>

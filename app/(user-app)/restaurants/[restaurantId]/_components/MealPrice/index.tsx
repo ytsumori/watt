@@ -33,12 +33,7 @@ export function MealPrice({ meal, selectedOptions, titlePrefix }: Props) {
                 {selectedOption && ` (${selectedOption.title})`}
               </Text>
               <Spacer />
-              <Text>
-                ¥{item.price.toLocaleString("ja-JP")}
-                {selectedOption &&
-                  selectedOption.extraPrice > 0 &&
-                  ` + ¥${selectedOption.extraPrice.toLocaleString("ja-JP")}`}
-              </Text>
+              <Text>{(item.price + (selectedOption?.extraPrice ?? 0)).toLocaleString("ja-JP")}円</Text>
             </Flex>
           );
         })}
@@ -51,7 +46,7 @@ export function MealPrice({ meal, selectedOptions, titlePrefix }: Props) {
               単品合計価格
             </Text>
             <Text as="span" textDecorationLine="line-through">
-              ¥{(meal.items.reduce((acc, item) => acc + item.price, 0) + totalExtraPrice).toLocaleString("ja-JP")}
+              {(meal.items.reduce((acc, item) => acc + item.price, 0) + totalExtraPrice).toLocaleString("ja-JP")}円
             </Text>
           </Text>
         </Flex>
@@ -63,7 +58,7 @@ export function MealPrice({ meal, selectedOptions, titlePrefix }: Props) {
               価格
             </Text>
           </HStack>
-          <Text as="span">¥{(meal.price + totalExtraPrice).toLocaleString("ja-JP")}</Text>
+          <Text as="span">{(meal.price + totalExtraPrice).toLocaleString("ja-JP")}円</Text>
         </Flex>
       </Box>
     </VStack>

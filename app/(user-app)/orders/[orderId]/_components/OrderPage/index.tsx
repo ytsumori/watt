@@ -265,7 +265,7 @@ export function OrderPage({ order }: Props) {
           {isPaymentCompleted && order.payment && (
             <VStack alignItems="start" w="full">
               <Heading size="md">Wattでの支払い代金</Heading>
-              <Heading size="sm">¥{order.payment.totalAmount.toLocaleString("ja-JP")}</Heading>
+              <Heading size="sm">{order.payment.totalAmount.toLocaleString("ja-JP")}円</Heading>
             </VStack>
           )}
           <Button variant="outline" size="md" colorScheme="gray" w="full" maxW="full" as={NextLink} href="/">

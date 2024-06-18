@@ -262,14 +262,13 @@ export function MealForm({ restaurantId, editingMeal, onSubmit }: Props) {
           <Text>円</Text>
         </HStack>
         <Text fontSize="sm" mt={1}>
-          単品合計金額(割引金額)：¥
-          {itemsFieldList.reduce((sum, item) => sum + Number(item.value?.price ?? 0), 0).toLocaleString("ja-JP")}
-          (¥
+          単品合計金額(割引金額)：
+          {itemsFieldList.reduce((sum, item) => sum + Number(item.value?.price ?? 0), 0).toLocaleString("ja-JP")}円 (
           {(
             itemsFieldList.reduce((sum, item) => sum + Number(item.value?.price ?? 0), 0) -
             Number(fields.price.value ?? 0)
           ).toLocaleString("ja-JP")}
-          )
+          円)
         </Text>
         <FormErrorMessage>{fields.price.errors?.join("、") ?? ""}</FormErrorMessage>
       </FormControl>

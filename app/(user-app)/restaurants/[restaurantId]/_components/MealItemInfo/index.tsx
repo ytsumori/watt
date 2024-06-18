@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, SimpleGrid, Text, useRadioGroup } from "@chakra-ui/react";
+import { Box, Flex, SimpleGrid, Text, useRadioGroup } from "@chakra-ui/react";
 import { MealWithItems } from "../../_types/MealWithItems";
 import { OptionRadioCard } from "../OptionRadioCard";
 
@@ -18,9 +18,12 @@ export function MealItemInfo({ mealItem, selectedOption, onOptionChange }: Props
   const group = getRootProps();
   return (
     <Box key={mealItem.id} w="full">
-      <Text fontSize="sm" as="b">
-        {mealItem.title}
-      </Text>
+      <Flex w="full" justifyContent="space-between">
+        <Text fontSize="sm" as="b">
+          {mealItem.title}
+        </Text>
+        <Text fontSize="xs">単品価格: {mealItem.price.toLocaleString("ja-JP")}円</Text>
+      </Flex>
       <Text whiteSpace="pre-wrap" fontSize="xs" color="blackAlpha.700">
         {mealItem.description}
       </Text>
@@ -39,9 +42,14 @@ export function MealItemInfo({ mealItem, selectedOption, onOptionChange }: Props
                   <Text fontSize="xs" color="blackAlpha.700">
                     {option.title}
                   </Text>
-                  <Text fontSize="xs" color="blackAlpha.500" ml={1}>
-                    +¥{option.extraPrice.toLocaleString("ja-JP")}
-                  </Text>
+                  {option.extraPrice !== 0 ? (
+                    <Text fontSize="xs" color="blackAlpha.500" ml={1}>
+                      {option.extraPrice > 0 && "+"}
+                      {option.extraPrice.toLocaleString("ja-JP")}円
+                    </Text>
+                  ) : (
+                    <Box h="18px" />
+                  )}
                 </OptionRadioCard>
               );
             })}
