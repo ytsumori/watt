@@ -7,7 +7,8 @@ export default async function Home() {
       meals: { where: { isDiscarded: false }, orderBy: { price: "asc" } },
       googleMapPlaceInfo: { select: { latitude: true, longitude: true } }
     },
-    where: { meals: { some: { isDiscarded: false } } }
+    where: { meals: { some: { isDiscarded: false } } },
+    orderBy: { isOpen: "desc" }
   });
   return <HomePage restaurants={restaurants} />;
 }
