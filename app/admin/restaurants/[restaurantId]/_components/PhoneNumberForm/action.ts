@@ -1,7 +1,7 @@
 "use server";
 
-import { formatPhoneNumber, isValidPhoneNumber } from "@/utils/phone-number";
 import prisma from "@/lib/prisma/client";
+import { formatPhoneNumber, isValidPhoneNumber } from "@/utils/phone-number";
 
 export async function updatePhoneNumber({ restaurantId, phoneNumber }: { restaurantId: string; phoneNumber: string }) {
   if (!isValidPhoneNumber(phoneNumber)) {
