@@ -18,7 +18,6 @@ import {
   VStack
 } from "@chakra-ui/react";
 import { format } from "date-fns";
-import { getOrderTotalPrice } from "@/lib/prisma/order-total-price";
 import { Fragment } from "react";
 import { MonthSelect } from "./MonthSelect";
 
@@ -47,6 +46,7 @@ export async function RestaurantOrdersSection({ restaurantId, month }: Props) {
 
   const totalOrders = await prisma.order.findMany({
     select: {
+      orderTotalPrice: true,
       meals: {
         select: {
           meal: { select: { price: true } },
@@ -61,7 +61,7 @@ export async function RestaurantOrdersSection({ restaurantId, month }: Props) {
       completedAt: { not: null }
     }
   });
-  const totalOrderAmount = totalOrders.reduce((total, order) => total + getOrderTotalPrice(order), 0);
+  const totalOrderAmount = totalOrders.reduce((total, order) => total + order.orderTotalPrice, 0);
 
   const monthlyOrders = await prisma.order.findMany({
     select: {
@@ -69,6 +69,7 @@ export async function RestaurantOrdersSection({ restaurantId, month }: Props) {
       orderNumber: true,
       peopleCount: true,
       completedAt: true,
+      orderTotalPrice: true,
       meals: {
         select: {
           id: true,
@@ -99,7 +100,7 @@ export async function RestaurantOrdersSection({ restaurantId, month }: Props) {
     currentDate.setMonth(currentDate.getMonth() + 1);
   }
 
-  const monthlyOrderAmount = monthlyOrders.reduce((total, order) => total + getOrderTotalPrice(order), 0);
+  const monthlyOrderAmount = monthlyOrders.reduce((total, order) => total + order.orderTotalPrice, 0);
 
   return (
     <VStack width="full" alignItems="baseline" spacing={6}>
@@ -172,7 +173,7 @@ export async function RestaurantOrdersSection({ restaurantId, month }: Props) {
                         </Fragment>
                       ))}
                     </Td>
-                    <Td>{getOrderTotalPrice(order).toLocaleString("ja-JP")}円</Td>
+                    <Td>{order.orderTotalPrice.toLocaleString("ja-JP")}円</Td>
                     <Td>{order.payment ? `${order.payment.totalAmount.toLocaleString("ja-JP")}円` : "-"}</Td>
                     <Td>{order.completedAt ? format(order.completedAt, "yyyy/MM/dd HH:mm") : ""}</Td>
                   </Tr>

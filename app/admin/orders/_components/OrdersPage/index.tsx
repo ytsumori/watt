@@ -1,6 +1,5 @@
 "use client";
 
-import { getOrderTotalPrice } from "@/lib/prisma/order-total-price";
 import { ArrowLeftIcon, ArrowRightIcon } from "@chakra-ui/icons";
 import {
   Box,
@@ -29,6 +28,7 @@ type Props = {
       orderNumber: true;
       peopleCount: true;
       completedAt: true;
+      orderTotalPrice: true;
       meals: {
         select: {
           id: true;
@@ -85,7 +85,7 @@ export function OrdersPage({ orders, page, maxPage }: Props) {
                       </Fragment>
                     ))}
                   </Td>
-                  <Td>{getOrderTotalPrice(order).toLocaleString("ja-JP")}円</Td>
+                  <Td>{order.orderTotalPrice.toLocaleString("ja-JP")}円</Td>
                   <Td>{order.payment ? `${order.payment.totalAmount.toLocaleString("ja-JP")}円` : "-"}</Td>
                   <Td>{order.completedAt && format(order.completedAt, "yyyy/MM/dd HH:mm")}</Td>
                 </Tr>

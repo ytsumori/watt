@@ -2,7 +2,6 @@
 
 import { multicastMessage } from "@/lib/line-messaging-api";
 import prisma from "@/lib/prisma/client";
-import { getOrderTotalPrice } from "@/lib/prisma/order-total-price";
 
 export async function notifyStaffOrder({ orderId }: { orderId: string }) {
   const order = await prisma.order.findUnique({
@@ -12,6 +11,7 @@ export async function notifyStaffOrder({ orderId }: { orderId: string }) {
     select: {
       orderNumber: true,
       peopleCount: true,
+      orderTotalPrice: true,
       meals: {
         select: {
           meal: {
@@ -264,7 +264,7 @@ export async function notifyStaffOrder({ orderId }: { orderId: string }) {
                               },
                               {
                                 type: "text",
-                                text: `${getOrderTotalPrice(order).toLocaleString("ja-JP")}円`,
+                                text: `${order.orderTotalPrice.toLocaleString("ja-JP")}円`,
                                 size: "sm",
                                 color: "#111111",
                                 align: "end",

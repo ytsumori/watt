@@ -17,6 +17,7 @@ export default async function Orders({ searchParams }: Props) {
       orderNumber: true,
       peopleCount: true,
       completedAt: true,
+      orderTotalPrice: true,
       meals: {
         select: {
           id: true,
