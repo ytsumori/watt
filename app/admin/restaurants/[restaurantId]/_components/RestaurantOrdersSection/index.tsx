@@ -95,7 +95,10 @@ export async function RestaurantOrdersSection({ restaurantId, month }: Props) {
   // create a list of months from the first order to the current month
   let monthsFromStart: string[] = [];
   let currentDate = firstOrder.completedAt;
-  while (currentDate < new Date()) {
+  const endOfThisMonth = new Date();
+  endOfThisMonth.setDate(1);
+  endOfThisMonth.setMonth(endOfThisMonth.getMonth() + 1);
+  while (currentDate < endOfThisMonth) {
     monthsFromStart.push(format(currentDate.toDateString(), "yyyy/MM"));
     currentDate.setMonth(currentDate.getMonth() + 1);
   }
