@@ -15,7 +15,7 @@ export function MonthSelect({ monthOptions }: Props) {
 
   return (
     <Select
-      value={searchParams.get("month") ?? format(new Date(), "yyyy-MM")}
+      value={searchParams.get("month") ?? format(new Date(), "yyyy/MM")}
       onChange={(event) => {
         const month = event.target.value;
         router.push(`${pathname}?month=${month}`, {
