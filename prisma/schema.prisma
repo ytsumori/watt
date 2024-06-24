@@ -119,12 +119,12 @@ model RestaurantGoogleMapPlaceInfo {
 }
 
 model RestaurantCoordinates {
-  id           String                               @id @default(cuid())
-  restaurantId String                               @unique
+  id           String                                 @id @default(cuid())
+  restaurantId String                                 @unique
   point        Unsupported("geography(Point, 4326)")?
-  createdAt    DateTime                             @default(now())
-  updatedAt    DateTime                             @default(now())
-  Restaurant   Restaurant                           @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  createdAt    DateTime                               @default(now())
+  updatedAt    DateTime                               @default(now())
+  Restaurant   Restaurant                             @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
 }
 
 model RestaurantGoogleMapOpeningHour {
@@ -201,6 +201,7 @@ model Order {
   userId                 String
   restaurantId           String
   peopleCount            Int
+  orderTotalPrice        Int
   completedAt            DateTime?
   canceledAt             DateTime?
   approvedByRestaurantAt DateTime?

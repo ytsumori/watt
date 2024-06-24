@@ -3,7 +3,6 @@
 import { getMyId } from "@/actions/me";
 import stripe from "@/lib/stripe";
 import prisma from "@/lib/prisma/client";
-import { getOrderTotalPrice } from "@/lib/prisma/order-total-price";
 
 export async function createPaymentIntent({
   orderId,
@@ -64,7 +63,7 @@ export async function createPaymentIntent({
     data: {
       orderId,
       stripePaymentId: paymentIntent.id,
-      additionalAmount: amount - getOrderTotalPrice(order),
+      additionalAmount: amount - order.orderTotalPrice,
       totalAmount: amount,
       restaurantProfitPrice: amount
     }

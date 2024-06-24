@@ -1,6 +1,5 @@
 "use client";
 
-import { getOrderTotalPrice } from "@/lib/prisma/order-total-price";
 import { Box, Divider, Flex, Heading, Spacer, Text, VStack } from "@chakra-ui/react";
 import { Prisma } from "@prisma/client";
 
@@ -61,7 +60,7 @@ export function PriceSection({ order }: Props) {
       ))}
       <Divider />
       <Heading size="sm" alignSelf="self-end">
-        合計 {getOrderTotalPrice(order).toLocaleString("ja-JP")}円
+        合計 {order.orderTotalPrice.toLocaleString("ja-JP")}円
       </Heading>
     </VStack>
   );

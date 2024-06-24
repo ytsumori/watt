@@ -19,6 +19,10 @@
     {
       "path": "/api/cron/update-restaurant-coordinates",
       "schedule": "15 21 1 * *"
+    },
+    {
+      "path": "/api/cron/verify-order-price",
+      "schedule": "0 15 * * *"
     }
   ],
   "buildCommand": "sh scripts/build.sh"
