@@ -709,35 +709,6 @@ export default function Term() {
           パートナーは、本契約上の地位に基づく一切の権利義務を、当社の事前の書面による承諾なく、第三者に譲渡もしくは貸与し、又は担保に供してはならないものとします。
         </span>
       </p>
-      <h2 className="c5" id="h.hijdp2a1wzsf">
-        <span className="c3">第26条（個人情報の取扱いに関する特約との適用関係）</span>
-      </h2>
-      <p className="c6">
-        <span>個人情報に関する取扱いについては、本規約のほか、</span>
-        <span>「</span>
-        <span>
-          <a
-            className="c16"
-            href="https://www.google.com/url?q=https://cdn.p.recruit.co.jp/terms/clu-t-1002/index.html&sa=D&source=editors&ust=1719218665193179&usg=AOvVaw3MPqQUOHyWfUj-JCsgly--"
-          >
-            個人情報の取扱いに関する特約
-          </a>
-        </span>
-        <span>（要リンク）」</span>
-        <sup>
-          <a href="#cmnt1" id="cmnt_ref1">
-            [a]
-          </a>
-        </sup>
-        <sup>
-          <a href="#cmnt2" id="cmnt_ref2">
-            [b]
-          </a>
-        </sup>
-        <span className="c2">
-          が適用されます。本規約と「個人情報の取扱いに関する特約」の定めに矛盾または抵触が存在する場合、「個人情報の取扱いに関する特約」が本規約に優先するものとします
-        </span>
-      </p>
       <h2 className="c5 c7" id="h.uc6dxu7m0v0b">
         <span className="c3">第27条 （調査協力等）</span>
       </h2>
