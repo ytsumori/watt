@@ -18,7 +18,6 @@ export default async function Order({ params }: { params: Params }) {
   const order = await prisma.order.findUnique({
     where: { id: params.orderId },
     include: {
-      payment: true,
       restaurant: { include: { googleMapPlaceInfo: { select: { url: true } } } },
       meals: {
         include: {

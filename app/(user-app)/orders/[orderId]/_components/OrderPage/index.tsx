@@ -23,7 +23,6 @@ import { cancelOrder } from "../../_actions/cancel-order";
 import { completeOrder } from "../../_actions/complete-order";
 import { CompleteConfirmModal } from "../PaymentConfirmModal";
 import { CancelConfirmModal } from "../CancelConfirmModal";
-import NextImage from "next/image";
 import { getOrderStatus } from "@/lib/prisma/order-status";
 import { PriceSection } from "../PriceSection";
 
@@ -48,7 +47,6 @@ type Props = {
           };
         };
       };
-      payment: true;
     };
   }>;
 };
@@ -220,7 +218,6 @@ export function OrderPage({ order }: Props) {
         </VStack>
       );
     case "COMPLETE":
-      const isPaymentCompleted = order.payment !== null && order.payment.completedAt !== null;
       return (
         <VStack alignItems="start" p={4} spacing={4}>
           <Heading>注文完了</Heading>
@@ -240,34 +237,14 @@ export function OrderPage({ order }: Props) {
           >
             <AlertIcon />
             <AlertTitle>注文が完了しました</AlertTitle>
-            <AlertDescription>
-              {isPaymentCompleted ? "ご利用ありがとうございました" : "お食事をお楽しみください"}
-            </AlertDescription>
+            <AlertDescription>お食事をお楽しみください</AlertDescription>
           </Alert>
-          {!isPaymentCompleted && (
-            <Button
-              as={NextLink}
-              size="lg"
-              w="full"
-              maxW="full"
-              href={`/orders/${order.id}/payments/new`}
-              isDisabled={isConfirming || isCancelling}
-            >
-              <NextImage src="/watt-logo-secondary.png" alt="Watt" width={67} height={36} /> で会計する
-            </Button>
-          )}
           <Heading>注文情報</Heading>
           <VStack alignItems="start">
             <Heading size="md">店舗</Heading>
             <Heading size="sm">{order.restaurant.name}</Heading>
           </VStack>
           <PriceSection order={order} />
-          {isPaymentCompleted && order.payment && (
-            <VStack alignItems="start" w="full">
-              <Heading size="md">Wattでの支払い代金</Heading>
-              <Heading size="sm">{order.payment.totalAmount.toLocaleString("ja-JP")}円</Heading>
-            </VStack>
-          )}
           <Button variant="outline" size="md" colorScheme="gray" w="full" maxW="full" as={NextLink} href="/">
             ホーム画面に戻る
           </Button>

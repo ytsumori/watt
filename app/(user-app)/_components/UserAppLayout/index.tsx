@@ -72,9 +72,6 @@ export default function UserAppLayout({ children, user }: Props) {
                   <MenuItem as={NextLink} href="/orders">
                     注文履歴
                   </MenuItem>
-                  <MenuItem as={NextLink} href="/payment-methods">
-                    支払い方法
-                  </MenuItem>
                   <MenuItem as={NextLink} href="/profile">
                     プロフィール
                   </MenuItem>
