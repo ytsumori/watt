@@ -38,11 +38,6 @@ export function OrdersPage() {
             options: { select: { mealItemOption: { select: { title: true } } } };
           };
         };
-        payment: {
-          select: {
-            totalAmount: true;
-          };
-        };
       };
     }>[]
   >([]);
@@ -100,20 +95,17 @@ export function OrdersPage() {
         <>
           <HStack spacing={2} alignItems="baseline" mt={4}>
             <Stat>
-              <StatLabel w="max-content">注文額</StatLabel>
+              <StatLabel w="max-content">件数</StatLabel>
+              <StatNumber w="max-content">{orders.length.toLocaleString("ja-JP")}件</StatNumber>
+            </Stat>
+            <Stat>
+              <StatLabel w="max-content">合計額</StatLabel>
               <StatNumber w="max-content">{ordersPriceSum.toLocaleString("ja-JP")}円</StatNumber>
             </Stat>
             <Stat>
               <StatLabel w="max-content">送客手数料(目安)</StatLabel>
               <StatNumber w="max-content">{Math.floor(ordersPriceSum * 0.05).toLocaleString("ja-JP")}円</StatNumber>
               <StatHelpText w="max-content">注文額x5%</StatHelpText>
-            </Stat>
-            <Stat>
-              <StatLabel w="max-content">Watt決済額</StatLabel>
-              <StatNumber w="max-content">
-                {orders.reduce((total, order) => total + (order.payment?.totalAmount ?? 0), 0).toLocaleString("ja-JP")}
-                円
-              </StatNumber>
             </Stat>
           </HStack>
           <VStack divider={<Divider />} alignItems="start" spacing={1} w="full" mt={4}>
@@ -144,9 +136,6 @@ export function OrdersPage() {
                 </Text>
                 <Text fontSize="xs">
                   注文金額: <b>{order.orderTotalPrice.toLocaleString("ja-JP")}円</b>
-                </Text>
-                <Text fontSize="xs">
-                  Watt決済額: {order.payment ? <b>{order.payment.totalAmount.toLocaleString("ja-JP")}円</b> : "-"}
                 </Text>
               </VStack>
             ))}

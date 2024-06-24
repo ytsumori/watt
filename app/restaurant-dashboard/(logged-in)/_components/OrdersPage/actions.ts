@@ -21,11 +21,6 @@ export async function getOrders(restaurantId: string, month: string) {
           meal: { select: { title: true } },
           options: { select: { mealItemOption: { select: { title: true } } } }
         }
-      },
-      payment: {
-        select: {
-          totalAmount: true
-        }
       }
     },
     where: {
