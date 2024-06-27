@@ -25,6 +25,7 @@ import { CompleteConfirmModal } from "../PaymentConfirmModal";
 import { CancelConfirmModal } from "../CancelConfirmModal";
 import { getOrderStatus } from "@/lib/prisma/order-status";
 import { PriceSection } from "../PriceSection";
+import { format } from "date-fns";
 
 type Props = {
   order: Prisma.OrderGetPayload<{
@@ -84,6 +85,9 @@ export function OrderPage({ order }: Props) {
       });
   };
 
+  const arrivalDeadline = order.createdAt;
+  arrivalDeadline.setMinutes(arrivalDeadline.getMinutes() + 30);
+
   switch (getOrderStatus(order)) {
     case "IN PROGRESS":
       return (
@@ -100,7 +104,8 @@ export function OrderPage({ order }: Props) {
                 borderRadius={4}
               >
                 <AlertIcon />
-                <AlertDescription>
+                <AlertTitle mb={1}>{format(arrivalDeadline, "HH:mm")}までにお店に向かってください</AlertTitle>
+                <AlertDescription fontSize="sm">
                   入店後お店の人に「Wattでの注文で」と伝え、こちらの画面を見せて注文を確定してください
                 </AlertDescription>
               </Alert>
