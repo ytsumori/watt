@@ -19,6 +19,8 @@ const createCloudSchedulerJob = async () => {
   const parent = client.locationPath(process.env.GCP_PROJECT_ID, process.env.CLOUD_SCHEDULER_LOCATION);
   const existJobs = await client.listJobs({ parent });
 
+  // すでにジョブが存在する場合は更新、存在しない場合は作成
+  // ジョブの名前を変えた場合のみ、ない扱いになり新規作成になるため手動で古いジョブを削除する必要がある
   await Promise.all(
     jobs.map(async (job) =>
       existJobs[0].some((existJob) => job.name === existJob.name)
