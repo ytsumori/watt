@@ -85,7 +85,7 @@ export function OrderPage({ order }: Props) {
       });
   };
 
-  const arrivalDeadline = order.createdAt;
+  const arrivalDeadline = new Date(order.createdAt);
   arrivalDeadline.setMinutes(arrivalDeadline.getMinutes() + 30);
 
   switch (getOrderStatus(order)) {

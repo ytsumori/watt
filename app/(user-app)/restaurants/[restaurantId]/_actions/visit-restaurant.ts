@@ -40,7 +40,8 @@ export async function visitRestaurant({
     peopleCount
   });
 
-  const taskId = await createHttpTask({ name: "cancel-order", delaySeconds: 60 * 30, payload: { orderId: order.id } });
+  // 少し猶予を持たせるため、33分後にキャンセルタスクを作成
+  const taskId = await createHttpTask({ name: "cancel-order", delaySeconds: 60 * 33, payload: { orderId: order.id } });
 
   if (taskId) {
     await prisma.orderAutomaticCancellation.create({ data: { orderId: order.id, googleCloudTaskId: taskId } });
