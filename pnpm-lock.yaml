@@ -32,6 +32,9 @@ importers:
       '@emotion/styled':
         specifier: ^11.11.5
         version: 11.11.5(@emotion/react@11.11.4(@types/react@18.2.48)(react@18.2.0))(@types/react@18.2.48)(react@18.2.0)
+      '@google-cloud/scheduler':
+        specifier: ^4.3.0
+        version: 4.3.0
       '@google-cloud/tasks':
         specifier: 4.0.1
         version: 4.0.1
@@ -174,6 +177,9 @@ importers:
       '@vitejs/plugin-react':
         specifier: ^4.3.1
         version: 4.3.1(vite@5.3.1(@types/node@20.11.13))
+      dotenv:
+        specifier: ^16.4.5
+        version: 16.4.5
       dotenv-cli:
         specifier: ^7.4.2
         version: 7.4.2
@@ -1016,6 +1022,10 @@ packages:
   '@eslint/js@8.56.0':
     resolution: {integrity: sha512-gMsVel9D7f2HLkBma9VbtzZRehRogVRfbr++f06nL2vnCGCNlzOD+/MUov/F4p8myyAHspEhVobgjpX64q5m6A==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
+
+  '@google-cloud/scheduler@4.3.0':
+    resolution: {integrity: sha512-3VeVu/YVkJ0NIC0zDRucmY6o4wm7ii5TGHJLKtJUz4osm8f143uJ/FDSJz1vXMAg6GseZ/yzLvBQ5r/Sb+U2Ow==}
+    engines: {node: '>=14.0.0'}
 
   '@google-cloud/tasks@4.0.1':
     resolution: {integrity: sha512-cluHSN52WgaNoDPVguxCeXZq4rTBHqJntXFB9aI9zG8n8MJukf6V0H7yoAXpKXQxyeXv4LRy108kAgLPgXP3yA==}
@@ -5357,6 +5367,13 @@ snapshots:
 
   '@eslint/js@8.56.0': {}
 
+  '@google-cloud/scheduler@4.3.0':
+    dependencies:
+      google-gax: 4.3.6
+    transitivePeerDependencies:
+      - encoding
+      - supports-color
+
   '@google-cloud/tasks@4.0.1':
     dependencies:
       google-gax: 4.3.6
@@ -8356,7 +8373,7 @@ snapshots:
 
   proto3-json-serializer@2.0.2:
     dependencies:
-      protobufjs: 7.3.0
+      protobufjs: 7.3.2
 
   protobufjs@7.3.0:
     dependencies:
