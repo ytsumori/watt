@@ -1,5 +1,6 @@
 import "dotenv/config";
 import scheduler from "@google-cloud/scheduler";
+import { protos } from "@google-cloud/scheduler";
 import { jobs } from "./jobs";
 import { logger } from "@/utils/logger";
 
@@ -33,17 +34,29 @@ const createCloudSchedulerJob = async () => {
       .filter((existJob) => !jobNames.includes(existJob.name))
       .map((job) => client.deleteJob({ name: job.name }));
 
-  Promise.all([...updateJob(), ...createJob(), ...deleteJob()]);
+  return await Promise.allSettled([...updateJob(), ...createJob(), ...deleteJob()]);
 };
 
 (async () => {
-  try {
-    await createCloudSchedulerJob();
-  } catch (error) {
-    logger({
-      severity: "ERROR",
-      message: "CLOUD SCHEDULERのジョブ作成に失敗しました",
-      payload: { error: JSON.stringify(error) }
-    });
-  }
+  const results = await createCloudSchedulerJob();
+  results?.forEach((result) => {
+    if (result.status === "fulfilled") {
+      const value = result.value[0] as protos.google.cloud.scheduler.v1.IJob;
+      logger({
+        severity: "INFO",
+        message: "Cloud Schedulerの(更新/作成/削除)に成功しました",
+        payload: { name: value.name, desciption: value.description }
+      });
+    } else {
+      logger({
+        severity: "ERROR",
+        message: "Cloud Schedulerのジョブの(更新/作成/削除)に失敗しました",
+        payload: {
+          details: result.reason["details"],
+          reason: result.reason["reason"],
+          errorInfoMetadata: result.reason["errorInfoMetadata"]
+        }
+      });
+    }
+  });
 })();
