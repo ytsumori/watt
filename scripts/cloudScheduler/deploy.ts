@@ -8,7 +8,7 @@ import { logger } from "@/utils/logger";
   const client = new scheduler.CloudSchedulerClient({
     credentials: {
       client_email: process.env.CLOUD_SCHEDULER_AUTH_EMAIL,
-      private_key: process.env.CLOUD_SCHEDULER_AUTH_SECRET
+      private_key: process.env.CLOUD_SCHEDULER_AUTH_SECRET?.replace(/\\n/gm, "\n")
     }
   });
 
