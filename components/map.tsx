@@ -56,6 +56,7 @@ export default function Map({ restaurants, activeRestaurantIds, availableRestaur
   return (
     <Wrapper apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY ?? ""} render={render} libraries={["places"]}>
       <MapComponent
+        mapId={process.env.NEXT_PUBLIC_MAP_ID}
         center={center}
         onIdle={handleIdle}
         zoom={zoom}
