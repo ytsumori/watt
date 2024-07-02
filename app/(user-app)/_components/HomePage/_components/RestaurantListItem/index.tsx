@@ -1,3 +1,5 @@
+"use client";
+
 import { MealPreviewBox } from "@/components/meal/MealPreviewBox";
 import { HStack, Heading, Badge, VStack, Text, Icon, Box } from "@chakra-ui/react";
 import NextLink from "next/link";
