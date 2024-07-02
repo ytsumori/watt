@@ -5,28 +5,46 @@ import { RestaurantWithDistance } from "../../_types/RestaurantWithDistance";
 import { useMemo } from "react";
 import { BusinessHourStatus } from "./_types/BusinessHourStatus";
 import { FaMapMarkerAlt } from "react-icons/fa";
+import { dayOfWeekToNumber } from "@/utils/day-of-week";
+import { DayOfWeek } from "@prisma/client";
 
 type Props = {
   restaurant: RestaurantWithDistance;
 };
-
 export function RestaurantListItem({ restaurant }: Props) {
   const currentOpeningHour = useMemo(() => {
+    const now = new Date();
+    const currentDay = now.getDay();
+    const yesterdayDay = currentDay === 0 ? 6 : currentDay - 1;
+    const tomorrowDay = currentDay === 6 ? 0 : currentDay + 1;
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
     return restaurant.openingHours.find((openingHour) => {
-      const now = new Date();
-      const currentHour = now.getHours();
-      const currentMinute = now.getMinutes();
-
-      if (openingHour.openHour < currentHour && currentHour < openingHour.closeHour) {
-        return true;
-      }
-
-      if (openingHour.openHour === currentHour && openingHour.openMinute <= currentMinute) {
-        return true;
-      }
-
-      if (openingHour.closeHour === currentHour && currentMinute <= openingHour.closeMinute) {
-        return true;
+      if (
+        dayOfWeekToNumber(openingHour.openDayOfWeek) === yesterdayDay &&
+        dayOfWeekToNumber(openingHour.closeDayOfWeek) === currentDay
+      ) {
+        return (
+          currentHour < openingHour.closeHour ||
+          (openingHour.closeHour === currentHour && currentMinute <= openingHour.closeMinute)
+        );
+      } else if (
+        dayOfWeekToNumber(openingHour.openDayOfWeek) === currentDay &&
+        dayOfWeekToNumber(openingHour.closeDayOfWeek) === tomorrowDay
+      ) {
+        return (
+          openingHour.openHour < currentHour ||
+          (openingHour.openHour === currentHour && openingHour.openMinute <= currentMinute)
+        );
+      } else if (
+        dayOfWeekToNumber(openingHour.openDayOfWeek) === currentDay &&
+        dayOfWeekToNumber(openingHour.closeDayOfWeek) === currentDay
+      ) {
+        return (
+          (openingHour.openHour < currentHour && currentHour < openingHour.closeHour) ||
+          (openingHour.openHour === currentHour && openingHour.openMinute <= currentMinute) ||
+          (openingHour.closeHour === currentHour && currentMinute <= openingHour.closeMinute)
+        );
       }
 
       return false;
@@ -34,36 +52,60 @@ export function RestaurantListItem({ restaurant }: Props) {
   }, [restaurant.openingHours]);
 
   const closingTime = useMemo(() => {
-    return currentOpeningHour
-      ? { hour: currentOpeningHour.closeHour, minute: currentOpeningHour.closeMinute }
-      : undefined;
+    if (!currentOpeningHour) return undefined;
+
+    const now = new Date();
+    const currentDay = now.getDay();
+    const tomorrowDay = currentDay === 6 ? 0 : currentDay + 1;
+
+    if (dayOfWeekToNumber(currentOpeningHour.closeDayOfWeek) === tomorrowDay) {
+      return { hour: currentOpeningHour.closeHour + 24, minute: currentOpeningHour.closeMinute };
+    }
+    return {
+      hour:
+        dayOfWeekToNumber(currentOpeningHour.closeDayOfWeek) === tomorrowDay
+          ? currentOpeningHour.closeHour + 24
+          : currentOpeningHour.closeHour,
+      minute: currentOpeningHour.closeMinute
+    };
   }, [currentOpeningHour]);
 
   const nextOpeningTime = useMemo(() => {
-    const nextOpeningHour = restaurant.openingHours.find((openingHour) => {
+    const nextOpeningHour = restaurant.openingHours.reduce<
+      | {
+          openHour: number;
+          openMinute: number;
+          openDayOfWeek: DayOfWeek;
+          closeHour: number;
+          closeMinute: number;
+          closeDayOfWeek: DayOfWeek;
+        }
+      | undefined
+    >((accumulator, currentValue) => {
       const now = new Date();
+      const currentDay = now.getDay();
       const currentHour = now.getHours();
       const currentMinute = now.getMinutes();
 
-      if (openingHour.openHour < currentHour && currentHour < openingHour.closeHour) {
-        return false;
+      if (dayOfWeekToNumber(currentValue.openDayOfWeek) === currentDay) {
+        if (
+          currentValue.openHour > currentHour ||
+          (currentValue.openHour === currentHour && currentValue.openMinute > currentMinute)
+        ) {
+          if (!accumulator || accumulator.openHour > currentValue.openHour) {
+            return currentValue;
+          }
+        }
       }
-
-      if (openingHour.openHour === currentHour && openingHour.openMinute <= currentMinute) {
-        return false;
-      }
-
-      if (openingHour.closeHour === currentHour && currentMinute <= openingHour.closeMinute) {
-        return false;
-      }
-
-      return true;
-    });
-
+    }, undefined);
     return nextOpeningHour ? { hour: nextOpeningHour.openHour, minute: nextOpeningHour.openMinute } : undefined;
   }, [restaurant.openingHours]);
 
   const businessHourStatus = useMemo(() => {
+    if (restaurant.openingHours.length === 0) {
+      return "unknown";
+    }
+
     const now = new Date();
     const currentHour = now.getHours();
     const currentMinute = now.getMinutes();
@@ -89,7 +131,7 @@ export function RestaurantListItem({ restaurant }: Props) {
       }
       return "closed";
     }
-  }, [closingTime, currentOpeningHour, nextOpeningTime]);
+  }, [closingTime, currentOpeningHour, nextOpeningTime, restaurant.openingHours.length]);
 
   return (
     <>

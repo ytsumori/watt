@@ -12,8 +12,20 @@ export default async function Home() {
       },
       googleMapPlaceInfo: { select: { latitude: true, longitude: true } },
       openingHours: {
-        where: { openDayOfWeek: dayNumberToDayOfWeek(new Date().getDay()) },
-        select: { openHour: true, openMinute: true, closeHour: true, closeMinute: true }
+        where: {
+          OR: [
+            { openDayOfWeek: dayNumberToDayOfWeek(new Date().getDay()) },
+            { closeDayOfWeek: dayNumberToDayOfWeek(new Date().getDay()) }
+          ]
+        },
+        select: {
+          openHour: true,
+          openMinute: true,
+          openDayOfWeek: true,
+          closeHour: true,
+          closeMinute: true,
+          closeDayOfWeek: true
+        }
       }
     },
     where: { meals: { some: { isDiscarded: false } } },
