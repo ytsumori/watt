@@ -4,18 +4,35 @@ import { formatDistance } from "@/app/(user-app)/_util/formatDistance";
 import { createServiceRoleClient } from "@/lib/supabase/createServiceRoleClient";
 import { logger } from "@/utils/logger";
 import { Prisma } from "@prisma/client";
+import { RestaurantWithDistance } from "../../_types/RestaurantWithDistance";
 
 type Restaurant = Prisma.RestaurantGetPayload<{
-  include: { meals: true; googleMapPlaceInfo: { select: { latitude: true; longitude: true } } };
+  include: {
+    meals: {
+      select: {
+        id: true;
+        title: true;
+        price: true;
+        imagePath: true;
+      };
+    };
+    googleMapPlaceInfo: { select: { latitude: true; longitude: true } };
+    openingHours: {
+      select: {
+        openHour: true;
+        openMinute: true;
+        openDayOfWeek: true;
+        closeHour: true;
+        closeMinute: true;
+        closeDayOfWeek: true;
+      };
+    };
+  };
 }>;
 
 type Args = { lat: number; long: number; restaurants: Restaurant[] };
 
-export const findNearbyRestaurants = async ({
-  lat,
-  long,
-  restaurants
-}: Args): Promise<(Restaurant & { distance: string })[]> => {
+export const findNearbyRestaurants = async ({ lat, long, restaurants }: Args): Promise<RestaurantWithDistance[]> => {
   const supabase = createServiceRoleClient();
   const { data: nearbyRestaurants, error } = await supabase.rpc("find_nearby_restaurants", { long, lat });
 

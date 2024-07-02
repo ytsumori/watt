@@ -2,28 +2,19 @@
 
 import Map from "@/components/map";
 import { useEffect, useState } from "react";
-import { Box, HStack, Heading, Badge, VStack } from "@chakra-ui/react";
+import { Box, VStack } from "@chakra-ui/react";
 import { InView } from "react-intersection-observer";
-import { Prisma } from "@prisma/client";
-import { MealPreviewBox } from "@/components/meal/MealPreviewBox";
 import { useRouter } from "next/navigation";
-import NextLink from "next/link";
 import { calculateDistance } from "../../_util/calculateDistance";
 import { findNearbyRestaurants } from "./_actions/findNearByRestaurants";
-import { Distance } from "../Distance";
 import { logger } from "@/utils/logger";
+import { RestaurantWithDistance } from "./_types/RestaurantWithDistance";
+import { RestaurantListItem } from "./_components/RestaurantListItem";
 
-type NearbyRestaurant = Awaited<ReturnType<typeof findNearbyRestaurants>>;
-type Restaurant = Prisma.RestaurantGetPayload<{
-  include: { meals: true; googleMapPlaceInfo: { select: { latitude: true; longitude: true } } };
-}>;
-
-export default function HomePage({ restaurants }: { restaurants: Restaurant[] }) {
+export default function HomePage({ restaurants }: { restaurants: RestaurantWithDistance[] }) {
   const router = useRouter();
   const [inViewRestaurantIds, setInViewRestaurantIds] = useState<string[]>([]);
-  const [nearbyRestaurants, setNearbyRestaurants] = useState<NearbyRestaurant | (Restaurant & { distance?: string })[]>(
-    restaurants
-  );
+  const [nearbyRestaurants, setNearbyRestaurants] = useState(restaurants);
 
   useEffect(() => {
     navigator.permissions.query({ name: "geolocation" }).then((permissionStatus) => {
@@ -80,14 +71,24 @@ export default function HomePage({ restaurants }: { restaurants: Restaurant[] })
           onRestaurantSelect={handleRestaurantSelect}
         />
       </Box>
-      <Box minH="280px" h="50%" overflowY="auto" pb={4} className="hidden-scrollbar" backgroundColor="blackAlpha.100">
+      <VStack
+        w="full"
+        minH="280px"
+        h="50%"
+        overflowY="auto"
+        pt={3}
+        pb={4}
+        className="hidden-scrollbar"
+        backgroundColor="blackAlpha.100"
+        spacing={3}
+      >
         {nearbyRestaurants.map((restaurant, index) => (
           <Box
             key={restaurant.id}
             id={restaurant.id}
             backgroundColor={restaurant.isOpen ? "white" : "transparent"}
-            my={3}
             py={3}
+            w="full"
           >
             <InView
               initialInView={index < 2}
@@ -101,33 +102,11 @@ export default function HomePage({ restaurants }: { restaurants: Restaurant[] })
                 }
               }}
             >
-              <HStack px={4} overflowX="auto" className="hidden-scrollbar" mt={3}>
-                {restaurant.meals.map((meal) => (
-                  <MealPreviewBox key={meal.id} meal={meal} href={`restaurants/${restaurant.id}?mealId=${meal.id}`} />
-                ))}
-              </HStack>
-              <NextLink href={`/restaurants/${restaurant.id}`}>
-                <VStack px={4} alignItems="start" pt={3} spacing={1}>
-                  <Heading size="sm" color={restaurant.isOpen ? "black" : "gray"}>
-                    {restaurant.name}
-                  </Heading>
-                  {restaurant.distance ? <Distance distance={restaurant.distance} /> : <></>}
-                  {restaurant.isOpen ? (
-                    <Badge backgroundColor="brand.400" variant="solid" fontSize="sm">
-                      ○ 今すぐ入れます！
-                    </Badge>
-                  ) : (
-                    <Badge backgroundColor="blackAlpha.700" variant="solid" fontSize="sm">
-                      × 今は入れません
-                    </Badge>
-                  )}
-                </VStack>
-              </NextLink>
+              <RestaurantListItem restaurant={restaurant} />
             </InView>
-            {index !== restaurants.length - 1 && <Box w="full" h="0" backgroundColor="blackAlpha.100" />}
           </Box>
         ))}
-      </Box>
+      </VStack>
     </>
   );
 }
