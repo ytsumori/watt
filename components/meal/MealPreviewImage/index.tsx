@@ -11,5 +11,5 @@ type Props = {
 export function MealPreviewImage({ src, alt }: Props) {
   const publicUrl = transformSupabaseImage("meals", src);
 
-  return <Image src={publicUrl} alt={alt} objectFit="cover" aspectRatio={1 / 1} borderRadius={8} />;
+  return <Image src={publicUrl} alt={alt} objectFit="cover" aspectRatio={1 / 1} borderRadius={8} loading="lazy" />;
 }

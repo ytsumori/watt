@@ -1,13 +1,20 @@
 "use client";
 
 import { Box, BoxProps, Text } from "@chakra-ui/react";
-import { Meal } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { MealPreviewImage } from "../MealPreviewImage";
 import { ReactNode } from "react";
 import Link from "next/link";
 
 type Props = {
-  meal: Meal;
+  meal: Prisma.MealGetPayload<{
+    select: {
+      id: true;
+      title: true;
+      price: true;
+      imagePath: true;
+    };
+  }>;
   href?: string;
   children?: ReactNode;
   isLabelHidden?: boolean;
