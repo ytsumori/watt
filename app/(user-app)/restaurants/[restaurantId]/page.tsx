@@ -3,9 +3,9 @@ import { options } from "@/lib/next-auth/options";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { RestaurantPage } from "./_components/RestaurantPage";
-import { transformSupabaseImage } from "@/utils/image/transformSupabaseImage";
 import { Metadata } from "next";
 import { findInProgressOrder } from "../../_actions/findInProgressOrder";
+import { getMealImageUrl } from "@/utils/image/getMealImageUrl";
 
 type Params = { params: { restaurantId: string }; searchParams: { mealId?: string } };
 
@@ -52,7 +52,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata | u
   });
 
   if (restaurant && restaurant.meals.length > 0) {
-    const url = transformSupabaseImage("meals", restaurant.meals[0].imagePath);
+    const url = getMealImageUrl(restaurant.meals[0].imagePath);
     return {
       title: `${restaurant.name} | Watt`,
       openGraph: { images: [url] }
