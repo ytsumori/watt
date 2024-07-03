@@ -1,7 +1,6 @@
 "use client";
 
-import { MealPreviewBox } from "@/components/meal/MealPreviewBox";
-import { HStack, Heading, Badge, VStack, Text, Icon, Box } from "@chakra-ui/react";
+import { Heading, Badge, VStack, Text, Icon, Box } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { RestaurantWithDistance } from "../../_types/RestaurantWithDistance";
 import { useMemo } from "react";
@@ -9,6 +8,7 @@ import { BusinessHourStatus } from "./_types/BusinessHourStatus";
 import { FaMapMarkerAlt } from "react-icons/fa";
 import { dayOfWeekToNumber } from "@/utils/day-of-week";
 import { DayOfWeek } from "@prisma/client";
+import { ImageStacks } from "../ImageStacks";
 
 type Props = {
   restaurant: RestaurantWithDistance;
@@ -137,11 +137,11 @@ export function RestaurantListItem({ restaurant }: Props) {
 
   return (
     <>
-      <HStack px={4} overflowX="auto" className="hidden-scrollbar">
-        {restaurant.meals.map((meal) => (
-          <MealPreviewBox key={meal.id} meal={meal} href={`restaurants/${restaurant.id}?mealId=${meal.id}`} />
-        ))}
-      </HStack>
+      <ImageStacks
+        restaurantId={restaurant.id}
+        meals={restaurant.meals}
+        interiorImagePath={restaurant.interiorImagePath ?? undefined}
+      />
       <NextLink href={`/restaurants/${restaurant.id}`}>
         <VStack px={4} alignItems="start" pt={3} spacing={1}>
           <Heading size="sm" color={restaurant.isOpen ? "black" : "gray"}>
