@@ -196,7 +196,7 @@ function BusinessHourLabel({
       return null;
     case "open":
       return (
-        <Text>
+        <Text suppressHydrationWarning>
           <Text as="span" color="green">
             営業中
           </Text>
@@ -206,7 +206,7 @@ function BusinessHourLabel({
       );
     case "closed":
       return (
-        <Text>
+        <Text suppressHydrationWarning>
           <Text as="span" color="red">
             営業時間外
           </Text>
@@ -216,7 +216,7 @@ function BusinessHourLabel({
       );
     case "closing":
       return (
-        <Text>
+        <Text suppressHydrationWarning>
           <Text as="span" color="brown">
             まもなく閉店
           </Text>
@@ -226,7 +226,7 @@ function BusinessHourLabel({
       );
     case "opening":
       return (
-        <Text>
+        <Text suppressHydrationWarning>
           <Text as="span" color="brown">
             まもなく営業開始
           </Text>
