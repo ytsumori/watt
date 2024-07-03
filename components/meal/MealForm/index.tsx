@@ -10,6 +10,7 @@ import {
   FormLabel,
   HStack,
   IconButton,
+  Image,
   Input,
   NumberInput,
   NumberInputField,
@@ -101,7 +102,7 @@ export function MealForm({ restaurantId, editingMeal, onSubmit }: Props) {
         <input name={fields.image.name} type="file" accept="image/*" onChange={handleFileChange} />
         {previewUrl && (
           // eslint-disable-next-line @next/next/no-img-element
-          <img width={300} height={300} src={previewUrl} alt="Preview" />
+          <Image width={300} height={300} src={previewUrl} alt="Preview" />
         )}
         <FormErrorMessage>{fields.image.errors?.join("、") ?? ""}</FormErrorMessage>
       </FormControl>
