@@ -8,13 +8,16 @@ export const theme = extendTheme(
   {
     colors: {
       brand: {
-        50: "#FFFAF5",
-        100: "#FFE5D0",
-        200: "#FFD7B8",
-        300: "#FFC8A0",
-        400: "#FF5850", // main
-        500: "#FF4D4D",
-        600: "#DC3444"
+        50: process.env.IS_DEV ? "#f2f9f2" : "#fff5f5",
+        100: process.env.IS_DEV ? "#cae8cc" : "#ffd7d5",
+        200: process.env.IS_DEV ? "#9ad39f" : "#ffb2ae",
+        300: process.env.IS_DEV ? "#5eb966" : "#ff8079",
+        400: process.env.IS_DEV ? "#43a84b" : "#ff5d55",
+        500: process.env.IS_DEV ? "#3D9D45" : "#FF5850", // main
+        600: process.env.IS_DEV ? "#2f7836" : "#b9403a",
+        700: process.env.IS_DEV ? "#26602b" : "#95332f",
+        800: process.env.IS_DEV ? "#205124" : "#7e2b28",
+        900: process.env.IS_DEV ? "#173b1a" : "#5b201d"
       }
     }
   },
