@@ -1,29 +1,3 @@
 {
-  "crons": [
-    {
-      "path": "/api/cron/update-restaurant-status",
-      "schedule": "*/30 * * * *"
-    },
-    {
-      "path": "/api/cron/update-opening-hours",
-      "schedule": "15 21 * * *"
-    },
-    {
-      "path": "/api/cron/update-map-place-detail",
-      "schedule": "15 21 1 * *"
-    },
-    {
-      "path": "/api/cron/notify-closing-restaurants",
-      "schedule": "0 3 * * *"
-    },
-    {
-      "path": "/api/cron/update-restaurant-coordinates",
-      "schedule": "15 21 1 * *"
-    },
-    {
-      "path": "/api/cron/verify-order-price",
-      "schedule": "0 15 * * *"
-    }
-  ],
   "buildCommand": "sh scripts/build.sh"
 }
