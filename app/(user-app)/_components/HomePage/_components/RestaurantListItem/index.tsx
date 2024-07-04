@@ -5,12 +5,18 @@ import { RestaurantWithDistance } from "../../_types/RestaurantWithDistance";
 import { FaMapMarkerAlt } from "react-icons/fa";
 import { ImageStacks } from "../ImageStacks";
 import { BusinessHourLabel } from "./_components/BusinessHourLabel";
+import { useEffect, useState } from "react";
 
 type Props = {
   restaurant: RestaurantWithDistance;
 };
 
 export function RestaurantListItem({ restaurant }: Props) {
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
   return (
     <>
       <ImageStacks
@@ -34,15 +40,14 @@ export function RestaurantListItem({ restaurant }: Props) {
           )}
           <BusinessHourLabel openingHours={restaurant.openingHours} />
         </Box>
-        {restaurant.isOpen ? (
-          <Badge backgroundColor="brand.400" variant="solid" fontSize="sm">
-            ○ 今すぐ入れます！
-          </Badge>
-        ) : (
-          <Badge backgroundColor="blackAlpha.700" variant="solid" fontSize="sm">
-            × 今は入れません
-          </Badge>
-        )}
+        <Badge
+          backgroundColor={restaurant.isOpen ? "brand.400" : "blackAlpha.700"}
+          variant="solid"
+          fontSize="sm"
+          suppressHydrationWarning={true}
+        >
+          {restaurant.isOpen ? "○ 今すぐ入れます！" : "× 今は入れません"}
+        </Badge>
       </VStack>
     </>
   );
