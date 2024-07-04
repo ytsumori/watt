@@ -29,8 +29,7 @@ export function MealPreviewBox({ meal, href, children, isLabelHidden = false, is
       borderRadius={12}
       position="relative"
       {...boxProps}
-      onClick={(e) => e.stopPropagation()}
-      {...(href ? { as: Link, href: href } : {})}
+      {...(href ? { as: Link, href: href, onClick: (e) => e.stopPropagation() } : {})}
     >
       <MealPreviewImage src={meal.imagePath} alt={`meal-${meal.id}`} />
       {!isLabelHidden && (
