@@ -1,7 +1,6 @@
 "use client";
 
 import { Heading, Badge, VStack, Text, Icon, Box } from "@chakra-ui/react";
-import NextLink from "next/link";
 import { RestaurantWithDistance } from "../../_types/RestaurantWithDistance";
 import { useMemo } from "react";
 import { BusinessHourStatus } from "./_types/BusinessHourStatus";
@@ -13,6 +12,7 @@ import { ImageStacks } from "../ImageStacks";
 type Props = {
   restaurant: RestaurantWithDistance;
 };
+
 export function RestaurantListItem({ restaurant }: Props) {
   const currentOpeningHour = useMemo(() => {
     const now = new Date();
@@ -142,42 +142,38 @@ export function RestaurantListItem({ restaurant }: Props) {
         meals={restaurant.meals}
         interiorImagePath={restaurant.interiorImagePath ?? undefined}
       />
-      <NextLink href={`/restaurants/${restaurant.id}`}>
-        <VStack px={4} alignItems="start" pt={3} spacing={1}>
-          <Heading size="sm" color={restaurant.isOpen ? "black" : "gray"}>
-            {restaurant.name}
-          </Heading>
-          <Box fontSize="xs" opacity={0.6}>
-            {restaurant.distance ? (
-              <Text>
-                <Icon as={FaMapMarkerAlt} mr={1} />
-                現在地から
-                {restaurant.distance}
-              </Text>
-            ) : (
-              <></>
-            )}
-            {businessHourStatus && (
-              <BusinessHourLabel
-                status={businessHourStatus}
-                closingTime={closingTime}
-                nextOpeningTime={nextOpeningTime}
-              />
-            )}
-          </Box>
-          {restaurant.isOpen ? (
-            <>
-              <Badge backgroundColor="brand.400" variant="solid" fontSize="sm">
-                ○ 今すぐ入れます！
-              </Badge>
-            </>
+      <VStack px={4} alignItems="start" pt={3} spacing={1}>
+        <Heading size="sm" color={restaurant.isOpen ? "black" : "gray"}>
+          {restaurant.name}
+        </Heading>
+        <Box fontSize="xs" opacity={0.6}>
+          {restaurant.distance ? (
+            <Text>
+              <Icon as={FaMapMarkerAlt} mr={1} />
+              現在地から
+              {restaurant.distance}
+            </Text>
           ) : (
-            <Badge backgroundColor="blackAlpha.700" variant="solid" fontSize="sm">
-              × 今は入れません
-            </Badge>
+            <></>
           )}
-        </VStack>
-      </NextLink>
+          {businessHourStatus && (
+            <BusinessHourLabel
+              status={businessHourStatus}
+              closingTime={closingTime}
+              nextOpeningTime={nextOpeningTime}
+            />
+          )}
+        </Box>
+        {restaurant.isOpen ? (
+          <Badge backgroundColor="brand.400" variant="solid" fontSize="sm">
+            ○ 今すぐ入れます！
+          </Badge>
+        ) : (
+          <Badge backgroundColor="blackAlpha.700" variant="solid" fontSize="sm">
+            × 今は入れません
+          </Badge>
+        )}
+      </VStack>
     </>
   );
 }
