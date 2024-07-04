@@ -17,34 +17,32 @@ export default function HomePage({ restaurants }: { restaurants: RestaurantWithD
   const [nearbyRestaurants, setNearbyRestaurants] = useState(restaurants);
 
   useEffect(() => {
-    navigator.permissions.query({ name: "geolocation" }).then((permissionStatus) => {
-      navigator.geolocation.getCurrentPosition(async (position) => {
-        const { latitude: lat, longitude: long } = position.coords;
-        if (permissionStatus.state === "granted") {
-          try {
-            const sortedRestaurants = await findNearbyRestaurants({ long, lat, restaurants });
-            setNearbyRestaurants(sortedRestaurants);
-          } catch (error) {
-            setNearbyRestaurants(
-              restaurants.map((restaurant) => ({
-                ...restaurant,
-                distance: calculateDistance({
-                  origin: { lat, lng: long },
-                  destination: {
-                    lat: restaurant.googleMapPlaceInfo?.latitude,
-                    lng: restaurant.googleMapPlaceInfo?.longitude
-                  }
-                })
-              }))
-            );
-            logger({
-              severity: "ERROR",
-              message: "findNearbyRestaurantsの呼び出しに失敗しました",
-              payload: { error: JSON.stringify(error) }
-            });
-          }
+    navigator.geolocation.getCurrentPosition(async (position) => {
+      const { latitude: lat, longitude: long } = position.coords;
+      if (lat && long) {
+        try {
+          const sortedRestaurants = await findNearbyRestaurants({ long, lat, restaurants });
+          setNearbyRestaurants(sortedRestaurants);
+        } catch (error) {
+          setNearbyRestaurants(
+            restaurants.map((restaurant) => ({
+              ...restaurant,
+              distance: calculateDistance({
+                origin: { lat, lng: long },
+                destination: {
+                  lat: restaurant.googleMapPlaceInfo?.latitude,
+                  lng: restaurant.googleMapPlaceInfo?.longitude
+                }
+              })
+            }))
+          );
+          logger({
+            severity: "ERROR",
+            message: "findNearbyRestaurantsの呼び出しに失敗しました",
+            payload: { error: JSON.stringify(error) }
+          });
         }
-      });
+      }
     });
   }, [restaurants]);
 
