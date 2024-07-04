@@ -5,7 +5,6 @@ import { Prisma } from "@prisma/client";
 import { MealPreviewImage } from "../MealPreviewImage";
 import { ReactNode } from "react";
 import Link from "next/link";
-import { useRouter } from "next-nprogress-bar";
 
 type Props = {
   meal: Prisma.MealGetPayload<{
@@ -23,7 +22,6 @@ type Props = {
 } & BoxProps;
 
 export function MealPreviewBox({ meal, href, children, isLabelHidden = false, isRouter = false, ...boxProps }: Props) {
-  const router = useRouter();
   return (
     <Box
       maxW="150px"
@@ -31,16 +29,8 @@ export function MealPreviewBox({ meal, href, children, isLabelHidden = false, is
       borderRadius={12}
       position="relative"
       {...boxProps}
-      {...(href
-        ? isRouter
-          ? {
-              onClick: (e) => {
-                router.push(href);
-                e.stopPropagation();
-              }
-            }
-          : { as: Link, href: href }
-        : {})}
+      onClick={(e) => e.stopPropagation()}
+      {...(href ? { as: Link, href: href } : {})}
     >
       <MealPreviewImage src={meal.imagePath} alt={`meal-${meal.id}`} />
       {!isLabelHidden && (
