@@ -8,6 +8,7 @@ export const createJob = ({ name, description, schedule, path }: Args): protos.g
       "projects/" + process.env.GCP_PROJECT_ID + "/locations/" + process.env.CLOUD_SCHEDULER_LOCATION + "/jobs/" + name,
     description,
     schedule,
+    timeZone: "Etc/UTC",
     httpTarget: {
       httpMethod: "GET",
       uri: process.env.NEXT_PUBLIC_HOST_URL + "/api/cron" + path,
