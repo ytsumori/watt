@@ -2,139 +2,15 @@
 
 import { Heading, Badge, VStack, Text, Icon, Box } from "@chakra-ui/react";
 import { RestaurantWithDistance } from "../../_types/RestaurantWithDistance";
-import { useMemo } from "react";
-import { BusinessHourStatus } from "./_types/BusinessHourStatus";
 import { FaMapMarkerAlt } from "react-icons/fa";
-import { dayOfWeekToNumber } from "@/utils/day-of-week";
-import { DayOfWeek } from "@prisma/client";
 import { ImageStacks } from "../ImageStacks";
+import { BusinessHourLabel } from "./_components/BusinessHourLabel";
 
 type Props = {
   restaurant: RestaurantWithDistance;
 };
 
 export function RestaurantListItem({ restaurant }: Props) {
-  const currentOpeningHour = useMemo(() => {
-    const now = new Date();
-    const currentDay = now.getDay();
-    const yesterdayDay = currentDay === 0 ? 6 : currentDay - 1;
-    const tomorrowDay = currentDay === 6 ? 0 : currentDay + 1;
-    const currentHour = now.getHours();
-    const currentMinute = now.getMinutes();
-    return restaurant.openingHours.find((openingHour) => {
-      if (
-        dayOfWeekToNumber(openingHour.openDayOfWeek) === yesterdayDay &&
-        dayOfWeekToNumber(openingHour.closeDayOfWeek) === currentDay
-      ) {
-        return (
-          currentHour < openingHour.closeHour ||
-          (openingHour.closeHour === currentHour && currentMinute <= openingHour.closeMinute)
-        );
-      } else if (
-        dayOfWeekToNumber(openingHour.openDayOfWeek) === currentDay &&
-        dayOfWeekToNumber(openingHour.closeDayOfWeek) === tomorrowDay
-      ) {
-        return (
-          openingHour.openHour < currentHour ||
-          (openingHour.openHour === currentHour && openingHour.openMinute <= currentMinute)
-        );
-      } else if (
-        dayOfWeekToNumber(openingHour.openDayOfWeek) === currentDay &&
-        dayOfWeekToNumber(openingHour.closeDayOfWeek) === currentDay
-      ) {
-        return (
-          (openingHour.openHour < currentHour && currentHour < openingHour.closeHour) ||
-          (openingHour.openHour === currentHour && openingHour.openMinute <= currentMinute) ||
-          (openingHour.closeHour === currentHour && currentMinute <= openingHour.closeMinute)
-        );
-      }
-
-      return false;
-    });
-  }, [restaurant.openingHours]);
-
-  const closingTime = useMemo(() => {
-    if (!currentOpeningHour) return undefined;
-
-    const now = new Date();
-    const currentDay = now.getDay();
-    const tomorrowDay = currentDay === 6 ? 0 : currentDay + 1;
-
-    if (dayOfWeekToNumber(currentOpeningHour.closeDayOfWeek) === tomorrowDay) {
-      return { hour: currentOpeningHour.closeHour + 24, minute: currentOpeningHour.closeMinute };
-    }
-    return {
-      hour:
-        dayOfWeekToNumber(currentOpeningHour.closeDayOfWeek) === tomorrowDay
-          ? currentOpeningHour.closeHour + 24
-          : currentOpeningHour.closeHour,
-      minute: currentOpeningHour.closeMinute
-    };
-  }, [currentOpeningHour]);
-
-  const nextOpeningTime = useMemo(() => {
-    const nextOpeningHour = restaurant.openingHours.reduce<
-      | {
-          openHour: number;
-          openMinute: number;
-          openDayOfWeek: DayOfWeek;
-          closeHour: number;
-          closeMinute: number;
-          closeDayOfWeek: DayOfWeek;
-        }
-      | undefined
-    >((accumulator, currentValue) => {
-      const now = new Date();
-      const currentDay = now.getDay();
-      const currentHour = now.getHours();
-      const currentMinute = now.getMinutes();
-
-      if (dayOfWeekToNumber(currentValue.openDayOfWeek) === currentDay) {
-        if (
-          currentValue.openHour > currentHour ||
-          (currentValue.openHour === currentHour && currentValue.openMinute > currentMinute)
-        ) {
-          if (!accumulator || accumulator.openHour > currentValue.openHour) {
-            return currentValue;
-          }
-        }
-      }
-    }, undefined);
-    return nextOpeningHour ? { hour: nextOpeningHour.openHour, minute: nextOpeningHour.openMinute } : undefined;
-  }, [restaurant.openingHours]);
-
-  const businessHourStatus = useMemo(() => {
-    if (restaurant.openingHours.length === 0) {
-      return "unknown";
-    }
-
-    const now = new Date();
-    const currentHour = now.getHours();
-    const currentMinute = now.getMinutes();
-
-    if (currentOpeningHour) {
-      if (closingTime) {
-        if (closingTime.hour === currentHour && closingTime.minute - currentMinute <= 30) {
-          return "closing";
-        }
-        if (closingTime.hour - currentHour === 1 && closingTime.minute + 60 - currentMinute <= 30) {
-          return "closing";
-        }
-      }
-      return "open";
-    } else {
-      if (nextOpeningTime) {
-        if (nextOpeningTime.hour === currentHour && nextOpeningTime.minute - currentMinute <= 30) {
-          return "opening";
-        }
-        if (nextOpeningTime.hour - currentHour === 1 && nextOpeningTime.minute + 60 - currentMinute <= 30) {
-          return "opening";
-        }
-      }
-      return "closed";
-    }
-  }, [closingTime, currentOpeningHour, nextOpeningTime, restaurant.openingHours.length]);
-
   return (
     <>
       <ImageStacks
@@ -156,13 +32,7 @@ export function RestaurantListItem({ restaurant }: Props) {
           ) : (
             <></>
           )}
-          {businessHourStatus && (
-            <BusinessHourLabel
-              status={businessHourStatus}
-              closingTime={closingTime}
-              nextOpeningTime={nextOpeningTime}
-            />
-          )}
+          <BusinessHourLabel openingHours={restaurant.openingHours} />
         </Box>
         {restaurant.isOpen ? (
           <Badge backgroundColor="brand.400" variant="solid" fontSize="sm">
@@ -176,61 +46,4 @@ export function RestaurantListItem({ restaurant }: Props) {
       </VStack>
     </>
   );
-}
-
-function BusinessHourLabel({
-  status,
-  closingTime,
-  nextOpeningTime
-}: {
-  status: BusinessHourStatus;
-  closingTime?: { hour: number; minute: number };
-  nextOpeningTime?: { hour: number; minute: number };
-}) {
-  switch (status) {
-    case "unknown":
-      return null;
-    case "open":
-      return (
-        <Text suppressHydrationWarning>
-          <Text as="span" color="green">
-            営業中
-          </Text>
-          {closingTime &&
-            `・営業終了: ${closingTime.hour}:${closingTime.minute.toString().padStart(2, "0")}${nextOpeningTime ? `・再開時間: ${nextOpeningTime.hour}:${nextOpeningTime.minute.toString().padStart(2, "0")}` : ""}`}
-        </Text>
-      );
-    case "closed":
-      return (
-        <Text suppressHydrationWarning>
-          <Text as="span" color="red">
-            営業時間外
-          </Text>
-          {nextOpeningTime &&
-            `・営業開始: ${nextOpeningTime.hour}:${nextOpeningTime.minute.toString().padStart(2, "0")}`}
-        </Text>
-      );
-    case "closing":
-      return (
-        <Text suppressHydrationWarning>
-          <Text as="span" color="brown">
-            まもなく閉店
-          </Text>
-          {closingTime &&
-            `・営業終了: ${closingTime.hour}:${closingTime.minute.toString().padStart(2, "0")}${nextOpeningTime ? `・再開時間: ${nextOpeningTime.hour}:${nextOpeningTime.minute.toString().padStart(2, "0")}` : ""}`}
-        </Text>
-      );
-    case "opening":
-      return (
-        <Text suppressHydrationWarning>
-          <Text as="span" color="brown">
-            まもなく営業開始
-          </Text>
-          {nextOpeningTime &&
-            `・${nextOpeningTime.hour.toString().padStart(2, "0")}:${nextOpeningTime.minute.toString().padStart(2, "0")}`}
-        </Text>
-      );
-    default:
-      return null;
-  }
 }
