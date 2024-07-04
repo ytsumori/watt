@@ -14,6 +14,7 @@ export const createRestaurantMock = (restaurant?: Partial<Restaurant>): Restaura
     phoneNumber: null,
     createdAt: new Date(),
     updatedAt: new Date(),
+    interiorImagePath: null,
     ...restaurant
   };
 };
