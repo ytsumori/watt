@@ -15,20 +15,20 @@ type Props = {
 };
 
 export function ImageStacks({ restaurantId, meals, interiorImagePath }: Props) {
-  const firstMeal = meals[0];
+  const firstMeal = meals.at(0);
   if (!firstMeal) return null;
 
   const interiorImageUrl = interiorImagePath ? getRestaurantInteriorImageUrl(interiorImagePath) : undefined;
 
-  const restMeals = meals.splice(1);
+  const restMeals = meals.slice(1);
   return (
     <HStack px={4} overflowX="auto" className="hidden-scrollbar">
       <MealPreviewBox meal={firstMeal} href={`restaurants/${restaurantId}?mealId=${firstMeal.id}`} />
       {interiorImageUrl && (
         <NextLink href={`restaurants/${restaurantId}`}>
           <Image
-            width="150px"
-            height="150px"
+            minW="150px"
+            maxW="150px"
             src={interiorImageUrl}
             objectFit="cover"
             aspectRatio={1 / 1}
