@@ -115,7 +115,7 @@ export function RestaurantPage({ restaurant, inProgressOrderId, userId, defaultM
 
   return (
     <>
-      <VStack w="full" p={4} alignItems="start" spacing={0}>
+      <VStack w="full" p={4} alignItems="start" spacing={4}>
         <RestaurantInfo restaurant={restaurant} />
         <Divider borderColor="black" my={6} />
         <Box>
