@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma/client";
-import { Heading, VStack, Text } from "@chakra-ui/react";
+import { Heading, VStack, Text, Button } from "@chakra-ui/react";
 import { RestaurantBankAccount } from "./_components/restaurant-bank-account";
 import { SmokingSelect } from "./_components/SmokingSelect";
 import { PaymentOptionCheckboxGroup } from "./_components/PaymentOptionCheckboxGroup";
@@ -7,6 +7,7 @@ import { PhoneNumberForm } from "./_components/PhoneNumberForm";
 import { MealList } from "@/components/meal/MealList";
 import { RestaurantOrdersSection } from "./_components/RestaurantOrdersSection";
 import { Suspense } from "react";
+import { InteriorImageInput } from "./_components/InteriorImageInput";
 
 type PageProps = { params: { restaurantId: string }; searchParams: { month?: string } };
 
@@ -17,6 +18,7 @@ export default async function RestaurantPage({ params, searchParams }: PageProps
       id: true,
       name: true,
       bankAccount: true,
+      interiorImagePath: true,
       meals: {
         orderBy: { price: "asc" },
         include: {
@@ -57,6 +59,10 @@ export default async function RestaurantPage({ params, searchParams }: PageProps
           restaurantId={restaurant.id}
           defaultPaymentOptions={restaurant.paymentOptions.map((option) => option.option)}
         />
+      </VStack>
+      <VStack alignItems="start">
+        <Heading size="md">内観画像</Heading>
+        <InteriorImageInput restaurantId={restaurant.id} defaultImagePath={restaurant.interiorImagePath ?? undefined} />
       </VStack>
       <VStack alignItems="start">
         <Heading size="md">電話番号</Heading>

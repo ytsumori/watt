@@ -1,6 +1,6 @@
 import { createClientSupabase } from "@/lib/supabase/client";
 
-export const transformSupabaseImage = (
+export const getSupabaseImageUrl = (
   bucketName: string,
   src: string,
   size?: { width: number; height: number }

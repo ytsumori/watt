@@ -4,12 +4,12 @@ import Map from "@/components/map";
 import { useEffect, useState } from "react";
 import { Box, VStack } from "@chakra-ui/react";
 import { InView } from "react-intersection-observer";
-import { useRouter } from "next/navigation";
 import { calculateDistance } from "../../_util/calculateDistance";
 import { findNearbyRestaurants } from "./_actions/findNearByRestaurants";
 import { logger } from "@/utils/logger";
 import { RestaurantWithDistance } from "./_types/RestaurantWithDistance";
 import { RestaurantListItem } from "./_components/RestaurantListItem";
+import { useRouter } from "next-nprogress-bar";
 
 export default function HomePage({ restaurants }: { restaurants: RestaurantWithDistance[] }) {
   const router = useRouter();
@@ -79,30 +79,31 @@ export default function HomePage({ restaurants }: { restaurants: RestaurantWithD
         className="hidden-scrollbar"
         backgroundColor="blackAlpha.100"
         spacing={3}
+        alignItems="start"
       >
         {nearbyRestaurants.map((restaurant, index) => (
-          <Box
+          <InView
             key={restaurant.id}
-            id={restaurant.id}
-            backgroundColor={restaurant.isOpen ? "white" : "transparent"}
-            py={3}
-            w="full"
+            initialInView={index < 2}
+            threshold={0.8}
+            onChange={(inView) => {
+              if (inView) {
+                router.prefetch(`/restaurants/${restaurant.id}`);
+                setInViewRestaurantIds((prev) => [...prev, restaurant.id]);
+              } else {
+                setInViewRestaurantIds((prev) => prev.filter((id) => id !== restaurant.id));
+              }
+            }}
+            style={{ width: "100%" }}
           >
-            <InView
-              initialInView={index < 2}
-              threshold={0.8}
-              onChange={(inView) => {
-                if (inView) {
-                  router.prefetch(`/restaurants/${restaurant.id}`);
-                  setInViewRestaurantIds((prev) => [...prev, restaurant.id]);
-                } else {
-                  setInViewRestaurantIds((prev) => prev.filter((id) => id !== restaurant.id));
-                }
-              }}
+            <Box
+              backgroundColor={restaurant.isOpen ? "white" : "transparent"}
+              py={3}
+              onClick={() => router.push(`/restaurants/${restaurant.id}`)}
             >
               <RestaurantListItem restaurant={restaurant} />
-            </InView>
-          </Box>
+            </Box>
+          </InView>
         ))}
       </VStack>
     </>

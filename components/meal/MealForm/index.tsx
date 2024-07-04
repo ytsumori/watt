@@ -10,6 +10,7 @@ import {
   FormLabel,
   HStack,
   IconButton,
+  Image,
   Input,
   NumberInput,
   NumberInputField,
@@ -20,12 +21,12 @@ import { useEffect, useState } from "react";
 import { useFormState } from "react-dom";
 import { submit } from "./action";
 import { useFormStatus } from "react-dom";
-import { transformSupabaseImage } from "@/utils/image/transformSupabaseImage";
 import { Prisma } from "@prisma/client";
 import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
 import { SubmissionResult, useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
 import { mealFormSchema } from "./schema";
+import { getMealImageUrl } from "@/utils/image/getMealImageUrl";
 
 type Props = {
   restaurantId: string;
@@ -37,7 +38,7 @@ export function MealForm({ restaurantId, editingMeal, onSubmit }: Props) {
   const [previewUrl, setPreviewUrl] = useState<string>();
   useEffect(() => {
     if (editingMeal) {
-      setPreviewUrl(transformSupabaseImage("meals", editingMeal.imagePath));
+      setPreviewUrl(getMealImageUrl(editingMeal.imagePath));
     }
   }, [editingMeal]);
   const [lastResult, action] = useFormState<SubmissionResult<string[]> | undefined, FormData>(
@@ -101,7 +102,7 @@ export function MealForm({ restaurantId, editingMeal, onSubmit }: Props) {
         <input name={fields.image.name} type="file" accept="image/*" onChange={handleFileChange} />
         {previewUrl && (
           // eslint-disable-next-line @next/next/no-img-element
-          <img width={300} height={300} src={previewUrl} alt="Preview" />
+          <Image width={300} height={300} src={previewUrl} alt="Preview" />
         )}
         <FormErrorMessage>{fields.image.errors?.join("、") ?? ""}</FormErrorMessage>
       </FormControl>

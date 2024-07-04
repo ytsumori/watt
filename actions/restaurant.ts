@@ -2,6 +2,8 @@
 
 import prisma from "@/lib/prisma/client";
 import { Prisma } from "@prisma/client";
+import { createServiceRoleClient } from "@/lib/supabase/createServiceRoleClient";
+import { randomUUID } from "crypto";
 
 export async function findRestaurant<T extends Prisma.RestaurantFindUniqueArgs>(
   args: Prisma.SelectSubset<T, Prisma.RestaurantFindUniqueArgs>
@@ -34,4 +36,25 @@ export async function updateIsOpen({ id, isOpen }: { id: string; isOpen: boolean
       }
     }
   });
+}
+
+export async function uploadInteriorImage(restaurantId: string, formData: FormData) {
+  const restaurant = await prisma.restaurant.findUnique({ where: { id: restaurantId } });
+  if (!restaurant) throw new Error("restaurant not found");
+
+  const file = formData.get("image") as File | null;
+  if (!file) throw new Error("file not found");
+
+  const supabase = createServiceRoleClient();
+  const { data, error } = await supabase.storage
+    .from("restaurant-interiors")
+    .upload(`${restaurantId}/${randomUUID()}`, file);
+  if (error) {
+    console.error("fail to upload image", error);
+    throw new Error("fail to upload image", error);
+  }
+
+  await prisma.restaurant.update({ where: { id: restaurantId }, data: { interiorImagePath: data.path } });
+
+  return data.path;
 }

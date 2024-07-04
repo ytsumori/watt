@@ -1,18 +1,18 @@
 "use client";
 
-import { MealPreviewBox } from "@/components/meal/MealPreviewBox";
-import { HStack, Heading, Badge, VStack, Text, Icon, Box } from "@chakra-ui/react";
-import NextLink from "next/link";
+import { Heading, Badge, VStack, Text, Icon, Box } from "@chakra-ui/react";
 import { RestaurantWithDistance } from "../../_types/RestaurantWithDistance";
 import { useMemo } from "react";
 import { BusinessHourStatus } from "./_types/BusinessHourStatus";
 import { FaMapMarkerAlt } from "react-icons/fa";
 import { dayOfWeekToNumber } from "@/utils/day-of-week";
 import { DayOfWeek } from "@prisma/client";
+import { ImageStacks } from "../ImageStacks";
 
 type Props = {
   restaurant: RestaurantWithDistance;
 };
+
 export function RestaurantListItem({ restaurant }: Props) {
   const currentOpeningHour = useMemo(() => {
     const now = new Date();
@@ -137,47 +137,43 @@ export function RestaurantListItem({ restaurant }: Props) {
 
   return (
     <>
-      <HStack px={4} overflowX="auto" className="hidden-scrollbar">
-        {restaurant.meals.map((meal) => (
-          <MealPreviewBox key={meal.id} meal={meal} href={`restaurants/${restaurant.id}?mealId=${meal.id}`} />
-        ))}
-      </HStack>
-      <NextLink href={`/restaurants/${restaurant.id}`}>
-        <VStack px={4} alignItems="start" pt={3} spacing={1}>
-          <Heading size="sm" color={restaurant.isOpen ? "black" : "gray"}>
-            {restaurant.name}
-          </Heading>
-          <Box fontSize="xs" opacity={0.6}>
-            {restaurant.distance ? (
-              <Text>
-                <Icon as={FaMapMarkerAlt} mr={1} />
-                現在地から
-                {restaurant.distance}
-              </Text>
-            ) : (
-              <></>
-            )}
-            {businessHourStatus && (
-              <BusinessHourLabel
-                status={businessHourStatus}
-                closingTime={closingTime}
-                nextOpeningTime={nextOpeningTime}
-              />
-            )}
-          </Box>
-          {restaurant.isOpen ? (
-            <>
-              <Badge backgroundColor="brand.400" variant="solid" fontSize="sm">
-                ○ 今すぐ入れます！
-              </Badge>
-            </>
+      <ImageStacks
+        restaurantId={restaurant.id}
+        meals={restaurant.meals}
+        interiorImagePath={restaurant.interiorImagePath ?? undefined}
+      />
+      <VStack px={4} alignItems="start" pt={3} spacing={1}>
+        <Heading size="sm" color={restaurant.isOpen ? "black" : "gray"}>
+          {restaurant.name}
+        </Heading>
+        <Box fontSize="xs" opacity={0.6}>
+          {restaurant.distance ? (
+            <Text>
+              <Icon as={FaMapMarkerAlt} mr={1} />
+              現在地から
+              {restaurant.distance}
+            </Text>
           ) : (
-            <Badge backgroundColor="blackAlpha.700" variant="solid" fontSize="sm">
-              × 今は入れません
-            </Badge>
+            <></>
           )}
-        </VStack>
-      </NextLink>
+          {businessHourStatus && (
+            <BusinessHourLabel
+              status={businessHourStatus}
+              closingTime={closingTime}
+              nextOpeningTime={nextOpeningTime}
+            />
+          )}
+        </Box>
+        {restaurant.isOpen ? (
+          <Badge backgroundColor="brand.400" variant="solid" fontSize="sm">
+            ○ 今すぐ入れます！
+          </Badge>
+        ) : (
+          <Badge backgroundColor="blackAlpha.700" variant="solid" fontSize="sm">
+            × 今は入れません
+          </Badge>
+        )}
+      </VStack>
     </>
   );
 }

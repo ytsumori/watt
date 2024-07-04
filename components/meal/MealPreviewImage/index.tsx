@@ -1,6 +1,6 @@
 "use client";
 
-import { transformSupabaseImage } from "@/utils/image/transformSupabaseImage";
+import { getMealImageUrl } from "@/utils/image/getMealImageUrl";
 import { Image, ImageProps } from "@chakra-ui/react";
 
 type Props = {
@@ -9,7 +9,7 @@ type Props = {
 };
 
 export function MealPreviewImage({ src, alt }: Props) {
-  const publicUrl = transformSupabaseImage("meals", src);
+  const publicUrl = getMealImageUrl(src);
 
   return <Image src={publicUrl} alt={alt} objectFit="cover" aspectRatio={1 / 1} borderRadius={8} loading="lazy" />;
 }
