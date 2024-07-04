@@ -11,7 +11,7 @@ export const getSupabaseImageUrl = (
   const supabase = createClientSupabase();
   const { data } = supabase.storage
     .from(bucketName)
-    .getPublicUrl(src, { transform: size ? size : { width: 500, height: 500 } });
+    .getPublicUrl(src, { transform: size ?? { width: 500, height: 500 } });
 
   return data.publicUrl;
 };
