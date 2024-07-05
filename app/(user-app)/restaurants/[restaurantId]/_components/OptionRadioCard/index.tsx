@@ -15,6 +15,7 @@ export function OptionRadioCard(props: Props) {
     <Box as="label">
       <input {...input} />
       <Box
+        h="full"
         {...checkbox}
         cursor="pointer"
         borderWidth="1px"
