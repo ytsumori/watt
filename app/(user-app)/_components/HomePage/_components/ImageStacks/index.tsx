@@ -38,12 +38,7 @@ export function ImageStacks({ restaurantId, meals, interiorImagePath }: Props) {
         />
       )}
       {restMeals.map((meal) => (
-        <MealPreviewBox
-          key={meal.id}
-          meal={meal}
-          href={`restaurants/${restaurantId}?mealId=${firstMeal.id}`}
-          isRouter
-        />
+        <MealPreviewBox key={meal.id} meal={meal} href={`restaurants/${restaurantId}?mealId=${meal.id}`} isRouter />
       ))}
     </HStack>
   );

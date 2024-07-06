@@ -27,13 +27,14 @@ export function MealPrice({ meal, selectedOptions, titlePrefix }: Props) {
         {meal.items.map((item, itemIndex) => {
           const selectedOption = item.options.find((option) => option.id === selectedOptions[itemIndex]);
           return (
-            <Flex w="full" alignItems="flex-start" fontSize="sm" key={item.id}>
+            <Flex w="full" alignItems="end" fontSize="sm" key={item.id} justifyContent="space-between">
               <Text>
                 {item.title}
                 {selectedOption && ` (${selectedOption.title})`}
               </Text>
-              <Spacer />
-              <Text>{(item.price + (selectedOption?.extraPrice ?? 0)).toLocaleString("ja-JP")}円</Text>
+              <Text css={{ textWrap: "nowrap" }}>
+                {(item.price + (selectedOption?.extraPrice ?? 0)).toLocaleString("ja-JP")}円
+              </Text>
             </Flex>
           );
         })}

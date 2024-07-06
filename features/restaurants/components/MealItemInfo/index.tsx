@@ -18,12 +18,9 @@ export function MealItemInfo({ mealItem, selectedOption, onOptionChange }: Props
   const group = getRootProps();
   return (
     <Box key={mealItem.id} w="full">
-      <Flex w="full" justifyContent="space-between">
-        <Text fontSize="sm" as="b">
-          {mealItem.title}
-        </Text>
-        <Text fontSize="xs">単品価格: {mealItem.price.toLocaleString("ja-JP")}円</Text>
-      </Flex>
+      <Text fontSize="sm" as="b">
+        {mealItem.title}
+      </Text>
       <Text whiteSpace="pre-wrap" fontSize="xs" color="blackAlpha.700">
         {mealItem.description}
       </Text>
@@ -34,7 +31,7 @@ export function MealItemInfo({ mealItem, selectedOption, onOptionChange }: Props
               お選びください
             </Text>
           )}
-          <SimpleGrid columns={2} spacing={3} {...group} w="full">
+          <SimpleGrid columns={2} spacing={1} {...group} w="full">
             {mealItem.options.map((option) => {
               const radio = getRadioProps({ value: option.id });
               return (
