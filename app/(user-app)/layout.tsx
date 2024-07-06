@@ -3,13 +3,30 @@ import { options } from "@/lib/next-auth/options";
 import { getServerSession } from "next-auth";
 import prisma from "@/lib/prisma/client";
 
-export default async function UserApp({ children }: { children: React.ReactNode }) {
+export default async function UserApp({ children, modal }: { children: React.ReactNode; modal: React.ReactNode }) {
   const session = await getServerSession(options);
-  if (!session) return <UserAppLayout>{children}</UserAppLayout>;
+  if (!session)
+    return (
+      <UserAppLayout>
+        {children}
+        {modal}
+      </UserAppLayout>
+    );
 
   const sessionUser = session.user;
   const user = await prisma.user.findUnique({ where: { id: sessionUser.id } });
-  if (!user) return <UserAppLayout>{children}</UserAppLayout>;
+  if (!user)
+    return (
+      <UserAppLayout>
+        {children}
+        {modal}
+      </UserAppLayout>
+    );
 
-  return <UserAppLayout user={user}>{children}</UserAppLayout>;
+  return (
+    <UserAppLayout user={user}>
+      {children}
+      {modal}
+    </UserAppLayout>
+  );
 }
