@@ -2,10 +2,8 @@ import prisma from "@/lib/prisma/client";
 import { options } from "@/lib/next-auth/options";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
-import { Metadata } from "next";
-import { findInProgressOrder } from "../../_actions/findInProgressOrder";
-import { getMealImageUrl } from "@/utils/image/getMealImageUrl";
-import { RestaurantPage } from "@/features/restaurants/components/RestaurantPage";
+import { findInProgressOrder } from "@/app/(user-app)/_actions/findInProgressOrder";
+import { RestaurantModalPage } from "@/features/restaurants/components/RestaurantModalPage";
 
 type Params = { params: { restaurantId: string }; searchParams: { mealId?: string } };
 
@@ -33,7 +31,7 @@ export default async function Restaurant({ params, searchParams }: Params) {
     const order = await findInProgressOrder(userId);
 
     return (
-      <RestaurantPage
+      <RestaurantModalPage
         restaurant={restaurant}
         inProgressOrderId={order?.id ?? undefined}
         userId={userId}
@@ -42,20 +40,5 @@ export default async function Restaurant({ params, searchParams }: Params) {
     );
   }
 
-  return <RestaurantPage restaurant={restaurant} defaultMeal={defaultMeal} />;
-}
-
-export async function generateMetadata({ params }: Params): Promise<Metadata | undefined> {
-  const restaurant = await prisma.restaurant.findUnique({
-    where: { id: params.restaurantId },
-    include: { meals: { where: { isDiscarded: false } }, googleMapPlaceInfo: { select: { url: true } } }
-  });
-
-  if (restaurant && restaurant.meals.length > 0) {
-    const url = getMealImageUrl(restaurant.meals[0].imagePath);
-    return {
-      title: `${restaurant.name} | Watt`,
-      openGraph: { images: [url] }
-    };
-  }
+  return <RestaurantModalPage restaurant={restaurant} defaultMeal={defaultMeal} />;
 }
