@@ -195,10 +195,8 @@ export function RestaurantModalPage({ restaurant, inProgressOrderId, userId, def
                           </>
                         ) : (
                           <>
-                            <p>kfdsakfjhalskdhflkajshflkjsah</p>
                             <Divider borderColor="blackAlpha.400" />
                             <Heading size="md">2人目の注文を選択</Heading>
-                            <p>kfdsakfjhalskdhflkajshflkjsah</p>
                             <Box height="full">
                               <MealCarousel
                                 meals={restaurant.meals}
