@@ -136,7 +136,7 @@ export function RestaurantModalPage({ restaurant, inProgressOrderId, userId, def
           <Text fontSize="xs">食べたいセットを選択してください</Text>
         </Box>
         {peopleCount === 2 && <Heading size="md">1人目の注文を選択</Heading>}
-        <Box height="full">
+        <Box>
           <MealCarousel
             meals={restaurant.meals}
             selectedMealId={firstPersonMeal?.id}
