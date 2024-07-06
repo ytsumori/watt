@@ -2,7 +2,7 @@
 
 import { Heading, Divider, Text, Flex, Spacer } from "@chakra-ui/react";
 import { MealPrice } from "../MealPrice";
-import { MealWithItems } from "../../_types/MealWithItems";
+import { MealWithItems } from "../../types/MealWithItems";
 
 type Props = {
   firstPersonMeal: MealWithItems;

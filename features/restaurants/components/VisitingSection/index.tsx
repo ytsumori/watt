@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Divider, Text } from "@chakra-ui/react";
+import { Box, Button, Divider, Text } from "@chakra-ui/react";
 
 type Props = {
   isLoading: boolean;
@@ -16,9 +16,11 @@ export function VisitingSection({ isLoading, onClick }: Props) {
         <br />
         30分以内にお店に向かってください。
       </Text>
-      <Button isLoading={isLoading} onClick={onClick} w="full" maxW="full" size="md">
-        お店に向かう
-      </Button>
+      <Box>
+        <Button isLoading={isLoading} onClick={onClick} w="full" maxW="full" size="md">
+          お店に向かう
+        </Button>
+      </Box>
     </>
   );
 }

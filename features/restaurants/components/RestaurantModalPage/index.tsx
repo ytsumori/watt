@@ -25,8 +25,8 @@ import { MealCarousel } from "../MealCarousel";
 import { PriceSection } from "../PriceSection";
 import { VisitingSection } from "../VisitingSection";
 import { ConfirmModal } from "@/components/confirm-modal";
-import { visitRestaurant } from "../../_actions/visit-restaurant";
-import { MealWithItems } from "../../_types/MealWithItems";
+import { visitRestaurant } from "../../actions/visit-restaurant";
+import { MealWithItems } from "../../types/MealWithItems";
 
 type Props = {
   restaurant: Prisma.RestaurantGetPayload<{
@@ -41,7 +41,7 @@ type Props = {
   defaultMeal?: MealWithItems;
 };
 
-export function RestaurantPage({ restaurant, inProgressOrderId, userId, defaultMeal }: Props) {
+export function RestaurantModalPage({ restaurant, inProgressOrderId, userId, defaultMeal }: Props) {
   const router = useRouter();
   const [isVisitRequesting, setIsVisitRequesting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<{ title: string; description: string }>();
@@ -115,7 +115,20 @@ export function RestaurantPage({ restaurant, inProgressOrderId, userId, defaultM
 
   return (
     <>
-      <VStack w="full" p={4} alignItems="start" spacing={4}>
+      <VStack
+        w="full"
+        p={4}
+        alignItems="start"
+        spacing={4}
+        height="100%"
+        backgroundColor="white"
+        position="absolute"
+        overflowY="scroll"
+        bottom={0}
+      >
+        <Box>
+          <Button onClick={() => router.back()}>戻る</Button>
+        </Box>
         <RestaurantInfo restaurant={restaurant} />
         <Divider borderColor="black" my={6} />
         <Box>
@@ -123,11 +136,13 @@ export function RestaurantPage({ restaurant, inProgressOrderId, userId, defaultM
           <Text fontSize="xs">食べたいセットを選択してください</Text>
         </Box>
         {peopleCount === 2 && <Heading size="md">1人目の注文を選択</Heading>}
-        <MealCarousel
-          meals={restaurant.meals}
-          selectedMealId={firstPersonMeal?.id}
-          onSelectMeal={handleFirstMealSelected}
-        />
+        <Box height="full">
+          <MealCarousel
+            meals={restaurant.meals}
+            selectedMealId={firstPersonMeal?.id}
+            onSelectMeal={handleFirstMealSelected}
+          />
+        </Box>
         {firstPersonMeal && (
           <>
             <MealInfo
@@ -180,46 +195,50 @@ export function RestaurantPage({ restaurant, inProgressOrderId, userId, defaultM
                           </>
                         ) : (
                           <>
+                            <p>kfdsakfjhalskdhflkajshflkjsah</p>
                             <Divider borderColor="blackAlpha.400" />
                             <Heading size="md">2人目の注文を選択</Heading>
-                            <MealCarousel
-                              meals={restaurant.meals}
-                              selectedMealId={secondPersonMeal?.id}
-                              onSelectMeal={handleSecondMealSelected}
-                              additionalBox={
-                                <Center
-                                  minW="150px"
-                                  w="150px"
-                                  h="150px"
-                                  borderRadius={12}
-                                  position="relative"
-                                  borderWidth={secondPersonMeal === null ? 4 : 0}
-                                  borderColor="brand.400"
-                                  backgroundColor="gray.100"
-                                  onClick={() => setSecondPersonMeal(null)}
-                                >
-                                  <Text fontSize="sm" as="b" color="brand.400">
-                                    1人目の注文を
-                                    <br />
-                                    シェアする
-                                  </Text>
-                                  {secondPersonMeal === null && (
-                                    <CheckIcon
-                                      position="absolute"
-                                      top={0}
-                                      right={0}
-                                      backgroundColor="brand.400"
-                                      color="white"
-                                      boxSize={6}
-                                      borderRadius={6}
-                                      m={1}
-                                      p={1}
-                                      aria-label="checked"
-                                    />
-                                  )}
-                                </Center>
-                              }
-                            />
+                            <p>kfdsakfjhalskdhflkajshflkjsah</p>
+                            <Box height="full">
+                              <MealCarousel
+                                meals={restaurant.meals}
+                                selectedMealId={secondPersonMeal?.id}
+                                onSelectMeal={handleSecondMealSelected}
+                                additionalBox={
+                                  <Center
+                                    minW="150px"
+                                    w="150px"
+                                    h="150px"
+                                    borderRadius={12}
+                                    position="relative"
+                                    borderWidth={secondPersonMeal === null ? 4 : 0}
+                                    borderColor="brand.400"
+                                    backgroundColor="gray.100"
+                                    onClick={() => setSecondPersonMeal(null)}
+                                  >
+                                    <Text fontSize="sm" as="b" color="brand.400">
+                                      1人目の注文を
+                                      <br />
+                                      シェアする
+                                    </Text>
+                                    {secondPersonMeal === null && (
+                                      <CheckIcon
+                                        position="absolute"
+                                        top={0}
+                                        right={0}
+                                        backgroundColor="brand.400"
+                                        color="white"
+                                        boxSize={6}
+                                        borderRadius={6}
+                                        m={1}
+                                        p={1}
+                                        aria-label="checked"
+                                      />
+                                    )}
+                                  </Center>
+                                }
+                              />
+                            </Box>
                             {secondPersonMeal !== undefined ? (
                               <>
                                 {secondPersonMeal !== null && secondMealSelectedOptions ? (

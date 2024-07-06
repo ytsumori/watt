@@ -4,7 +4,7 @@ import { HStack } from "@chakra-ui/react";
 import { MealPreviewBox } from "@/components/meal/MealPreviewBox";
 import { Prisma } from "@prisma/client";
 import { CheckIcon } from "@chakra-ui/icons";
-import { MealWithItems } from "../../_types/MealWithItems";
+import { MealWithItems } from "../../types/MealWithItems";
 
 type Props = {
   meals: MealWithItems[];
