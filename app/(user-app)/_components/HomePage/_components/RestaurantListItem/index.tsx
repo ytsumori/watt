@@ -1,22 +1,14 @@
-"use client";
-
 import { Heading, Badge, VStack, Text, Icon, Box } from "@chakra-ui/react";
 import { RestaurantWithDistance } from "../../_types/RestaurantWithDistance";
 import { FaMapMarkerAlt } from "react-icons/fa";
 import { ImageStacks } from "../ImageStacks";
 import { BusinessHourLabel } from "./_components/BusinessHourLabel";
-import { useEffect, useState } from "react";
 
 type Props = {
   restaurant: RestaurantWithDistance;
 };
 
 export function RestaurantListItem({ restaurant }: Props) {
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
   return (
     <>
       <ImageStacks
