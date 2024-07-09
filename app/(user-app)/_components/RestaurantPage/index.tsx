@@ -104,6 +104,7 @@ export function RestaurantPage({ restaurant, inProgressOrderId, userId, defaultM
     })
       .then((order) => {
         router.push(`/orders/${order.id}`);
+        router.refresh();
       })
       .catch(() => {
         setIsVisitRequesting(false);
