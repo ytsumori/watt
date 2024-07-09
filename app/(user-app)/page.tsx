@@ -1,6 +1,5 @@
 import HomePage from "@/app/(user-app)/_components/HomePage";
 import prisma from "@/lib/prisma/client";
-import { dayNumberToDayOfWeek } from "@/utils/day-of-week";
 
 export default async function Home() {
   const restaurants = await prisma.restaurant.findMany({
@@ -12,12 +11,6 @@ export default async function Home() {
       },
       googleMapPlaceInfo: { select: { latitude: true, longitude: true } },
       openingHours: {
-        where: {
-          OR: [
-            { openDayOfWeek: dayNumberToDayOfWeek(new Date().getDay()) },
-            { closeDayOfWeek: dayNumberToDayOfWeek(new Date().getDay()) }
-          ]
-        },
         select: {
           openHour: true,
           openMinute: true,
