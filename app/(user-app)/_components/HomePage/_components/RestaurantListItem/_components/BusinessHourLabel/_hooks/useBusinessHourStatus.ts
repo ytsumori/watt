@@ -85,19 +85,31 @@ export function useBusinessHourStatus(openingHours: RestaurantWithDistance["open
         }
       | undefined
     >((accumulator, currentValue) => {
-      if (currentValue.openDayOfWeek === currentDay) {
-        if (
-          currentValue.openHour > currentHour ||
-          (currentValue.openHour === currentHour && currentValue.openMinute > currentMinute)
-        ) {
-          if (!accumulator || accumulator.openHour > currentValue.openHour) {
-            return currentValue;
-          }
+      if (
+        currentDay === currentValue.openDayOfWeek &&
+        (currentHour < currentValue.openHour ||
+          (currentHour === currentValue.openHour && currentMinute < currentValue.openMinute))
+      ) {
+        if (!accumulator) return currentValue;
+        if (accumulator.openDayOfWeek === tomorrowDay) return currentValue;
+
+        if (currentValue.openHour < accumulator.openHour) return currentValue;
+      } else if (tomorrowDay === currentValue.openDayOfWeek) {
+        if (!accumulator) return currentValue;
+
+        if (accumulator.openDayOfWeek === tomorrowDay && currentValue.openHour < accumulator.openHour) {
+          return currentValue;
         }
       }
+      return accumulator;
     }, undefined);
-    return nextOpeningHour ? { hour: nextOpeningHour.openHour, minute: nextOpeningHour.openMinute } : undefined;
-  }, [currentDay, currentHour, currentMinute, utcOpeningHours]);
+    return nextOpeningHour
+      ? {
+          hour: nextOpeningHour.openHour,
+          minute: nextOpeningHour.openMinute
+        }
+      : undefined;
+  }, [currentDay, currentHour, currentMinute, tomorrowDay, utcOpeningHours]);
 
   const businessHourStatus = useMemo(() => {
     if (openingHours.length === 0) {
@@ -159,8 +171,8 @@ function getUTCFromJST(dayOfWeek: number, hour: number, minute: number) {
 
 function getJSTStringFromUTC(hour: number, minute: number) {
   const jstHour = hour + 9;
-  if (jstHour > 23) {
-    return `${jstHour - 24}:${minute.toString().padStart(2, "0")}`;
+  if (jstHour >= 24) {
+    return `明日 ${jstHour - 24}:${minute.toString().padStart(2, "0")}`;
   }
 
   return `${jstHour}:${minute.toString().padStart(2, "0")}`;
