@@ -14,19 +14,20 @@ import {
   Center
 } from "@chakra-ui/react";
 import { Prisma } from "@prisma/client";
-import { RestaurantInfo } from "../RestaurantInfo";
 import { useState } from "react";
 import { CheckIcon } from "@chakra-ui/icons";
 import { signIn } from "next-auth/react";
 import NextLink from "next/link";
 import { useRouter } from "next/navigation";
-import { MealInfo } from "../MealInfo";
-import { MealCarousel } from "../MealCarousel";
-import { PriceSection } from "../PriceSection";
-import { VisitingSection } from "../VisitingSection";
+import { MealWithItems } from "./types/MealWithItems";
+import React from "react";
+import { RestaurantInfo } from "./components/RestaurantInfo";
+import { MealCarousel } from "./components/MealCarousel";
+import { MealInfo } from "./components/MealInfo";
+import { PriceSection } from "./components/PriceSection";
+import { VisitingSection } from "./components/VisitingSection";
+import { visitRestaurant } from "./actions/visit-restaurant";
 import { ConfirmModal } from "@/components/confirm-modal";
-import { visitRestaurant } from "../../_actions/visit-restaurant";
-import { MealWithItems } from "../../_types/MealWithItems";
 
 type Props = {
   restaurant: Prisma.RestaurantGetPayload<{
@@ -103,6 +104,7 @@ export function RestaurantPage({ restaurant, inProgressOrderId, userId, defaultM
     })
       .then((order) => {
         router.push(`/orders/${order.id}`);
+        router.refresh();
       })
       .catch(() => {
         setIsVisitRequesting(false);
@@ -119,7 +121,7 @@ export function RestaurantPage({ restaurant, inProgressOrderId, userId, defaultM
         <RestaurantInfo restaurant={restaurant} />
         <Divider borderColor="black" my={6} />
         <Box>
-          <Heading size="lg">メニューを選択</Heading>
+          <Heading size="sm">メニューを選択</Heading>
           <Text fontSize="xs">食べたいセットを選択してください</Text>
         </Box>
         {peopleCount === 2 && <Heading size="md">1人目の注文を選択</Heading>}

@@ -2,7 +2,7 @@
 
 import { VStack, Text, Flex, Spacer, Box, HStack } from "@chakra-ui/react";
 import NextImage from "next/image";
-import { MealWithItems } from "../../_types/MealWithItems";
+import { MealWithItems } from "../../types/MealWithItems";
 
 type Props = {
   meal: MealWithItems;

@@ -1,7 +1,7 @@
 "use client";
 
 import { Box, Flex, SimpleGrid, Text, useRadioGroup } from "@chakra-ui/react";
-import { MealWithItems } from "../../_types/MealWithItems";
+import { MealWithItems } from "../../types/MealWithItems";
 import { OptionRadioCard } from "../OptionRadioCard";
 
 type Props = {

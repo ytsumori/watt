@@ -1,7 +1,7 @@
 "use client";
 
 import { Box, Divider, Heading, Text, VStack } from "@chakra-ui/react";
-import { MealWithItems } from "../../_types/MealWithItems";
+import { MealWithItems } from "../../types/MealWithItems";
 import { MealItemInfo } from "../MealItemInfo";
 
 type Props = {
