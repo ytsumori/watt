@@ -3,7 +3,7 @@ import { options } from "@/lib/next-auth/options";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { findInProgressOrder } from "@/app/(user-app)/_actions/findInProgressOrder";
-import { RestaurantModalPage } from "@/features/restaurants/components/RestaurantModalPage";
+import { RestaurantModalPage } from "@/app/(user-app)/@modal/(.)restaurants/[restaurantId]/_components/RestaurantModalPage";
 
 type Params = { params: { restaurantId: string }; searchParams: { mealId?: string } };
 

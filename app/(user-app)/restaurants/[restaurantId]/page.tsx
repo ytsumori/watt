@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { Metadata } from "next";
 import { findInProgressOrder } from "../../_actions/findInProgressOrder";
 import { getMealImageUrl } from "@/utils/image/getMealImageUrl";
-import { RestaurantPage } from "@/features/restaurants/components/RestaurantPage";
+import { RestaurantPage } from "../../_components/RestaurantPage";
 
 type Params = { params: { restaurantId: string }; searchParams: { mealId?: string } };
 

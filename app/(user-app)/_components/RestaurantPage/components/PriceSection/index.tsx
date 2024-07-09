@@ -32,7 +32,7 @@ export function PriceSection({
   }
   return (
     <>
-      <Heading size="lg">ご注文内容の確認</Heading>
+      <Heading size="sm">ご注文内容の確認</Heading>
       <MealPrice
         meal={firstPersonMeal}
         titlePrefix={secondPersonMeal ? "1人目: " : undefined}

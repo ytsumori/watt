@@ -14,19 +14,20 @@ import {
   Center
 } from "@chakra-ui/react";
 import { Prisma } from "@prisma/client";
-import { RestaurantInfo } from "../RestaurantInfo";
 import { useState } from "react";
 import { CheckIcon } from "@chakra-ui/icons";
 import { signIn } from "next-auth/react";
 import NextLink from "next/link";
 import { useRouter } from "next/navigation";
-import { MealInfo } from "../MealInfo";
-import { MealCarousel } from "../MealCarousel";
-import { PriceSection } from "../PriceSection";
-import { VisitingSection } from "../VisitingSection";
+import { MealWithItems } from "./types/MealWithItems";
+import React from "react";
+import { RestaurantInfo } from "./components/RestaurantInfo";
+import { MealCarousel } from "./components/MealCarousel";
+import { MealInfo } from "./components/MealInfo";
+import { PriceSection } from "./components/PriceSection";
+import { VisitingSection } from "./components/VisitingSection";
+import { visitRestaurant } from "./actions/visit-restaurant";
 import { ConfirmModal } from "@/components/confirm-modal";
-import { visitRestaurant } from "../../actions/visit-restaurant";
-import { MealWithItems } from "../../types/MealWithItems";
 
 type Props = {
   restaurant: Prisma.RestaurantGetPayload<{
@@ -41,7 +42,7 @@ type Props = {
   defaultMeal?: MealWithItems;
 };
 
-export function RestaurantModalPage({ restaurant, inProgressOrderId, userId, defaultMeal }: Props) {
+export function RestaurantPage({ restaurant, inProgressOrderId, userId, defaultMeal }: Props) {
   const router = useRouter();
   const [isVisitRequesting, setIsVisitRequesting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<{ title: string; description: string }>();
@@ -115,34 +116,19 @@ export function RestaurantModalPage({ restaurant, inProgressOrderId, userId, def
 
   return (
     <>
-      <VStack
-        w="full"
-        p={4}
-        alignItems="start"
-        spacing={4}
-        height="100%"
-        backgroundColor="white"
-        position="absolute"
-        overflowY="scroll"
-        bottom={0}
-      >
-        <Box>
-          <Button onClick={() => router.back()}>戻る</Button>
-        </Box>
+      <VStack w="full" p={4} alignItems="start" spacing={4}>
         <RestaurantInfo restaurant={restaurant} />
         <Divider borderColor="black" my={6} />
         <Box>
-          <Heading size="lg">メニューを選択</Heading>
+          <Heading size="sm">メニューを選択</Heading>
           <Text fontSize="xs">食べたいセットを選択してください</Text>
         </Box>
         {peopleCount === 2 && <Heading size="md">1人目の注文を選択</Heading>}
-        <Box>
-          <MealCarousel
-            meals={restaurant.meals}
-            selectedMealId={firstPersonMeal?.id}
-            onSelectMeal={handleFirstMealSelected}
-          />
-        </Box>
+        <MealCarousel
+          meals={restaurant.meals}
+          selectedMealId={firstPersonMeal?.id}
+          onSelectMeal={handleFirstMealSelected}
+        />
         {firstPersonMeal && (
           <>
             <MealInfo
@@ -197,46 +183,44 @@ export function RestaurantModalPage({ restaurant, inProgressOrderId, userId, def
                           <>
                             <Divider borderColor="blackAlpha.400" />
                             <Heading size="md">2人目の注文を選択</Heading>
-                            <Box height="full">
-                              <MealCarousel
-                                meals={restaurant.meals}
-                                selectedMealId={secondPersonMeal?.id}
-                                onSelectMeal={handleSecondMealSelected}
-                                additionalBox={
-                                  <Center
-                                    minW="150px"
-                                    w="150px"
-                                    h="150px"
-                                    borderRadius={12}
-                                    position="relative"
-                                    borderWidth={secondPersonMeal === null ? 4 : 0}
-                                    borderColor="brand.400"
-                                    backgroundColor="gray.100"
-                                    onClick={() => setSecondPersonMeal(null)}
-                                  >
-                                    <Text fontSize="sm" as="b" color="brand.400">
-                                      1人目の注文を
-                                      <br />
-                                      シェアする
-                                    </Text>
-                                    {secondPersonMeal === null && (
-                                      <CheckIcon
-                                        position="absolute"
-                                        top={0}
-                                        right={0}
-                                        backgroundColor="brand.400"
-                                        color="white"
-                                        boxSize={6}
-                                        borderRadius={6}
-                                        m={1}
-                                        p={1}
-                                        aria-label="checked"
-                                      />
-                                    )}
-                                  </Center>
-                                }
-                              />
-                            </Box>
+                            <MealCarousel
+                              meals={restaurant.meals}
+                              selectedMealId={secondPersonMeal?.id}
+                              onSelectMeal={handleSecondMealSelected}
+                              additionalBox={
+                                <Center
+                                  minW="150px"
+                                  w="150px"
+                                  h="150px"
+                                  borderRadius={12}
+                                  position="relative"
+                                  borderWidth={secondPersonMeal === null ? 4 : 0}
+                                  borderColor="brand.400"
+                                  backgroundColor="gray.100"
+                                  onClick={() => setSecondPersonMeal(null)}
+                                >
+                                  <Text fontSize="sm" as="b" color="brand.400">
+                                    1人目の注文を
+                                    <br />
+                                    シェアする
+                                  </Text>
+                                  {secondPersonMeal === null && (
+                                    <CheckIcon
+                                      position="absolute"
+                                      top={0}
+                                      right={0}
+                                      backgroundColor="brand.400"
+                                      color="white"
+                                      boxSize={6}
+                                      borderRadius={6}
+                                      m={1}
+                                      p={1}
+                                      aria-label="checked"
+                                    />
+                                  )}
+                                </Center>
+                              }
+                            />
                             {secondPersonMeal !== undefined ? (
                               <>
                                 {secondPersonMeal !== null && secondMealSelectedOptions ? (
