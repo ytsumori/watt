@@ -6,8 +6,9 @@ import { Prisma } from "@prisma/client";
 import { Alert, Button, Center, useDisclosure, Text, VStack, Spinner, Box, Heading } from "@chakra-ui/react";
 import { ConfirmModal } from "@/components/confirm-modal";
 import { MealPreviewImage } from "@/components/meal/MealPreviewImage";
-import { cancelOrder, findOrder } from "./_actions";
 import { getMealImageUrl } from "@/utils/image/getMealImageUrl";
+import { findOrder } from "./_actions/find-order";
+import { cancelOrder } from "./_actions/cancel-order";
 
 export default function RejectOrder({ params }: { params: { orderId: string } }) {
   const restaurantId = useContext(RestaurantIdContext);
