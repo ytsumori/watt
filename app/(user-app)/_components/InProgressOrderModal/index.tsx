@@ -3,6 +3,7 @@
 import { useDisclosure, Text } from "@chakra-ui/react";
 import { ConfirmModal } from "@/components/confirm-modal";
 import { usePathname, useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 type Props = {
   inProgressOrderId?: string;
@@ -11,7 +12,13 @@ type Props = {
 export function InProgressOrderModal({ inProgressOrderId }: Props) {
   const router = useRouter();
   const pathname = usePathname();
-  const { isOpen, onClose } = useDisclosure({ defaultIsOpen: !!inProgressOrderId && !pathname.startsWith("/orders") });
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
+  useEffect(() => {
+    if (inProgressOrderId && !pathname.startsWith("/orders")) {
+      onOpen();
+    }
+  }, [inProgressOrderId, onOpen, pathname]);
 
   return (
     <ConfirmModal
