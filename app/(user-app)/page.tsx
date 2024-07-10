@@ -5,7 +5,7 @@ export default async function Home() {
   const restaurants = await prisma.restaurant.findMany({
     include: {
       meals: {
-        where: { isDiscarded: false },
+        where: { isInactive: false },
         orderBy: { price: "asc" },
         select: { id: true, title: true, price: true, imagePath: true }
       },
@@ -21,7 +21,7 @@ export default async function Home() {
         }
       }
     },
-    where: { meals: { some: { isDiscarded: false } } },
+    where: { meals: { some: { isInactive: false } } },
     orderBy: { isOpen: "desc" }
   });
   return <HomePage restaurants={restaurants} />;

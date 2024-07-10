@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
     where: {
       meals: {
         some: {
-          isDiscarded: false
+          isInactive: false
         }
       }
     }

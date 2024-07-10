@@ -12,7 +12,7 @@ export default async function Restaurant({ params, searchParams }: Params) {
     where: { id: params.restaurantId },
     include: {
       meals: {
-        where: { isDiscarded: false },
+        where: { isInactive: false },
         orderBy: { price: "asc" },
         include: { items: { include: { options: true } } }
       },

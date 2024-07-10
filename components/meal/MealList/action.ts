@@ -26,13 +26,13 @@ export async function getMeals(restaurantId: string) {
   });
 }
 
-export async function discardMeal({ id }: { id: string }) {
+export async function inactivateMeal({ id }: { id: string }) {
   return await prisma.meal.update({
     where: {
       id
     },
     data: {
-      isDiscarded: true
+      isInactive: true
     }
   });
 }
@@ -43,7 +43,7 @@ export async function activateMeal({ id }: { id: string }) {
       id
     },
     data: {
-      isDiscarded: false
+      isInactive: false
     }
   });
 }

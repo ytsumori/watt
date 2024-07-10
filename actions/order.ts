@@ -26,7 +26,7 @@ export async function createOrder({
     select: {
       id: true,
       price: true,
-      isDiscarded: true,
+      isInactive: true,
       restaurant: { select: { phoneNumber: true } },
       items: { select: { options: { select: { id: true, extraPrice: true } } } }
     }
@@ -34,8 +34,8 @@ export async function createOrder({
 
   if (!firstMeal) {
     throw new Error("First meal not found");
-  } else if (firstMeal.isDiscarded) {
-    throw new Error("First meal is discarded");
+  } else if (firstMeal.isInactive) {
+    throw new Error("First meal is inactive");
   } else if (
     firstMeal.items.some((item, index) => {
       const optionId = firstOptionIds[index];
@@ -63,15 +63,15 @@ export async function createOrder({
       where: { id: secondMealId, restaurantId },
       select: {
         id: true,
-        isDiscarded: true,
+        isInactive: true,
         price: true,
         items: { select: { options: { select: { id: true, extraPrice: true } } } }
       }
     });
     if (!secondMeal) {
       throw new Error("Second meal not found");
-    } else if (secondMeal.isDiscarded) {
-      throw new Error("Second meal is discarded");
+    } else if (secondMeal.isInactive) {
+      throw new Error("Second meal is inactive");
     } else if (
       secondMeal.items.some((item, index) => {
         const optionId = secondOptionIds[index];
