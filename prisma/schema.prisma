@@ -159,7 +159,8 @@ model Meal {
   price        Int
   title        String
   description  String
-  isDiscarded  Boolean     @default(false)
+  isInactive   Boolean     @default(false)
+  outdatedAt   DateTime?
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @default(now()) @updatedAt
   restaurant   Restaurant  @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
