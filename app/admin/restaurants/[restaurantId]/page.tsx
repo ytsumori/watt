@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma/client";
-import { Heading, VStack, Text, Button } from "@chakra-ui/react";
+import { Heading, VStack, Text } from "@chakra-ui/react";
 import { RestaurantBankAccount } from "./_components/restaurant-bank-account";
 import { SmokingSelect } from "./_components/SmokingSelect";
 import { PaymentOptionCheckboxGroup } from "./_components/PaymentOptionCheckboxGroup";
