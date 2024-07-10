@@ -14,7 +14,7 @@ export default async function Restaurant({ params, searchParams }: Params) {
     where: { id: params.restaurantId },
     include: {
       meals: {
-        where: { isDiscarded: false },
+        where: { isInactive: false, outdatedAt: null },
         orderBy: { price: "asc" },
         include: { items: { include: { options: true } } }
       },
@@ -48,7 +48,7 @@ export default async function Restaurant({ params, searchParams }: Params) {
 export async function generateMetadata({ params }: Params): Promise<Metadata | undefined> {
   const restaurant = await prisma.restaurant.findUnique({
     where: { id: params.restaurantId },
-    include: { meals: { where: { isDiscarded: false } }, googleMapPlaceInfo: { select: { url: true } } }
+    include: { meals: { where: { isInactive: false } }, googleMapPlaceInfo: { select: { url: true } } }
   });
 
   if (restaurant && restaurant.meals.length > 0) {

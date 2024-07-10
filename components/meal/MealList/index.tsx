@@ -5,7 +5,7 @@ import { Button, Flex, HStack, Heading, VStack, useDisclosure } from "@chakra-ui
 import { Prisma } from "@prisma/client";
 import { useState } from "react";
 import { MealFormModal } from "../MealFormModal";
-import { activateMeal, discardMeal, getMeals } from "./action";
+import { activateMeal, inactivateMeal, getMeals } from "./action";
 
 type MealProp = Prisma.MealGetPayload<{
   include: { items: { include: { options: true } }; orders: { select: { id: true } } };
@@ -19,16 +19,14 @@ type Props = {
 export function MealList({ restaurantId, defaultMeals }: Props) {
   const { isOpen: isMealFormOpen, onOpen: onMealFormOpen, onClose: onMealFormClose } = useDisclosure();
 
-  const [meals, setMeals] = useState<MealProp[]>(defaultMeals?.filter((meal) => !meal.isDiscarded) ?? []);
-  const [discardedMeals, setDiscardedMeals] = useState<MealProp[]>(
-    defaultMeals?.filter((meal) => meal.isDiscarded) ?? []
-  );
+  const [meals, setMeals] = useState<MealProp[]>(defaultMeals?.filter((meal) => !meal.isInactive) ?? []);
+  const [inactiveMeals, setInactiveMeals] = useState<MealProp[]>(defaultMeals?.filter((meal) => meal.isInactive) ?? []);
   const [editingMeal, setEditingMeal] = useState<MealProp>();
 
   const revalidateMeals = () => {
     getMeals(restaurantId).then((meals) => {
-      setMeals(meals.filter((meal) => !meal.isDiscarded));
-      setDiscardedMeals(meals.filter((meal) => meal.isDiscarded));
+      setMeals(meals.filter((meal) => !meal.isInactive));
+      setInactiveMeals(meals.filter((meal) => meal.isInactive));
     });
   };
 
@@ -37,8 +35,8 @@ export function MealList({ restaurantId, defaultMeals }: Props) {
     onMealFormOpen();
   };
 
-  const handleClickDiscard = async (mealId: string) => {
-    discardMeal({ id: mealId }).then(() => {
+  const handleClickInactivate = async (mealId: string) => {
+    inactivateMeal({ id: mealId }).then(() => {
       revalidateMeals();
     });
   };
@@ -58,33 +56,28 @@ export function MealList({ restaurantId, defaultMeals }: Props) {
         </Flex>
         <Heading size="sm">提供中</Heading>
         <Flex wrap="wrap" justify="space-evenly" gap={4}>
-          {meals.map((meal) => {
-            const isEditable = meal.orders.length === 0;
-            return (
-              <MealCard
-                key={meal.id}
-                meal={meal}
-                button={
-                  <HStack>
-                    {isEditable && (
-                      <Button variant="outline" onClick={() => handleClickEdit(meal)}>
-                        編集する
-                      </Button>
-                    )}
-                    <Button variant="solid" colorScheme="red" onClick={() => handleClickDiscard(meal.id)}>
-                      取り消す
-                    </Button>
-                  </HStack>
-                }
-              />
-            );
-          })}
+          {meals.map((meal) => (
+            <MealCard
+              key={meal.id}
+              meal={meal}
+              button={
+                <HStack>
+                  <Button variant="outline" onClick={() => handleClickEdit(meal)}>
+                    編集する
+                  </Button>
+                  <Button variant="solid" colorScheme="red" onClick={() => handleClickInactivate(meal.id)}>
+                    取り消す
+                  </Button>
+                </HStack>
+              }
+            />
+          ))}
         </Flex>
         <Heading size="sm" textColor="gray">
           取り消し済み
         </Heading>
         <Flex wrap="wrap" justify="space-evenly" gap={4}>
-          {discardedMeals.map((meal) => {
+          {inactiveMeals.map((meal) => {
             const isEditable = meal.orders.length === 0;
             return (
               <MealCard
