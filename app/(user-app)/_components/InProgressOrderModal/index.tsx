@@ -1,35 +1,37 @@
 "use client";
 
-import { useDisclosure, Text } from "@chakra-ui/react";
+import { Text } from "@chakra-ui/react";
 import { ConfirmModal } from "@/components/confirm-modal";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { getInProgressOrder } from "./actions/getInProgressOrder";
 
-type Props = {
-  inProgressOrderId?: string;
-};
-
-export function InProgressOrderModal({ inProgressOrderId }: Props) {
+export function InProgressOrderModal() {
   const router = useRouter();
   const pathname = usePathname();
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [inProgressOrderId, setInProgressOrderId] = useState<string>();
 
   useEffect(() => {
-    if (inProgressOrderId && !pathname.startsWith("/orders")) {
-      onOpen();
+    if (!pathname.startsWith("/orders")) {
+      console.log("hello");
+      getInProgressOrder().then((order) => {
+        if (order) {
+          setInProgressOrderId(order.id);
+        }
+      });
     }
-  }, [inProgressOrderId, onOpen, pathname]);
+  }, [pathname]);
 
   return (
     <ConfirmModal
-      isOpen={isOpen}
-      onClose={onClose}
+      isOpen={inProgressOrderId !== undefined}
+      onClose={() => setInProgressOrderId(undefined)}
       title="すでにお店に向かっている注文があります"
       confirmButton={{
         label: "注文ページに移動する",
         onClick: () => {
           router.push(`/orders/${inProgressOrderId}`);
-          onClose();
+          setInProgressOrderId(undefined);
         }
       }}
     >

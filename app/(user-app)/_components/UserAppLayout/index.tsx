@@ -24,6 +24,7 @@ import NextLink from "next/link";
 import Image from "next/image";
 import { User } from "@prisma/client";
 import { OnboardingModal } from "../OnboardingModal";
+import { InProgressOrderModal } from "../InProgressOrderModal";
 
 type Props = {
   children: React.ReactNode;
@@ -107,6 +108,7 @@ export default function UserAppLayout({ children, user }: Props) {
         {children}
       </Flex>
       <OnboardingModal />
+      <InProgressOrderModal />
     </>
   );
 }
