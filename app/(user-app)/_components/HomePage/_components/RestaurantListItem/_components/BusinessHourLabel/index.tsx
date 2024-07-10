@@ -20,7 +20,7 @@ export function BusinessHourLabel({ openingHours }: Props) {
           <Text as="span" color="green">
             営業中
           </Text>
-          {closingTime && `・営業終了: ${closingTime}${nextOpeningTime ? `・再開時間: ${nextOpeningTime}` : ""}`}
+          {closingTime && `・営業終了: ${closingTime}`}
         </Text>
       );
     case "closed":
@@ -38,7 +38,7 @@ export function BusinessHourLabel({ openingHours }: Props) {
           <Text as="span" color="brown">
             まもなく閉店
           </Text>
-          {closingTime && `・営業終了: ${closingTime}${nextOpeningTime ? `・再開時間: ${nextOpeningTime}` : ""}`}
+          {closingTime && `・営業終了: ${closingTime}`}
         </Text>
       );
     case "opening":
