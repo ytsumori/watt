@@ -13,7 +13,6 @@ export function InProgressOrderModal() {
 
   useEffect(() => {
     if (!pathname.startsWith("/orders")) {
-      console.log("hello");
       getInProgressOrder().then((order) => {
         if (order) {
           setInProgressOrderId(order.id);
