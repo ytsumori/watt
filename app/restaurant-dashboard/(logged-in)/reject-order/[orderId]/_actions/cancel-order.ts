@@ -3,18 +3,20 @@
 import { updateIsOpen } from "@/actions/restaurant";
 import prisma from "@/lib/prisma/client";
 import { sendMessage } from "@/lib/xoxzo";
-
-export async function findOrder({ orderId, restaurantId }: { orderId: string; restaurantId: string }) {
-  return await prisma.order.findUnique({
-    where: { id: orderId, restaurantId },
-    include: { meals: { include: { meal: true } } }
-  });
-}
+import { logger } from "@/utils/logger";
+import { notifySlackOrderRejection } from "./notify-slack-order-rejection";
 
 export async function cancelOrder(orderId: string) {
   const order = await prisma.order.findUnique({
     where: { id: orderId },
-    include: { user: true }
+    include: {
+      user: true,
+      restaurant: {
+        select: {
+          name: true
+        }
+      }
+    }
   });
 
   if (!order) {
@@ -29,14 +31,14 @@ export async function cancelOrder(orderId: string) {
 
   if (!order.user.phoneNumber) throw new Error("User has no phone number");
 
-  try {
-    await sendMessage(
-      order.user.phoneNumber,
-      `お店が満席のため、注文(#${order.orderNumber})がキャンセルされました。詳しくはWattをご確認ください。`
-    );
-  } catch (e) {
-    console.error("Error notifying user", e);
-  }
+  await sendMessage(
+    order.user.phoneNumber,
+    `お店が満席のため、注文(#${order.orderNumber})がキャンセルされました。詳しくはWattをご確認ください。`
+  ).catch((e) => logger({ severity: "ERROR", message: "Error sending message", payload: { e } }));
+
+  await notifySlackOrderRejection({ restaurantName: order.restaurant.name }).catch((e) =>
+    logger({ severity: "ERROR", message: "Error notifying slack of order rejection", payload: { e } })
+  );
 
   return await prisma.order.findUnique({
     where: { id: orderId },

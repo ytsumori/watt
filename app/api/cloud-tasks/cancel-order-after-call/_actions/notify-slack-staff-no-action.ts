@@ -2,7 +2,7 @@
 
 import { sendSlackMessage } from "@/lib/slack";
 
-export async function notifySlack({ restaurantNames }: { restaurantNames: string[] }) {
+export async function notifySlackStaffNoAction({ restaurantName }: { restaurantName: string }) {
   await sendSlackMessage({
     channel: "partnerSuccess",
     blocks: [
@@ -10,7 +10,7 @@ export async function notifySlack({ restaurantNames }: { restaurantNames: string
         type: "section",
         text: {
           type: "mrkdwn",
-          text: ":warning:2日以上閉まり続けているお店があります:warning:"
+          text: ":rotating_light:電話通知後に対応がなくキャンセルになった注文がありました:rotating_light:"
         }
       },
       {
@@ -21,7 +21,7 @@ export async function notifySlack({ restaurantNames }: { restaurantNames: string
         elements: [
           {
             type: "mrkdwn",
-            text: `閉まり続けているお店:\n*${restaurantNames.join("\n")}*`
+            text: `対応しなかったお店:\n*${restaurantName}*`
           }
         ]
       }

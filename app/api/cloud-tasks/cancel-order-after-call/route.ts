@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma/client";
 import { notifyStaffNoActionCancellation } from "./_actions/notify-staff-no-action-cancellation";
 import { sendMessage } from "@/lib/xoxzo";
-import { notifySlack } from "./_actions/notify-slack";
 import { updateIsOpen } from "@/actions/restaurant";
+import { logger } from "@/utils/logger";
+import { notifySlackStaffNoAction } from "./_actions/notify-slack-staff-no-action";
 
 export async function POST(request: NextRequest) {
   const authHeader = request.headers.get("authorization");
@@ -43,18 +44,12 @@ export async function POST(request: NextRequest) {
     `お店が満席のため、注文(#${order.orderNumber})がキャンセルされました。詳しくはWattをご確認ください。`
   );
 
-  try {
-    await notifyStaffNoActionCancellation({ orderId: body.orderId });
-  } catch (e) {
-    console.error("Error cancelling order", e);
-    return NextResponse.json({ message: "Error cancelling order" }, { status: 500 });
-  }
-  try {
-    await notifySlack({ restaurantName: order.restaurant.name });
-  } catch (e) {
-    console.error("Error notifying slack", e);
-    return NextResponse.json({ message: "Error notifying slack" }, { status: 500 });
-  }
+  await notifyStaffNoActionCancellation({ orderId: body.orderId }).catch((e) =>
+    logger({ severity: "ERROR", message: "Error notifying staff of no action cancellation", payload: { e } })
+  );
+  await notifySlackStaffNoAction({ restaurantName: order.restaurant.name }).catch((e) =>
+    logger({ severity: "ERROR", message: "Error notifying slack of no action cancellation", payload: { e } })
+  );
 
   return NextResponse.json({ message: "success" });
 }
