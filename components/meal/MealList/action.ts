@@ -18,7 +18,8 @@ export async function getMeals(restaurantId: string) {
       }
     },
     where: {
-      restaurantId
+      restaurantId,
+      outdatedAt: null
     },
     orderBy: {
       price: "asc"

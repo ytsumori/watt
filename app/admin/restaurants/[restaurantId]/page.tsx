@@ -33,6 +33,9 @@ export default async function RestaurantPage({ params, searchParams }: PageProps
               id: true
             }
           }
+        },
+        where: {
+          outdatedAt: null
         }
       },
       smokingOption: true,

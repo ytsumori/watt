@@ -5,7 +5,7 @@ export default async function Home() {
   const restaurants = await prisma.restaurant.findMany({
     include: {
       meals: {
-        where: { isInactive: false },
+        where: { isInactive: false, outdatedAt: null },
         orderBy: { price: "asc" },
         select: { id: true, title: true, price: true, imagePath: true }
       },

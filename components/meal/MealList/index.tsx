@@ -56,27 +56,22 @@ export function MealList({ restaurantId, defaultMeals }: Props) {
         </Flex>
         <Heading size="sm">提供中</Heading>
         <Flex wrap="wrap" justify="space-evenly" gap={4}>
-          {meals.map((meal) => {
-            const isEditable = meal.orders.length === 0;
-            return (
-              <MealCard
-                key={meal.id}
-                meal={meal}
-                button={
-                  <HStack>
-                    {isEditable && (
-                      <Button variant="outline" onClick={() => handleClickEdit(meal)}>
-                        編集する
-                      </Button>
-                    )}
-                    <Button variant="solid" colorScheme="red" onClick={() => handleClickInactivate(meal.id)}>
-                      取り消す
-                    </Button>
-                  </HStack>
-                }
-              />
-            );
-          })}
+          {meals.map((meal) => (
+            <MealCard
+              key={meal.id}
+              meal={meal}
+              button={
+                <HStack>
+                  <Button variant="outline" onClick={() => handleClickEdit(meal)}>
+                    編集する
+                  </Button>
+                  <Button variant="solid" colorScheme="red" onClick={() => handleClickInactivate(meal.id)}>
+                    取り消す
+                  </Button>
+                </HStack>
+              }
+            />
+          ))}
         </Flex>
         <Heading size="sm" textColor="gray">
           取り消し済み

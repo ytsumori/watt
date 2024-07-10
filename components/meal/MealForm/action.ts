@@ -19,6 +19,8 @@ export async function submit(formData: FormData) {
     const meal = await prisma.meal.findUnique({
       where: { id: submission.value.id },
       select: {
+        id: true,
+        imagePath: true,
         orders: {
           select: {
             id: true
@@ -27,7 +29,6 @@ export async function submit(formData: FormData) {
       }
     });
     if (!meal) throw new Error("meal not found");
-    if (meal.orders.length > 0) throw new Error("meal has orders");
 
     let imageData: {
       path: string;
@@ -40,40 +41,82 @@ export async function submit(formData: FormData) {
       if (error) throw new Error("fail to upload image", error);
       imageData = data;
     }
-
-    await prisma.meal.update({
-      where: { id: submission.value.id },
-      data: {
-        title: submission.value.title,
-        price: submission.value.price,
-        description: submission.value.description,
-        ...(imageData ? { imagePath: imageData.path } : {}),
-        items: {
-          deleteMany: {},
-          create: submission.value.items.map((item, index) => {
-            return {
-              title: item.title,
-              description: item.description,
-              price: item.price,
-              position: index,
-              ...(item.options && {
-                options: {
-                  createMany: {
-                    data: item.options.map((option, optionIndex) => {
-                      return {
-                        title: option.title,
-                        position: optionIndex,
-                        extraPrice: option.extraPrice
-                      };
-                    })
+    if (meal.orders.length === 0) {
+      await prisma.meal.update({
+        where: { id: submission.value.id },
+        data: {
+          title: submission.value.title,
+          price: submission.value.price,
+          description: submission.value.description,
+          ...(imageData ? { imagePath: imageData.path } : {}),
+          items: {
+            deleteMany: {},
+            create: submission.value.items.map((item, index) => {
+              return {
+                title: item.title,
+                description: item.description,
+                price: item.price,
+                position: index,
+                ...(item.options && {
+                  options: {
+                    createMany: {
+                      data: item.options.map((option, optionIndex) => {
+                        return {
+                          title: option.title,
+                          position: optionIndex,
+                          extraPrice: option.extraPrice
+                        };
+                      })
+                    }
                   }
-                }
-              })
-            };
-          })
+                })
+              };
+            })
+          }
         }
-      }
-    });
+      });
+    } else {
+      await prisma.$transaction([
+        prisma.meal.create({
+          data: {
+            restaurantId: submission.value.restaurantId,
+            title: submission.value.title,
+            price: submission.value.price,
+            description: submission.value.description,
+            imagePath: imageData?.path ?? meal.imagePath,
+            items: {
+              create: submission.value.items.map((item, index) => {
+                return {
+                  title: item.title,
+                  description: item.description,
+                  price: item.price,
+                  position: index,
+                  ...(item.options && {
+                    options: {
+                      createMany: {
+                        data: item.options.map((option, optionIndex) => {
+                          return {
+                            title: option.title,
+                            position: optionIndex,
+                            extraPrice: option.extraPrice
+                          };
+                        })
+                      }
+                    }
+                  })
+                };
+              })
+            }
+          }
+        }),
+        prisma.meal.update({
+          where: { id: meal.id },
+          data: {
+            outdatedAt: new Date()
+          }
+        })
+      ]);
+    }
   } else {
     if (!submission.value.image) throw new Error("image is required");
 
