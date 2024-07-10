@@ -4,6 +4,8 @@ import { checkCallStatus, sendMessage } from "@/lib/xoxzo";
 import { createHttpTask } from "@/lib/googleTasks/createHttpTask";
 import { updateIsOpen } from "@/actions/restaurant";
 import { notifyStaffUnansweredCancellation } from "./_actions/notify-staff-unanswered-cancellation";
+import { notifySlackUnansweredCall } from "./_actions/notify-slack-unanswered-call";
+import { logger } from "@/utils/logger";
 
 export async function POST(request: NextRequest) {
   const authHeader = request.headers.get("authorization");
@@ -17,7 +19,8 @@ export async function POST(request: NextRequest) {
     where: { id: body.orderId },
     include: {
       notificationCall: true,
-      user: { select: { phoneNumber: true } }
+      user: { select: { phoneNumber: true } },
+      restaurant: { select: { name: true } }
     }
   });
   if (!order || !order.notificationCall) return NextResponse.json({ message: "order not found" }, { status: 404 });
@@ -54,7 +57,12 @@ export async function POST(request: NextRequest) {
           order.user.phoneNumber,
           `お店が満席のため、注文(#${order.orderNumber})がキャンセルされました。詳しくはWattをご確認ください。`
         );
-        await notifyStaffUnansweredCancellation({ orderId: order.id });
+        await notifyStaffUnansweredCancellation({ orderId: order.id }).catch((e) =>
+          logger({ severity: "ERROR", message: "Error notifying staff of unanswered cancellation", payload: { e } })
+        );
+        await notifySlackUnansweredCall({ restaurantName: order.restaurant.name }).catch((e) =>
+          logger({ severity: "ERROR", message: "Error notifying slack of unanswered cancellation", payload: { e } })
+        );
         break;
       case "IN PROGRESS":
         await createHttpTask({ name: "check-call-status", delaySeconds: 30, payload: { orderId: order.id } });
