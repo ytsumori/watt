@@ -2,7 +2,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "dev": "supabase start -x realtime,inbucket,edge-runtime,logflare,vector,pg_prove && prisma generate && pnpm cloud-tasks-up && next dev",
+    "dev": "supabase start -x realtime,inbucket,edge-runtime,logflare,vector,pg_prove && prisma generate && pnpm cloud-tasks-up && pnpm db-typegen && next dev",
     "dev/down": "supabase stop && pnpm cloud-tasks-down",
     "build": "prisma generate && prisma migrate deploy && next build && pnpm deploy-cloud-scheduler",
     "preview-build": "prisma generate && next build",
@@ -17,7 +17,8 @@
     "cloud-tasks-up": "cd docker && docker-compose up -d",
     "cloud-tasks-down": "cd docker && docker-compose down",
     "deploy-cloud-scheduler": "pnpm dlx tsx ./scripts/cloudScheduler/deploy.ts",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "db-typegen": "supabase gen types typescript --local > types/supabase.ts"
   },
   "prisma": {},
   "dependencies": {

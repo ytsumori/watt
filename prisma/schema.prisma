@@ -83,7 +83,7 @@ model Restaurant {
   googleMapPlaceInfo RestaurantGoogleMapPlaceInfo?
   menuImages         RestaurantMenuImage[]
   paymentOptions     RestaurantPaymentOption[]
-  coordinates        RestaurantCoordinates?
+  coordinate         RestaurantCoordinate?
   staffs             Staff[]
 }
 
@@ -119,7 +119,7 @@ model RestaurantGoogleMapPlaceInfo {
   restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
 }
 
-model RestaurantCoordinates {
+model RestaurantCoordinate {
   id           String                                 @id @default(cuid())
   restaurantId String                                 @unique
   point        Unsupported("geography(Point, 4326)")?
