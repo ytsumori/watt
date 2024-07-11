@@ -6,8 +6,8 @@ import prisma from "@/lib/prisma/client";
 import { createId } from "@paralleldrive/cuid2";
 
 export async function GET(request: NextRequest) {
-  // const authHeader = request.headers.get("authorization");
-  // if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) return new NextResponse("Unauthorized", { status: 401 });
+  const authHeader = request.headers.get("authorization");
+  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) return new NextResponse("Unauthorized", { status: 401 });
 
   const supabase = createServiceRoleClient();
   const restaurants = await prisma.restaurant.findMany({
