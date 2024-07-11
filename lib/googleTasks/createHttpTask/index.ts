@@ -21,7 +21,7 @@ export const createHttpTask = async <T extends object>({
           }
         });
 
-  const project = process.env.GCP_PROJECT_NAME;
+  const project = process.env.GCP_PROJECT_ID;
   const location = process.env.CLOUD_TASKS_LOCATION;
   const queue = process.env.CLOUD_TASKS_QUEUE_NAME;
 

@@ -8,7 +8,7 @@ export const deleteHttpTask = async (orderId: string) => {
   const order = await prisma.order.findUnique({ where: { id: orderId }, include: { automaticCancellation: true } });
   if (!order) throw new Error("Order not found");
 
-  const project = process.env.GCP_PROJECT_NAME;
+  const project = process.env.GCP_PROJECT_ID;
   const location = process.env.CLOUD_TASKS_LOCATION;
   const queue = process.env.CLOUD_TASKS_QUEUE_NAME;
 
