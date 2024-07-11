@@ -1,7 +1,7 @@
 "use server";
 
 import prisma from "@/lib/prisma/client";
-import { createRestaurantCoordinates } from "./create-restaurant-coordinates";
+import { createRestaurantCoordinate } from "./create-restaurant-coordinates";
 import { deleteRestaurant } from "./deleteRestaurant";
 import { logger } from "@/utils/logger";
 import { Prisma } from "@prisma/client";
@@ -24,13 +24,13 @@ export async function createRestaurant({
   });
 
   try {
-    await createRestaurantCoordinates({ restaurantId: restaurant.id, lat: latitude, lng: longitude });
+    await createRestaurantCoordinate({ restaurantId: restaurant.id, lat: latitude, lng: longitude });
     return { data: restaurant, errors: null };
   } catch (e) {
     await deleteRestaurant({ restaurantId: restaurant.id });
     logger({
       severity: "ERROR",
-      message: "RestaurantCoordinatesの作成に失敗しました",
+      message: "RestaurantCoordinateの作成に失敗しました",
       payload: { name: restaurant.name, error: JSON.stringify(e) }
     });
     return { data: null, errors: [{ type: "EXPECTED", message: "意図しないエラーが発生しました" }] };
