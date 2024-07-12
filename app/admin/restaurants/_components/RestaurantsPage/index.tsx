@@ -41,6 +41,7 @@ export function RestaurantsPage({ restaurants }: Props) {
             <Tr>
               <Th>ID</Th>
               <Th>店名</Th>
+              <Th>公開ステータス</Th>
               <Th textAlign="center">
                 登録用URL
                 <Tooltip label="飲食店が管理画面にログインするためのURLをコピーします">
@@ -70,6 +71,9 @@ export function RestaurantsPage({ restaurants }: Props) {
                     <Link as={NextLink} href={"restaurants/" + restaurant.id}>
                       {restaurant.name}
                     </Link>
+                  </Td>
+                  <Td textColor={restaurant.isPublished ? "green" : ""} fontWeight="bold">
+                    {restaurant.isPublished ? "公開中" : "非公開"}
                   </Td>
                   <Td textAlign="center">
                     <IconButton aria-label="登録用URLコピー" icon={<CopyIcon />} onClick={handleCopy} />
