@@ -14,8 +14,8 @@
     "migrate-dev": "dotenv -e .env.local -- prisma migrate dev",
     "create-migration": "dotenv -e .env.local -- prisma migrate dev --create-only",
     "format-schema": "dotenv -e .env.local -- prisma validate & prisma format",
-    "cloud-tasks-up": "cd docker && docker-compose up -d",
-    "cloud-tasks-down": "cd docker && docker-compose down",
+    "cloud-tasks-up": "cd docker && docker compose up -d",
+    "cloud-tasks-down": "cd docker && docker compose down",
     "deploy-cloud-scheduler": "pnpm dlx tsx ./scripts/cloudScheduler/deploy.ts",
     "type-check": "tsc --noEmit",
     "db-typegen": "supabase gen types typescript --local > types/supabase.ts"
