@@ -58,3 +58,10 @@ export async function uploadInteriorImage(restaurantId: string, formData: FormDa
 
   return data.path;
 }
+
+export async function updateRestaurantPublishment({ id, isPublished }: { id: string; isPublished: boolean }) {
+  return await prisma.restaurant.update({
+    where: { id },
+    data: { isPublished }
+  });
+}

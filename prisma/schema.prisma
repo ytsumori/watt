@@ -68,6 +68,7 @@ model Restaurant {
   id                 String                           @id @default(cuid())
   name               String
   isOpen             Boolean                          @default(false)
+  isPublished        Boolean                          @default(false)
   googleMapPlaceId   String                           @unique
   password           String                           @unique @default(uuid())
   smokingOption      SmokingOption?

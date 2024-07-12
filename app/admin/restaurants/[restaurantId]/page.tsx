@@ -8,6 +8,7 @@ import { MealList } from "@/components/meal/MealList";
 import { RestaurantOrdersSection } from "./_components/RestaurantOrdersSection";
 import { Suspense } from "react";
 import { InteriorImageInput } from "./_components/InteriorImageInput";
+import { PublishSwitch } from "./_components/PublishSwitch";
 
 type PageProps = { params: { restaurantId: string }; searchParams: { month?: string } };
 
@@ -19,6 +20,7 @@ export default async function RestaurantPage({ params, searchParams }: PageProps
       name: true,
       bankAccount: true,
       interiorImagePath: true,
+      isPublished: true,
       meals: {
         orderBy: { price: "asc" },
         include: {
@@ -51,6 +53,10 @@ export default async function RestaurantPage({ params, searchParams }: PageProps
       <Heading as="h1" size="lg">
         {restaurant.name}
       </Heading>
+      <VStack alignItems="start" w="full">
+        <Heading size="md">公開状態</Heading>
+        <PublishSwitch restaurantId={restaurant.id} defaultIsPublished={restaurant.isPublished} />
+      </VStack>
       {restaurant.bankAccount && <RestaurantBankAccount restaurantBankAccount={restaurant.bankAccount} />}
       <VStack alignItems="start">
         <Heading size="md">喫煙情報</Heading>
