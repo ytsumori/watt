@@ -1,10 +1,10 @@
 "use server";
 
-import prisma from "@/lib/prisma/client";
 import { findInProgressOrder } from "@/app/(user-app)/_actions/findInProgressOrder";
 import { notifyStaffOrder } from "./notify-staff-order";
 import { createOrder } from "@/actions/order";
 import { createHttpTask } from "@/lib/googleTasks/createHttpTask";
+import { logger } from "@/utils/logger";
 
 type Args = {
   userId: string;
@@ -40,22 +40,15 @@ export async function visitRestaurant({
     peopleCount
   });
 
-  // 少し猶予を持たせるため、33分後にキャンセルタスクを作成
-  const taskId = await createHttpTask({ name: "cancel-order", delaySeconds: 60 * 33, payload: { orderId: order.id } });
-
-  if (taskId) {
-    await prisma.orderAutomaticCancellation.create({ data: { orderId: order.id, googleCloudTaskId: taskId } });
-  } else {
-    console.error("Error creating task");
-  }
-
   try {
     await notifyStaffOrder({ orderId: order.id });
   } catch (e) {
-    console.error("Error notifying staff", e);
+    logger({ severity: "ERROR", message: "Error notifying staff", payload: { e } });
   }
 
-  await createHttpTask({ name: "call-restaurant", delaySeconds: 60 * 3, payload: { orderId: order.id } });
+  await createHttpTask({ name: "call-restaurant", delaySeconds: 60, payload: { orderId: order.id } }).catch((e) =>
+    logger({ severity: "ERROR", message: "Error creating task", payload: { e } })
+  );
 
   return order;
 }

@@ -32,47 +32,42 @@ export async function POST(request: NextRequest) {
   if (order.canceledAt) return NextResponse.json({ message: "order already cancelled" }, { status: 200 });
   if (order.completedAt) return NextResponse.json({ message: "order already completed" }, { status: 200 });
 
-  try {
-    const { status: callStatus } = await checkCallStatus(order.notificationCall.callId);
-    switch (callStatus) {
-      case "ANSWERED":
-        await prisma.orderNotificationCall.update({
-          where: { orderId: order.id },
-          data: { status: "ANSWERED" }
-        });
-        await createHttpTask({ name: "cancel-order-after-call", delaySeconds: 60 * 3, payload: { orderId: order.id } });
-        break;
-      case "FAILED":
-      case "NO ANSWER":
-        await prisma.order.update({
-          where: { id: order.id },
-          data: {
-            canceledAt: new Date(),
-            notificationCall: { update: { status: "NO_ANSWER" } },
-            cancellation: { create: { reason: "CALL_NO_ANSWER", cancelledBy: "STAFF" } }
-          }
-        });
-        await updateIsOpen({ id: order.restaurantId, isOpen: false });
-        await sendMessage(
-          order.user.phoneNumber,
-          `お店が満席のため、注文(#${order.orderNumber})がキャンセルされました。詳しくはWattをご確認ください。`
-        );
-        await notifyStaffUnansweredCancellation({ orderId: order.id }).catch((e) =>
-          logger({ severity: "ERROR", message: "Error notifying staff of unanswered cancellation", payload: { e } })
-        );
-        await notifySlackUnansweredCall({ restaurantName: order.restaurant.name }).catch((e) =>
-          logger({ severity: "ERROR", message: "Error notifying slack of unanswered cancellation", payload: { e } })
-        );
-        break;
-      case "IN PROGRESS":
-        await createHttpTask({ name: "check-call-status", delaySeconds: 30, payload: { orderId: order.id } });
-        return NextResponse.json({ message: "call still in progress" });
-      default:
-        return NextResponse.json({ message: "call status not found" }, { status: 500 });
-    }
-  } catch (e) {
-    console.error("Error checking call status", e);
-    return NextResponse.json({ message: "error" }, { status: 500 });
+  const { status: callStatus } = await checkCallStatus(order.notificationCall.callId);
+  switch (callStatus) {
+    case "ANSWERED":
+      await prisma.orderNotificationCall.update({
+        where: { orderId: order.id },
+        data: { status: "ANSWERED" }
+      });
+      await createHttpTask({ name: "cancel-order-after-call", delaySeconds: 60, payload: { orderId: order.id } });
+      break;
+    case "FAILED":
+    case "NO ANSWER":
+      await prisma.order.update({
+        where: { id: order.id },
+        data: {
+          canceledAt: new Date(),
+          notificationCall: { update: { status: "NO_ANSWER" } },
+          cancellation: { create: { reason: "CALL_NO_ANSWER", cancelledBy: "STAFF" } }
+        }
+      });
+      await updateIsOpen({ id: order.restaurantId, isOpen: false });
+      await sendMessage(
+        order.user.phoneNumber,
+        `お店が満席のため、注文(#${order.orderNumber})がキャンセルされました。詳しくはWattをご確認ください。`
+      );
+      await notifyStaffUnansweredCancellation({ orderId: order.id }).catch((e) =>
+        logger({ severity: "ERROR", message: "Error notifying staff of unanswered cancellation", payload: { e } })
+      );
+      await notifySlackUnansweredCall({ restaurantName: order.restaurant.name }).catch((e) =>
+        logger({ severity: "ERROR", message: "Error notifying slack of unanswered cancellation", payload: { e } })
+      );
+      break;
+    case "IN PROGRESS":
+      await createHttpTask({ name: "check-call-status", delaySeconds: 15, payload: { orderId: order.id } });
+      return NextResponse.json({ message: "call still in progress" });
+    default:
+      return NextResponse.json({ message: "call status not found" }, { status: 500 });
   }
 
   return NextResponse.json({ message: "success" });
