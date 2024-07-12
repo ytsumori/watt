@@ -21,7 +21,7 @@ export default async function Home() {
         }
       }
     },
-    where: { meals: { some: { isInactive: false } } },
+    where: { isPublished: true, meals: { some: { isInactive: false } } },
     orderBy: { isOpen: "desc" }
   });
   return <HomePage restaurants={restaurants} />;
