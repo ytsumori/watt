@@ -12,15 +12,15 @@ export async function GET(request: NextRequest) {
 
   const oneDayAgo = new Date();
   oneDayAgo.setDate(oneDayAgo.getDate() - 1);
-  const twoDaysAgo = new Date();
-  twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
 
   const restaurants = await prisma.restaurantClosedAlert.findMany({
     where: {
       openAt: null,
       notifiedAt: {
-        lte: oneDayAgo,
-        gte: twoDaysAgo
+        lte: oneDayAgo
+      },
+      restaurant: {
+        isPublished: true
       }
     },
     select: { restaurant: { select: { name: true } } }
