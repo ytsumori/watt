@@ -21,7 +21,7 @@ export async function notifySlack({ restaurantNames }: { restaurantNames: string
         elements: [
           {
             type: "mrkdwn",
-            text: `閉まり続けているお店:\n*${restaurantNames.join("*\n")}*`
+            text: `閉まり続けているお店:\n*${restaurantNames.join("*\n*")}*`
           }
         ]
       }
