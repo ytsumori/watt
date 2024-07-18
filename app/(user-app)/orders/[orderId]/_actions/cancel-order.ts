@@ -1,6 +1,6 @@
 "use server";
 
-import { updateIsOpen } from "@/actions/restaurant";
+import { updateIsOpen } from "@/actions/mutations/restaurant";
 import { notifyStaffCancellation, notifyStaffFullCancellation } from "./notify-staff-cancellation";
 import { deleteHttpTask } from "@/lib/googleTasks/deleteHttpTask";
 import prisma from "@/lib/prisma/client";

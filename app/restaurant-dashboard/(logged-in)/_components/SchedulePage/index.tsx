@@ -14,14 +14,13 @@ import {
   useToast
 } from "@chakra-ui/react";
 import { ChangeEvent, Fragment, useCallback, useContext, useEffect, useState } from "react";
-import { updateIsOpen } from "@/actions/restaurant";
-
 import { RestaurantGoogleMapOpeningHour } from "@prisma/client";
 import { getRestaurantOpeningInfo, updateBusinessHours } from "./actions";
-import { RestaurantIdContext } from "../restaurant-id-provider";
 import { ScheduleListItem } from "./_components/ScheduleListItem";
 import { dayOfWeekToNumber } from "@/utils/day-of-week";
 import { RepeatIcon } from "@chakra-ui/icons";
+import { RestaurantIdContext } from "../RestaurantIdProvider";
+import { updateIsOpen } from "@/actions/mutations/restaurant";
 
 export function SchedulePage() {
   const restaurantId = useContext(RestaurantIdContext);

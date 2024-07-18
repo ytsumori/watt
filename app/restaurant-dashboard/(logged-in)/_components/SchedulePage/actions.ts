@@ -1,6 +1,6 @@
 "use server";
 
-import { updateOpeningHours } from "@/actions/restaurant-google-map-opening-hour";
+import { updateOpeningHours } from "@/actions/mutations/restaurant-google-map-opening-hour";
 import prisma from "@/lib/prisma/client";
 
 export async function getRestaurantOpeningInfo(restaurantId: string) {

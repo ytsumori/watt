@@ -1,10 +1,10 @@
 "use server";
 
-import { updateIsOpen } from "@/actions/restaurant";
 import prisma from "@/lib/prisma/client";
-import { sendMessage } from "@/lib/xoxzo";
 import { logger } from "@/utils/logger";
 import { notifySlackOrderRejection } from "./notify-slack-order-rejection";
+import { updateIsOpen } from "@/actions/mutations/restaurant";
+import { notifyCancelSms } from "@/actions/sms-notification";
 
 export async function cancelOrder(orderId: string) {
   const order = await prisma.order.findUnique({
@@ -31,10 +31,7 @@ export async function cancelOrder(orderId: string) {
 
   if (!order.user.phoneNumber) throw new Error("User has no phone number");
 
-  await sendMessage(
-    order.user.phoneNumber,
-    `お店が満席のため、注文(#${order.orderNumber})がキャンセルされました。詳しくはWattをご確認ください。`
-  ).catch((e) => logger({ severity: "ERROR", message: "Error sending message", payload: { e } }));
+  await notifyCancelSms({ phoneNumber: order.user.phoneNumber, orderNumber: order.orderNumber });
 
   await notifySlackOrderRejection({ restaurantName: order.restaurant.name }).catch((e) =>
     logger({ severity: "ERROR", message: "Error notifying slack of order rejection", payload: { e } })

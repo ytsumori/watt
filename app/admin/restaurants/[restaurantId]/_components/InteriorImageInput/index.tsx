@@ -1,6 +1,6 @@
 "use client";
 
-import { uploadInteriorImage } from "@/actions/restaurant";
+import { uploadInteriorImage } from "@/actions/mutations/restaurant";
 import { getRestaurantInteriorImageUrl } from "@/utils/image/getRestaurantInteriorImageUrl";
 import { logger } from "@/utils/logger";
 import { Image, useToast } from "@chakra-ui/react";

@@ -1,7 +1,7 @@
 "use client";
 
-import { checkOneTimePassword, generateOneTimePassword } from "@/actions/one-time-password";
-import { updateUser } from "@/actions/user";
+import { generateOneTimePassword } from "@/actions/mutations/one-time-password";
+import { updateUser } from "@/actions/mutations/user";
 import { ConfirmModal } from "@/components/confirm-modal";
 import { isValidPhoneNumberInput } from "@/utils/phone-number";
 import { CheckIcon } from "@chakra-ui/icons";
@@ -24,6 +24,7 @@ import {
 import { User } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { checkOneTimePassword } from "./action";
 
 type Props = {
   me: User;

@@ -1,4 +1,4 @@
-import { encodeSignUpToken } from "@/actions/restaurant-sign-up";
+import { encodeSignUpToken } from "@/actions/mutations/restaurant-sign-up";
 
 export async function copySignUpURL({ id, password }: { id: string; password: string }) {
   const token = await encodeSignUpToken({ restaurantId: id, password });

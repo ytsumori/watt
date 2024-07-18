@@ -1,6 +1,6 @@
 "use client";
 
-import { updateRestaurantPublishment } from "@/actions/restaurant";
+import { updateRestaurantPublishment } from "@/actions/mutations/restaurant";
 import { logger } from "@/utils/logger";
 import { CopyIcon } from "@chakra-ui/icons";
 import { Button, Flex, FormControl, FormLabel, Switch, useToast } from "@chakra-ui/react";

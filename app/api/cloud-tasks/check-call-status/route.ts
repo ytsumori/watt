@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma/client";
-import { checkCallStatus, sendMessage } from "@/lib/xoxzo";
+import { checkCallStatus } from "@/lib/xoxzo";
 import { createHttpTask } from "@/lib/googleTasks/createHttpTask";
-import { updateIsOpen } from "@/actions/restaurant";
 import { notifyStaffUnansweredCancellation } from "./_actions/notify-staff-unanswered-cancellation";
 import { notifySlackUnansweredCall } from "./_actions/notify-slack-unanswered-call";
 import { logger } from "@/utils/logger";
+import { updateIsOpen } from "@/actions/mutations/restaurant";
+import { notifyCancelSms } from "@/actions/sms-notification";
 
 export async function POST(request: NextRequest) {
   const authHeader = request.headers.get("authorization");
@@ -52,10 +53,7 @@ export async function POST(request: NextRequest) {
         }
       });
       await updateIsOpen({ id: order.restaurantId, isOpen: false });
-      await sendMessage(
-        order.user.phoneNumber,
-        `お店が満席のため、注文(#${order.orderNumber})がキャンセルされました。詳しくはWattをご確認ください。`
-      );
+      await notifyCancelSms({ phoneNumber: order.user.phoneNumber, orderNumber: order.orderNumber });
       await notifyStaffUnansweredCancellation({ orderId: order.id }).catch((e) =>
         logger({ severity: "ERROR", message: "Error notifying staff of unanswered cancellation", payload: { e } })
       );

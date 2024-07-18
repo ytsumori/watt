@@ -4,8 +4,8 @@ import { Prisma } from "@prisma/client";
 import { useContext, useEffect, useState } from "react";
 import { MealList } from "@/components/meal/MealList";
 import { Center, Spinner, Text, VStack } from "@chakra-ui/react";
-import { RestaurantIdContext } from "../restaurant-id-provider";
 import { getMeals } from "./actions";
+import { RestaurantIdContext } from "../RestaurantIdProvider";
 
 export function MealPage() {
   const restaurantId = useContext(RestaurantIdContext);
