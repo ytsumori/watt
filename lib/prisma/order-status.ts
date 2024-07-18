@@ -1,6 +1,6 @@
 import { Order } from "@prisma/client";
 
-export type OrderStatus = "COMPLETE" | "CANCELED" | "IN PROGRESS";
+export type OrderStatus = "COMPLETE" | "CANCELED" | "IN PROGRESS" | "APPROVED";
 
 export function getOrderStatus(order: Order): OrderStatus {
   if (order.completedAt) {
@@ -8,6 +8,9 @@ export function getOrderStatus(order: Order): OrderStatus {
   }
   if (order.canceledAt) {
     return "CANCELED";
+  }
+  if (order.approvedByRestaurantAt) {
+    return "APPROVED";
   }
   return "IN PROGRESS";
 }
@@ -18,6 +21,8 @@ export const translateOrderStatus = (order: OrderStatus): string => {
       return "注文完了";
     case "CANCELED":
       return "キャンセル済み";
+    case "APPROVED":
+      return "承諾済み";
     case "IN PROGRESS":
       return "未完了";
     default:

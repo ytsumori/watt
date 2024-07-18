@@ -304,9 +304,9 @@ export function RestaurantPage({ restaurant, inProgressOrderId, userId, defaultM
           isDisabled: isVisitRequesting
         }}
       >
-        向かっていることをお店に通知します。30分以内にお店に向かってください。
+        5分以内にお店の空席状況を確認します。
         <br />
-        注文を確定するまで調理は開始されません。
+        空席状況が確認でき次第お店に向かってください。
       </ConfirmModal>
       <ConfirmModal
         isOpen={errorMessage !== undefined}

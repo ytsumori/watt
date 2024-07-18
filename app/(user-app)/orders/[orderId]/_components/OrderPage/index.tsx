@@ -26,6 +26,7 @@ import { CancelConfirmModal } from "../CancelConfirmModal";
 import { getOrderStatus } from "@/lib/prisma/order-status";
 import { PriceSection } from "../PriceSection";
 import { format } from "date-fns";
+import { PhoneIcon } from "@chakra-ui/icons";
 
 type Props = {
   order: Prisma.OrderGetPayload<{
@@ -85,9 +86,6 @@ export function OrderPage({ order }: Props) {
       });
   };
 
-  const arrivalDeadline = new Date(order.createdAt);
-  arrivalDeadline.setMinutes(arrivalDeadline.getMinutes() + 30);
-
   switch (getOrderStatus(order)) {
     case "IN PROGRESS":
       return (
@@ -95,6 +93,117 @@ export function OrderPage({ order }: Props) {
           <VStack alignItems="start" spacing={8} p={4}>
             <VStack alignItems="start" spacing={4}>
               <Heading>注文を確定</Heading>
+              <Text>
+                注文番号:
+                <Heading as="span" ml={2}>
+                  {order.orderNumber}
+                </Heading>
+              </Text>
+              <Alert
+                status="warning"
+                flexDirection="column"
+                alignItems="center"
+                justifyContent="center"
+                textAlign="center"
+                borderRadius={4}
+              >
+                <AlertIcon as={PhoneIcon} />
+                <AlertTitle mb={1}>お店の空き状況を確認しています</AlertTitle>
+                <AlertDescription fontSize="sm">5分以内に確認し、通知します</AlertDescription>
+              </Alert>
+              <VStack alignItems="start">
+                <Heading size="md">店舗</Heading>
+                <Heading size="sm">{order.restaurant.name}</Heading>
+                {order.restaurant.googleMapPlaceInfo && (
+                  <Button
+                    w="full"
+                    leftIcon={<Icon as={FaMapMarkedAlt} />}
+                    as={NextLink}
+                    href={order.restaurant.googleMapPlaceInfo.url}
+                    target="_blank"
+                  >
+                    Googleマップでお店情報を見る
+                  </Button>
+                )}
+                <Box h="15vh" w="full">
+                  <iframe
+                    width="100%"
+                    height="100%"
+                    style={{ border: 0 }}
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    src={`https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY}&q=place_id:${order.restaurant.googleMapPlaceId}`}
+                  />
+                </Box>
+              </VStack>
+              <PriceSection order={order} />
+              <VStack w="full" mt={10}>
+                <Button
+                  size="md"
+                  w="full"
+                  maxW="full"
+                  onClick={onCompleteModalOpen}
+                  isDisabled={isCancelling}
+                  isLoading={isConfirming}
+                >
+                  注文を確定する
+                </Button>
+                <Button
+                  size="md"
+                  colorScheme="gray"
+                  w="full"
+                  maxW="full"
+                  onClick={onCancelModalOpen}
+                  isDisabled={isConfirming}
+                  isLoading={isCancelling}
+                >
+                  キャンセル
+                </Button>
+              </VStack>
+            </VStack>
+          </VStack>
+          <CompleteConfirmModal
+            isOpen={isCompleteModalOpen}
+            isConfirming={isConfirming}
+            onClose={onCompleteModalClose}
+            onConfirm={handleCompleteConfirm}
+          />
+          <CancelConfirmModal
+            isOpen={isCancelModalOpen}
+            isCancelling={isCancelling}
+            onClose={onCancelModalClose}
+            onConfirm={handleCancelConfirm}
+          />
+          <ConfirmModal
+            isOpen={errorMessage !== undefined}
+            title={errorMessage?.title ?? ""}
+            confirmButton={{
+              label: "OK",
+              onClick: () => router.refresh()
+            }}
+            onClose={() => undefined}
+          >
+            {errorMessage?.description ?? ""}
+          </ConfirmModal>
+        </>
+      );
+    case "APPROVED":
+      if (!order.approvedByRestaurantAt) {
+        throw new Error("approvedByRestaurantAt is not set");
+      }
+      const arrivalDeadline = new Date(order.approvedByRestaurantAt);
+      arrivalDeadline.setMinutes(arrivalDeadline.getMinutes() + 30);
+      return (
+        <>
+          <VStack alignItems="start" spacing={8} p={4}>
+            <VStack alignItems="start" spacing={4}>
+              <Heading>注文を確定</Heading>
+              <Text>
+                注文番号:
+                <Heading as="span" ml={2}>
+                  {order.orderNumber}
+                </Heading>
+              </Text>
               <Alert
                 status="info"
                 flexDirection="column"
@@ -134,12 +243,6 @@ export function OrderPage({ order }: Props) {
                   />
                 </Box>
               </VStack>
-              <Text>
-                注文番号:
-                <Heading as="span" ml={2}>
-                  {order.orderNumber}
-                </Heading>
-              </Text>
               <PriceSection order={order} />
               <VStack w="full" mt={10}>
                 <Button
