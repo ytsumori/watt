@@ -1,14 +1,15 @@
 "use client";
 
-import { findBankAccountByRestaurantId, updateRestaurantBankAccount } from "@/actions/restaurant-bank-account";
 import { Box, Center, Heading, Spinner, Text, VStack, useToast } from "@chakra-ui/react";
 import { useContext, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { RestaurantIdContext } from "../../_components/restaurant-id-provider";
 import { BankAccountForm, BankAccountFormData } from "../_components/bank-account-form";
 import { RestaurantBankAccount } from "@prisma/client";
 import { translateBankAccountType } from "@/lib/prisma/translate-enum";
 import { getBank, getBranch } from "@/lib/bankcode-jp";
+import { RestaurantIdContext } from "../../_components/RestaurantIdProvider";
+import { updateRestaurantBankAccount } from "@/actions/mutations/restaurant-bank-account";
+import { findBankAccount } from "./_actions/find-bank-account";
 
 export default function NewBankAccount() {
   const router = useRouter();
@@ -21,7 +22,7 @@ export default function NewBankAccount() {
   const [defaultBranchName, setDefaultBranchName] = useState<string>();
 
   useEffect(() => {
-    findBankAccountByRestaurantId(restaurantId).then((bankAccount) => {
+    findBankAccount(restaurantId).then((bankAccount) => {
       if (bankAccount) {
         setDefaultBankAccount(bankAccount);
         setIsLoading(false);

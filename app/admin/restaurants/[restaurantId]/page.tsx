@@ -1,6 +1,5 @@
 import prisma from "@/lib/prisma/client";
 import { Heading, VStack, Text } from "@chakra-ui/react";
-import { RestaurantBankAccount } from "./_components/restaurant-bank-account";
 import { SmokingSelect } from "./_components/SmokingSelect";
 import { PaymentOptionCheckboxGroup } from "./_components/PaymentOptionCheckboxGroup";
 import { PhoneNumberForm } from "./_components/PhoneNumberForm";
@@ -9,6 +8,7 @@ import { RestaurantOrdersSection } from "./_components/RestaurantOrdersSection";
 import { Suspense } from "react";
 import { InteriorImageInput } from "./_components/InteriorImageInput";
 import { PublishSwitch } from "./_components/PublishSwitch";
+import { RestaurantBankAccount } from "./_components/RestaurantBankAccount";
 
 type PageProps = { params: { restaurantId: string }; searchParams: { month?: string } };
 

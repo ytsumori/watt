@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma/client";
 import { notifyStaffNoActionCancellation } from "./_actions/notify-staff-no-action-cancellation";
-import { sendMessage } from "@/lib/xoxzo";
-import { updateIsOpen } from "@/actions/restaurant";
 import { logger } from "@/utils/logger";
 import { notifySlackStaffNoAction } from "./_actions/notify-slack-staff-no-action";
+import { notifyCancelSms } from "@/actions/sms-notification";
+import { updateIsOpen } from "@/actions/mutations/restaurant";
 
 export async function POST(request: NextRequest) {
   const authHeader = request.headers.get("authorization");
@@ -39,10 +39,7 @@ export async function POST(request: NextRequest) {
     data: { canceledAt: new Date(), cancellation: { create: { reason: "CALL_NO_ANSWER", cancelledBy: "STAFF" } } }
   });
   await updateIsOpen({ id: order.restaurantId, isOpen: false });
-  await sendMessage(
-    order.user.phoneNumber,
-    `お店が満席のため、注文(#${order.orderNumber})がキャンセルされました。詳しくはWattをご確認ください。`
-  );
+  await notifyCancelSms({ phoneNumber: order.user.phoneNumber, orderNumber: order.orderNumber });
 
   await notifyStaffNoActionCancellation({ orderId: body.orderId }).catch((e) =>
     logger({ severity: "ERROR", message: "Error notifying staff of no action cancellation", payload: { e } })

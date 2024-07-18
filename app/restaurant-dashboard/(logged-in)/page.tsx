@@ -16,13 +16,13 @@ import {
 } from "@chakra-ui/react";
 import { useContext, useEffect, useState } from "react";
 import { Restaurant } from "@prisma/client";
-import { findRestaurant } from "@/actions/restaurant";
 import { useRouter } from "next/navigation";
 import { EditIcon } from "@chakra-ui/icons";
-import { RestaurantIdContext } from "./_components/restaurant-id-provider";
 import { OrdersPage } from "./_components/OrdersPage";
 import { SchedulePage } from "./_components/SchedulePage";
 import { MealPage } from "./_components/MealPage";
+import { RestaurantIdContext } from "./_components/RestaurantIdProvider";
+import { findRestaurant } from "./_actions/find-restaurant";
 
 export default function Dashboard() {
   const restaurantId = useContext(RestaurantIdContext);

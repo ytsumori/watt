@@ -15,9 +15,9 @@ import {
   Text,
   VStack
 } from "@chakra-ui/react";
-import { RestaurantIdContext } from "../restaurant-id-provider";
 import { getFirstOrder, getOrders } from "./actions";
 import { format } from "date-fns";
+import { RestaurantIdContext } from "../RestaurantIdProvider";
 
 export function OrdersPage() {
   const restaurantId = useContext(RestaurantIdContext);

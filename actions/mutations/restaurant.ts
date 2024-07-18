@@ -1,17 +1,8 @@
 "use server";
 
 import prisma from "@/lib/prisma/client";
-import { Prisma } from "@prisma/client";
 import { createServiceRoleClient } from "@/lib/supabase/createServiceRoleClient";
 import { randomUUID } from "crypto";
-
-export async function findRestaurant<T extends Prisma.RestaurantFindUniqueArgs>(
-  args: Prisma.SelectSubset<T, Prisma.RestaurantFindUniqueArgs>
-) {
-  return await prisma.restaurant.findUnique<Prisma.SelectSubset<T, Prisma.RestaurantFindUniqueArgs>>({
-    ...args!
-  });
-}
 
 export async function updateIsOpen({ id, isOpen }: { id: string; isOpen: boolean }) {
   return await prisma.restaurant.update({

@@ -2,12 +2,8 @@
 
 import { CloudTasksClient } from "@google-cloud/tasks";
 import { credentials } from "@grpc/grpc-js";
-import prisma from "@/lib/prisma/client";
 
-export const deleteHttpTask = async (orderId: string) => {
-  const order = await prisma.order.findUnique({ where: { id: orderId }, include: { automaticCancellation: true } });
-  if (!order) throw new Error("Order not found");
-
+export const deleteHttpTask = async (taskId: string) => {
   const project = process.env.GCP_PROJECT_ID;
   const location = process.env.CLOUD_TASKS_LOCATION;
   const queue = process.env.CLOUD_TASKS_QUEUE_NAME;
@@ -24,13 +20,5 @@ export const deleteHttpTask = async (orderId: string) => {
           }
         });
 
-  if (!order.automaticCancellation?.googleCloudTaskId) return console.error("No task to delete");
-
-  try {
-    await client.deleteTask({
-      name: `${client.queuePath(project, location, queue)}/tasks/${order.automaticCancellation.googleCloudTaskId}`
-    });
-  } catch (e) {
-    console.log("ERROR on deleteHttpTask", e);
-  }
+  await client.deleteTask({ name: `${client.queuePath(project, location, queue)}/tasks/${taskId}` });
 };

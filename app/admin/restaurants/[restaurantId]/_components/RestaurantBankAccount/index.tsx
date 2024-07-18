@@ -20,9 +20,9 @@ import { getBank, getBranch } from "@/lib/bankcode-jp";
 import { Prisma } from "@prisma/client";
 import { FC, useEffect, useState } from "react";
 import { translateBankAccountType } from "@/lib/prisma/translate-enum";
-import { updateRestaurantBankAccount } from "@/actions/restaurant-bank-account";
 import { useRouter } from "next/navigation";
 import { isValidHolderName } from "@/utils/zengin";
+import { updateRestaurantBankAccount } from "@/actions/mutations/restaurant-bank-account";
 
 type BankAccount = Prisma.RestaurantBankAccountGetPayload<Prisma.RestaurantBankAccountDefaultArgs>;
 type RestaurantBankAccountProps = { restaurantBankAccount: BankAccount };

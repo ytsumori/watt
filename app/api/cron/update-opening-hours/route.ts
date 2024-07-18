@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma/client";
-import { updateOpeningHours } from "@/actions/restaurant-google-map-opening-hour";
+import { updateOpeningHours } from "@/actions/mutations/restaurant-google-map-opening-hour";
 
 export async function GET(request: NextRequest) {
   const authHeader = request.headers.get("authorization");
