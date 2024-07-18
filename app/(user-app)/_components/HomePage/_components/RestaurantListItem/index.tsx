@@ -10,7 +10,7 @@ type Props = {
 
 export function RestaurantListItem({ restaurant }: Props) {
   return (
-    <>
+    <Box id={restaurant.id}>
       <ImageStacks
         restaurantId={restaurant.id}
         meals={restaurant.meals}
@@ -41,6 +41,6 @@ export function RestaurantListItem({ restaurant }: Props) {
           {restaurant.isOpen ? "○ 今すぐ入れます！" : "× 今は入れません"}
         </Badge>
       </VStack>
-    </>
+    </Box>
   );
 }
