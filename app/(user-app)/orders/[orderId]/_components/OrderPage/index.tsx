@@ -108,7 +108,7 @@ export function OrderPage({ order }: Props) {
             >
               <AlertIcon as={PhoneIcon} />
               <AlertTitle mb={1}>お店の空き状況を確認しています</AlertTitle>
-              <AlertDescription fontSize="sm">5分以内に確認し、通知します</AlertDescription>
+              <AlertDescription fontSize="sm">5分以内に確認し、SMSで通知します</AlertDescription>
             </Alert>
             <VStack alignItems="start">
               <Heading size="md">店舗</Heading>
