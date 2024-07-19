@@ -50,8 +50,7 @@ export async function RestaurantOrdersSection({ restaurantId, month }: Props) {
       meals: {
         select: {
           meal: { select: { price: true } },
-          options: { select: { mealItemOption: { select: { extraPrice: true } } } },
-          quantity: true
+          options: { select: { mealItemOption: { select: { extraPrice: true } } } }
         }
       },
       payment: { select: { totalAmount: true } }
@@ -74,8 +73,7 @@ export async function RestaurantOrdersSection({ restaurantId, month }: Props) {
         select: {
           id: true,
           meal: { select: { price: true, title: true } },
-          options: { select: { mealItemOption: { select: { extraPrice: true, title: true } } } },
-          quantity: true
+          options: { select: { mealItemOption: { select: { extraPrice: true, title: true } } } }
         }
       },
       payment: { select: { totalAmount: true } }
@@ -170,8 +168,7 @@ export async function RestaurantOrdersSection({ restaurantId, month }: Props) {
                     <Td>
                       {order.meals.map((meal) => (
                         <Fragment key={meal.id}>
-                          {meal.meal.title}({meal.options.map((option) => option.mealItemOption.title).join(",")}) x
-                          {meal.quantity}
+                          {meal.meal.title}({meal.options.map((option) => option.mealItemOption.title).join(",")})
                           <br />
                         </Fragment>
                       ))}

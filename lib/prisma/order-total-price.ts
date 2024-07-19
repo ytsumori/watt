@@ -7,7 +7,6 @@ export function getOrderTotalPrice(
         select: {
           meal: { select: { price: true } };
           options: { select: { mealItemOption: { select: { extraPrice: true } } } };
-          quantity: true;
         };
       };
     };
@@ -18,6 +17,6 @@ export function getOrderTotalPrice(
     const optionPrice = orderMeal.options.reduce((acc, option) => {
       return acc + option.mealItemOption.extraPrice;
     }, 0);
-    return acc + (mealPrice + optionPrice) * orderMeal.quantity;
+    return acc + (mealPrice + optionPrice);
   }, 0);
 }

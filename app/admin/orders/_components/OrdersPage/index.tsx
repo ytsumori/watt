@@ -34,7 +34,6 @@ type Props = {
           id: true;
           meal: { select: { title: true; price: true } };
           options: { select: { mealItemOption: { select: { title: true; extraPrice: true } } } };
-          quantity: true;
         };
       };
       payment: { select: { totalAmount: true } };
@@ -79,8 +78,7 @@ export function OrdersPage({ orders, page, maxPage }: Props) {
                   <Td>
                     {order.meals.map((meal) => (
                       <Fragment key={meal.id}>
-                        {meal.meal.title}({meal.options.map((option) => option.mealItemOption.title).join(",")}) x
-                        {meal.quantity}
+                        {meal.meal.title}({meal.options.map((option) => option.mealItemOption.title).join(",")})
                         <br />
                       </Fragment>
                     ))}
