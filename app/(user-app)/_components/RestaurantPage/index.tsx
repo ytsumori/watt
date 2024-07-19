@@ -1,24 +1,11 @@
 "use client";
 
-import {
-  Button,
-  Heading,
-  VStack,
-  Alert,
-  AlertIcon,
-  Divider,
-  Text,
-  Box,
-  useDisclosure,
-  Select,
-  Center
-} from "@chakra-ui/react";
+import { Heading, VStack, Alert, AlertIcon, Divider, Text, Box, useDisclosure, Select, Center } from "@chakra-ui/react";
 import { Prisma } from "@prisma/client";
 import { useState } from "react";
 import { CheckIcon } from "@chakra-ui/icons";
-import { signIn } from "next-auth/react";
 import NextLink from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { MealWithItems } from "./types/MealWithItems";
 import React from "react";
 import { RestaurantInfo } from "./components/RestaurantInfo";
@@ -28,6 +15,7 @@ import { PriceSection } from "./components/PriceSection";
 import { VisitingSection } from "./components/VisitingSection";
 import { visitRestaurant } from "./actions/visit-restaurant";
 import { ConfirmModal } from "@/components/confirm-modal";
+import { LineLoginButton } from "../../restaurants/[restaurantId]/_components/LineLoginButton";
 
 type Props = {
   restaurant: Prisma.RestaurantGetPayload<{
@@ -44,6 +32,7 @@ type Props = {
 
 export function RestaurantPage({ restaurant, inProgressOrderId, userId, defaultMeal }: Props) {
   const router = useRouter();
+  const pathname = usePathname();
   const [isVisitRequesting, setIsVisitRequesting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<{ title: string; description: string }>();
   const {
@@ -274,9 +263,9 @@ export function RestaurantPage({ restaurant, inProgressOrderId, userId, defaultM
                         <AlertIcon />
                         以下からLINEでログインすることでお食事に進めます
                       </Alert>
-                      <Button onClick={() => signIn()} w="full" maxW="full">
-                        ログインする
-                      </Button>
+                      <Box margin="auto">
+                        <LineLoginButton callbackUrl={pathname} />
+                      </Box>
                     </>
                   )}
                 </>

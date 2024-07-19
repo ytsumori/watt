@@ -1,7 +1,7 @@
 "use client";
-import { Box, Text, Button, Flex } from "@chakra-ui/react";
+import { LineLoginButton } from "@/app/(user-app)/restaurants/[restaurantId]/_components/LineLoginButton";
+import { Box, Flex } from "@chakra-ui/react";
 import Image from "next/image";
-import { LineLoginButton } from "../LineLoginButton";
 import { FC } from "react";
 
 type Props = { callbackUrl: string };
