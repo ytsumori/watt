@@ -4,6 +4,7 @@ import { Wrapper, Status } from "@googlemaps/react-wrapper";
 import { createCustomEqual } from "fast-equals";
 import { isLatLngLiteral } from "@googlemaps/typescript-guards";
 import { Children, cloneElement, isValidElement, useEffect, useRef, useState } from "react";
+import { calculateDirection } from "./util";
 
 const render = (status: Status) => {
   return <h1>{status}</h1>;
@@ -11,7 +12,8 @@ const render = (status: Status) => {
 
 type Props = {
   restaurants: { id: string; name: string; location: google.maps.LatLngLiteral }[];
-  activeRestaurantIds: string[];
+  activeRestaurant: { id: string; name: string; location: { lat: number; lng: number } } | null;
+  currentLocation?: { lat: number; lng: number };
   availableRestaurantIds: string[];
   onRestaurantSelect?: (restaurantId: string) => void;
 };
@@ -21,9 +23,14 @@ const CENTER_POSITION: google.maps.LatLngLiteral = {
   lng: 135.4961399413188
 };
 
-export default function Map({ restaurants, activeRestaurantIds, availableRestaurantIds, onRestaurantSelect }: Props) {
-  const [zoom, setZoom] = useState(16);
-  const [currentLocation, setCurrentLocation] = useState<google.maps.LatLngLiteral>();
+export default function Map({
+  restaurants,
+  activeRestaurant,
+  currentLocation,
+  availableRestaurantIds,
+  onRestaurantSelect
+}: Props) {
+  const [zoom, setZoom] = useState(13);
   const [center, setCenter] = useState<google.maps.LatLngLiteral>(CENTER_POSITION);
 
   const handleIdle = (map: google.maps.Map) => {
@@ -35,32 +42,17 @@ export default function Map({ restaurants, activeRestaurantIds, availableRestaur
     if (onRestaurantSelect) onRestaurantSelect(restaurantID);
   };
 
-  useEffect(() => {
-    const id = navigator.geolocation.watchPosition(
-      (position) => {
-        setCurrentLocation({
-          lat: position.coords.latitude,
-          lng: position.coords.longitude
-        });
-      },
-      (error) => {
-        console.error(error);
-      }
-    );
-
-    return () => {
-      navigator.geolocation.clearWatch(id);
-    };
-  }, []);
-
   return (
     <Wrapper apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY ?? ""} render={render} libraries={["places"]}>
       <MapComponent
         mapId={process.env.NEXT_PUBLIC_MAP_ID}
         center={center}
         onIdle={handleIdle}
+        setZoom={setZoom}
         zoom={zoom}
         disableDefaultUI
+        active={activeRestaurant?.location}
+        current={currentLocation}
         clickableIcons={false}
         style={{ height: "100%", width: "100%" }}
       >
@@ -69,7 +61,7 @@ export default function Map({ restaurants, activeRestaurantIds, availableRestaur
             key={restaurant.id}
             location={restaurant.location}
             title={restaurant.name}
-            active={activeRestaurantIds.includes(restaurant.id)}
+            active={activeRestaurant?.id === restaurant.id}
             available={availableRestaurantIds.includes(restaurant.id)}
             clickable={availableRestaurantIds.includes(restaurant.id)}
             onClick={() => handleRestaurantSelect(restaurant.id)}
@@ -85,24 +77,38 @@ interface MapProps extends google.maps.MapOptions {
   style?: { [key: string]: string };
   onIdle: (map: google.maps.Map) => void;
   children?: React.ReactNode;
-  currentPlaceId?: string;
+  active?: { lat: number; lng: number };
+  current?: { lat: number; lng: number };
+  setZoom: (zoom: number) => void;
 }
 
-function MapComponent({ onIdle, children, style, currentPlaceId, ...options }: MapProps) {
+function MapComponent({ onIdle, children, style, active, current, setZoom, ...options }: MapProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [map, setMap] = useState<google.maps.Map>();
-
   useEffect(() => {
     if (ref.current && !map) {
-      setMap(new window.google.maps.Map(ref.current, {}));
+      const map = new window.google.maps.Map(ref.current, {});
+      setMap(map);
     }
   }, [ref, map]);
 
-  useDeepCompareEffectForMaps(() => {
-    if (map) {
-      map.setOptions(options);
+  useEffect(() => {
+    if (!map || !active) return;
+
+    if (current) {
+      const direction = calculateDirection({ current, active });
+      const sw = new google.maps.LatLng({ lat: direction.south, lng: direction.west });
+      const ne = new google.maps.LatLng({ lat: direction.north, lng: direction.east });
+      map.fitBounds(new google.maps.LatLngBounds(sw, ne));
+    } else {
+      const activePos = new google.maps.LatLng(active.lat, active.lng);
+      map.panToBounds(new google.maps.LatLngBounds(activePos));
+      map.setZoom(16);
+      map.panTo(activePos);
     }
-  }, [map, options]);
+  }, [active, current, map, setZoom]);
+
+  useDeepCompareEffectForMaps(() => map && map.setOptions({ ...options }), [map, options]);
 
   useEffect(() => {
     if (map) {
@@ -202,8 +208,8 @@ function RestaurantMarker({ location, active, available, onClick, ...options }: 
             path: "M7 10C8.5 10 10 8.5 10 7C10 5.5 8.5 4 7 4C5.5 4 4 5.5 4 7C4 8.5 5.5 10 7 10ZM7.00016 0C8.93749 0 10.5858 0.679667 11.9452 2.039C13.3045 3.39833 13.9842 5.04667 13.9842 6.984C13.9842 7.95267 13.7418 9.062 13.2572 10.312C12.7725 11.562 12.1865 12.734 11.4992 13.828C10.8118 14.922 10.1322 15.9453 9.46016 16.898C8.78816 17.8507 8.21783 18.6083 7.74916 19.171L6.99916 19.968C6.81183 19.7493 6.56183 19.4603 6.24916 19.101C5.93649 18.7417 5.37383 18.023 4.56116 16.945C3.74849 15.867 3.03749 14.82 2.42816 13.804C1.81883 12.788 1.26416 11.6397 0.76416 10.359C0.26416 9.07833 0.0141602 7.95333 0.0141602 6.984C0.0141602 5.04667 0.693827 3.39833 2.05316 2.039C3.41249 0.679667 5.06083 0 6.99816 0L7.00016 0Z",
             fillColor: "#FF5850",
             fillOpacity: 1,
-            strokeWeight: 0,
-
+            strokeWeight: 2,
+            strokeColor: "white",
             scale: 3,
             anchor: new google.maps.Point(7, 20)
           };
