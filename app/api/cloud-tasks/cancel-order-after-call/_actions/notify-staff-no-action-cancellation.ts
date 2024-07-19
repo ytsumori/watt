@@ -74,7 +74,7 @@ export async function notifyStaffNoActionCancellation({ orderId }: { orderId: st
               },
               {
                 type: "text",
-                text: "電話通知から3分以内に対応がなかったため、自動的にキャンセルされ営業ステータスが「入店不可」に切り替わりました。",
+                text: "電話通知後に対応がなかったため、自動的にキャンセルされ営業ステータスが「入店不可」に切り替わりました。",
                 wrap: true,
                 margin: "lg",
                 color: "#DC3444",
