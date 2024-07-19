@@ -2,16 +2,12 @@ import { useState, useEffect } from "react";
 
 export const useGetCurrentPosition = () => {
   const [position, setPosition] = useState<{ lat: number; lng: number } | undefined>();
-  const [error, setError] = useState<GeolocationPositionError | undefined>(undefined);
+  const [error, setError] = useState<GeolocationPositionError>();
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(
-      (position) => {
-        setPosition({ lat: position.coords.latitude, lng: position.coords.longitude });
-      },
-      (error) => {
-        setError(error);
-      }
+      (position) => setPosition({ lat: position.coords.latitude, lng: position.coords.longitude }),
+      (error) => setError(error)
     );
   }, []);
 

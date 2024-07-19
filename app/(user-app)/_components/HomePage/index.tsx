@@ -34,14 +34,18 @@ export default function HomePage({ restaurants }: { restaurants: RestaurantWithD
             };
           })}
           currentLocation={position}
-          activeRestaurant={{
-            id: activeRestaurant?.id ?? "",
-            name: activeRestaurant?.name ?? "",
-            location: {
-              lat: activeRestaurant?.googleMapPlaceInfo?.latitude,
-              lng: activeRestaurant?.googleMapPlaceInfo?.longitude
-            }
-          }}
+          activeRestaurant={
+            activeRestaurant?.googleMapPlaceInfo
+              ? {
+                  id: activeRestaurant?.id ?? "",
+                  name: activeRestaurant?.name ?? "",
+                  location: {
+                    lat: activeRestaurant.googleMapPlaceInfo.latitude,
+                    lng: activeRestaurant.googleMapPlaceInfo.longitude
+                  }
+                }
+              : null
+          }
           availableRestaurantIds={restaurants.flatMap((restaurant) => (restaurant.isOpen ? [restaurant.id] : []))}
           onRestaurantSelect={handleRestaurantSelect}
         />

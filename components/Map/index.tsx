@@ -12,7 +12,7 @@ const render = (status: Status) => {
 
 type Props = {
   restaurants: { id: string; name: string; location: google.maps.LatLngLiteral }[];
-  activeRestaurant: { id: string; name: string; location: { lat?: number; lng?: number } } | null;
+  activeRestaurant: { id: string; name: string; location: { lat: number; lng: number } } | null;
   currentLocation?: { lat: number; lng: number };
   availableRestaurantIds: string[];
   onRestaurantSelect?: (restaurantId: string) => void;
@@ -77,7 +77,7 @@ interface MapProps extends google.maps.MapOptions {
   style?: { [key: string]: string };
   onIdle: (map: google.maps.Map) => void;
   children?: React.ReactNode;
-  active?: { lat?: number; lng?: number };
+  active?: { lat: number; lng: number };
   current?: { lat: number; lng: number };
   setZoom: (zoom: number) => void;
 }
@@ -93,20 +93,18 @@ function MapComponent({ onIdle, children, style, active, current, setZoom, ...op
   }, [ref, map]);
 
   useEffect(() => {
-    const bounds = map?.getBounds();
+    if (!map || !active) return;
 
-    if (map && current?.lat && current?.lng && active?.lat && active?.lng && bounds) {
+    if (current) {
       const direction = calculateDirection({ current, active });
-      const sw = direction && new google.maps.LatLng({ lat: direction.south, lng: direction.west });
-      const ne = direction && new google.maps.LatLng({ lat: direction.north, lng: direction.east });
+      const sw = new google.maps.LatLng({ lat: direction.south, lng: direction.west });
+      const ne = new google.maps.LatLng({ lat: direction.north, lng: direction.east });
       map.fitBounds(new google.maps.LatLngBounds(sw, ne));
     } else {
-      if (map && active?.lat && active?.lng) {
-        const activePos = new google.maps.LatLng(active.lat, active.lng);
-        map.panToBounds(new google.maps.LatLngBounds(activePos), 100);
-        map.setZoom(16);
-        map.panTo(activePos);
-      }
+      const activePos = new google.maps.LatLng(active.lat, active.lng);
+      map.panToBounds(new google.maps.LatLngBounds(activePos));
+      map.setZoom(16);
+      map.panTo(activePos);
     }
   }, [active, current, map, setZoom]);
 
