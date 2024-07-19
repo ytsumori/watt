@@ -263,9 +263,7 @@ export function RestaurantPage({ restaurant, inProgressOrderId, userId, defaultM
                         <AlertIcon />
                         以下からLINEでログインすることでお食事に進めます
                       </Alert>
-                      <Box margin="auto">
-                        <LineLoginButton callbackUrl={pathname} />
-                      </Box>
+                      <LineLoginButton callbackUrl={pathname} />
                     </>
                   )}
                 </>
