@@ -32,10 +32,6 @@ type Props = {
 };
 
 export default function UserAppLayout({ children, user }: Props) {
-  const pathname = usePathname();
-
-  if (pathname === "/signin") return <>{children}</>;
-
   const handleSignOutClick = () => {
     if (confirm("ログアウトしますか？")) signOut();
   };

@@ -19,7 +19,6 @@ export const options: AuthOptions = {
       }
     })
   ],
-  pages: { signIn: "/signin" },
   adapter: PrismaAdapter(prisma),
   debug: process.env.NODE_ENV === "development",
   session: { strategy: "jwt" },
