@@ -27,30 +27,28 @@ export const LineLoginButton: FC<Props> = ({ callbackUrl }) => {
   }, [margin]);
 
   return (
-    <Box padding="3px" width="100%">
-      <Box ref={ref} backgroundColor="#000000" borderRadius="5px" width="100%">
-        <button
-          onClick={onClick}
-          style={{
-            backgroundColor: `rgba(6, 199, 86, ${opacity})`,
-            display: "flex",
-            alignItems: "center",
-            borderRadius: "5px",
-            color: "#FFFFFF",
-            fontWeight: "bold",
-            width: "100%"
-          }}
-          onMouseEnter={onMouseEnter}
-          onMouseLeave={onMouseLeave}
-        >
-          <Box ref={imageRef} padding="3px" borderRight="2px solid rgba(0, 0, 0, 0.08)">
-            <Image src="/line-logo.png" alt="LINE" width={44} height={44} />
-          </Box>
-          <Box ref={loginTextRef} lineHeight={1} margin={`0px ${margin}px`}>
-            LINEでログインする
-          </Box>
-        </button>
-      </Box>
+    <Box ref={ref} backgroundColor="#000000" borderRadius="5px" width="100%">
+      <button
+        onClick={onClick}
+        style={{
+          backgroundColor: `rgba(6, 199, 86, ${opacity})`,
+          display: "flex",
+          alignItems: "center",
+          borderRadius: "5px",
+          color: "#FFFFFF",
+          fontWeight: "bold",
+          width: "100%"
+        }}
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
+      >
+        <Box ref={imageRef} padding={"2px"} borderRight="2px solid rgba(0, 0, 0, 0.08)">
+          <Image src="/line-logo.png" alt="LINE" width={margin >= 44 ? 44 : 36} height={margin >= 44 ? 44 : 36} />
+        </Box>
+        <Box lineHeight={1} width="100%">
+          <span ref={loginTextRef}>LINEでログインする</span>
+        </Box>
+      </button>
     </Box>
   );
 };
