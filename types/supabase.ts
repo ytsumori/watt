@@ -388,7 +388,7 @@ export type Database = {
           id: string
           mealId: string
           orderId: string
-          quantity: number | null
+          quantity: number
           updatedAt: string
         }
         Insert: {
@@ -396,7 +396,7 @@ export type Database = {
           id: string
           mealId: string
           orderId: string
-          quantity?: number | null
+          quantity: number
           updatedAt?: string
         }
         Update: {
@@ -404,7 +404,7 @@ export type Database = {
           id?: string
           mealId?: string
           orderId?: string
-          quantity?: number | null
+          quantity?: number
           updatedAt?: string
         }
         Relationships: [
