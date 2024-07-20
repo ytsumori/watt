@@ -20,7 +20,6 @@ export async function notifyStaffOrder({ orderId }: { orderId: string }) {
               price: true
             }
           },
-          quantity: true,
           options: {
             select: {
               mealItemOption: {
@@ -189,64 +188,81 @@ export async function notifyStaffOrder({ orderId }: { orderId: string }) {
                         type: "box",
                         layout: "vertical",
                         contents: [
-                          ...(order.meals.flatMap((mealOrder) => {
-                            return [
-                              {
-                                type: "box",
-                                layout: "horizontal",
-                                contents: [
-                                  {
-                                    type: "text",
-                                    text: `${mealOrder.meal.title} × ${mealOrder.quantity}`,
-                                    size: "sm",
-                                    color: "#555555",
-                                    flex: 0
-                                  },
-                                  {
-                                    type: "text",
-                                    text: `${mealOrder.meal.price.toLocaleString("ja-JP")}円`,
-                                    size: "sm",
-                                    color: "#111111",
-                                    align: "end"
-                                  }
-                                ],
-                                margin: "md"
-                              },
-                              ...mealOrder.options.map((option) => {
-                                return {
-                                  type: "box",
-                                  layout: "horizontal",
-                                  contents: [
-                                    {
-                                      type: "text",
-                                      text: `・${option.mealItemOption.mealItem.title} ${option.mealItemOption.title}`,
-                                      size: "sm",
-                                      color: "#555555",
-                                      flex: 0
-                                    },
-                                    {
-                                      type: "text",
-                                      text: `${option.mealItemOption.extraPrice >= 0 ? "+" : ""}${option.mealItemOption.extraPrice.toLocaleString("ja-JP")}円`,
-                                      size: "sm",
-                                      color: "#111111",
-                                      align: "end"
-                                    }
-                                  ]
-                                };
-                              })
-                            ];
-                          }) as {
-                            type: "box";
-                            layout: "horizontal";
-                            contents: {
-                              type: "text";
-                              text: string;
-                              size: "sm";
-                              color: string;
-                              flex?: 0;
-                              align?: "end";
-                            }[];
-                          }[]),
+                          ...Array(order.peopleCount)
+                            .fill(0)
+                            .flatMap((_, index) => {
+                              const currentOrder = order.meals.at(index);
+                              return [
+                                ...(order.peopleCount > 1
+                                  ? [
+                                      {
+                                        type: "text" as "text",
+                                        text: `${index + 1}人目`,
+                                        size: "sm",
+                                        color: "#555555",
+                                        wrap: true,
+                                        margin: "sm"
+                                      }
+                                    ]
+                                  : []),
+                                ...(currentOrder
+                                  ? [
+                                      {
+                                        type: "box" as "box",
+                                        layout: "horizontal" as "horizontal",
+                                        contents: [
+                                          {
+                                            type: "text" as "text",
+                                            text: currentOrder.meal.title,
+                                            size: "sm",
+                                            color: "#555555",
+                                            wrap: true,
+                                            weight: "bold"
+                                          },
+                                          {
+                                            type: "text" as "text",
+                                            text: `${currentOrder.meal.price.toLocaleString("ja-JP")}円`,
+                                            size: "sm",
+                                            color: "#111111",
+                                            align: "end" as "end"
+                                          }
+                                        ]
+                                      },
+                                      ...currentOrder.options.map((option) => {
+                                        return {
+                                          type: "box" as "box",
+                                          layout: "horizontal" as "horizontal",
+                                          contents: [
+                                            {
+                                              type: "text" as "text",
+                                              text: `・${option.mealItemOption.mealItem.title} ${option.mealItemOption.title}`,
+                                              size: "sm",
+                                              color: "#555555",
+                                              wrap: true
+                                            },
+                                            {
+                                              type: "text" as "text",
+                                              text: `${option.mealItemOption.extraPrice >= 0 ? "+" : ""}${option.mealItemOption.extraPrice.toLocaleString("ja-JP")}円`,
+                                              size: "sm",
+                                              color: "#111111",
+                                              align: "end" as "end"
+                                            }
+                                          ]
+                                        };
+                                      })
+                                    ]
+                                  : [
+                                      {
+                                        type: "text" as "text",
+                                        text: "注文無し",
+                                        size: "sm",
+                                        color: "#555555",
+                                        wrap: true,
+                                        weight: "bold" as "bold"
+                                      }
+                                    ])
+                              ];
+                            }),
                           {
                             type: "separator",
                             margin: "sm"

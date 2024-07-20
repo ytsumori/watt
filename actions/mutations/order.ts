@@ -84,70 +84,41 @@ export async function createOrder({
       throw new Error("Second meal options do not match");
     }
 
-    if (
-      secondMealId === firstMealId &&
-      secondOptionIds.every((optionId, index) => optionId === firstOptionIds[index])
-    ) {
-      return await prisma.order.create({
-        data: {
-          userId,
-          restaurantId,
-          peopleCount,
-          orderTotalPrice: firstOrderTotalPrice * 2,
-          meals: {
-            create: [
-              {
-                mealId: firstMealId,
-                quantity: 2,
-                options: {
-                  createMany: {
-                    data: [...firstOptionIds.flatMap((optionId) => (optionId ? { mealItemOptionId: optionId } : []))]
-                  }
-                }
-              }
-            ]
-          }
-        }
-      });
-    } else {
-      const secondOrderTotalPrice =
-        secondMeal.price +
-        secondMeal.items.reduce((acc, item, index) => {
-          const optionId = secondOptionIds[index];
+    const secondOrderTotalPrice =
+      secondMeal.price +
+      secondMeal.items.reduce((acc, item, index) => {
+        const optionId = secondOptionIds[index];
 
-          return acc + (optionId ? item.options.find((option) => option.id === optionId)?.extraPrice ?? 0 : 0);
-        }, 0);
-      return await prisma.order.create({
-        data: {
-          userId,
-          restaurantId,
-          peopleCount,
-          orderTotalPrice: firstOrderTotalPrice + secondOrderTotalPrice,
-          meals: {
-            create: [
-              {
-                mealId: firstMealId,
-                quantity: 1,
-                options: {
-                  createMany: {
-                    data: [...firstOptionIds.flatMap((optionId) => (optionId ? { mealItemOptionId: optionId } : []))]
-                  }
-                }
-              },
-              {
-                mealId: secondMealId,
-                quantity: 1,
-                options: {
-                  createMany: {
-                    data: [...secondOptionIds.flatMap((optionId) => (optionId ? { mealItemOptionId: optionId } : []))]
-                  }
+        return acc + (optionId ? item.options.find((option) => option.id === optionId)?.extraPrice ?? 0 : 0);
+      }, 0);
+    return await prisma.order.create({
+      data: {
+        userId,
+        restaurantId,
+        peopleCount,
+        orderTotalPrice: firstOrderTotalPrice + secondOrderTotalPrice,
+        meals: {
+          create: [
+            {
+              mealId: firstMealId,
+              options: {
+                createMany: {
+                  data: [...firstOptionIds.flatMap((optionId) => (optionId ? { mealItemOptionId: optionId } : []))]
                 }
               }
-            ]
-          }
+            },
+            {
+              mealId: secondMealId,
+              options: {
+                createMany: {
+                  data: [...secondOptionIds.flatMap((optionId) => (optionId ? { mealItemOptionId: optionId } : []))]
+                }
+              }
+            }
+          ]
         }
-      });
-    }
+      }
+    });
   } else {
     return await prisma.order.create({
       data: {
@@ -159,7 +130,6 @@ export async function createOrder({
           create: [
             {
               mealId: firstMealId,
-              quantity: 1,
               options: {
                 createMany: {
                   data: [...firstOptionIds.flatMap((optionId) => (optionId ? { mealItemOptionId: optionId } : []))]

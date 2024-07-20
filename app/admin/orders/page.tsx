@@ -22,8 +22,7 @@ export default async function Orders({ searchParams }: Props) {
         select: {
           id: true,
           meal: { select: { title: true, price: true } },
-          options: { select: { mealItemOption: { select: { title: true, extraPrice: true } } } },
-          quantity: true
+          options: { select: { mealItemOption: { select: { title: true, extraPrice: true } } } }
         }
       },
       payment: { select: { totalAmount: true } },

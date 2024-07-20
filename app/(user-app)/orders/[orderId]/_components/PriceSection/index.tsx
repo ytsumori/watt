@@ -34,9 +34,7 @@ export function PriceSection({ order }: Props) {
       {order.meals.map((orderMeal) => (
         <Box key={orderMeal.id} w="full">
           <Flex w="full">
-            <Text>
-              {orderMeal.meal.title} × {orderMeal.quantity}
-            </Text>
+            <Text>{orderMeal.meal.title}</Text>
             <Spacer />
             <Text fontWeight="bold">{orderMeal.meal.price.toLocaleString("ja-JP")} 円</Text>
           </Flex>

@@ -33,7 +33,6 @@ export function OrdersPage() {
         meals: {
           select: {
             id: true;
-            quantity: true;
             meal: { select: { title: true } };
             options: { select: { mealItemOption: { select: { title: true } } } };
           };
@@ -128,8 +127,7 @@ export function OrdersPage() {
                   <br />
                   {order.meals.map((meal) => (
                     <b key={meal.id}>
-                      {meal.meal.title}({meal.options.map((option) => option.mealItemOption.title).join(",")}) x{" "}
-                      {meal.quantity}
+                      {meal.meal.title}({meal.options.map((option) => option.mealItemOption.title).join(",")})
                       <br />
                     </b>
                   ))}
