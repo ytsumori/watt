@@ -3,6 +3,7 @@
 import { getOpeningHours } from "@/lib/places-api";
 import prisma from "@/lib/prisma/client";
 import { dayNumberToDayOfWeek } from "@/utils/day-of-week";
+import { convertOpeningHours } from "@/utils/openingHours";
 
 export async function updateOpeningHours({
   restaurantId,
@@ -12,11 +13,10 @@ export async function updateOpeningHours({
   googleMapPlaceId: string;
 }) {
   const previousOpeningHours = await prisma.restaurantGoogleMapOpeningHour.findMany({ where: { restaurantId } });
-  const { currentOpeningHours } = await getOpeningHours({
-    placeId: googleMapPlaceId
-  });
+  const { currentOpeningHours } = await getOpeningHours({ placeId: googleMapPlaceId });
+  const convertedOpeningHours = currentOpeningHours && convertOpeningHours(currentOpeningHours);
 
-  if (!currentOpeningHours) {
+  if (!convertedOpeningHours) {
     if (previousOpeningHours.length > 0) {
       await prisma.restaurantGoogleMapOpeningHour.deleteMany({ where: { restaurantId } });
     }
@@ -24,10 +24,10 @@ export async function updateOpeningHours({
   }
 
   const isSameOpeningHours =
-    previousOpeningHours.length === currentOpeningHours.periods.length &&
+    previousOpeningHours.length === convertedOpeningHours.periods.length &&
     previousOpeningHours.every((previousOpeningHour) => {
       const key = `${previousOpeningHour.openDayOfWeek}-${previousOpeningHour.openHour}-${previousOpeningHour.openMinute}-${previousOpeningHour.closeDayOfWeek}-${previousOpeningHour.closeHour}-${previousOpeningHour.closeMinute}`;
-      return currentOpeningHours.periods.some((period) => {
+      return convertedOpeningHours.periods.some((period) => {
         return (
           `${dayNumberToDayOfWeek(period.open.day)}-${period.open.hour}-${period.open.minute}-${dayNumberToDayOfWeek(period.close.day)}-${period.close.hour}-${period.close.minute}` ===
           key
@@ -39,7 +39,7 @@ export async function updateOpeningHours({
   return await prisma.$transaction([
     prisma.restaurantGoogleMapOpeningHour.deleteMany({ where: { restaurantId } }),
     prisma.restaurantGoogleMapOpeningHour.createMany({
-      data: currentOpeningHours.periods.map((period) => ({
+      data: convertedOpeningHours.periods.map((period) => ({
         restaurantId,
         openDayOfWeek: dayNumberToDayOfWeek(period.open.day),
         openHour: period.open.hour,

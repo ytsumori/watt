@@ -38,7 +38,7 @@ export async function getPlaceDetail({ placeId }: { placeId: string }) {
   return response.json() as Promise<PlaceDetailResult>;
 }
 
-type OpeningHoursResult = {
+export type OpeningHoursResult = {
   currentOpeningHours?: {
     periods: {
       open: {
