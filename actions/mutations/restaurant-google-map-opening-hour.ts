@@ -14,7 +14,7 @@ export async function updateOpeningHours({
 }) {
   const previousOpeningHours = await prisma.restaurantGoogleMapOpeningHour.findMany({ where: { restaurantId } });
   const { currentOpeningHours } = await getOpeningHours({ placeId: googleMapPlaceId });
-  const convertedOpeningHours = convertOpeningHours(currentOpeningHours);
+  const convertedOpeningHours = currentOpeningHours && convertOpeningHours(currentOpeningHours);
 
   if (!convertedOpeningHours) {
     if (previousOpeningHours.length > 0) {
