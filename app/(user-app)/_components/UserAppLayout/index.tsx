@@ -32,10 +32,6 @@ type Props = {
 };
 
 export default function UserAppLayout({ children, user }: Props) {
-  const pathname = usePathname();
-
-  if (pathname === "/signin") return <>{children}</>;
-
   const handleSignOutClick = () => {
     if (confirm("ログアウトしますか？")) signOut();
   };
@@ -79,7 +75,7 @@ export default function UserAppLayout({ children, user }: Props) {
                   <MenuItem onClick={handleSignOutClick}>ログアウト</MenuItem>
                 </>
               ) : (
-                <MenuItem onClick={() => signIn()}>ログイン</MenuItem>
+                <MenuItem onClick={() => signIn("line", { callbackUrl: "/" })}>ログイン</MenuItem>
               )}
               <Accordion allowToggle>
                 <AccordionItem border="none">
