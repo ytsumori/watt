@@ -24,6 +24,16 @@ export async function updateIsOpen({ id, isOpen }: { id: string; isOpen: boolean
               }
             }
           : { create: {} })
+      },
+      fullStatuses: {
+        updateMany: {
+          where: {
+            easedAt: null
+          },
+          data: {
+            easedAt: new Date()
+          }
+        }
       }
     }
   });

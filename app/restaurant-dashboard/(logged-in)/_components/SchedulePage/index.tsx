@@ -1,30 +1,21 @@
 "use client";
 
-import {
-  Box,
-  Button,
-  Divider,
-  FormControl,
-  FormHelperText,
-  FormLabel,
-  HStack,
-  Heading,
-  Switch,
-  Text,
-  useToast
-} from "@chakra-ui/react";
-import { ChangeEvent, Fragment, useCallback, useContext, useEffect, useState } from "react";
+import { Box, Button, Divider, Heading, Text, useToast } from "@chakra-ui/react";
+import { Fragment, useCallback, useContext, useEffect, useState } from "react";
 import { RestaurantGoogleMapOpeningHour } from "@prisma/client";
 import { getRestaurantOpeningInfo, updateBusinessHours } from "./actions";
 import { ScheduleListItem } from "./_components/ScheduleListItem";
 import { dayOfWeekToNumber } from "@/utils/day-of-week";
 import { RepeatIcon } from "@chakra-ui/icons";
 import { RestaurantIdContext } from "../RestaurantIdProvider";
-import { updateIsOpen } from "@/actions/mutations/restaurant";
+import { StatusRadioGroup } from "./_components/StatusRadioGroup";
+import { getStatus } from "./util";
+import { IsOpenSwitch } from "./_components/IsOpenSwitch";
 
 export function SchedulePage() {
   const restaurantId = useContext(RestaurantIdContext);
   const [isRestaurantOpen, setIsRestaurantOpen] = useState<boolean>();
+  const [isFull, setIsFull] = useState<boolean>();
   const [openingHours, setOpeningHours] = useState<RestaurantGoogleMapOpeningHour[]>();
   const [isUpdating, setIsUpdating] = useState(false);
   const toast = useToast();
@@ -35,6 +26,9 @@ export function SchedulePage() {
         if (!restaurant) return;
 
         setIsRestaurantOpen(restaurant.isOpen);
+        if (restaurant.isFullStatusAvailable) {
+          setIsFull(restaurant.fullStatuses.length > 0);
+        }
         setOpeningHours(restaurant.openingHours);
       })
       .catch(() =>
@@ -50,22 +44,6 @@ export function SchedulePage() {
   useEffect(() => {
     revalidateOpeningInfo();
   }, [revalidateOpeningInfo]);
-
-  const handleOpenStatusChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const isOpen = event.target.checked;
-    updateIsOpen({ id: restaurantId, isOpen })
-      .then(() => {
-        setIsRestaurantOpen(isOpen);
-      })
-      .catch(() =>
-        toast({
-          title: "エラー",
-          description: "入店可否ステータスの変更に失敗しました",
-          status: "error",
-          isClosable: true
-        })
-      );
-  };
 
   const handleUpdateOpeningHoursClick = () => {
     setIsUpdating(true);
@@ -87,13 +65,15 @@ export function SchedulePage() {
 
   return (
     <>
-      <FormControl>
-        <HStack>
-          <FormLabel mb={0}>現在入店可能</FormLabel>
-          <Switch onChange={handleOpenStatusChange} isChecked={isRestaurantOpen} />
-        </HStack>
-        <FormHelperText>お客さんを案内できない場合はオフにしてください</FormHelperText>
-      </FormControl>
+      {isFull !== undefined ? (
+        <StatusRadioGroup restaurantId={restaurantId} status={getStatus({ isOpen: !!isRestaurantOpen, isFull })} />
+      ) : (
+        <IsOpenSwitch
+          restaurantId={restaurantId}
+          isRestaurantOpen={!!isRestaurantOpen}
+          onChange={setIsRestaurantOpen}
+        />
+      )}
       <Heading size="md" mt={6}>
         営業時間の自動開店・閉店設定
       </Heading>
