@@ -4,7 +4,7 @@ import { HStack, Heading, Text, VStack, useRadioGroup, useToast } from "@chakra-
 import { updateIsOpen } from "@/actions/mutations/restaurant";
 import { createFullStatus } from "@/actions/mutations/restaurant-full-status";
 import { StatusRadioButton } from "../StatusRadioButton";
-import { RestaurantStatus } from "../../type";
+import { RestaurantStatus } from "@/utils/restaurant-status";
 
 type Props = {
   restaurantId: string;

@@ -9,8 +9,8 @@ import { dayOfWeekToNumber } from "@/utils/day-of-week";
 import { RepeatIcon } from "@chakra-ui/icons";
 import { RestaurantIdContext } from "../RestaurantIdProvider";
 import { StatusRadioGroup } from "./_components/StatusRadioGroup";
-import { getStatus } from "./util";
 import { IsOpenSwitch } from "./_components/IsOpenSwitch";
+import { getRestaurantStatus } from "@/utils/restaurant-status";
 
 export function SchedulePage() {
   const restaurantId = useContext(RestaurantIdContext);
@@ -27,7 +27,7 @@ export function SchedulePage() {
 
         setIsRestaurantOpen(restaurant.isOpen);
         if (restaurant.isFullStatusAvailable) {
-          setIsFull(restaurant.fullStatuses.length > 0);
+          setIsFull(restaurant.fullStatuses.some((status) => status.easedAt === null));
         }
         setOpeningHours(restaurant.openingHours);
       })
@@ -66,7 +66,10 @@ export function SchedulePage() {
   return (
     <>
       {isFull !== undefined ? (
-        <StatusRadioGroup restaurantId={restaurantId} status={getStatus({ isOpen: !!isRestaurantOpen, isFull })} />
+        <StatusRadioGroup
+          restaurantId={restaurantId}
+          status={getRestaurantStatus({ isOpen: !!isRestaurantOpen, isFull })}
+        />
       ) : (
         <IsOpenSwitch
           restaurantId={restaurantId}

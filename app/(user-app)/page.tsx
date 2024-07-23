@@ -7,7 +7,7 @@ export default async function Home() {
       meals: {
         where: { isInactive: false, outdatedAt: null },
         orderBy: { price: "asc" },
-        select: { id: true, title: true, price: true, imagePath: true }
+        select: { id: true, title: true, price: true, listPrice: true, imagePath: true }
       },
       googleMapPlaceInfo: { select: { latitude: true, longitude: true } },
       openingHours: {
@@ -18,6 +18,14 @@ export default async function Home() {
           closeHour: true,
           closeMinute: true,
           closeDayOfWeek: true
+        }
+      },
+      fullStatuses: {
+        where: {
+          easedAt: null
+        },
+        select: {
+          easedAt: true
         }
       }
     },

@@ -15,7 +15,7 @@ type Props = {
 
 export function MealCarousel({ meals, selectedMealId, onSelectMeal, additionalBox }: Props) {
   return (
-    <HStack overflowX="auto" maxW="full" className="hidden-scrollbar">
+    <HStack overflowX="auto" maxW="full" className="hidden-scrollbar" alignItems="start">
       {meals.map((meal) => {
         const isSelected = meal.id === selectedMealId;
         return (
@@ -25,7 +25,7 @@ export function MealCarousel({ meals, selectedMealId, onSelectMeal, additionalBo
             onClick={() => onSelectMeal(meal)}
             borderWidth={isSelected ? 4 : 0}
             borderColor="brand.400"
-            isLabelHidden={isSelected}
+            isLabelHidden
           >
             {isSelected && (
               <CheckIcon

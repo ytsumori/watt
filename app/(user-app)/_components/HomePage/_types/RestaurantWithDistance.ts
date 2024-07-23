@@ -7,6 +7,7 @@ export type RestaurantWithDistance = Prisma.RestaurantGetPayload<{
         id: true;
         title: true;
         price: true;
+        listPrice: true;
         imagePath: true;
       };
     };
@@ -21,6 +22,11 @@ export type RestaurantWithDistance = Prisma.RestaurantGetPayload<{
         closeHour: true;
         closeMinute: true;
         closeDayOfWeek: true;
+      };
+    };
+    fullStatuses: {
+      select: {
+        easedAt: true;
       };
     };
   };
