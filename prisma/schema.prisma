@@ -223,7 +223,6 @@ model OrderMeal {
   id        String            @id @default(cuid())
   orderId   String
   mealId    String
-  quantity  Int? // @deprecated
   createdAt DateTime          @default(now())
   updatedAt DateTime          @default(now()) @updatedAt
   order     Order             @relation(fields: [orderId], references: [id], onDelete: Cascade)
