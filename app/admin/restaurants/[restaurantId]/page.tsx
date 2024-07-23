@@ -9,6 +9,7 @@ import { Suspense } from "react";
 import { InteriorImageInput } from "./_components/InteriorImageInput";
 import { PublishSwitch } from "./_components/PublishSwitch";
 import { RestaurantBankAccount } from "./_components/RestaurantBankAccount";
+import { FullStatusSwitch } from "./_components/FullStatusSwitch";
 
 type PageProps = { params: { restaurantId: string }; searchParams: { month?: string } };
 
@@ -21,6 +22,7 @@ export default async function RestaurantPage({ params, searchParams }: PageProps
       bankAccount: true,
       interiorImagePath: true,
       isPublished: true,
+      isFullStatusAvailable: true,
       meals: {
         orderBy: { price: "asc" },
         include: {
@@ -56,7 +58,14 @@ export default async function RestaurantPage({ params, searchParams }: PageProps
       <VStack alignItems="start" w="full">
         <Heading size="md">公開状態</Heading>
         <PublishSwitch restaurantId={restaurant.id} defaultIsPublished={restaurant.isPublished} />
+        <Heading size="sm">混雑設定機能</Heading>
+        <Text fontSize="xs">混雑時の価格(定価)での送客のオンボード完了後にONにしてください</Text>
+        <FullStatusSwitch
+          restaurantId={restaurant.id}
+          defaultIsFullStatusAvailable={restaurant.isFullStatusAvailable}
+        />
       </VStack>
+
       {restaurant.bankAccount && <RestaurantBankAccount restaurantBankAccount={restaurant.bankAccount} />}
       <VStack alignItems="start">
         <Heading size="md">喫煙情報</Heading>

@@ -56,3 +56,16 @@ export async function updateRestaurantPublishment({ id, isPublished }: { id: str
     data: { isPublished }
   });
 }
+
+export async function updateRestaurantFullStatusAvailability({
+  id,
+  isFullStatusAvailable
+}: {
+  id: string;
+  isFullStatusAvailable: boolean;
+}) {
+  return await prisma.restaurant.update({
+    where: { id },
+    data: { isFullStatusAvailable }
+  });
+}

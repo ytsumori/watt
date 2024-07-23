@@ -7,6 +7,7 @@ import {
   Flex,
   FormControl,
   FormErrorMessage,
+  FormHelperText,
   FormLabel,
   HStack,
   IconButton,
@@ -247,6 +248,7 @@ export function MealForm({ restaurantId, editingMeal, onSubmit }: Props) {
           </NumberInput>
           <Text>円</Text>
         </HStack>
+        <FormHelperText>混雑時に適用される価格</FormHelperText>
         <FormErrorMessage>{fields.listPrice.errors?.join("、") ?? ""}</FormErrorMessage>
       </FormControl>
       <FormControl isRequired my={3} isInvalid={!!fields.price.errors}>
@@ -262,6 +264,7 @@ export function MealForm({ restaurantId, editingMeal, onSubmit }: Props) {
           </NumberInput>
           <Text>円</Text>
         </HStack>
+        <FormHelperText>来店可能時に適用される価格</FormHelperText>
         <FormErrorMessage>{fields.price.errors?.join("、") ?? ""}</FormErrorMessage>
       </FormControl>
       <SubmitButton isDisabled={!form.valid} />
