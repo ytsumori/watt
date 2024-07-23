@@ -127,6 +127,7 @@ export type Database = {
           id: string
           imagePath: string
           isInactive: boolean
+          listPrice: number | null
           outdatedAt: string | null
           price: number
           restaurantId: string
@@ -139,6 +140,7 @@ export type Database = {
           id: string
           imagePath: string
           isInactive?: boolean
+          listPrice?: number | null
           outdatedAt?: string | null
           price: number
           restaurantId: string
@@ -151,6 +153,7 @@ export type Database = {
           id?: string
           imagePath?: string
           isInactive?: boolean
+          listPrice?: number | null
           outdatedAt?: string | null
           price?: number
           restaurantId?: string
@@ -174,7 +177,7 @@ export type Database = {
           id: string
           mealId: string
           position: number
-          price: number
+          price: number | null
           title: string
           updatedAt: string
         }
@@ -184,7 +187,7 @@ export type Database = {
           id: string
           mealId: string
           position: number
-          price: number
+          price?: number | null
           title: string
           updatedAt?: string
         }
@@ -194,7 +197,7 @@ export type Database = {
           id?: string
           mealId?: string
           position?: number
-          price?: number
+          price?: number | null
           title?: string
           updatedAt?: string
         }
@@ -542,6 +545,7 @@ export type Database = {
           googleMapPlaceId: string
           id: string
           interiorImagePath: string | null
+          isFullStatusAvailable: boolean
           isOpen: boolean
           isPublished: boolean
           name: string
@@ -555,6 +559,7 @@ export type Database = {
           googleMapPlaceId: string
           id: string
           interiorImagePath?: string | null
+          isFullStatusAvailable?: boolean
           isOpen?: boolean
           isPublished?: boolean
           name: string
@@ -568,6 +573,7 @@ export type Database = {
           googleMapPlaceId?: string
           id?: string
           interiorImagePath?: string | null
+          isFullStatusAvailable?: boolean
           isOpen?: boolean
           isPublished?: boolean
           name?: string
@@ -685,6 +691,35 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "RestaurantCoordinate_restaurantId_fkey"
+            columns: ["restaurantId"]
+            isOneToOne: false
+            referencedRelation: "Restaurant"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      RestaurantFullStatus: {
+        Row: {
+          easedAt: string | null
+          id: string
+          restaurantId: string
+          startedAt: string
+        }
+        Insert: {
+          easedAt?: string | null
+          id: string
+          restaurantId: string
+          startedAt?: string
+        }
+        Update: {
+          easedAt?: string | null
+          id?: string
+          restaurantId?: string
+          startedAt?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "RestaurantFullStatus_restaurantId_fkey"
             columns: ["restaurantId"]
             isOneToOne: false
             referencedRelation: "Restaurant"
