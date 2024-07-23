@@ -35,7 +35,8 @@ export function MealCard({ meal, button }: Props) {
           <VStack alignItems="start">
             <Heading size="md">{meal.title}</Heading>
             <Box>
-              <Text fontSize="sm">金額：{meal.price.toLocaleString("ja-JP")}円</Text>
+              <Text fontSize="sm">定価：{meal.listPrice?.toLocaleString("ja-JP")}円</Text>
+              <Text fontSize="sm">割引金額：{meal.price.toLocaleString("ja-JP")}円</Text>
             </Box>
             <Text fontSize="xs" whiteSpace="pre-wrap">
               {meal.description}
@@ -49,8 +50,6 @@ export function MealCard({ meal, button }: Props) {
                   <AccordionButton p={1}>
                     <Text as="span" flex="1" textAlign="left" fontSize="xs">
                       <b>{item.title}</b>
-                      <br />
-                      {item.price.toLocaleString("ja-JP")}円
                     </Text>
                     {(item.description || item.options.length > 0) && <AccordionIcon />}
                   </AccordionButton>
