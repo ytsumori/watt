@@ -43,7 +43,7 @@ export function NewRestaurantPageClient() {
 
   const handleSubmit = async () => {
     if (!selectedPlace) return;
-    const { data, errors } = await createRestaurant({
+    const { data, error } = await createRestaurant({
       name: selectedPlace.displayName.text,
       googleMapPlaceId: selectedPlace.id,
       latitude: selectedPlace.location.latitude,
@@ -51,8 +51,8 @@ export function NewRestaurantPageClient() {
       url: selectedPlace.googleMapsUri
     });
 
-    if (errors) {
-      logger({ severity: "ERROR", message: "Failed to create Restaurant", payload: { errors } });
+    if (error) {
+      logger({ severity: "ERROR", message: "Failed to create Restaurant", payload: { error } });
       return;
     }
 

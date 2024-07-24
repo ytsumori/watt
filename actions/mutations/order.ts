@@ -2,7 +2,7 @@
 
 import prisma from "@/lib/prisma/client";
 
-type CreateOrderArgs = {
+export type CreateOrderArgs = {
   userId: string;
   restaurantId: string;
   firstMealId: string;
@@ -10,6 +10,7 @@ type CreateOrderArgs = {
   secondMealId?: string;
   secondOptionIds?: (string | null)[];
   peopleCount: 1 | 2;
+  isDiscounted: boolean;
 };
 
 export async function createOrder({
@@ -19,15 +20,19 @@ export async function createOrder({
   firstOptionIds,
   secondMealId,
   secondOptionIds,
-  peopleCount
+  peopleCount,
+  isDiscounted
 }: CreateOrderArgs) {
   const firstMeal = await prisma.meal.findUnique({
     where: { id: firstMealId, restaurantId },
     select: {
       id: true,
       price: true,
+      listPrice: true,
       isInactive: true,
-      restaurant: { select: { phoneNumber: true } },
+      restaurant: {
+        select: { phoneNumber: true, fullStatuses: { where: { easedAt: null }, select: { id: true } } }
+      },
       items: { select: { options: { select: { id: true, extraPrice: true } } } }
     }
   });
@@ -47,9 +52,14 @@ export async function createOrder({
   ) {
     throw new Error("First meal options do not match");
   }
+  const isFull = firstMeal.restaurant.fullStatuses.length > 0;
+  if (isDiscounted === isFull) {
+    throw new Error("Status outdated");
+  }
 
+  const firstMealPrice = isDiscounted ? firstMeal.price : firstMeal.listPrice!;
   const firstOrderTotalPrice =
-    firstMeal.price +
+    firstMealPrice +
     firstMeal.items.reduce((acc, item, index) => {
       const optionId = firstOptionIds[index];
 
@@ -65,6 +75,7 @@ export async function createOrder({
         id: true,
         isInactive: true,
         price: true,
+        listPrice: true,
         items: { select: { options: { select: { id: true, extraPrice: true } } } }
       }
     });
@@ -84,8 +95,9 @@ export async function createOrder({
       throw new Error("Second meal options do not match");
     }
 
+    const secondMealPrice = isDiscounted ? secondMeal.price : secondMeal.listPrice!;
     const secondOrderTotalPrice =
-      secondMeal.price +
+      secondMealPrice +
       secondMeal.items.reduce((acc, item, index) => {
         const optionId = secondOptionIds[index];
 
@@ -96,6 +108,7 @@ export async function createOrder({
         userId,
         restaurantId,
         peopleCount,
+        isDiscounted,
         orderTotalPrice: firstOrderTotalPrice + secondOrderTotalPrice,
         meals: {
           create: [
@@ -125,6 +138,7 @@ export async function createOrder({
         userId,
         restaurantId,
         peopleCount,
+        isDiscounted,
         orderTotalPrice: firstOrderTotalPrice,
         meals: {
           create: [

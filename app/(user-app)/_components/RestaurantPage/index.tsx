@@ -93,25 +93,37 @@ export function RestaurantPage({ restaurant, inProgressOrderId, userId, defaultM
 
     setIsVisitRequesting(true);
 
-    visitRestaurant({
-      userId,
-      restaurantId: restaurant.id,
-      firstMealId: firstPersonMeal.id,
-      firstOptionIds: firstMealSelectedOptions,
-      secondMealId: secondPersonMeal?.id,
-      secondOptionIds: secondMealSelectedOptions,
-      peopleCount
-    })
-      .then((order) => {
-        router.push(`/orders/${order.id}`);
-      })
-      .catch(() => {
-        setIsVisitRequesting(false);
-        setErrorMessage({
-          title: "エラー",
-          description: "エラーが発生しました。もう一度お試しください。"
-        });
+    try {
+      const { data, error } = await visitRestaurant({
+        userId,
+        restaurantId: restaurant.id,
+        firstMealId: firstPersonMeal.id,
+        firstOptionIds: firstMealSelectedOptions,
+        secondMealId: secondPersonMeal?.id,
+        secondOptionIds: secondMealSelectedOptions,
+        peopleCount,
+        isDiscounted
       });
+
+      if (error) {
+        setIsVisitRequesting(false);
+        onVisitConfirmModalClose();
+        setErrorMessage({
+          title: "お店のステータスが更新されました",
+          description: "お店のステータスが更新され、価格が変わりました。もう一度お試しください。"
+        });
+        return;
+      }
+
+      router.push(`/orders/${data.id}`);
+    } catch (e) {
+      setIsVisitRequesting(false);
+      onVisitConfirmModalClose();
+      setErrorMessage({
+        title: "エラー",
+        description: "エラーが発生しました。もう一度お試しください。"
+      });
+    }
   };
 
   return (

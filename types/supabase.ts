@@ -274,6 +274,7 @@ export type Database = {
           completedAt: string | null
           createdAt: string
           id: string
+          isDiscounted: boolean
           orderNumber: number
           orderTotalPrice: number
           peopleCount: number
@@ -287,6 +288,7 @@ export type Database = {
           completedAt?: string | null
           createdAt?: string
           id: string
+          isDiscounted?: boolean
           orderNumber?: number
           orderTotalPrice: number
           peopleCount: number
@@ -300,6 +302,7 @@ export type Database = {
           completedAt?: string | null
           createdAt?: string
           id?: string
+          isDiscounted?: boolean
           orderNumber?: number
           orderTotalPrice?: number
           peopleCount?: number
