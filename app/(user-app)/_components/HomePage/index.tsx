@@ -107,7 +107,7 @@ export default function HomePage({ restaurants }: { restaurants: RestaurantWithD
         <ModalContent>
           <ModalHeader>お店のステータスについて</ModalHeader>
           <ModalCloseButton />
-          <ModalBody>
+          <ModalBody pt={0} pb={4}>
             <VStack alignItems="start" fontSize="sm">
               <Box>
                 <StatusBadge status="open" />

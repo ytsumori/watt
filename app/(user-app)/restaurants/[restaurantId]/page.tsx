@@ -19,7 +19,11 @@ export default async function Restaurant({ params, searchParams }: Params) {
         include: { items: { include: { options: true } } }
       },
       googleMapPlaceInfo: { select: { url: true } },
-      paymentOptions: true
+      paymentOptions: true,
+      fullStatuses: {
+        where: { easedAt: null },
+        select: { easedAt: true }
+      }
     }
   });
   if (!restaurant) redirect("/");

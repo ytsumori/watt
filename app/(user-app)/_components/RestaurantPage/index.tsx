@@ -2,7 +2,7 @@
 
 import { Heading, VStack, Alert, AlertIcon, Divider, Text, Box, useDisclosure, Select, Center } from "@chakra-ui/react";
 import { Prisma } from "@prisma/client";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { CheckIcon } from "@chakra-ui/icons";
 import NextLink from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -16,6 +16,7 @@ import { VisitingSection } from "./components/VisitingSection";
 import { visitRestaurant } from "./actions/visit-restaurant";
 import { ConfirmModal } from "@/components/confirm-modal";
 import { LineLoginButton } from "../../restaurants/[restaurantId]/_components/LineLoginButton";
+import { getRestaurantStatus } from "@/utils/restaurant-status";
 
 type Props = {
   restaurant: Prisma.RestaurantGetPayload<{
@@ -23,6 +24,7 @@ type Props = {
       meals: { include: { items: { include: { options: true } } } };
       googleMapPlaceInfo: { select: { url: true } };
       paymentOptions: true;
+      fullStatuses: { select: { easedAt: true } };
     };
   }>;
   inProgressOrderId?: string;
@@ -47,6 +49,15 @@ export function RestaurantPage({ restaurant, inProgressOrderId, userId, defaultM
   );
   const [secondPersonMeal, setSecondPersonMeal] = useState<MealWithItems | null>();
   const [secondMealSelectedOptions, setSecondMealSelectedOptions] = useState<(string | null)[]>();
+  const restaurantStatus = useMemo(
+    () =>
+      getRestaurantStatus({
+        isOpen: restaurant.isOpen,
+        isFull: restaurant.fullStatuses.some((status) => status.easedAt === null)
+      }),
+    [restaurant.fullStatuses, restaurant.isOpen]
+  );
+  const isDiscounted = restaurantStatus === "open";
 
   const handleFirstMealSelected = (selectedMeal: MealWithItems) => {
     setFirstMealSelectedOptions(new Array(selectedMeal.items.length).fill(null));
@@ -124,6 +135,7 @@ export function RestaurantPage({ restaurant, inProgressOrderId, userId, defaultM
               meal={firstPersonMeal}
               selectedOptions={firstMealSelectedOptions}
               onOptionChange={handleFirstMealOptionChange}
+              isDiscounted={isDiscounted}
             />
             {restaurant.isOpen ? (
               inProgressOrderId ? (
@@ -165,6 +177,7 @@ export function RestaurantPage({ restaurant, inProgressOrderId, userId, defaultM
                             <PriceSection
                               firstPersonMeal={firstPersonMeal}
                               firstSelectedOptions={firstMealSelectedOptions}
+                              isDiscounted={isDiscounted}
                             />
                             <VisitingSection isLoading={isVisitRequesting} onClick={handleVisitingClick} />
                           </>
@@ -178,9 +191,9 @@ export function RestaurantPage({ restaurant, inProgressOrderId, userId, defaultM
                               onSelectMeal={handleSecondMealSelected}
                               additionalBox={
                                 <Center
-                                  minW="150px"
-                                  w="150px"
-                                  h="150px"
+                                  minW="130px"
+                                  w="130px"
+                                  h="130px"
                                   borderRadius={12}
                                   position="relative"
                                   borderWidth={secondPersonMeal === null ? 4 : 0}
@@ -218,6 +231,7 @@ export function RestaurantPage({ restaurant, inProgressOrderId, userId, defaultM
                                       meal={secondPersonMeal}
                                       selectedOptions={secondMealSelectedOptions}
                                       onOptionChange={handleSecondMealOptionChange}
+                                      isDiscounted={isDiscounted}
                                     />
                                     {secondPersonMeal.items.every(
                                       (item, index) =>
@@ -230,6 +244,7 @@ export function RestaurantPage({ restaurant, inProgressOrderId, userId, defaultM
                                           firstSelectedOptions={firstMealSelectedOptions}
                                           secondPersonMeal={secondPersonMeal ?? undefined}
                                           secondSelectedOptions={secondMealSelectedOptions}
+                                          isDiscounted={isDiscounted}
                                         />
                                         <VisitingSection isLoading={isVisitRequesting} onClick={handleVisitingClick} />
                                       </>
@@ -242,6 +257,7 @@ export function RestaurantPage({ restaurant, inProgressOrderId, userId, defaultM
                                     <PriceSection
                                       firstPersonMeal={firstPersonMeal}
                                       firstSelectedOptions={firstMealSelectedOptions}
+                                      isDiscounted={isDiscounted}
                                     />
                                     <VisitingSection isLoading={isVisitRequesting} onClick={handleVisitingClick} />
                                   </>

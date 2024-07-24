@@ -35,8 +35,8 @@ export function MealPreviewBox({
 }: Props) {
   return (
     <Box
-      maxW="150px"
-      minW="150px"
+      maxW="130px"
+      minW="130px"
       borderRadius={12}
       {...(href ? { as: Link, href: href, onClick: (e) => e.stopPropagation() } : { onClick })}
     >

@@ -13,8 +13,8 @@ export function InteriorImage({ restaurantId, interiorImagePath }: Props) {
     <VStack alignItems="start" spacing={0}>
       <Text fontSize="xs">内観</Text>
       <Image
-        minW="150px"
-        maxW="150px"
+        minW="130px"
+        maxW="130px"
         src={getRestaurantInteriorImageUrl(interiorImagePath)}
         objectFit="cover"
         aspectRatio={1 / 1}
