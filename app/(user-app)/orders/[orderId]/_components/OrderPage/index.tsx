@@ -343,10 +343,10 @@ export function OrderPage({ order }: Props) {
             <AlertTitle>注文が完了しました</AlertTitle>
             <AlertDescription>お食事をお楽しみください</AlertDescription>
           </Alert>
-          <Heading>注文情報</Heading>
+          <Heading size="md">注文情報</Heading>
           <VStack alignItems="start">
-            <Heading size="md">店舗</Heading>
-            <Heading size="sm">{order.restaurant.name}</Heading>
+            <Heading size="sm">店舗</Heading>
+            <Text fontSize="sm">{order.restaurant.name}</Text>
           </VStack>
           <PriceSection order={order} />
           <Button variant="outline" size="md" colorScheme="gray" w="full" maxW="full" as={NextLink} href="/">

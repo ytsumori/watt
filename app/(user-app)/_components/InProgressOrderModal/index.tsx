@@ -12,7 +12,7 @@ export function InProgressOrderModal() {
   const [inProgressOrderId, setInProgressOrderId] = useState<string>();
 
   useEffect(() => {
-    if (!pathname.startsWith("/orders")) {
+    if (!pathname.startsWith("/order")) {
       getInProgressOrder().then((order) => {
         if (order) {
           setInProgressOrderId(order.id);
