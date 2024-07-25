@@ -70,7 +70,7 @@ export function RestaurantInfo({ restaurant }: Props) {
               )}
             </SimpleGrid>
             {restaurant.interiorImagePath && (
-              <>
+              <Box mt={2}>
                 <Text>内観</Text>
                 <Image
                   maxW="100px"
@@ -95,7 +95,7 @@ export function RestaurantInfo({ restaurant }: Props) {
                     />
                   </ModalContent>
                 </Modal>
-              </>
+              </Box>
             )}
           </Box>
         </VStack>

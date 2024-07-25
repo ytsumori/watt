@@ -34,7 +34,7 @@ type Props = {
       restaurant: { include: { googleMapPlaceInfo: { select: { url: true } } } };
       meals: {
         include: {
-          meal: { select: { title: true; price: true } };
+          meal: { select: { title: true; price: true; listPrice: true } };
           options: {
             select: {
               id: true;

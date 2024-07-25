@@ -7,6 +7,7 @@ import {
   Flex,
   FormControl,
   FormErrorMessage,
+  FormHelperText,
   FormLabel,
   HStack,
   IconButton,
@@ -147,21 +148,6 @@ export function MealForm({ restaurantId, editingMeal, onSubmit }: Props) {
                   <Input name={itemFields.title.name} defaultValue={itemFields.title.initialValue} />
                   <FormErrorMessage>{itemFields.title.errors?.join("、") ?? ""}</FormErrorMessage>
                 </FormControl>
-                <FormControl isRequired isInvalid={!!itemFields.price.errors} mt={1}>
-                  <FormLabel>単価</FormLabel>
-                  <HStack maxW="full">
-                    <NumberInput
-                      allowMouseWheel={false}
-                      name={itemFields.price.name}
-                      min={0}
-                      defaultValue={itemFields.price.initialValue}
-                    >
-                      <NumberInputField />
-                    </NumberInput>
-                    <Text>円</Text>
-                  </HStack>
-                  <FormErrorMessage>{itemFields.price.errors?.join("、") ?? ""}</FormErrorMessage>
-                </FormControl>
                 <FormControl isInvalid={!!itemFields.description.errors} mt={1}>
                   <FormLabel>説明</FormLabel>
                   <Textarea
@@ -249,8 +235,24 @@ export function MealForm({ restaurantId, editingMeal, onSubmit }: Props) {
         <FormErrorMessage>{fields.items.errors?.join("、") ?? ""}</FormErrorMessage>
       </FormControl>
       <Divider />
+      <FormControl isRequired my={3} isInvalid={!!fields.listPrice.errors}>
+        <FormLabel>定価(税込)</FormLabel>
+        <HStack maxW="full">
+          <NumberInput
+            allowMouseWheel={false}
+            name={fields.listPrice.name}
+            min={0}
+            defaultValue={fields.listPrice.initialValue}
+          >
+            <NumberInputField />
+          </NumberInput>
+          <Text>円</Text>
+        </HStack>
+        <FormHelperText>混雑時に適用される価格</FormHelperText>
+        <FormErrorMessage>{fields.listPrice.errors?.join("、") ?? ""}</FormErrorMessage>
+      </FormControl>
       <FormControl isRequired my={3} isInvalid={!!fields.price.errors}>
-        <FormLabel>セット金額(税込)</FormLabel>
+        <FormLabel>セット割引価格(税込)</FormLabel>
         <HStack maxW="full">
           <NumberInput
             allowMouseWheel={false}
@@ -262,15 +264,7 @@ export function MealForm({ restaurantId, editingMeal, onSubmit }: Props) {
           </NumberInput>
           <Text>円</Text>
         </HStack>
-        <Text fontSize="sm" mt={1}>
-          単品合計金額(割引金額)：
-          {itemsFieldList.reduce((sum, item) => sum + Number(item.value?.price ?? 0), 0).toLocaleString("ja-JP")}円 (
-          {(
-            itemsFieldList.reduce((sum, item) => sum + Number(item.value?.price ?? 0), 0) -
-            Number(fields.price.value ?? 0)
-          ).toLocaleString("ja-JP")}
-          円)
-        </Text>
+        <FormHelperText>来店可能時に適用される価格</FormHelperText>
         <FormErrorMessage>{fields.price.errors?.join("、") ?? ""}</FormErrorMessage>
       </FormControl>
       <SubmitButton isDisabled={!form.valid} />

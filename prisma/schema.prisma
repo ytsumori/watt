@@ -65,27 +65,29 @@ model StripeCustomer {
 }
 
 model Restaurant {
-  id                 String                           @id @default(cuid())
-  name               String
-  isOpen             Boolean                          @default(false)
-  isPublished        Boolean                          @default(false)
-  googleMapPlaceId   String                           @unique
-  password           String                           @unique @default(uuid())
-  smokingOption      SmokingOption?
-  phoneNumber        String?
-  interiorImagePath  String?
-  createdAt          DateTime                         @default(now())
-  updatedAt          DateTime                         @default(now()) @updatedAt
-  meals              Meal[]
-  orders             Order[]
-  bankAccount        RestaurantBankAccount?
-  closedAlerts       RestaurantClosedAlert[]
-  openingHours       RestaurantGoogleMapOpeningHour[]
-  googleMapPlaceInfo RestaurantGoogleMapPlaceInfo?
-  menuImages         RestaurantMenuImage[]
-  paymentOptions     RestaurantPaymentOption[]
-  coordinate         RestaurantCoordinate?
-  staffs             Staff[]
+  id                    String                           @id @default(cuid())
+  name                  String
+  isOpen                Boolean                          @default(false)
+  isPublished           Boolean                          @default(false)
+  isFullStatusAvailable Boolean                          @default(false)
+  googleMapPlaceId      String                           @unique
+  password              String                           @unique @default(uuid())
+  smokingOption         SmokingOption?
+  phoneNumber           String?
+  interiorImagePath     String?
+  createdAt             DateTime                         @default(now())
+  updatedAt             DateTime                         @default(now()) @updatedAt
+  meals                 Meal[]
+  orders                Order[]
+  bankAccount           RestaurantBankAccount?
+  closedAlerts          RestaurantClosedAlert[]
+  openingHours          RestaurantGoogleMapOpeningHour[]
+  googleMapPlaceInfo    RestaurantGoogleMapPlaceInfo?
+  menuImages            RestaurantMenuImage[]
+  paymentOptions        RestaurantPaymentOption[]
+  coordinate            RestaurantCoordinate?
+  staffs                Staff[]
+  fullStatuses          RestaurantFullStatus[]
 }
 
 model RestaurantPaymentOption {
@@ -153,10 +155,20 @@ model RestaurantClosedAlert {
   restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
 }
 
+model RestaurantFullStatus {
+  id           String    @id @default(cuid())
+  restaurantId String
+  startedAt    DateTime  @default(now())
+  easedAt      DateTime?
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+}
+
 model Meal {
   id           String      @id @default(cuid())
   restaurantId String
   imagePath    String
+  listPrice    Int?
   price        Int
   title        String
   description  String
@@ -172,7 +184,7 @@ model Meal {
 model MealItem {
   id          String           @id @default(cuid())
   mealId      String
-  price       Int
+  price       Int?
   title       String
   description String?
   position    Int
@@ -208,6 +220,7 @@ model Order {
   completedAt            DateTime?
   canceledAt             DateTime?
   approvedByRestaurantAt DateTime?
+  isDiscounted           Boolean                     @default(true)
   createdAt              DateTime                    @default(now())
   updatedAt              DateTime                    @default(now()) @updatedAt
   restaurant             Restaurant                  @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
@@ -223,7 +236,6 @@ model OrderMeal {
   id        String            @id @default(cuid())
   orderId   String
   mealId    String
-  quantity  Int? // @deprecated
   createdAt DateTime          @default(now())
   updatedAt DateTime          @default(now()) @updatedAt
   order     Order             @relation(fields: [orderId], references: [id], onDelete: Cascade)

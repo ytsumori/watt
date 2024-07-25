@@ -12,48 +12,61 @@ type Props = {
       id: true;
       title: true;
       price: true;
+      listPrice: true;
       imagePath: true;
     };
   }>;
   href?: string;
   children?: ReactNode;
   isLabelHidden?: boolean;
+  isDiscounted?: boolean;
   isRouter?: boolean;
 } & BoxProps;
 
-export function MealPreviewBox({ meal, href, children, isLabelHidden = false, isRouter = false, ...boxProps }: Props) {
+export function MealPreviewBox({
+  meal,
+  href,
+  children,
+  isLabelHidden = false,
+  isDiscounted = false,
+  isRouter = false,
+  onClick,
+  ...boxProps
+}: Props) {
   return (
     <Box
-      maxW="150px"
-      minW="150px"
+      maxW="130px"
+      minW="130px"
       borderRadius={12}
-      position="relative"
-      {...boxProps}
-      {...(href ? { as: Link, href: href, onClick: (e) => e.stopPropagation() } : {})}
+      {...(href ? { as: Link, href: href, onClick: (e) => e.stopPropagation() } : { onClick })}
     >
-      <MealPreviewImage src={meal.imagePath} alt={`meal-${meal.id}`} />
+      <Box borderRadius={12} position="relative" {...boxProps}>
+        <MealPreviewImage src={meal.imagePath} alt={`meal-${meal.id}`} />
+        {children}
+      </Box>
       {!isLabelHidden && (
         <>
-          <Box
-            position="absolute"
-            bottom={0}
-            left={0}
-            p={2}
-            textAlign="start"
-            backgroundColor="blackAlpha.700"
-            color="white"
-            fontSize="xs"
-            lineHeight="12px"
-            fontWeight="bold"
-            w="full"
-            borderBottomRadius={8}
-          >
-            <Text noOfLines={1}>{meal.title}</Text>
-            <Text>¥{meal.price.toLocaleString("ja-JP")}</Text>
+          <Text noOfLines={1} fontSize="xs" mt={1} fontWeight="bold">
+            {meal.title}
+          </Text>
+          <Box lineHeight="normal">
+            {isDiscounted ? (
+              <>
+                <Text as="span" textDecorationLine="line-through" fontSize="xs">
+                  ¥{meal.listPrice!.toLocaleString("ja-JP")}
+                </Text>
+                <Text as="span" fontSize="md" fontWeight="bold" color="brand.400" ml={1}>
+                  ¥{meal.price.toLocaleString("ja-JP")}
+                </Text>
+              </>
+            ) : (
+              <Text as="span" fontSize="md" fontWeight="bold">
+                ¥{meal.listPrice!.toLocaleString("ja-JP")}
+              </Text>
+            )}
           </Box>
         </>
       )}
-      {children}
     </Box>
   );
 }

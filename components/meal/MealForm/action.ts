@@ -47,6 +47,7 @@ export async function submit(formData: FormData) {
         data: {
           title: submission.value.title,
           price: submission.value.price,
+          listPrice: submission.value.listPrice,
           description: submission.value.description,
           ...(imageData ? { imagePath: imageData.path } : {}),
           items: {
@@ -55,7 +56,6 @@ export async function submit(formData: FormData) {
               return {
                 title: item.title,
                 description: item.description,
-                price: item.price,
                 position: index,
                 ...(item.options && {
                   options: {
@@ -82,6 +82,7 @@ export async function submit(formData: FormData) {
             restaurantId: submission.value.restaurantId,
             title: submission.value.title,
             price: submission.value.price,
+            listPrice: submission.value.listPrice,
             description: submission.value.description,
             imagePath: imageData?.path ?? meal.imagePath,
             items: {
@@ -89,7 +90,6 @@ export async function submit(formData: FormData) {
                 return {
                   title: item.title,
                   description: item.description,
-                  price: item.price,
                   position: index,
                   ...(item.options && {
                     options: {
@@ -132,6 +132,7 @@ export async function submit(formData: FormData) {
         restaurantId: submission.value.restaurantId,
         title: submission.value.title,
         price: submission.value.price,
+        listPrice: submission.value.listPrice,
         description: submission.value.description,
         imagePath: data.path,
         items: {
@@ -139,7 +140,6 @@ export async function submit(formData: FormData) {
             return {
               title: item.title,
               description: item.description,
-              price: item.price,
               position: index,
               ...(item.options && {
                 options: {

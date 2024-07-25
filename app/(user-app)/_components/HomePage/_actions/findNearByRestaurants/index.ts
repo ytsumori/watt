@@ -13,6 +13,7 @@ type Restaurant = Prisma.RestaurantGetPayload<{
         id: true;
         title: true;
         price: true;
+        listPrice: true;
         imagePath: true;
       };
     };
@@ -25,6 +26,11 @@ type Restaurant = Prisma.RestaurantGetPayload<{
         closeHour: true;
         closeMinute: true;
         closeDayOfWeek: true;
+      };
+    };
+    fullStatuses: {
+      select: {
+        easedAt: true;
       };
     };
   };

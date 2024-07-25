@@ -24,6 +24,16 @@ export async function updateIsOpen({ id, isOpen }: { id: string; isOpen: boolean
               }
             }
           : { create: {} })
+      },
+      fullStatuses: {
+        updateMany: {
+          where: {
+            easedAt: null
+          },
+          data: {
+            easedAt: new Date()
+          }
+        }
       }
     }
   });
@@ -54,5 +64,18 @@ export async function updateRestaurantPublishment({ id, isPublished }: { id: str
   return await prisma.restaurant.update({
     where: { id },
     data: { isPublished }
+  });
+}
+
+export async function updateRestaurantFullStatusAvailability({
+  id,
+  isFullStatusAvailable
+}: {
+  id: string;
+  isFullStatusAvailable: boolean;
+}) {
+  return await prisma.restaurant.update({
+    where: { id },
+    data: { isFullStatusAvailable }
   });
 }

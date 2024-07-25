@@ -9,26 +9,32 @@ type Props = {
   firstSelectedOptions: (string | null)[];
   secondPersonMeal?: MealWithItems;
   secondSelectedOptions?: (string | null)[];
+  isDiscounted: boolean;
 };
 
 export function PriceSection({
   firstPersonMeal,
   firstSelectedOptions,
   secondPersonMeal,
-  secondSelectedOptions
+  secondSelectedOptions,
+  isDiscounted
 }: Props) {
   const firstMealExtraPrice = firstPersonMeal.items.reduce((acc, item, itemIndex) => {
     const selectedOption = item.options.find((option) => option.id === firstSelectedOptions[itemIndex]);
     return acc + (selectedOption?.extraPrice ?? 0);
   }, 0);
-  const firstMealPrice = firstPersonMeal.price + firstMealExtraPrice;
+  const firstMealPrice = isDiscounted
+    ? firstPersonMeal.price + firstMealExtraPrice
+    : firstPersonMeal.listPrice! + firstMealExtraPrice;
   let secondMealPrice: number = 0;
   if (secondPersonMeal && secondSelectedOptions) {
     const secondMealExtraPrice = secondPersonMeal.items.reduce((acc, item, itemIndex) => {
       const selectedOption = item.options.find((option) => option.id === secondSelectedOptions[itemIndex]);
       return acc + (selectedOption?.extraPrice ?? 0);
     }, 0);
-    secondMealPrice = secondPersonMeal.price + secondMealExtraPrice;
+    secondMealPrice = isDiscounted
+      ? secondPersonMeal.price + secondMealExtraPrice
+      : secondPersonMeal.listPrice! + secondMealExtraPrice;
   }
   return (
     <>
@@ -37,9 +43,15 @@ export function PriceSection({
         meal={firstPersonMeal}
         titlePrefix={secondPersonMeal ? "1人目: " : undefined}
         selectedOptions={firstSelectedOptions}
+        isDiscounted={isDiscounted}
       />
       {secondPersonMeal && secondSelectedOptions && (
-        <MealPrice meal={secondPersonMeal} titlePrefix="2人目: " selectedOptions={secondSelectedOptions} />
+        <MealPrice
+          meal={secondPersonMeal}
+          titlePrefix="2人目: "
+          selectedOptions={secondSelectedOptions}
+          isDiscounted={isDiscounted}
+        />
       )}
       <Divider borderColor="blackAlpha.400" />
       <Flex w="full">

@@ -4,17 +4,10 @@ import { findInProgressOrder } from "@/app/(user-app)/_actions/findInProgressOrd
 import { notifyStaffOrder } from "./notify-staff-order";
 import { createHttpTask } from "@/lib/googleTasks/createHttpTask";
 import { logger } from "@/utils/logger";
-import { createOrder } from "@/actions/mutations/order";
-
-type Args = {
-  userId: string;
-  restaurantId: string;
-  firstMealId: string;
-  firstOptionIds: (string | null)[];
-  secondMealId?: string;
-  secondOptionIds?: (string | null)[];
-  peopleCount: 1 | 2;
-};
+import { createOrder, CreateOrderArgs } from "@/actions/mutations/order";
+import { Order } from "@prisma/client";
+import prisma from "@/lib/prisma/client";
+import { Result } from "@/types/error";
 
 export async function visitRestaurant({
   userId,
@@ -23,11 +16,25 @@ export async function visitRestaurant({
   firstOptionIds,
   secondMealId,
   secondOptionIds,
-  peopleCount
-}: Args) {
+  peopleCount,
+  isDiscounted
+}: CreateOrderArgs): Promise<Result<Order>> {
   const inProgressOrder = await findInProgressOrder(userId);
   if (inProgressOrder) {
     throw new Error("Active order already exists");
+  }
+
+  const fullStatus = await prisma.restaurantFullStatus.findFirst({
+    where: {
+      restaurantId,
+      easedAt: null
+    },
+    select: {
+      id: true
+    }
+  });
+  if (isDiscounted === !!fullStatus) {
+    return { data: null, error: { message: "Status outdated" } };
   }
 
   const order = await createOrder({
@@ -37,7 +44,8 @@ export async function visitRestaurant({
     firstOptionIds,
     secondMealId,
     secondOptionIds,
-    peopleCount
+    peopleCount,
+    isDiscounted
   });
 
   try {
@@ -50,5 +58,5 @@ export async function visitRestaurant({
     logger({ severity: "ERROR", message: "Error creating task", payload: { e } })
   );
 
-  return order;
+  return { data: order, error: null };
 }

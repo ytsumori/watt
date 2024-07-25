@@ -1,7 +1,18 @@
 "use client";
 
 import Map from "@/components/Map";
-import { Box, VStack } from "@chakra-ui/react";
+import {
+  Box,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalHeader,
+  ModalOverlay,
+  Text,
+  useDisclosure,
+  VStack
+} from "@chakra-ui/react";
 import { InView } from "react-intersection-observer";
 import { RestaurantWithDistance } from "./_types/RestaurantWithDistance";
 import { RestaurantListItem } from "./_components/RestaurantListItem";
@@ -9,12 +20,15 @@ import { useRouter } from "next-nprogress-bar";
 import { useGetCurrentPosition } from "./hooks/useGetCurrentPosition";
 import { useFetchNearbyRestaurants } from "./hooks/useFetchNearbyRestaurants";
 import { useState } from "react";
+import { getRestaurantStatus } from "@/utils/restaurant-status";
+import { StatusBadge } from "./_components/RestaurantListItem/_components/StatusBadge";
 
 export default function HomePage({ restaurants }: { restaurants: RestaurantWithDistance[] }) {
   const router = useRouter();
   const { position } = useGetCurrentPosition();
   const { nearbyRestaurants } = useFetchNearbyRestaurants({ position, restaurants });
   const [activeRestaurant, setActiveRestaurant] = useState<RestaurantWithDistance | null>(null);
+  const { isOpen: isHelpModalOpen, onOpen: onHelpModalOpen, onClose: onHelpModalClose } = useDisclosure();
 
   const handleRestaurantSelect = (restaurantId: string) => {
     const element = document.getElementById(restaurantId);
@@ -30,7 +44,11 @@ export default function HomePage({ restaurants }: { restaurants: RestaurantWithD
             return {
               id: restaurant.id,
               name: restaurant.name,
-              location: { lat: restaurant.googleMapPlaceInfo.latitude, lng: restaurant.googleMapPlaceInfo.longitude }
+              location: { lat: restaurant.googleMapPlaceInfo.latitude, lng: restaurant.googleMapPlaceInfo.longitude },
+              status: getRestaurantStatus({
+                isOpen: restaurant.isOpen,
+                isFull: restaurant.fullStatuses.some((status) => status.easedAt === null)
+              })
             };
           })}
           currentLocation={position}
@@ -46,7 +64,6 @@ export default function HomePage({ restaurants }: { restaurants: RestaurantWithD
                 }
               : null
           }
-          availableRestaurantIds={restaurants.flatMap((restaurant) => (restaurant.isOpen ? [restaurant.id] : []))}
           onRestaurantSelect={handleRestaurantSelect}
         />
       </Box>
@@ -80,11 +97,39 @@ export default function HomePage({ restaurants }: { restaurants: RestaurantWithD
               py={3}
               onClick={() => router.push(`/restaurants/${restaurant.id}`)}
             >
-              <RestaurantListItem restaurant={restaurant} />
+              <RestaurantListItem restaurant={restaurant} onClickHelp={onHelpModalOpen} />
             </Box>
           </InView>
         ))}
       </VStack>
+      <Modal isOpen={isHelpModalOpen} onClose={onHelpModalClose} isCentered>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>お店のステータスについて</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody pt={0} pb={4}>
+            <VStack alignItems="start" fontSize="sm">
+              <Box>
+                <StatusBadge status="open" />
+                <Text>お店に入れる状態です。割引を適用した価格でセットメニューをご提供します。</Text>
+              </Box>
+              <Box>
+                <StatusBadge status="full" />
+                <Text>
+                  お店に入れる状態ですが、席が埋まってしまう可能性があります。定価でセットメニューをご提供します。
+                </Text>
+              </Box>
+              <Box>
+                <StatusBadge status="close" />
+                <Text>お店に入れない状態です。</Text>
+              </Box>
+              <Text fontSize="xs" color="gray.500">
+                ※ステータスはリアルタイムではありません
+              </Text>
+            </VStack>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
     </>
   );
 }
