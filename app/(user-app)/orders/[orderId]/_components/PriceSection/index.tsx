@@ -8,7 +8,7 @@ type Props = {
     include: {
       meals: {
         include: {
-          meal: { select: { title: true; price: true } };
+          meal: { select: { title: true; price: true; listPrice: true } };
           options: {
             select: {
               id: true;
@@ -36,7 +36,9 @@ export function PriceSection({ order }: Props) {
           <Flex w="full">
             <Text>{orderMeal.meal.title}</Text>
             <Spacer />
-            <Text fontWeight="bold">{orderMeal.meal.price.toLocaleString("ja-JP")} 円</Text>
+            <Text fontWeight="bold">
+              {(order.isDiscounted ? orderMeal.meal.price : orderMeal.meal.listPrice!).toLocaleString("ja-JP")} 円
+            </Text>
           </Flex>
           {orderMeal.options.map((option) => (
             <Flex w="full" key={option.id}>

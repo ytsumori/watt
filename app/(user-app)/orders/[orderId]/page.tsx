@@ -21,7 +21,7 @@ export default async function Order({ params }: { params: Params }) {
       restaurant: { include: { googleMapPlaceInfo: { select: { url: true } } } },
       meals: {
         include: {
-          meal: { select: { title: true, price: true } },
+          meal: { select: { title: true, price: true, listPrice: true } },
           options: {
             select: {
               id: true,

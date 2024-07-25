@@ -12,12 +12,14 @@ export async function notifyStaffOrder({ orderId }: { orderId: string }) {
       orderNumber: true,
       peopleCount: true,
       orderTotalPrice: true,
+      isDiscounted: true,
       meals: {
         select: {
           meal: {
             select: {
               title: true,
-              price: true
+              price: true,
+              listPrice: true
             }
           },
           options: {
@@ -191,7 +193,7 @@ export async function notifyStaffOrder({ orderId }: { orderId: string }) {
                           ...Array(order.peopleCount)
                             .fill(0)
                             .flatMap((_, index) => {
-                              const currentOrder = order.meals.at(index);
+                              const orderMeal = order.meals.at(index);
                               return [
                                 ...(order.peopleCount > 1
                                   ? [
@@ -205,7 +207,7 @@ export async function notifyStaffOrder({ orderId }: { orderId: string }) {
                                       }
                                     ]
                                   : []),
-                                ...(currentOrder
+                                ...(orderMeal
                                   ? [
                                       {
                                         type: "box" as "box",
@@ -213,7 +215,7 @@ export async function notifyStaffOrder({ orderId }: { orderId: string }) {
                                         contents: [
                                           {
                                             type: "text" as "text",
-                                            text: currentOrder.meal.title,
+                                            text: orderMeal.meal.title,
                                             size: "sm",
                                             color: "#555555",
                                             wrap: true,
@@ -221,14 +223,14 @@ export async function notifyStaffOrder({ orderId }: { orderId: string }) {
                                           },
                                           {
                                             type: "text" as "text",
-                                            text: `${currentOrder.meal.price.toLocaleString("ja-JP")}円`,
+                                            text: `${(order.isDiscounted ? orderMeal.meal.price : orderMeal.meal.listPrice!).toLocaleString("ja-JP")}円`,
                                             size: "sm",
                                             color: "#111111",
                                             align: "end" as "end"
                                           }
                                         ]
                                       },
-                                      ...currentOrder.options.map((option) => {
+                                      ...orderMeal.options.map((option) => {
                                         return {
                                           type: "box" as "box",
                                           layout: "horizontal" as "horizontal",
