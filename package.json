@@ -18,9 +18,12 @@
     "cloud-tasks-down": "cd docker && docker compose down",
     "deploy-cloud-scheduler": "pnpm dlx tsx ./scripts/cloudScheduler/deploy.ts",
     "type-check": "tsc --noEmit",
-    "db-typegen": "supabase gen types --lang=typescript --local > types/supabase.ts"
+    "db-typegen": "supabase gen types --lang=typescript --local > types/supabase.ts",
+    "db-seed": "prisma db seed"
   },
-  "prisma": {},
+  "prisma": {
+    "seed": "pnpm dlx tsx --tsconfig tsconfig.json prisma/seed.ts"
+  },
   "dependencies": {
     "@chakra-ui/anatomy": "^2.2.2",
     "@chakra-ui/icons": "^2.1.1",
