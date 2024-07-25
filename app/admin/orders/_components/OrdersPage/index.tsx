@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeftIcon, ArrowRightIcon } from "@chakra-ui/icons";
+import { ArrowLeftIcon, ArrowRightIcon, CheckIcon, CloseIcon } from "@chakra-ui/icons";
 import {
   Box,
   Table,
@@ -29,6 +29,7 @@ type Props = {
       peopleCount: true;
       completedAt: true;
       orderTotalPrice: true;
+      isDiscounted: true;
       meals: {
         select: {
           id: true;
@@ -36,7 +37,6 @@ type Props = {
           options: { select: { mealItemOption: { select: { title: true; extraPrice: true } } } };
         };
       };
-      payment: { select: { totalAmount: true } };
       restaurant: { select: { id: true; name: true } };
     };
   }>[];
@@ -60,7 +60,7 @@ export function OrdersPage({ orders, page, maxPage }: Props) {
               <Th>人数</Th>
               <Th>セット内容</Th>
               <Th>注文金額</Th>
-              <Th>Watt支払い</Th>
+              <Th>スキ割</Th>
               <Th>注文日時</Th>
             </Tr>
           </Thead>
@@ -84,7 +84,7 @@ export function OrdersPage({ orders, page, maxPage }: Props) {
                     ))}
                   </Td>
                   <Td>{order.orderTotalPrice.toLocaleString("ja-JP")}円</Td>
-                  <Td>{order.payment ? `${order.payment.totalAmount.toLocaleString("ja-JP")}円` : "-"}</Td>
+                  <Td>{order.isDiscounted ? <CheckIcon color="green.500" /> : <CloseIcon color="red.500" />}</Td>
                   <Td>{order.completedAt && format(order.completedAt, "yyyy/MM/dd HH:mm")}</Td>
                 </Tr>
               );

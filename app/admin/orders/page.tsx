@@ -18,6 +18,7 @@ export default async function Orders({ searchParams }: Props) {
       peopleCount: true,
       completedAt: true,
       orderTotalPrice: true,
+      isDiscounted: true,
       meals: {
         select: {
           id: true,
@@ -25,7 +26,6 @@ export default async function Orders({ searchParams }: Props) {
           options: { select: { mealItemOption: { select: { title: true, extraPrice: true } } } }
         }
       },
-      payment: { select: { totalAmount: true } },
       restaurant: { select: { id: true, name: true } }
     },
     where: {
