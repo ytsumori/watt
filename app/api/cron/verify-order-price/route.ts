@@ -27,8 +27,7 @@ export async function GET(request: NextRequest) {
           meal: { select: { price: true } },
           options: { select: { mealItemOption: { select: { extraPrice: true } } } }
         }
-      },
-      payment: { select: { totalAmount: true } }
+      }
     },
     where: {
       createdAt: {
