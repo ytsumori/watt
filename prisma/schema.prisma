@@ -35,33 +35,23 @@ model Session {
 }
 
 model User {
-  id             String          @id @default(cuid())
-  name           String?
-  email          String?         @unique
-  emailVerified  DateTime?
-  phoneNumber    String?         @unique
-  image          String?
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @default(now()) @updatedAt
-  accounts       Account[]
-  orders         Order[]
-  sessions       Session[]
-  stripeCustomer StripeCustomer?
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  phoneNumber   String?   @unique
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @default(now()) @updatedAt
+  accounts      Account[]
+  orders        Order[]
+  sessions      Session[]
 }
 
 model OneTimePassword {
   id          String @id @default(cuid())
   phoneNumber String @unique
   code        String @db.VarChar(6)
-}
-
-model StripeCustomer {
-  id               String   @id @default(cuid())
-  userId           String   @unique
-  stripeCustomerId String   @unique
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @default(now()) @updatedAt
-  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Restaurant {
@@ -229,7 +219,6 @@ model Order {
   cancellation           OrderCancellation?
   meals                  OrderMeal[]
   notificationCall       OrderNotificationCall?
-  payment                Payment?
 }
 
 model OrderMeal {
@@ -276,20 +265,6 @@ model OrderAutomaticCancellation {
   googleCloudTaskId String
   createdAt         DateTime @default(now())
   order             Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
-}
-
-model Payment {
-  id                    String    @id @default(cuid())
-  orderId               String    @unique
-  stripePaymentId       String
-  additionalAmount      Int
-  totalAmount           Int
-  restaurantProfitPrice Int
-  isCsvDownloaded       Boolean   @default(false)
-  completedAt           DateTime?
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @default(now()) @updatedAt
-  order                 Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
 }
 
 model Staff {

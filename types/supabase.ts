@@ -495,53 +495,6 @@ export type Database = {
           },
         ]
       }
-      Payment: {
-        Row: {
-          additionalAmount: number
-          completedAt: string | null
-          createdAt: string
-          id: string
-          isCsvDownloaded: boolean
-          orderId: string
-          restaurantProfitPrice: number
-          stripePaymentId: string
-          totalAmount: number
-          updatedAt: string
-        }
-        Insert: {
-          additionalAmount: number
-          completedAt?: string | null
-          createdAt?: string
-          id: string
-          isCsvDownloaded?: boolean
-          orderId: string
-          restaurantProfitPrice: number
-          stripePaymentId: string
-          totalAmount: number
-          updatedAt?: string
-        }
-        Update: {
-          additionalAmount?: number
-          completedAt?: string | null
-          createdAt?: string
-          id?: string
-          isCsvDownloaded?: boolean
-          orderId?: string
-          restaurantProfitPrice?: number
-          stripePaymentId?: string
-          totalAmount?: number
-          updatedAt?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "Payment_orderId_fkey"
-            columns: ["orderId"]
-            isOneToOne: false
-            referencedRelation: "Order"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       Restaurant: {
         Row: {
           createdAt: string
@@ -942,38 +895,6 @@ export type Database = {
             columns: ["restaurantId"]
             isOneToOne: false
             referencedRelation: "Restaurant"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      StripeCustomer: {
-        Row: {
-          createdAt: string
-          id: string
-          stripeCustomerId: string
-          updatedAt: string
-          userId: string
-        }
-        Insert: {
-          createdAt?: string
-          id: string
-          stripeCustomerId: string
-          updatedAt?: string
-          userId: string
-        }
-        Update: {
-          createdAt?: string
-          id?: string
-          stripeCustomerId?: string
-          updatedAt?: string
-          userId?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "StripeCustomer_userId_fkey"
-            columns: ["userId"]
-            isOneToOne: false
-            referencedRelation: "User"
             referencedColumns: ["id"]
           },
         ]

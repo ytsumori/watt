@@ -52,8 +52,7 @@ export async function RestaurantOrdersSection({ restaurantId, month }: Props) {
           meal: { select: { price: true } },
           options: { select: { mealItemOption: { select: { extraPrice: true } } } }
         }
-      },
-      payment: { select: { totalAmount: true } }
+      }
     },
     where: {
       restaurantId,
@@ -75,8 +74,7 @@ export async function RestaurantOrdersSection({ restaurantId, month }: Props) {
           meal: { select: { price: true, title: true } },
           options: { select: { mealItemOption: { select: { extraPrice: true, title: true } } } }
         }
-      },
-      payment: { select: { totalAmount: true } }
+      }
     },
     where: {
       restaurantId,
@@ -115,13 +113,6 @@ export async function RestaurantOrdersSection({ restaurantId, month }: Props) {
           <StatLabel w="max-content">累計注文額</StatLabel>
           <StatNumber w="max-content">{totalOrderAmount.toLocaleString("ja-JP")}円</StatNumber>
         </Stat>
-        <Stat>
-          <StatLabel w="max-content">累計Watt決済額</StatLabel>
-          <StatNumber w="max-content">
-            {totalOrders.reduce((total, order) => total + (order.payment?.totalAmount ?? 0), 0).toLocaleString("ja-JP")}
-            円
-          </StatNumber>
-        </Stat>
       </HStack>
       <Box>
         <Heading size="sm">月次売上</Heading>
@@ -137,15 +128,6 @@ export async function RestaurantOrdersSection({ restaurantId, month }: Props) {
               <StatNumber w="max-content">{Math.floor(monthlyOrderAmount * 0.05).toLocaleString("ja-JP")}円</StatNumber>
               <StatHelpText w="max-content">注文額x5%</StatHelpText>
             </Stat>
-            <Stat>
-              <StatLabel w="max-content">Watt決済額</StatLabel>
-              <StatNumber w="max-content">
-                {monthlyOrders
-                  .reduce((total, order) => total + (order.payment?.totalAmount ?? 0), 0)
-                  .toLocaleString("ja-JP")}
-                円
-              </StatNumber>
-            </Stat>
           </HStack>
           <Heading size="sm">注文一覧</Heading>
           <TableContainer>
@@ -156,7 +138,6 @@ export async function RestaurantOrdersSection({ restaurantId, month }: Props) {
                   <Th>人数</Th>
                   <Th>セット内容</Th>
                   <Th>注文金額</Th>
-                  <Th>Watt支払い</Th>
                   <Th>注文日時</Th>
                 </Tr>
               </Thead>
@@ -174,7 +155,6 @@ export async function RestaurantOrdersSection({ restaurantId, month }: Props) {
                       ))}
                     </Td>
                     <Td>{order.orderTotalPrice.toLocaleString("ja-JP")}円</Td>
-                    <Td>{order.payment ? `${order.payment.totalAmount.toLocaleString("ja-JP")}円` : "-"}</Td>
                     <Td>{order.completedAt ? format(order.completedAt, "yyyy/MM/dd HH:mm") : ""}</Td>
                   </Tr>
                 ))}

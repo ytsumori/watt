@@ -10,7 +10,6 @@ type Props = {
   orders: Prisma.OrderGetPayload<{
     include: {
       restaurant: { select: { name: true } };
-      payment: { select: { totalAmount: true } };
     };
   }>[];
 };
@@ -52,15 +51,6 @@ export function OrdersPage({ orders }: Props) {
                 <Text>{order.restaurant.name}</Text>
                 <ChevronRightIcon boxSize={6} />
               </Flex>
-              {order.payment && (
-                <Text fontSize="small">
-                  合計
-                  <Text fontSize="medium" as="b">
-                    {order.payment.totalAmount.toLocaleString("ja-JP")}
-                  </Text>
-                  円
-                </Text>
-              )}
               <Badge position="absolute" top={0} right={0} m={2} colorScheme={getBadgeColor(status)}>
                 {translateOrderStatus(status)}
               </Badge>
