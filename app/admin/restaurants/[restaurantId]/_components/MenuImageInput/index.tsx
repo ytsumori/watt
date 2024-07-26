@@ -32,6 +32,7 @@ export const MenuImageInput: React.FC<Props> = ({ restaurantId, defaultMenuImage
           .map((data) => data && { ...data, imagePath: getSupabaseImageUrl("menus", data.imagePath) })
           .filter(Boolean) as RestaurantMenuImage[];
         setMenuImages((prev) => [...prev, ...convertedUrlData].sort((a, b) => a.menuNumber - b.menuNumber));
+        toast({ title: "メニュー画像をアップロードしました", status: "success" });
       })
       .catch((e) => {
         logger({ severity: "ERROR", message: "Failed to upload menu image", payload: e });

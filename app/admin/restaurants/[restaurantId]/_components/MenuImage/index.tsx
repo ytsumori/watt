@@ -17,7 +17,8 @@ type Props = {
 export const MenuImage: FC<Props> = ({ idx, menuImages, setMenuImages, defaultMenuImages }) => {
   const image = menuImages[idx];
   const toast = useToast();
-  const handleOnchange = (direction: "right" | "left") => {
+
+  const onSaveMenuImageOrder = async (direction: "right" | "left") => {
     const isRight = direction === "right";
     const newMenuNumber = direction === "right" ? image.menuNumber + 1 : image.menuNumber - 1;
     const newImage = { ...image, menuNumber: newMenuNumber };
@@ -26,18 +27,15 @@ export const MenuImage: FC<Props> = ({ idx, menuImages, setMenuImages, defaultMe
       ...effectedImage,
       menuNumber: isRight ? effectedImage.menuNumber - 1 : effectedImage.menuNumber + 1
     };
-    setMenuImages((prev) => [
-      ...prev.filter((i) => ![image.id, effectedImage.id].includes(i.id)),
+    const newMenuImages = [
+      ...menuImages.filter((i) => ![image.id, effectedImage.id].includes(i.id)),
       newImage,
       effectedNewImage
-    ]);
-  };
-
-  const onSaveMenuImageOrder = async (direction: "right" | "left") => {
-    await updateMenuImages(defaultMenuImages ?? [], menuImages)
+    ];
+    await updateMenuImages(menuImages ?? [], newMenuImages)
       .then(() => {
         toast({ title: "メニュー画像の順番を保存しました", status: "success" });
-        handleOnchange(direction);
+        setMenuImages(newMenuImages);
       })
       .catch((e) => {
         logger({ severity: "ERROR", message: "Failed to update menu image order", payload: e });
