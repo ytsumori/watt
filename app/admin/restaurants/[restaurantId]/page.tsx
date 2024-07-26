@@ -46,7 +46,7 @@ export default async function RestaurantPage({ params, searchParams }: PageProps
       smokingOption: true,
       paymentOptions: true,
       phoneNumber: true,
-      menuImages: true
+      menuImages: { orderBy: { menuNumber: "asc" } }
     }
   });
 

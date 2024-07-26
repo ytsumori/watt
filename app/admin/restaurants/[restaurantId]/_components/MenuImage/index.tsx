@@ -1,18 +1,22 @@
 import { FC } from "react";
 
-import { Box, Flex, Image } from "@chakra-ui/react";
+import { Box, Flex, Image, useToast } from "@chakra-ui/react";
 import { RestaurantMenuImage } from "@prisma/client";
 import { getSupabaseImageUrl } from "@/utils/image/getSupabaseImageUrl";
 import { ArrowLeftIcon, ArrowRightIcon } from "@chakra-ui/icons";
+import { updateMenuImages } from "@/actions/mutations/menuImage";
+import { logger } from "@/utils/logger";
 
 type Props = {
   idx: number;
+  defaultMenuImages?: RestaurantMenuImage[];
   menuImages: RestaurantMenuImage[];
   setMenuImages: React.Dispatch<React.SetStateAction<RestaurantMenuImage[]>>;
 };
 
-export const MenuImage: FC<Props> = ({ idx, menuImages, setMenuImages }) => {
+export const MenuImage: FC<Props> = ({ idx, menuImages, setMenuImages, defaultMenuImages }) => {
   const image = menuImages[idx];
+  const toast = useToast();
   const handleOnchange = (direction: "right" | "left") => {
     const isRight = direction === "right";
     const newMenuNumber = direction === "right" ? image.menuNumber + 1 : image.menuNumber - 1;
@@ -28,6 +32,19 @@ export const MenuImage: FC<Props> = ({ idx, menuImages, setMenuImages }) => {
       effectedNewImage
     ]);
   };
+
+  const onSaveMenuImageOrder = async (direction: "right" | "left") => {
+    await updateMenuImages(defaultMenuImages ?? [], menuImages)
+      .then(() => {
+        toast({ title: "メニュー画像の順番を保存しました", status: "success" });
+        handleOnchange(direction);
+      })
+      .catch((e) => {
+        logger({ severity: "ERROR", message: "Failed to update menu image order", payload: e });
+        toast({ title: "メニュー画像の順番の保存に失敗しました", status: "error" });
+      });
+  };
+
   return (
     <Box textAlign="center">
       <Flex marginBottom={2}>
@@ -36,7 +53,7 @@ export const MenuImage: FC<Props> = ({ idx, menuImages, setMenuImages }) => {
             cursor="pointer"
             _hover={{ opacity: 0.7 }}
             marginRight="auto"
-            onClick={() => handleOnchange("left")}
+            onClick={() => onSaveMenuImageOrder("left")}
           />
         )}
         {idx !== menuImages.length - 1 && (
@@ -44,7 +61,7 @@ export const MenuImage: FC<Props> = ({ idx, menuImages, setMenuImages }) => {
             cursor="pointer"
             _hover={{ opacity: 0.7 }}
             marginLeft="auto"
-            onClick={() => handleOnchange("right")}
+            onClick={() => onSaveMenuImageOrder("right")}
           />
         )}
       </Flex>
