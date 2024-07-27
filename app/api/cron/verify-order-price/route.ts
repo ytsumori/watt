@@ -22,9 +22,10 @@ export async function GET(request: NextRequest) {
     select: {
       id: true,
       orderTotalPrice: true,
+      isDiscounted: true,
       meals: {
         select: {
-          meal: { select: { price: true } },
+          meal: { select: { price: true, listPrice: true } },
           options: { select: { mealItemOption: { select: { extraPrice: true } } } }
         }
       }
@@ -37,37 +38,24 @@ export async function GET(request: NextRequest) {
     }
   });
 
-  const verifyOrderPrice = async (
-    order: Prisma.OrderGetPayload<{
-      select: {
-        id: true;
-        orderTotalPrice: true;
-        meals: {
-          select: {
-            meal: { select: { price: true } };
-            options: { select: { mealItemOption: { select: { extraPrice: true } } } };
-          };
-        };
-      };
-    }>
-  ) => {
-    const calculatedTotalPrice = order.meals.reduce((acc, orderMeal) => {
-      const mealPrice = orderMeal.meal.price;
-      const optionPrice = orderMeal.options.reduce((acc, option) => {
-        return acc + option.mealItemOption.extraPrice;
+  await Promise.all(
+    orders.map(async (order) => {
+      const calculatedTotalPrice = order.meals.reduce((acc, orderMeal) => {
+        const mealPrice = order.isDiscounted ? orderMeal.meal.price : orderMeal.meal.listPrice!;
+        const optionPrice = orderMeal.options.reduce((acc, option) => {
+          return acc + option.mealItemOption.extraPrice;
+        }, 0);
+        return acc + mealPrice + optionPrice;
       }, 0);
-      return acc + mealPrice + optionPrice;
-    }, 0);
 
-    if (order.orderTotalPrice !== calculatedTotalPrice) {
-      await sendSlackMessage({
-        channel: "errorLogs",
-        text: `Order price mismatch for order ${order.id} - expected: ${calculatedTotalPrice}, actual: ${order.orderTotalPrice}`
-      });
-    }
-  };
-
-  await Promise.all(orders.map(verifyOrderPrice));
+      if (order.orderTotalPrice !== calculatedTotalPrice) {
+        await sendSlackMessage({
+          channel: "errorLogs",
+          text: `Order price mismatch for order ${order.id} - expected: ${calculatedTotalPrice}, actual: ${order.orderTotalPrice}`
+        });
+      }
+    })
+  );
 
   return NextResponse.json({ success: true });
 }
