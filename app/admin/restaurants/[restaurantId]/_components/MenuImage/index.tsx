@@ -4,17 +4,16 @@ import { Box, Flex, Image, useToast } from "@chakra-ui/react";
 import { RestaurantMenuImage } from "@prisma/client";
 import { getSupabaseImageUrl } from "@/utils/image/getSupabaseImageUrl";
 import { ArrowLeftIcon, ArrowRightIcon } from "@chakra-ui/icons";
-import { updateMenuImages } from "@/actions/mutations/menuImage";
+import { moveImageNext, moveImagePrevious } from "@/actions/mutations/menuImage";
 import { logger } from "@/utils/logger";
 
 type Props = {
   idx: number;
-  defaultMenuImages?: RestaurantMenuImage[];
   menuImages: RestaurantMenuImage[];
   setMenuImages: React.Dispatch<React.SetStateAction<RestaurantMenuImage[]>>;
 };
 
-export const MenuImage: FC<Props> = ({ idx, menuImages, setMenuImages, defaultMenuImages }) => {
+export const MenuImage: FC<Props> = ({ idx, menuImages, setMenuImages }) => {
   const image = menuImages[idx];
   const toast = useToast();
 
@@ -32,7 +31,15 @@ export const MenuImage: FC<Props> = ({ idx, menuImages, setMenuImages, defaultMe
       newImage,
       effectedNewImage
     ];
-    await updateMenuImages(menuImages ?? [], newMenuImages)
+
+    const { nextImage, previousImage } = isRight
+      ? { nextImage: image, previousImage: effectedImage }
+      : { nextImage: effectedImage, previousImage: image };
+
+    await Promise.all([
+      moveImageNext({ restaurantId: nextImage.id, currentPosition: nextImage.menuNumber }),
+      moveImagePrevious({ restaurantId: previousImage.id, currentPosition: previousImage.menuNumber })
+    ])
       .then(() => {
         toast({ title: "メニュー画像の順番を保存しました", status: "success" });
         setMenuImages(newMenuImages);

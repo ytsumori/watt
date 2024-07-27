@@ -47,13 +47,7 @@ export const MenuImageInput: React.FC<Props> = ({ restaurantId, defaultMenuImage
         {menuImages
           .sort((a, b) => a.menuNumber - b.menuNumber)
           .map((image, idx) => (
-            <MenuImage
-              key={image.id}
-              idx={idx}
-              menuImages={menuImages}
-              setMenuImages={setMenuImages}
-              defaultMenuImages={defaultMenuImages}
-            />
+            <MenuImage key={image.id} idx={idx} menuImages={menuImages} setMenuImages={setMenuImages} />
           ))}
       </Flex>
     </>

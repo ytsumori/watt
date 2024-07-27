@@ -28,15 +28,18 @@ export const uploadMenuImage = async (restaurantId: string, maxNum: number, form
   return await Promise.all(files.map((file, idx) => createMenuImages(file, maxNum + idx + 1)));
 };
 
-export const updateMenuImages = async (defaultMenuImages: RestaurantMenuImage[], menuImages: RestaurantMenuImage[]) => {
-  const menuImageDiff = defaultMenuImages.filter((defaultMenuImage) => {
-    const menuImage = menuImages.find((menuImage) => menuImage.id === defaultMenuImage.id);
-    return menuImage && defaultMenuImage.menuNumber !== menuImage.menuNumber;
+type MoveImageProps = { restaurantId: string; currentPosition: number };
+
+export const moveImageNext = async ({ restaurantId, currentPosition }: MoveImageProps) => {
+  return await prisma.restaurantMenuImage.update({
+    where: { id: restaurantId },
+    data: { menuNumber: currentPosition + 1 }
   });
-  if (menuImageDiff.length === 0) return;
-  return await Promise.all(
-    menuImages.map(
-      async (menuImage) => await prisma.restaurantMenuImage.update({ data: menuImage, where: { id: menuImage.id } })
-    )
-  );
+};
+
+export const moveImagePrevious = async ({ restaurantId, currentPosition }: MoveImageProps) => {
+  return await prisma.restaurantMenuImage.update({
+    where: { id: restaurantId },
+    data: { menuNumber: currentPosition - 1 }
+  });
 };
