@@ -78,6 +78,8 @@ interface MapProps extends google.maps.MapOptions {
 function MapComponent({ onIdle, children, style, active, current, setZoom, ...options }: MapProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [map, setMap] = useState<google.maps.Map>();
+  const [isFirst, setIsFirst] = useState(true);
+
   useEffect(() => {
     if (ref.current && !map) {
       const map = new window.google.maps.Map(ref.current, {});
@@ -87,19 +89,27 @@ function MapComponent({ onIdle, children, style, active, current, setZoom, ...op
 
   useEffect(() => {
     if (!map || !active) return;
-
-    if (current) {
+    if (isFirst && current && active) {
       const direction = calculateDirection({ current, active });
       const sw = new google.maps.LatLng({ lat: direction.south, lng: direction.west });
       const ne = new google.maps.LatLng({ lat: direction.north, lng: direction.east });
       map.fitBounds(new google.maps.LatLngBounds(sw, ne), 60);
+      setIsFirst(false);
+    }
+
+    if (current) {
+      const bounds = map.getBounds();
+      if (!bounds?.contains({ lat: active.lat, lng: active.lng })) {
+        const extendBounds = bounds?.extend(active);
+        extendBounds && map.fitBounds(extendBounds, 60);
+      }
     } else {
       const activePos = new google.maps.LatLng(active.lat, active.lng);
       map.panToBounds(new google.maps.LatLngBounds(activePos));
       map.setZoom(16);
       map.panTo(activePos);
     }
-  }, [active, current, map, setZoom]);
+  }, [active, current, isFirst, map, setZoom]);
 
   useDeepCompareEffectForMaps(() => map && map.setOptions({ ...options }), [map, options]);
 
