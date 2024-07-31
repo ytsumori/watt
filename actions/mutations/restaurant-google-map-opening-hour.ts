@@ -23,23 +23,27 @@ export async function updateOpeningHours({
     return;
   }
 
-  const isSameOpeningHours =
-    previousOpeningHours.length === convertedOpeningHours.periods.length &&
-    previousOpeningHours.every((previousOpeningHour) => {
-      const key = `${previousOpeningHour.openDayOfWeek}-${previousOpeningHour.openHour}-${previousOpeningHour.openMinute}-${previousOpeningHour.closeDayOfWeek}-${previousOpeningHour.closeHour}-${previousOpeningHour.closeMinute}`;
-      return convertedOpeningHours.periods.some((period) => {
-        return (
-          `${dayNumberToDayOfWeek(period.open.day)}-${period.open.hour}-${period.open.minute}-${dayNumberToDayOfWeek(period.close.day)}-${period.close.hour}-${period.close.minute}` ===
-          key
-        );
-      });
+  const deleteTransactions = previousOpeningHours.flatMap((previousOpeningHour) => {
+    const identicalPeriodIndex = convertedOpeningHours.periods.findIndex((period) => {
+      return (
+        previousOpeningHour.openDayOfWeek === dayNumberToDayOfWeek(period.open.day) &&
+        previousOpeningHour.openHour === period.open.hour &&
+        previousOpeningHour.openMinute === period.open.minute &&
+        previousOpeningHour.closeDayOfWeek === dayNumberToDayOfWeek(period.close.day) &&
+        previousOpeningHour.closeHour === period.close.hour &&
+        previousOpeningHour.closeMinute === period.close.minute
+      );
     });
-  if (isSameOpeningHours) return previousOpeningHours;
+    if (identicalPeriodIndex > -1) {
+      convertedOpeningHours.periods.splice(identicalPeriodIndex, 1);
+      return [];
+    }
+    return [prisma.restaurantGoogleMapOpeningHour.delete({ where: { id: previousOpeningHour.id } })];
+  });
 
-  return await prisma.$transaction([
-    prisma.restaurantGoogleMapOpeningHour.deleteMany({ where: { restaurantId } }),
-    prisma.restaurantGoogleMapOpeningHour.createMany({
-      data: convertedOpeningHours.periods.map((period) => ({
+  const createTransactions = convertedOpeningHours.periods.flatMap((period) => {
+    return prisma.restaurantGoogleMapOpeningHour.create({
+      data: {
         restaurantId,
         openDayOfWeek: dayNumberToDayOfWeek(period.open.day),
         openHour: period.open.hour,
@@ -47,7 +51,9 @@ export async function updateOpeningHours({
         closeDayOfWeek: dayNumberToDayOfWeek(period.close.day),
         closeHour: period.close.hour,
         closeMinute: period.close.minute
-      }))
-    })
-  ]);
+      }
+    });
+  });
+
+  return await prisma.$transaction([...deleteTransactions, ...createTransactions]);
 }
