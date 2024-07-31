@@ -1,5 +1,7 @@
 "use server";
 
+import { convertOpeningHours } from "./util";
+
 export type PlaceDetailResult = {
   id: string;
   displayName: {
@@ -59,5 +61,8 @@ export async function getOpeningHours({ placeId }: { placeId: string }) {
   const response = await fetch(
     `https://places.googleapis.com/v1/places/${placeId}?fields=current_opening_hours.periods&key=${process.env.GOOGLE_MAP_API_KEY}&languageCode=ja`
   );
-  return response.json() as Promise<OpeningHoursResult>;
+  const { currentOpeningHours } = (await response.json()) as OpeningHoursResult;
+  const formattedResult = currentOpeningHours && convertOpeningHours(currentOpeningHours);
+
+  return { currentOpeningHours: formattedResult };
 }

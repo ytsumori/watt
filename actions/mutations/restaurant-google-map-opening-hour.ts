@@ -1,9 +1,8 @@
 "use server";
 
-import { getOpeningHours } from "@/lib/places-api";
+import { getOpeningHours } from "@/lib/places-api/actions";
 import prisma from "@/lib/prisma/client";
 import { dayNumberToDayOfWeek } from "@/utils/day-of-week";
-import { convertOpeningHours } from "@/utils/openingHours";
 
 export async function updateOpeningHours({
   restaurantId,
@@ -13,10 +12,9 @@ export async function updateOpeningHours({
   googleMapPlaceId: string;
 }) {
   const previousOpeningHours = await prisma.restaurantGoogleMapOpeningHour.findMany({ where: { restaurantId } });
-  const { currentOpeningHours } = await getOpeningHours({ placeId: googleMapPlaceId });
-  const convertedOpeningHours = currentOpeningHours && convertOpeningHours(currentOpeningHours);
+  const { currentOpeningHours: newOpeningHours } = await getOpeningHours({ placeId: googleMapPlaceId });
 
-  if (!convertedOpeningHours) {
+  if (!newOpeningHours) {
     if (previousOpeningHours.length > 0) {
       await prisma.restaurantGoogleMapOpeningHour.deleteMany({ where: { restaurantId } });
     }
@@ -24,7 +22,7 @@ export async function updateOpeningHours({
   }
 
   const deleteTransactions = previousOpeningHours.flatMap((previousOpeningHour) => {
-    const identicalPeriodIndex = convertedOpeningHours.periods.findIndex((period) => {
+    const identicalPeriodIndex = newOpeningHours.periods.findIndex((period) => {
       return (
         previousOpeningHour.openDayOfWeek === dayNumberToDayOfWeek(period.open.day) &&
         previousOpeningHour.openHour === period.open.hour &&
@@ -35,13 +33,13 @@ export async function updateOpeningHours({
       );
     });
     if (identicalPeriodIndex > -1) {
-      convertedOpeningHours.periods.splice(identicalPeriodIndex, 1);
+      newOpeningHours.periods.splice(identicalPeriodIndex, 1);
       return [];
     }
     return [prisma.restaurantGoogleMapOpeningHour.delete({ where: { id: previousOpeningHour.id } })];
   });
 
-  const createTransactions = convertedOpeningHours.periods.flatMap((period) => {
+  const createTransactions = newOpeningHours.periods.flatMap((period) => {
     return prisma.restaurantGoogleMapOpeningHour.create({
       data: {
         restaurantId,
