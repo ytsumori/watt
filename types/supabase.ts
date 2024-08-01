@@ -654,6 +654,41 @@ export type Database = {
           },
         ]
       }
+      RestaurantExteriorImage: {
+        Row: {
+          createdAt: string
+          exteriorNumber: number
+          id: string
+          imagePath: string
+          restaurantId: string
+          updatedAt: string
+        }
+        Insert: {
+          createdAt?: string
+          exteriorNumber: number
+          id: string
+          imagePath: string
+          restaurantId: string
+          updatedAt?: string
+        }
+        Update: {
+          createdAt?: string
+          exteriorNumber?: number
+          id?: string
+          imagePath?: string
+          restaurantId?: string
+          updatedAt?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "RestaurantExteriorImage_restaurantId_fkey"
+            columns: ["restaurantId"]
+            isOneToOne: false
+            referencedRelation: "Restaurant"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       RestaurantFullStatus: {
         Row: {
           easedAt: string | null
