@@ -31,15 +31,41 @@ export const uploadMenuImage = async (restaurantId: string, maxNum: number, form
 type MoveImageProps = { restaurantId: string; currentPosition: number };
 
 export const moveImageNext = async ({ restaurantId, currentPosition }: MoveImageProps) => {
-  return await prisma.restaurantMenuImage.update({
-    where: { id: restaurantId },
-    data: { menuNumber: currentPosition + 1 }
+  return await prisma.$transaction(async (tx) => {
+    const menuImage = await tx.restaurantMenuImage.findFirst({ where: { restaurantId, menuNumber: currentPosition } });
+    const effectedMenuImage = await tx.restaurantMenuImage.findFirst({
+      where: { restaurantId, menuNumber: currentPosition + 1 }
+    });
+
+    if (!menuImage || !effectedMenuImage) throw new Error("restaurant menu image not found");
+
+    await tx.restaurantMenuImage.update({
+      where: { id: menuImage.id },
+      data: { menuNumber: menuImage.menuNumber + 1 }
+    });
+    await tx.restaurantMenuImage.update({
+      where: { id: effectedMenuImage.id },
+      data: { menuNumber: effectedMenuImage.menuNumber - 1 }
+    });
   });
 };
 
 export const moveImagePrevious = async ({ restaurantId, currentPosition }: MoveImageProps) => {
-  return await prisma.restaurantMenuImage.update({
-    where: { id: restaurantId },
-    data: { menuNumber: currentPosition - 1 }
+  return await prisma.$transaction(async (tx) => {
+    const menuImage = await tx.restaurantMenuImage.findFirst({ where: { restaurantId, menuNumber: currentPosition } });
+    const effectedMenuImage = await tx.restaurantMenuImage.findFirst({
+      where: { restaurantId, menuNumber: currentPosition - 1 }
+    });
+
+    if (!menuImage || !effectedMenuImage) throw new Error("restaurant menu image not found");
+
+    await tx.restaurantMenuImage.update({
+      where: { id: menuImage.id },
+      data: { menuNumber: menuImage.menuNumber - 1 }
+    });
+    await tx.restaurantMenuImage.update({
+      where: { id: effectedMenuImage.id },
+      data: { menuNumber: effectedMenuImage.menuNumber + 1 }
+    });
   });
 };

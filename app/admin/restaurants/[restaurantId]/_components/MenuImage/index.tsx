@@ -32,20 +32,20 @@ export const MenuImage: FC<Props> = ({ idx, menuImages, setMenuImages }) => {
       effectedNewImage
     ];
 
-    const { nextImage, previousImage } = isRight
-      ? { nextImage: image, previousImage: effectedImage }
-      : { nextImage: effectedImage, previousImage: image };
-
-    await Promise.all([
-      moveImageNext({ restaurantId: nextImage.id, currentPosition: nextImage.menuNumber }),
-      moveImagePrevious({ restaurantId: previousImage.id, currentPosition: previousImage.menuNumber })
-    ])
+    (isRight
+      ? moveImageNext({ restaurantId: image.restaurantId, currentPosition: image.menuNumber })
+      : moveImagePrevious({ restaurantId: image.restaurantId, currentPosition: image.menuNumber })
+    )
       .then(() => {
         toast({ title: "メニュー画像の順番を保存しました", status: "success" });
         setMenuImages(newMenuImages);
       })
       .catch((e) => {
-        logger({ severity: "ERROR", message: "Failed to update menu image order", payload: e });
+        logger({
+          severity: "ERROR",
+          message: "Failed to update menu image order",
+          payload: { error: JSON.stringify(e) }
+        });
         toast({ title: "メニュー画像の順番の保存に失敗しました", status: "error" });
       });
   };
