@@ -7,6 +7,7 @@ const main = async () => {
     await prisma.$executeRaw`INSERT INTO storage.buckets (id, name, public) VALUES ('meals', 'meals', true) ON CONFLICT (id) DO NOTHING;`;
     await prisma.$executeRaw`INSERT INTO storage.buckets (id, name, public) VALUES ('restaurant-interiors', 'restaurant-interiors', true) ON CONFLICT (id) DO NOTHING;`;
     await prisma.$executeRaw`INSERT INTO storage.buckets (id, name, public) VALUES ('menus', 'menus', true) ON CONFLICT (id) DO NOTHING;`;
+    await prisma.$executeRaw`INSERT INTO storage.buckets (id, name, public) VALUES ('restaurant-exteriors', 'restaurant-exteriors', true) ON CONFLICT (id) DO NOTHING;`;
   }
 };
 
