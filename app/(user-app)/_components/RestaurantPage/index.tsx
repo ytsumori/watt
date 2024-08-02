@@ -26,6 +26,7 @@ type Props = {
       paymentOptions: true;
       fullStatuses: { select: { easedAt: true } };
       exteriorImage: true;
+      menuImages: true;
     };
   }>;
   inProgressOrderId?: string;

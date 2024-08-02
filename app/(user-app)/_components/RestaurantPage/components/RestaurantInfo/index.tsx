@@ -23,10 +23,16 @@ import { Prisma } from "@prisma/client";
 import NextLink from "next/link";
 import { Fragment } from "react";
 import { FaMapMarkedAlt } from "react-icons/fa";
+import { MenuImageInfo } from "../MenuImageInfo";
 
 type Props = {
   restaurant: Prisma.RestaurantGetPayload<{
-    include: { googleMapPlaceInfo: { select: { url: true } }; exteriorImage: true; paymentOptions: true };
+    include: {
+      googleMapPlaceInfo: { select: { url: true } };
+      exteriorImage: true;
+      menuImages: true;
+      paymentOptions: true;
+    };
   }>;
 };
 
@@ -36,8 +42,8 @@ export function RestaurantInfo({ restaurant }: Props) {
 
   return (
     <>
-      <VStack w="full" alignItems="start" spacing={4}>
-        <VStack alignItems="start" spacing={2}>
+      <VStack w="full" alignItems="start" spacing={4} maxW="100%">
+        <VStack alignItems="start" spacing={2} maxW="100%">
           <Heading size="lg">{restaurant.name}</Heading>
           {restaurant.googleMapPlaceInfo && (
             <Button
@@ -49,7 +55,7 @@ export function RestaurantInfo({ restaurant }: Props) {
               Googleマップでお店情報を見る
             </Button>
           )}
-          <Box fontSize="sm" fontWeight="bold">
+          <Box fontSize="sm" fontWeight="bold" w="full">
             <SimpleGrid columns={2} spacingY={2} spacingX={4}>
               {restaurant.smokingOption && (
                 <>
@@ -73,6 +79,7 @@ export function RestaurantInfo({ restaurant }: Props) {
                 </>
               )}
             </SimpleGrid>
+            {restaurant.menuImages && <MenuImageInfo restaurantId={restaurant.id} menuImages={restaurant.menuImages} />}
             <Box mt={2}>
               <Text>外観・内観</Text>
               <Flex gap={3} mt={2}>

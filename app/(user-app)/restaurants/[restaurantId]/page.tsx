@@ -24,7 +24,8 @@ export default async function Restaurant({ params, searchParams }: Params) {
         where: { easedAt: null },
         select: { easedAt: true }
       },
-      exteriorImage: true
+      exteriorImage: true,
+      menuImages: { orderBy: { menuNumber: "asc" } }
     }
   });
   if (!restaurant) redirect("/");
