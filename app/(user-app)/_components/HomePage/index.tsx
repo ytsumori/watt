@@ -90,11 +90,8 @@ export default function HomePage({ restaurants }: { restaurants: RestaurantWithD
             key={restaurant.id}
             initialInView={index < 2}
             threshold={0.8}
-            onChange={(inView, entry) => {
-              const entryNode = entry.target.childNodes[0] as HTMLElement;
-              if (isScrolling && entryNode.id === `restaurant-container-${activeRestaurant?.id}`) {
-                setIsScrolling(false);
-              }
+            onChange={(inView) => {
+              if (isScrolling && activeRestaurant && activeRestaurant.id === restaurant.id) setIsScrolling(false);
               if (inView) {
                 router.prefetch(`/restaurants/${restaurant.id}`);
                 if (!isScrolling) setActiveRestaurant(restaurant);
@@ -103,7 +100,7 @@ export default function HomePage({ restaurants }: { restaurants: RestaurantWithD
             style={{ width: "100%" }}
           >
             <Box
-              id={`restaurant-container-${restaurant.id}`}
+              id={restaurant.id}
               backgroundColor={restaurant.isOpen ? "white" : "transparent"}
               py={3}
               onClick={() => router.push(`/restaurants/${restaurant.id}`)}

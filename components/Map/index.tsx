@@ -31,12 +31,12 @@ export default function Map({ restaurants, activeRestaurant, currentLocation, on
     setZoom(map.getZoom()!);
     setCenter(map.getCenter()!.toJSON());
   };
-  const { lat, lng } = restaurants[0].location;
+  const { lat, lng } = restaurants.length > 0 ? restaurants[0]?.location : { lat: 0, lng: 0 };
 
   useEffect(() => {
-    setFirstCenter({ current: currentLocation, active: { lat, lng }, setCenter, setZoom });
+    restaurants.length > 0 && setFirstCenter({ current: currentLocation, active: { lat, lng }, setCenter, setZoom });
     // eslint-disable-next-line react-hooks/exhaustive-deps -- currentLocationは初期位置の計算のために使っているだけで位置が変わるたびに実行したいわけではないので依存配列には含めない
-  }, [lat, lng]);
+  }, [lat, lng, restaurants.length]);
 
   const handleRestaurantSelect = (restaurantID: string) => {
     if (onRestaurantSelect) onRestaurantSelect(restaurantID);
