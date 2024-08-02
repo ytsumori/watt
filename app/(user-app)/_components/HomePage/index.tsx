@@ -45,7 +45,7 @@ export default function HomePage({ restaurants }: { restaurants: RestaurantWithD
     <>
       <Box flex="1">
         <Map
-          restaurants={restaurants.flatMap((restaurant) => {
+          restaurants={nearbyRestaurants.flatMap((restaurant) => {
             if (!restaurant.googleMapPlaceInfo) return [];
             return {
               id: restaurant.id,
@@ -93,7 +93,6 @@ export default function HomePage({ restaurants }: { restaurants: RestaurantWithD
             onChange={(inView, entry) => {
               const entryNode = entry.target.childNodes[0] as HTMLElement;
               if (isScrolling && entryNode.id === `restaurant-container-${activeRestaurant?.id}`) {
-                console.log("scrolling to false");
                 setIsScrolling(false);
               }
               if (inView) {
