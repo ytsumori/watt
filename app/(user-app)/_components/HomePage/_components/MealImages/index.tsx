@@ -3,6 +3,7 @@
 import { MealPreviewBox } from "@/components/meal/MealPreviewBox";
 import { RestaurantStatus } from "@/utils/restaurant-status";
 import { HStack, Text, VStack } from "@chakra-ui/react";
+import { useRouter } from "next/navigation";
 
 type Props = {
   restaurantId: string;
@@ -25,7 +26,7 @@ export function MealImages({ restaurantId, meals, status }: Props) {
           <MealPreviewBox
             key={meal.id}
             meal={meal}
-            href={`restaurants/${restaurantId}?mealId=${meal.id}`}
+            href={`restaurants/${restaurantId}/meals/${meal.id}`}
             isRouter
             isDiscounted={status === "open"}
           />
