@@ -16,7 +16,7 @@ export const MenuImageInfo: FC<Props> = ({ restaurantId, menuImages }) => {
   return (
     <Box mt={2}>
       <Text>メニュー</Text>
-      <Flex gap={3} maxW="100%" className="hidden-scrollbar" overflowX="scroll">
+      <Flex mt={2} gap={3} maxW="100%" className="hidden-scrollbar" overflowX="scroll">
         {menuImages.map((menuImage, idx) => (
           <Image
             key={menuImage.id}
