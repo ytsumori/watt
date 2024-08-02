@@ -4,7 +4,6 @@ import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { Metadata } from "next";
 import { getMealImageUrl } from "@/utils/image/getMealImageUrl";
-import { findInProgressOrder } from "@/app/(user-app)/_actions/findInProgressOrder";
 import { MealDetailPage } from "@/app/(user-app)/_components/MealDetaiiPage";
 
 type Params = { params: { mealId: string } };
