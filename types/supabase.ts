@@ -657,7 +657,6 @@ export type Database = {
       RestaurantExteriorImage: {
         Row: {
           createdAt: string
-          exteriorNumber: number
           id: string
           imagePath: string
           restaurantId: string
@@ -665,7 +664,6 @@ export type Database = {
         }
         Insert: {
           createdAt?: string
-          exteriorNumber: number
           id: string
           imagePath: string
           restaurantId: string
@@ -673,7 +671,6 @@ export type Database = {
         }
         Update: {
           createdAt?: string
-          exteriorNumber?: number
           id?: string
           imagePath?: string
           restaurantId?: string
