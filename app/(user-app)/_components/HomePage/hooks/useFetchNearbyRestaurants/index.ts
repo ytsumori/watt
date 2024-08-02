@@ -23,7 +23,7 @@ export const useFetchNearbyRestaurants = ({ position, restaurants }: Args) => {
                 lat: restaurant.googleMapPlaceInfo?.latitude,
                 lng: restaurant.googleMapPlaceInfo?.longitude
               }
-            })
+            })?.formatted
           }))
         );
         logger({

@@ -29,17 +29,23 @@ export default function HomePage({ restaurants }: { restaurants: RestaurantWithD
   const { nearbyRestaurants } = useFetchNearbyRestaurants({ position, restaurants });
   const [activeRestaurant, setActiveRestaurant] = useState<RestaurantWithDistance | null>(null);
   const { isOpen: isHelpModalOpen, onOpen: onHelpModalOpen, onClose: onHelpModalClose } = useDisclosure();
+  const [isScrolling, setIsScrolling] = useState(false);
 
   const handleRestaurantSelect = (restaurantId: string) => {
     const element = document.getElementById(restaurantId);
-    if (element) element.scrollIntoView({ behavior: "smooth" });
+    if (element) {
+      setIsScrolling(true);
+      const restaurant = nearbyRestaurants.find((r) => r.id === restaurantId);
+      restaurant && setActiveRestaurant(restaurant);
+      element.scrollIntoView({ behavior: "smooth" });
+    }
   };
 
   return (
     <>
       <Box flex="1">
         <Map
-          restaurants={restaurants.flatMap((restaurant) => {
+          restaurants={nearbyRestaurants.flatMap((restaurant) => {
             if (!restaurant.googleMapPlaceInfo) return [];
             return {
               id: restaurant.id,
@@ -85,14 +91,16 @@ export default function HomePage({ restaurants }: { restaurants: RestaurantWithD
             initialInView={index < 2}
             threshold={0.8}
             onChange={(inView) => {
+              if (isScrolling && activeRestaurant && activeRestaurant.id === restaurant.id) setIsScrolling(false);
               if (inView) {
                 router.prefetch(`/restaurants/${restaurant.id}`);
-                setActiveRestaurant(restaurant);
+                if (!isScrolling) setActiveRestaurant(restaurant);
               }
             }}
             style={{ width: "100%" }}
           >
             <Box
+              id={restaurant.id}
               backgroundColor={restaurant.isOpen ? "white" : "transparent"}
               py={3}
               onClick={() => router.push(`/restaurants/${restaurant.id}`)}
