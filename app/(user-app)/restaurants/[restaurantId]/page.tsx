@@ -23,7 +23,8 @@ export default async function Restaurant({ params, searchParams }: Params) {
       fullStatuses: {
         where: { easedAt: null },
         select: { easedAt: true }
-      }
+      },
+      menuImages: { orderBy: { menuNumber: "asc" } }
     }
   });
   if (!restaurant) redirect("/");
