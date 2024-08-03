@@ -3,6 +3,7 @@
 import { orderPaymentOptions } from "@/lib/prisma/order-enum";
 import { translatePaymentOption, translateSmokingOption } from "@/lib/prisma/translate-enum";
 import { getRestaurantInteriorImageUrl } from "@/utils/image/getRestaurantInteriorImageUrl";
+import { getSupabaseImageUrl } from "@/utils/image/getSupabaseImageUrl";
 import {
   Heading,
   VStack,
@@ -15,25 +16,34 @@ import {
   useDisclosure,
   Modal,
   ModalContent,
-  ModalOverlay
+  ModalOverlay,
+  Flex
 } from "@chakra-ui/react";
 import { Prisma } from "@prisma/client";
 import NextLink from "next/link";
 import { Fragment } from "react";
 import { FaMapMarkedAlt } from "react-icons/fa";
+import { MenuImageInfo } from "../MenuImageInfo";
 
 type Props = {
   restaurant: Prisma.RestaurantGetPayload<{
-    include: { googleMapPlaceInfo: { select: { url: true } }; paymentOptions: true };
+    include: {
+      googleMapPlaceInfo: { select: { url: true } };
+      exteriorImage: true;
+      menuImages: true;
+      paymentOptions: true;
+    };
   }>;
 };
 
 export function RestaurantInfo({ restaurant }: Props) {
   const { isOpen: isInteriorImageOpen, onOpen: onInteriorImageOpen, onClose: onInteriorImageClose } = useDisclosure();
+  const { isOpen: isExteriorImageOpen, onOpen: onExteriorImageOpen, onClose: onExteriorImageClose } = useDisclosure();
+
   return (
     <>
-      <VStack w="full" alignItems="start" spacing={4}>
-        <VStack alignItems="start" spacing={2}>
+      <VStack w="full" alignItems="start" spacing={4} maxW="100%">
+        <VStack alignItems="start" spacing={2} maxW="100%">
           <Heading size="lg">{restaurant.name}</Heading>
           {restaurant.googleMapPlaceInfo && (
             <Button
@@ -45,7 +55,7 @@ export function RestaurantInfo({ restaurant }: Props) {
               Googleマップでお店情報を見る
             </Button>
           )}
-          <Box fontSize="sm" fontWeight="bold">
+          <Box fontSize="sm" fontWeight="bold" w="full">
             <SimpleGrid columns={2} spacingY={2} spacingX={4}>
               {restaurant.smokingOption && (
                 <>
@@ -69,34 +79,78 @@ export function RestaurantInfo({ restaurant }: Props) {
                 </>
               )}
             </SimpleGrid>
-            {restaurant.interiorImagePath && (
-              <Box mt={2}>
-                <Text>内観</Text>
-                <Image
-                  maxW="100px"
-                  minW="100px"
-                  src={getRestaurantInteriorImageUrl(restaurant.interiorImagePath)}
-                  alt={`interior-image-${restaurant.id}`}
-                  borderRadius={8}
-                  objectFit="cover"
-                  aspectRatio={1 / 1}
-                  w="full"
-                  onClick={onInteriorImageOpen}
-                />
-                <Modal isOpen={isInteriorImageOpen} onClose={onInteriorImageClose} isCentered>
-                  <ModalOverlay />
-                  <ModalContent>
+            {restaurant.menuImages && <MenuImageInfo restaurantId={restaurant.id} menuImages={restaurant.menuImages} />}
+            <Box mt={2}>
+              <Text>外観・内観</Text>
+              <Flex gap={3} mt={2}>
+                {restaurant.exteriorImage && (
+                  <Box>
                     <Image
-                      src={getRestaurantInteriorImageUrl(restaurant.interiorImagePath, { width: 1000, height: 1000 })}
-                      alt={`interior-image-${restaurant.id}`}
+                      maxW="100px"
+                      minW="100px"
+                      src={getSupabaseImageUrl("restaurant-exteriors", restaurant.exteriorImage.imagePath)}
+                      alt={`exterior-image-${restaurant.id}`}
+                      borderRadius={8}
                       objectFit="cover"
                       aspectRatio={1 / 1}
                       w="full"
+                      onClick={onExteriorImageOpen}
                     />
-                  </ModalContent>
-                </Modal>
-              </Box>
-            )}
+                    <Modal isOpen={isExteriorImageOpen} onClose={onExteriorImageClose} isCentered>
+                      <ModalOverlay />
+                      <ModalContent>
+                        <Image
+                          src={getSupabaseImageUrl("restaurant-exteriors", restaurant.exteriorImage.imagePath, {
+                            width: 1000,
+                            height: 1000
+                          })}
+                          alt={`interior-image-${restaurant.id}`}
+                          objectFit="cover"
+                          aspectRatio={1 / 1}
+                          w="full"
+                        />
+                      </ModalContent>
+                    </Modal>
+                    <Text textAlign="center" fontSize="xs" mt={1} color="gray.500">
+                      外観
+                    </Text>
+                  </Box>
+                )}
+                {restaurant.interiorImagePath && (
+                  <Box>
+                    <Image
+                      maxW="100px"
+                      minW="100px"
+                      src={getRestaurantInteriorImageUrl(restaurant.interiorImagePath)}
+                      alt={`interior-image-${restaurant.id}`}
+                      borderRadius={8}
+                      objectFit="cover"
+                      aspectRatio={1 / 1}
+                      w="full"
+                      onClick={onInteriorImageOpen}
+                    />
+                    <Modal isOpen={isInteriorImageOpen} onClose={onInteriorImageClose} isCentered>
+                      <ModalOverlay />
+                      <ModalContent>
+                        <Image
+                          src={getRestaurantInteriorImageUrl(restaurant.interiorImagePath, {
+                            width: 1000,
+                            height: 1000
+                          })}
+                          alt={`interior-image-${restaurant.id}`}
+                          objectFit="cover"
+                          aspectRatio={1 / 1}
+                          w="full"
+                        />
+                      </ModalContent>
+                    </Modal>
+                    <Text textAlign="center" fontSize="xs" mt={1} color="gray.500">
+                      内観
+                    </Text>
+                  </Box>
+                )}
+              </Flex>
+            </Box>
           </Box>
         </VStack>
       </VStack>

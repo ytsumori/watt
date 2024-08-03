@@ -74,6 +74,7 @@ model Restaurant {
   openingHours          RestaurantGoogleMapOpeningHour[]
   googleMapPlaceInfo    RestaurantGoogleMapPlaceInfo?
   menuImages            RestaurantMenuImage[]
+  exteriorImage        RestaurantExteriorImage?
   paymentOptions        RestaurantPaymentOption[]
   coordinate            RestaurantCoordinate?
   staffs                Staff[]
@@ -99,6 +100,15 @@ model RestaurantMenuImage {
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @default(now()) @updatedAt
   restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+}
+
+model RestaurantExteriorImage {
+  id             String     @id @default(cuid())
+  restaurantId   String     @unique
+  imagePath      String
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @default(now()) @updatedAt
+  restaurant     Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
 }
 
 model RestaurantGoogleMapPlaceInfo {

@@ -3,9 +3,9 @@
 import { Wrapper, Status } from "@googlemaps/react-wrapper";
 import { createCustomEqual } from "fast-equals";
 import { isLatLngLiteral } from "@googlemaps/typescript-guards";
-import { Children, cloneElement, isValidElement, useEffect, useRef, useState } from "react";
-import { calculateDirection } from "./util";
+import { Children, cloneElement, isValidElement, memo, useEffect, useRef, useState } from "react";
 import { RestaurantStatus } from "@/utils/restaurant-status";
+import { setFirstCenter } from "./util";
 
 const render = (status: Status) => {
   return <h1>{status}</h1>;
@@ -24,13 +24,19 @@ const CENTER_POSITION: google.maps.LatLngLiteral = {
 };
 
 export default function Map({ restaurants, activeRestaurant, currentLocation, onRestaurantSelect }: Props) {
-  const [zoom, setZoom] = useState(13);
+  const [zoom, setZoom] = useState(15);
   const [center, setCenter] = useState<google.maps.LatLngLiteral>(CENTER_POSITION);
 
   const handleIdle = (map: google.maps.Map) => {
     setZoom(map.getZoom()!);
     setCenter(map.getCenter()!.toJSON());
   };
+  const { lat, lng } = restaurants.length > 0 ? restaurants[0]?.location : { lat: 0, lng: 0 };
+
+  useEffect(() => {
+    restaurants.length > 0 && setFirstCenter({ current: currentLocation, active: { lat, lng }, setCenter, setZoom });
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- currentLocationは初期位置の計算のために使っているだけで位置が変わるたびに実行したいわけではないので依存配列には含めない
+  }, [lat, lng, restaurants.length]);
 
   const handleRestaurantSelect = (restaurantID: string) => {
     if (onRestaurantSelect) onRestaurantSelect(restaurantID);
@@ -42,6 +48,7 @@ export default function Map({ restaurants, activeRestaurant, currentLocation, on
         mapId={process.env.NEXT_PUBLIC_MAP_ID}
         center={center}
         onIdle={handleIdle}
+        setCenter={setCenter}
         setZoom={setZoom}
         zoom={zoom}
         disableDefaultUI
@@ -73,11 +80,14 @@ interface MapProps extends google.maps.MapOptions {
   active?: { lat: number; lng: number };
   current?: { lat: number; lng: number };
   setZoom: (zoom: number) => void;
+  setCenter: (center: google.maps.LatLngLiteral) => void;
 }
 
-function MapComponent({ onIdle, children, style, active, current, setZoom, ...options }: MapProps) {
+function MapComponent({ onIdle, children, style, active, current, setZoom, setCenter, ...options }: MapProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [map, setMap] = useState<google.maps.Map>();
+  const [isFirst, setIsFirst] = useState(true);
+
   useEffect(() => {
     if (ref.current && !map) {
       const map = new window.google.maps.Map(ref.current, {});
@@ -87,19 +97,17 @@ function MapComponent({ onIdle, children, style, active, current, setZoom, ...op
 
   useEffect(() => {
     if (!map || !active) return;
-
-    if (current) {
-      const direction = calculateDirection({ current, active });
-      const sw = new google.maps.LatLng({ lat: direction.south, lng: direction.west });
-      const ne = new google.maps.LatLng({ lat: direction.north, lng: direction.east });
-      map.fitBounds(new google.maps.LatLngBounds(sw, ne), 60);
-    } else {
-      const activePos = new google.maps.LatLng(active.lat, active.lng);
-      map.panToBounds(new google.maps.LatLngBounds(activePos));
-      map.setZoom(16);
-      map.panTo(activePos);
+    if (isFirst && active) {
+      setFirstCenter({ current, active, setCenter, setZoom });
+      setIsFirst(false);
     }
-  }, [active, current, map, setZoom]);
+
+    const bounds = map.getBounds();
+    if (!bounds?.contains({ lat: active.lat, lng: active.lng })) {
+      const extendBounds = bounds?.extend(active);
+      extendBounds && map.fitBounds(extendBounds, 45);
+    }
+  }, [active, current, isFirst, map, setCenter, setZoom]);
 
   useDeepCompareEffectForMaps(() => map && map.setOptions({ ...options }), [map, options]);
 
