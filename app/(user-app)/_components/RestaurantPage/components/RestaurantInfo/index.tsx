@@ -79,78 +79,82 @@ export function RestaurantInfo({ restaurant }: Props) {
                 </>
               )}
             </SimpleGrid>
-            {restaurant.menuImages && <MenuImageInfo restaurantId={restaurant.id} menuImages={restaurant.menuImages} />}
-            <Box mt={2}>
-              <Text>外観・内観</Text>
-              <Flex gap={3} mt={2}>
-                {restaurant.exteriorImage && (
-                  <Box>
-                    <Image
-                      maxW="100px"
-                      minW="100px"
-                      src={getSupabaseImageUrl("restaurant-exteriors", restaurant.exteriorImage.imagePath)}
-                      alt={`exterior-image-${restaurant.id}`}
-                      borderRadius={8}
-                      objectFit="cover"
-                      aspectRatio={1 / 1}
-                      w="full"
-                      onClick={onExteriorImageOpen}
-                    />
-                    <Modal isOpen={isExteriorImageOpen} onClose={onExteriorImageClose} isCentered>
-                      <ModalOverlay />
-                      <ModalContent>
-                        <Image
-                          src={getSupabaseImageUrl("restaurant-exteriors", restaurant.exteriorImage.imagePath, {
-                            width: 1000,
-                            height: 1000
-                          })}
-                          alt={`interior-image-${restaurant.id}`}
-                          objectFit="cover"
-                          aspectRatio={1 / 1}
-                          w="full"
-                        />
-                      </ModalContent>
-                    </Modal>
-                    <Text textAlign="center" fontSize="xs" mt={1} color="gray.500">
-                      外観
-                    </Text>
-                  </Box>
-                )}
-                {restaurant.interiorImagePath && (
-                  <Box>
-                    <Image
-                      maxW="100px"
-                      minW="100px"
-                      src={getRestaurantInteriorImageUrl(restaurant.interiorImagePath)}
-                      alt={`interior-image-${restaurant.id}`}
-                      borderRadius={8}
-                      objectFit="cover"
-                      aspectRatio={1 / 1}
-                      w="full"
-                      onClick={onInteriorImageOpen}
-                    />
-                    <Modal isOpen={isInteriorImageOpen} onClose={onInteriorImageClose} isCentered>
-                      <ModalOverlay />
-                      <ModalContent>
-                        <Image
-                          src={getRestaurantInteriorImageUrl(restaurant.interiorImagePath, {
-                            width: 1000,
-                            height: 1000
-                          })}
-                          alt={`interior-image-${restaurant.id}`}
-                          objectFit="cover"
-                          aspectRatio={1 / 1}
-                          w="full"
-                        />
-                      </ModalContent>
-                    </Modal>
-                    <Text textAlign="center" fontSize="xs" mt={1} color="gray.500">
-                      内観
-                    </Text>
-                  </Box>
-                )}
-              </Flex>
-            </Box>
+            {restaurant.menuImages.length > 0 && (
+              <MenuImageInfo restaurantId={restaurant.id} menuImages={restaurant.menuImages} />
+            )}
+            {(restaurant.exteriorImage || restaurant.interiorImagePath) && (
+              <Box mt={2}>
+                <Text>外観・内観</Text>
+                <Flex gap={3} mt={2}>
+                  {restaurant.exteriorImage && (
+                    <Box>
+                      <Image
+                        maxW="100px"
+                        minW="100px"
+                        src={getSupabaseImageUrl("restaurant-exteriors", restaurant.exteriorImage.imagePath)}
+                        alt={`exterior-image-${restaurant.id}`}
+                        borderRadius={8}
+                        objectFit="cover"
+                        aspectRatio={1 / 1}
+                        w="full"
+                        onClick={onExteriorImageOpen}
+                      />
+                      <Modal isOpen={isExteriorImageOpen} onClose={onExteriorImageClose} isCentered>
+                        <ModalOverlay />
+                        <ModalContent>
+                          <Image
+                            src={getSupabaseImageUrl("restaurant-exteriors", restaurant.exteriorImage.imagePath, {
+                              width: 1000,
+                              height: 1000
+                            })}
+                            alt={`interior-image-${restaurant.id}`}
+                            objectFit="cover"
+                            aspectRatio={1 / 1}
+                            w="full"
+                          />
+                        </ModalContent>
+                      </Modal>
+                      <Text textAlign="center" fontSize="xs" mt={1} color="gray.500">
+                        外観
+                      </Text>
+                    </Box>
+                  )}
+                  {restaurant.interiorImagePath && (
+                    <Box>
+                      <Image
+                        maxW="100px"
+                        minW="100px"
+                        src={getRestaurantInteriorImageUrl(restaurant.interiorImagePath)}
+                        alt={`interior-image-${restaurant.id}`}
+                        borderRadius={8}
+                        objectFit="cover"
+                        aspectRatio={1 / 1}
+                        w="full"
+                        onClick={onInteriorImageOpen}
+                      />
+                      <Modal isOpen={isInteriorImageOpen} onClose={onInteriorImageClose} isCentered>
+                        <ModalOverlay />
+                        <ModalContent>
+                          <Image
+                            src={getRestaurantInteriorImageUrl(restaurant.interiorImagePath, {
+                              width: 1000,
+                              height: 1000
+                            })}
+                            alt={`interior-image-${restaurant.id}`}
+                            objectFit="cover"
+                            aspectRatio={1 / 1}
+                            w="full"
+                          />
+                        </ModalContent>
+                      </Modal>
+                      <Text textAlign="center" fontSize="xs" mt={1} color="gray.500">
+                        内観
+                      </Text>
+                    </Box>
+                  )}
+                </Flex>
+              </Box>
+            )}
           </Box>
         </VStack>
       </VStack>
