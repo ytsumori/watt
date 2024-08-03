@@ -3,7 +3,6 @@ import { options } from "@/lib/next-auth/options";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { Metadata } from "next";
-import { findInProgressOrder } from "../../_actions/findInProgressOrder";
 import { getMealImageUrl } from "@/utils/image/getMealImageUrl";
 import { RestaurantPage } from "../../_components/RestaurantPage";
 
