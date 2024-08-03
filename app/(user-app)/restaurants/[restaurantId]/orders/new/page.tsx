@@ -29,10 +29,10 @@ export default async function OrderNew({ params, searchParams }: Params) {
 
   const defaultMeal = restaurant.meals.find((meal) => meal.id === searchParams.mealId);
   const session = await getServerSession(options);
+  const userId = session?.user.id;
 
-  if (!session?.user.id) redirect("/");
+  if (!userId) redirect("/");
 
-  const userId = session.user.id;
   const order = await findInProgressOrder(userId);
 
   return (
