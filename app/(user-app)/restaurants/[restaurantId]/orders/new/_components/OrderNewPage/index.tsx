@@ -1,21 +1,20 @@
 "use client";
 
-import { visitRestaurant } from "@/app/(user-app)/_components/RestaurantPage/actions/visit-restaurant";
-import { MealCarousel } from "@/app/(user-app)/_components/RestaurantPage/components/MealCarousel";
-import { MealInfo } from "@/app/(user-app)/_components/RestaurantPage/components/MealInfo";
-import { PriceSection } from "@/app/(user-app)/_components/RestaurantPage/components/PriceSection";
-import { VisitingSection } from "@/app/(user-app)/_components/RestaurantPage/components/VisitingSection";
-import { MealWithItems } from "@/app/(user-app)/_components/RestaurantPage/types/MealWithItems";
-import { ConfirmModal } from "@/components/confirm-modal";
-import { getRestaurantStatus } from "@/utils/restaurant-status";
+import NextLink from "next/link";
 import { CheckIcon } from "@chakra-ui/icons";
 import { useDisclosure, VStack, Divider, Box, Heading, Alert, AlertIcon, Select, Center, Text } from "@chakra-ui/react";
 import { Prisma } from "@prisma/client";
-import { useRouter } from "next-nprogress-bar";
-import { usePathname } from "next/navigation";
+import { LineLoginButton } from "@/components/Auth/LineLoginButton";
+import { ConfirmModal } from "@/components/confirm-modal";
+import { getRestaurantStatus } from "@/utils/restaurant-status";
 import { FC, useMemo, useState } from "react";
-import NextLink from "next/link";
-import { LineLoginButton } from "../../../../_components/LineLoginButton";
+import { usePathname, useRouter } from "next/navigation";
+import { PriceSection } from "./_components/PriceSection";
+import { VisitingSection } from "./_components/VisitingSection";
+import { MealWithItems } from "./types/MealWithItems";
+import { visitRestaurant } from "./actions/visit-restaurant";
+import { MealCarousel } from "./_components/MealCarousel";
+import { MealInfo } from "./_components/MealInfo";
 
 type Props = {
   restaurant: Prisma.RestaurantGetPayload<{
