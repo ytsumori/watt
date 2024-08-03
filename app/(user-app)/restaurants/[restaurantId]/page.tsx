@@ -29,25 +29,9 @@ export default async function Restaurant({ params, searchParams }: Params) {
   });
   if (!restaurant) redirect("/");
 
-  const defaultMeal = restaurant.meals.find((meal) => meal.id === searchParams.mealId);
-
   const session = await getServerSession(options);
-  if (session) {
-    // logged in
-    const userId = session.user.id;
-    const order = await findInProgressOrder(userId);
 
-    return (
-      <RestaurantPage
-        restaurant={restaurant}
-        inProgressOrderId={order?.id ?? undefined}
-        userId={userId}
-        defaultMeal={defaultMeal}
-      />
-    );
-  }
-
-  return <RestaurantPage restaurant={restaurant} defaultMeal={defaultMeal} />;
+  return <RestaurantPage restaurant={restaurant} userId={session?.user.id} />;
 }
 
 export async function generateMetadata({ params }: Params): Promise<Metadata | undefined> {
