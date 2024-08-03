@@ -36,7 +36,7 @@ export const MealDetailPage: FC<Props> = ({ meal, isLogined }) => {
         ))}
       </VStack>
       {isLogined ? (
-        <Button onClick={() => router.push(`/restaurant/${meal.restaurantId}/orders/new?mealId=${meal.id}`)}>
+        <Button onClick={() => router.push(`/restaurants/${meal.restaurantId}/orders/new?mealId=${meal.id}`)}>
           このセットで注文画面に進む
         </Button>
       ) : (
