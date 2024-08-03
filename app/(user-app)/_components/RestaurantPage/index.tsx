@@ -25,6 +25,7 @@ type Props = {
       googleMapPlaceInfo: { select: { url: true } };
       paymentOptions: true;
       fullStatuses: { select: { easedAt: true } };
+      exteriorImage: true;
       menuImages: true;
     };
   }>;

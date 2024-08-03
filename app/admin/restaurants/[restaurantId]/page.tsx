@@ -10,6 +10,7 @@ import { InteriorImageInput } from "./_components/InteriorImageInput";
 import { PublishSwitch } from "./_components/PublishSwitch";
 import { RestaurantBankAccount } from "./_components/RestaurantBankAccount";
 import { FullStatusSwitch } from "./_components/FullStatusSwitch";
+import { ExteriorImageInput } from "./_components/ExteriorImageInput";
 import { MenuImageInput } from "./_components/MenuImageInput";
 
 type PageProps = { params: { restaurantId: string }; searchParams: { month?: string } };
@@ -46,6 +47,7 @@ export default async function RestaurantPage({ params, searchParams }: PageProps
       smokingOption: true,
       paymentOptions: true,
       phoneNumber: true,
+      exteriorImage: true,
       menuImages: { orderBy: { menuNumber: "asc" } }
     }
   });
@@ -79,6 +81,10 @@ export default async function RestaurantPage({ params, searchParams }: PageProps
           restaurantId={restaurant.id}
           defaultPaymentOptions={restaurant.paymentOptions.map((option) => option.option)}
         />
+      </VStack>
+      <VStack alignItems="start">
+        <Heading size="md">外観画像</Heading>
+        <ExteriorImageInput restaurantId={restaurant.id} defaultExteriorImage={restaurant.exteriorImage ?? undefined} />
       </VStack>
       <VStack alignItems="start">
         <Heading size="md">内観画像</Heading>
