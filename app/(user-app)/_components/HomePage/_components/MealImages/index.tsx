@@ -3,7 +3,6 @@
 import { MealPreviewBox } from "@/components/meal/MealPreviewBox";
 import { RestaurantStatus } from "@/utils/restaurant-status";
 import { HStack, Text, VStack } from "@chakra-ui/react";
-import { useRouter } from "next/navigation";
 
 type Props = {
   restaurantId: string;

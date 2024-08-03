@@ -1,10 +1,13 @@
+"use client";
 import { VStack, Box, Heading, Divider, Text, Button } from "@chakra-ui/react";
 import { Prisma } from "@prisma/client";
 import { FC } from "react";
 import { MealPrice } from "./_components/MealPrice";
 import { MealItemInfo } from "./_components/MealItemInfo";
-import { LineLoginButton } from "../../restaurants/[restaurantId]/_components/LineLoginButton";
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
+import { LineLoginButton } from "@/components/Auth/LineLoginButton";
+import { getSupabaseImageUrl } from "@/utils/image/getSupabaseImageUrl";
 
 type Props = {
   meal: Prisma.MealGetPayload<{
@@ -21,6 +24,14 @@ export const MealDetailPage: FC<Props> = ({ meal, isLogined }) => {
   const router = useRouter();
   return (
     <VStack w="full" alignItems="start" spacing={2}>
+      <Box width="100%">
+        <Image
+          src={getSupabaseImageUrl("meals", meal.imagePath, { width: 1000, height: 1000 })}
+          width={1000}
+          height={1000}
+          alt={`meal-${meal.id}`}
+        />
+      </Box>
       <Box w="full">
         <Heading size="md">{meal.title}</Heading>
         <MealPrice meal={meal} />
