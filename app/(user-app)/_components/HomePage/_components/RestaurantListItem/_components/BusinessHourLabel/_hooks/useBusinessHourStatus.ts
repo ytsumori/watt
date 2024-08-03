@@ -2,6 +2,7 @@ import { RestaurantWithDistance } from "@/app/(user-app)/_components/HomePage/_t
 import { dayOfWeekToNumber } from "@/utils/day-of-week";
 import { useMemo } from "react";
 import { BusinessHourStatus } from "../../../_types/BusinessHourStatus";
+import { getUTCFromJST } from "@/utils/timezone";
 
 export function useBusinessHourStatus(openingHours: RestaurantWithDistance["openingHours"]) {
   const now = useMemo(() => new Date(), []);
@@ -13,23 +14,21 @@ export function useBusinessHourStatus(openingHours: RestaurantWithDistance["open
 
   const utcOpeningHours = useMemo(() => {
     return openingHours.map(({ openDayOfWeek, openHour, openMinute, closeDayOfWeek, closeHour, closeMinute }) => {
-      const {
-        utcDayOfWeek: utcOpenDayOfWeek,
-        utcHour: utcOpenHour,
-        utcMinute: utcOpenMinute
-      } = getUTCFromJST(dayOfWeekToNumber(openDayOfWeek), openHour, openMinute);
-      const {
-        utcDayOfWeek: utcCloseDayOfWeek,
-        utcHour: utcCloseHour,
-        utcMinute: utcCloseMinute
-      } = getUTCFromJST(dayOfWeekToNumber(closeDayOfWeek), closeHour, closeMinute);
+      const { utcDayOfWeek: utcOpenDayOfWeek, utcHour: utcOpenHour } = getUTCFromJST(
+        dayOfWeekToNumber(openDayOfWeek),
+        openHour
+      );
+      const { utcDayOfWeek: utcCloseDayOfWeek, utcHour: utcCloseHour } = getUTCFromJST(
+        dayOfWeekToNumber(closeDayOfWeek),
+        closeHour
+      );
       return {
         openDayOfWeek: utcOpenDayOfWeek,
         openHour: utcOpenHour,
-        openMinute: utcOpenMinute,
+        openMinute,
         closeDayOfWeek: utcCloseDayOfWeek,
         closeHour: utcCloseHour,
-        closeMinute: utcCloseMinute
+        closeMinute
       };
     });
   }, [openingHours]);
@@ -148,25 +147,6 @@ export function useBusinessHourStatus(openingHours: RestaurantWithDistance["open
     closingTime: closingTime ? getJSTStringFromUTC(closingTime.hour, closingTime.minute) : undefined,
     nextOpeningTime: nextOpeningTime ? getJSTStringFromUTC(nextOpeningTime.hour, nextOpeningTime.minute) : undefined
   };
-}
-
-function getUTCFromJST(dayOfWeek: number, hour: number, minute: number) {
-  const utcHour = hour - 9;
-  if (utcHour < 0) {
-    return {
-      utcDayOfWeek: dayOfWeek === 0 ? 6 : dayOfWeek - 1,
-      utcHour: utcHour + 24,
-      utcMinute: minute
-    };
-  } else if (utcHour > 23) {
-    return {
-      utcDayOfWeek: dayOfWeek === 6 ? 0 : dayOfWeek + 1,
-      utcHour: utcHour - 24,
-      utcMinute: minute
-    };
-  } else {
-    return { utcDayOfWeek: dayOfWeek, utcHour, utcMinute: minute };
-  }
 }
 
 function getJSTStringFromUTC(hour: number, minute: number) {
