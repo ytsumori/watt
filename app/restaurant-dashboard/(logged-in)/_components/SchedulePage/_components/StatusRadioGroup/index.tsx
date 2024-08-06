@@ -50,7 +50,7 @@ export function StatusRadioGroup({ restaurantId, status }: Props) {
     getRootProps,
     getRadioProps,
     setValue: setStatus
-  } = useRadioGroup({ onChange: handleStatusChange, defaultValue: status });
+  } = useRadioGroup({ onChange: handleStatusChange, defaultValue: status === "packed" ? "close" : status });
   const group = getRootProps();
 
   return (

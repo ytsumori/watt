@@ -2,7 +2,7 @@
 
 import { Heading, VStack, Alert, AlertIcon, Divider, Text, Box, useDisclosure, Select, Center } from "@chakra-ui/react";
 import { Prisma } from "@prisma/client";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { CheckIcon } from "@chakra-ui/icons";
 import NextLink from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -27,6 +27,16 @@ type Props = {
       fullStatuses: { select: { easedAt: true } };
       exteriorImage: true;
       menuImages: true;
+      openingHours: {
+        select: {
+          openDayOfWeek: true;
+          openHour: true;
+          openMinute: true;
+          closeDayOfWeek: true;
+          closeHour: true;
+          closeMinute: true;
+        };
+      };
     };
   }>;
   inProgressOrderId?: string;
@@ -51,14 +61,7 @@ export function RestaurantPage({ restaurant, inProgressOrderId, userId, defaultM
   );
   const [secondPersonMeal, setSecondPersonMeal] = useState<MealWithItems | null>();
   const [secondMealSelectedOptions, setSecondMealSelectedOptions] = useState<(string | null)[]>();
-  const restaurantStatus = useMemo(
-    () =>
-      getRestaurantStatus({
-        isOpen: restaurant.isOpen,
-        isFull: restaurant.fullStatuses.some((status) => status.easedAt === null)
-      }),
-    [restaurant.fullStatuses, restaurant.isOpen]
-  );
+  const restaurantStatus = getRestaurantStatus(restaurant);
   const isDiscounted = restaurantStatus === "open";
 
   const handleFirstMealSelected = (selectedMeal: MealWithItems) => {

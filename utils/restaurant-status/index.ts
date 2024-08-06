@@ -18,9 +18,6 @@ export function getRestaurantStatus(
         };
       };
       fullStatuses: {
-        where: {
-          easedAt: null;
-        };
         select: {
           easedAt: true;
         };
