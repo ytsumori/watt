@@ -223,6 +223,7 @@ function RestaurantMarker({ location, active, status, onClick, ...options }: Mar
           marker.setZIndex(active ? google.maps.Marker.MAX_ZINDEX : 1);
           break;
         case "close":
+        case "full":
           marker.setIcon({
             path: active ? ACTIVE_ICON_PATH : INACTIVE_ICON_PATH,
             fillColor: "lightGray",
@@ -234,7 +235,7 @@ function RestaurantMarker({ location, active, status, onClick, ...options }: Mar
           });
           marker.setZIndex(active ? google.maps.Marker.MAX_ZINDEX : 0);
           break;
-        case "full":
+        case "packed":
           marker.setIcon({
             path: active ? ACTIVE_ICON_PATH : INACTIVE_ICON_PATH,
             fillColor: "white",

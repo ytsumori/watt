@@ -49,7 +49,7 @@ export function getCurrentOpeningHour(jstOpeningHours: JstOpeningHours) {
   });
 }
 
-export function isCurrentlyOpen(jstOpeningHours: JstOpeningHours) {
+export function isCurrentlyWorkingHour(jstOpeningHours: JstOpeningHours) {
   return !!getCurrentOpeningHour(jstOpeningHours);
 }
 

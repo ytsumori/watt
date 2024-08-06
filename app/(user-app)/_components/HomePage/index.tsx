@@ -3,6 +3,7 @@
 import Map from "@/components/Map";
 import {
   Box,
+  HStack,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -51,10 +52,7 @@ export default function HomePage({ restaurants }: { restaurants: RestaurantWithD
               id: restaurant.id,
               name: restaurant.name,
               location: { lat: restaurant.googleMapPlaceInfo.latitude, lng: restaurant.googleMapPlaceInfo.longitude },
-              status: getRestaurantStatus({
-                isOpen: restaurant.isOpen,
-                isFull: restaurant.fullStatuses.some((status) => status.easedAt === null)
-              })
+              status: getRestaurantStatus(restaurant)
             };
           })}
           currentLocation={position}
@@ -101,7 +99,7 @@ export default function HomePage({ restaurants }: { restaurants: RestaurantWithD
           >
             <Box
               id={restaurant.id}
-              backgroundColor={restaurant.isOpen ? "white" : "transparent"}
+              backgroundColor="white"
               py={3}
               onClick={() => router.push(`/restaurants/${restaurant.id}`)}
             >
@@ -122,13 +120,16 @@ export default function HomePage({ restaurants }: { restaurants: RestaurantWithD
                 <Text>お店に入れる状態です。割引を適用した価格でセットメニューをご提供します。</Text>
               </Box>
               <Box>
-                <StatusBadge status="full" />
+                <StatusBadge status="packed" />
                 <Text>
                   お店に入れる状態ですが、席が埋まってしまう可能性があります。定価でセットメニューをご提供します。
                 </Text>
               </Box>
               <Box>
-                <StatusBadge status="close" />
+                <HStack>
+                  <StatusBadge status="close" />
+                  <StatusBadge status="full" />
+                </HStack>
                 <Text>お店に入れない状態です。</Text>
               </Box>
               <Text fontSize="xs" color="gray.500">
