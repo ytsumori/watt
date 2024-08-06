@@ -24,10 +24,5 @@ export type RestaurantWithDistance = Prisma.RestaurantGetPayload<{
         closeDayOfWeek: true;
       };
     };
-    fullStatuses: {
-      select: {
-        easedAt: true;
-      };
-    };
   };
 }> & { distance?: string };

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma/client";
 import { Prisma } from "@prisma/client";
-import { getPlaceDetail } from "@/lib/places-api";
+import { getPlaceDetail } from "@/lib/places-api/actions";
 
 export async function GET(request: NextRequest) {
   const authHeader = request.headers.get("authorization");

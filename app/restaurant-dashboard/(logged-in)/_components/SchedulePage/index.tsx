@@ -2,7 +2,7 @@
 
 import { Box, Button, Divider, Heading, Text, useToast } from "@chakra-ui/react";
 import { Fragment, useCallback, useContext, useEffect, useState } from "react";
-import { RestaurantGoogleMapOpeningHour } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { getRestaurantOpeningInfo, updateBusinessHours } from "./actions";
 import { ScheduleListItem } from "./_components/ScheduleListItem";
 import { dayOfWeekToNumber } from "@/utils/day-of-week";
@@ -10,13 +10,18 @@ import { RepeatIcon } from "@chakra-ui/icons";
 import { RestaurantIdContext } from "../RestaurantIdProvider";
 import { StatusRadioGroup } from "./_components/StatusRadioGroup";
 import { IsOpenSwitch } from "./_components/IsOpenSwitch";
-import { getRestaurantStatus } from "@/utils/restaurant-status";
 
 export function SchedulePage() {
   const restaurantId = useContext(RestaurantIdContext);
-  const [isRestaurantOpen, setIsRestaurantOpen] = useState<boolean>();
-  const [isFull, setIsFull] = useState<boolean>();
-  const [openingHours, setOpeningHours] = useState<RestaurantGoogleMapOpeningHour[]>();
+  const [restaurant, setRestaurant] = useState<
+    Prisma.RestaurantGetPayload<{
+      select: {
+        isFullStatusAvailable: true;
+        status: true;
+        openingHours: true;
+      };
+    }>
+  >();
   const [isUpdating, setIsUpdating] = useState(false);
   const toast = useToast();
 
@@ -25,11 +30,7 @@ export function SchedulePage() {
       .then((restaurant) => {
         if (!restaurant) return;
 
-        setIsRestaurantOpen(restaurant.isOpen);
-        if (restaurant.isFullStatusAvailable) {
-          setIsFull(restaurant.fullStatuses.some((status) => status.easedAt === null));
-        }
-        setOpeningHours(restaurant.openingHours);
+        setRestaurant(restaurant);
       })
       .catch(() =>
         toast({
@@ -65,16 +66,13 @@ export function SchedulePage() {
 
   return (
     <>
-      {isFull !== undefined ? (
-        <StatusRadioGroup
-          restaurantId={restaurantId}
-          status={getRestaurantStatus({ isOpen: !!isRestaurantOpen, isFull })}
-        />
+      {restaurant?.isFullStatusAvailable ? (
+        <StatusRadioGroup restaurantId={restaurantId} status={restaurant.status} />
       ) : (
         <IsOpenSwitch
           restaurantId={restaurantId}
-          isRestaurantOpen={!!isRestaurantOpen}
-          onChange={setIsRestaurantOpen}
+          isRestaurantOpen={restaurant?.status === "OPEN"}
+          onChange={revalidateOpeningInfo}
         />
       )}
       <Heading size="md" mt={6}>
@@ -85,13 +83,13 @@ export function SchedulePage() {
         <Button leftIcon={<RepeatIcon />} onClick={handleUpdateOpeningHoursClick} isLoading={isUpdating}>
           最新の営業時間に更新
         </Button>
-        {openingHours
+        {restaurant?.openingHours
           ?.sort((a, b) => dayOfWeekToNumber(a.openDayOfWeek) - dayOfWeekToNumber(b.openDayOfWeek))
           .map((openingHour, index) => {
             return (
               <Fragment key={openingHour.id}>
                 <ScheduleListItem openingHour={openingHour} />
-                {index === openingHours.length - 1 ? null : <Divider />}
+                {index === restaurant.openingHours.length - 1 ? null : <Divider />}
               </Fragment>
             );
           })}

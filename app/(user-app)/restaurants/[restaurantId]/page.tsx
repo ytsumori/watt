@@ -20,10 +20,7 @@ export default async function Restaurant({ params, searchParams }: Params) {
       },
       googleMapPlaceInfo: { select: { url: true } },
       paymentOptions: true,
-      fullStatuses: {
-        where: { easedAt: null },
-        select: { easedAt: true }
-      },
+      openingHours: true,
       exteriorImage: true,
       menuImages: { orderBy: { menuNumber: "asc" } }
     }

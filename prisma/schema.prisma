@@ -58,6 +58,7 @@ model Restaurant {
   id                    String                           @id @default(cuid())
   name                  String
   isOpen                Boolean                          @default(false)
+  status                RestaurantStatus                 @default(CLOSED)
   isPublished           Boolean                          @default(false)
   isFullStatusAvailable Boolean                          @default(false)
   googleMapPlaceId      String                           @unique
@@ -74,11 +75,11 @@ model Restaurant {
   openingHours          RestaurantGoogleMapOpeningHour[]
   googleMapPlaceInfo    RestaurantGoogleMapPlaceInfo?
   menuImages            RestaurantMenuImage[]
-  exteriorImage        RestaurantExteriorImage?
+  exteriorImage         RestaurantExteriorImage?
   paymentOptions        RestaurantPaymentOption[]
   coordinate            RestaurantCoordinate?
   staffs                Staff[]
-  fullStatuses          RestaurantFullStatus[]
+  statusChanges         RestaurantStatusChange[]
 }
 
 model RestaurantPaymentOption {
@@ -103,12 +104,12 @@ model RestaurantMenuImage {
 }
 
 model RestaurantExteriorImage {
-  id             String     @id @default(cuid())
-  restaurantId   String     @unique
-  imagePath      String
-  createdAt      DateTime   @default(now())
-  updatedAt      DateTime   @default(now()) @updatedAt
-  restaurant     Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  id           String     @id @default(cuid())
+  restaurantId String     @unique
+  imagePath    String
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @default(now()) @updatedAt
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
 }
 
 model RestaurantGoogleMapPlaceInfo {
@@ -153,15 +154,6 @@ model RestaurantClosedAlert {
   notifiedAt   DateTime?
   openAt       DateTime?
   restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
-}
-
-model RestaurantFullStatus {
-  id           String    @id @default(cuid())
-  restaurantId String
-  startedAt    DateTime  @default(now())
-  easedAt      DateTime?
-
-  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
 }
 
 model Meal {
@@ -305,6 +297,15 @@ model RestaurantBankAccount {
   @@unique([bankCode, branchCode, accountType, accountNo])
 }
 
+model RestaurantStatusChange {
+  id           String           @id @default(cuid())
+  restaurantId String
+  from         RestaurantStatus
+  to           RestaurantStatus
+  changedAt    DateTime         @default(now())
+  restaurant   Restaurant       @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+}
+
 enum DayOfWeek {
   MONDAY
   TUESDAY
@@ -353,4 +354,10 @@ enum OrderNotificationCallStatus {
   IN_PROGRESS
   ANSWERED
   NO_ANSWER
+}
+
+enum RestaurantStatus {
+  OPEN
+  PACKED
+  CLOSED
 }

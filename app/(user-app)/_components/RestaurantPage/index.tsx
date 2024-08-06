@@ -2,7 +2,7 @@
 
 import { Heading, VStack, Alert, AlertIcon, Divider, Text, Box, useDisclosure, Select, Center } from "@chakra-ui/react";
 import { Prisma } from "@prisma/client";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { CheckIcon } from "@chakra-ui/icons";
 import NextLink from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -16,7 +16,6 @@ import { VisitingSection } from "./components/VisitingSection";
 import { visitRestaurant } from "./actions/visit-restaurant";
 import { ConfirmModal } from "@/components/confirm-modal";
 import { LineLoginButton } from "../../restaurants/[restaurantId]/_components/LineLoginButton";
-import { getRestaurantStatus } from "@/utils/restaurant-status";
 
 type Props = {
   restaurant: Prisma.RestaurantGetPayload<{
@@ -24,9 +23,18 @@ type Props = {
       meals: { include: { items: { include: { options: true } } } };
       googleMapPlaceInfo: { select: { url: true } };
       paymentOptions: true;
-      fullStatuses: { select: { easedAt: true } };
       exteriorImage: true;
       menuImages: true;
+      openingHours: {
+        select: {
+          openDayOfWeek: true;
+          openHour: true;
+          openMinute: true;
+          closeDayOfWeek: true;
+          closeHour: true;
+          closeMinute: true;
+        };
+      };
     };
   }>;
   inProgressOrderId?: string;
@@ -51,15 +59,7 @@ export function RestaurantPage({ restaurant, inProgressOrderId, userId, defaultM
   );
   const [secondPersonMeal, setSecondPersonMeal] = useState<MealWithItems | null>();
   const [secondMealSelectedOptions, setSecondMealSelectedOptions] = useState<(string | null)[]>();
-  const restaurantStatus = useMemo(
-    () =>
-      getRestaurantStatus({
-        isOpen: restaurant.isOpen,
-        isFull: restaurant.fullStatuses.some((status) => status.easedAt === null)
-      }),
-    [restaurant.fullStatuses, restaurant.isOpen]
-  );
-  const isDiscounted = restaurantStatus === "open";
+  const isDiscounted = restaurant.status === "OPEN";
 
   const handleFirstMealSelected = (selectedMeal: MealWithItems) => {
     setFirstMealSelectedOptions(new Array(selectedMeal.items.length).fill(null));
@@ -151,7 +151,7 @@ export function RestaurantPage({ restaurant, inProgressOrderId, userId, defaultM
               onOptionChange={handleFirstMealOptionChange}
               isDiscounted={isDiscounted}
             />
-            {restaurant.isOpen ? (
+            {restaurant.status !== "CLOSED" ? (
               inProgressOrderId ? (
                 <Alert status="warning" as={NextLink} href={`/orders/${inProgressOrderId}`}>
                   <AlertIcon />
