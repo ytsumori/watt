@@ -10,7 +10,7 @@ type Props = {
   meals: {
     id: string;
     price: number;
-    listPrice: number | null;
+    listPrice: number;
     imagePath: string;
     title: string;
   }[];

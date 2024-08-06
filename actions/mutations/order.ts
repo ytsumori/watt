@@ -57,7 +57,7 @@ export async function createOrder({
     throw new Error("Status outdated");
   }
 
-  const firstMealPrice = isDiscounted ? firstMeal.price : firstMeal.listPrice!;
+  const firstMealPrice = isDiscounted ? firstMeal.price : firstMeal.listPrice;
   const firstOrderTotalPrice =
     firstMealPrice +
     firstMeal.items.reduce((acc, item, index) => {
@@ -95,7 +95,7 @@ export async function createOrder({
       throw new Error("Second meal options do not match");
     }
 
-    const secondMealPrice = isDiscounted ? secondMeal.price : secondMeal.listPrice!;
+    const secondMealPrice = isDiscounted ? secondMeal.price : secondMeal.listPrice;
     const secondOrderTotalPrice =
       secondMealPrice +
       secondMeal.items.reduce((acc, item, index) => {

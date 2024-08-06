@@ -160,7 +160,7 @@ model Meal {
   id           String      @id @default(cuid())
   restaurantId String
   imagePath    String
-  listPrice    Int?
+  listPrice    Int
   price        Int
   title        String
   description  String
@@ -176,7 +176,6 @@ model Meal {
 model MealItem {
   id          String           @id @default(cuid())
   mealId      String
-  price       Int?
   title       String
   description String?
   position    Int

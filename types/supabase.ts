@@ -127,7 +127,7 @@ export type Database = {
           id: string
           imagePath: string
           isInactive: boolean
-          listPrice: number | null
+          listPrice: number
           outdatedAt: string | null
           price: number
           restaurantId: string
@@ -140,7 +140,7 @@ export type Database = {
           id: string
           imagePath: string
           isInactive?: boolean
-          listPrice?: number | null
+          listPrice: number
           outdatedAt?: string | null
           price: number
           restaurantId: string
@@ -153,7 +153,7 @@ export type Database = {
           id?: string
           imagePath?: string
           isInactive?: boolean
-          listPrice?: number | null
+          listPrice?: number
           outdatedAt?: string | null
           price?: number
           restaurantId?: string
@@ -177,7 +177,6 @@ export type Database = {
           id: string
           mealId: string
           position: number
-          price: number | null
           title: string
           updatedAt: string
         }
@@ -187,7 +186,6 @@ export type Database = {
           id: string
           mealId: string
           position: number
-          price?: number | null
           title: string
           updatedAt?: string
         }
@@ -197,7 +195,6 @@ export type Database = {
           id?: string
           mealId?: string
           position?: number
-          price?: number | null
           title?: string
           updatedAt?: string
         }

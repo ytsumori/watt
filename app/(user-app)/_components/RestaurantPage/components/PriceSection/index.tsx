@@ -25,7 +25,7 @@ export function PriceSection({
   }, 0);
   const firstMealPrice = isDiscounted
     ? firstPersonMeal.price + firstMealExtraPrice
-    : firstPersonMeal.listPrice! + firstMealExtraPrice;
+    : firstPersonMeal.listPrice + firstMealExtraPrice;
   let secondMealPrice: number = 0;
   if (secondPersonMeal && secondSelectedOptions) {
     const secondMealExtraPrice = secondPersonMeal.items.reduce((acc, item, itemIndex) => {
@@ -34,7 +34,7 @@ export function PriceSection({
     }, 0);
     secondMealPrice = isDiscounted
       ? secondPersonMeal.price + secondMealExtraPrice
-      : secondPersonMeal.listPrice! + secondMealExtraPrice;
+      : secondPersonMeal.listPrice + secondMealExtraPrice;
   }
   return (
     <>
