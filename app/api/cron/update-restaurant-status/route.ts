@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma/client";
 import { Prisma } from "@prisma/client";
-import { isOpenNow } from "./_util";
 import { notifyRestaurantToOpen } from "./_actions/notify-restaurant-to-open";
 import { updateRestaurantStatusAutomatically } from "@/actions/mutations/restaurant";
+import { isCurrentlyWorkingHour } from "@/utils/opening-hours";
 
 export async function GET(request: NextRequest) {
   const authHeader = request.headers.get("authorization");
@@ -33,8 +33,8 @@ export async function GET(request: NextRequest) {
 
   const update = async (restaurant: Prisma.RestaurantGetPayload<{ include: { openingHours: true } }>) => {
     if (restaurant.openingHours.length === 0) return;
-    if (isOpenNow(restaurant.openingHours)) {
-      if (!restaurant.isOpen) {
+    if (isCurrentlyWorkingHour(restaurant.openingHours)) {
+      if (restaurant.status !== "OPEN") {
         const unopenClosedAlert = await prisma.restaurantClosedAlert.findFirst({
           select: {
             id: true,
@@ -66,7 +66,7 @@ export async function GET(request: NextRequest) {
         }
       }
     } else {
-      if (restaurant.isOpen) {
+      if (restaurant.status !== "CLOSED") {
         await updateRestaurantStatusAutomatically({ id: restaurant.id, status: "CLOSED" });
       }
     }

@@ -22,7 +22,7 @@ export default async function Home() {
       }
     },
     where: { isPublished: true, meals: { some: { isInactive: false } } },
-    orderBy: { isOpen: "desc" }
+    orderBy: { status: "asc" }
   });
   return <HomePage restaurants={restaurants} />;
 }
