@@ -16,7 +16,6 @@ export function SchedulePage() {
   const [restaurant, setRestaurant] = useState<
     Prisma.RestaurantGetPayload<{
       select: {
-        isOpen: true;
         isFullStatusAvailable: true;
         status: true;
         openingHours: true;
@@ -72,7 +71,7 @@ export function SchedulePage() {
       ) : (
         <IsOpenSwitch
           restaurantId={restaurantId}
-          isRestaurantOpen={!!restaurant?.isOpen}
+          isRestaurantOpen={restaurant?.status === "OPEN"}
           onChange={revalidateOpeningInfo}
         />
       )}

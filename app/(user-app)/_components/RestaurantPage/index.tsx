@@ -151,7 +151,7 @@ export function RestaurantPage({ restaurant, inProgressOrderId, userId, defaultM
               onOptionChange={handleFirstMealOptionChange}
               isDiscounted={isDiscounted}
             />
-            {restaurant.isOpen ? (
+            {restaurant.status !== "CLOSED" ? (
               inProgressOrderId ? (
                 <Alert status="warning" as={NextLink} href={`/orders/${inProgressOrderId}`}>
                   <AlertIcon />
