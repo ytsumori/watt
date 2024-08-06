@@ -223,7 +223,7 @@ export async function notifyStaffOrder({ orderId }: { orderId: string }) {
                                           },
                                           {
                                             type: "text" as "text",
-                                            text: `${(order.isDiscounted ? orderMeal.meal.price : orderMeal.meal.listPrice!).toLocaleString("ja-JP")}円`,
+                                            text: `${(order.isDiscounted ? orderMeal.meal.price : orderMeal.meal.listPrice).toLocaleString("ja-JP")}円`,
                                             size: "sm",
                                             color: "#111111",
                                             align: "end" as "end"

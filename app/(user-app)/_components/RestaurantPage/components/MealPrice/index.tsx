@@ -44,7 +44,7 @@ export function MealPrice({ meal, selectedOptions, titlePrefix, isDiscounted }: 
                   定価
                 </Text>
                 <Text as="span" textDecorationLine="line-through">
-                  {(meal.listPrice! + totalExtraPrice).toLocaleString("ja-JP")}円
+                  {(meal.listPrice + totalExtraPrice).toLocaleString("ja-JP")}円
                 </Text>
               </Text>
             </Flex>
@@ -60,7 +60,7 @@ export function MealPrice({ meal, selectedOptions, titlePrefix, isDiscounted }: 
           <>
             <Flex fontWeight="bold">
               <Spacer />
-              <Text as="span">{(meal.listPrice! + totalExtraPrice).toLocaleString("ja-JP")}円</Text>
+              <Text as="span">{(meal.listPrice + totalExtraPrice).toLocaleString("ja-JP")}円</Text>
             </Flex>
           </>
         )}

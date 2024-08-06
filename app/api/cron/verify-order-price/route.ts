@@ -41,7 +41,7 @@ export async function GET(request: NextRequest) {
   await Promise.all(
     orders.map(async (order) => {
       const calculatedTotalPrice = order.meals.reduce((acc, orderMeal) => {
-        const mealPrice = order.isDiscounted ? orderMeal.meal.price : orderMeal.meal.listPrice!;
+        const mealPrice = order.isDiscounted ? orderMeal.meal.price : orderMeal.meal.listPrice;
         const optionPrice = orderMeal.options.reduce((acc, option) => {
           return acc + option.mealItemOption.extraPrice;
         }, 0);

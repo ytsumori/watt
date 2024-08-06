@@ -53,7 +53,7 @@ export function MealPreviewBox({
             {isDiscounted ? (
               <>
                 <Text as="span" textDecorationLine="line-through" fontSize="xs">
-                  ¥{meal.listPrice!.toLocaleString("ja-JP")}
+                  ¥{meal.listPrice.toLocaleString("ja-JP")}
                 </Text>
                 <Text as="span" fontSize="md" fontWeight="bold" color="brand.400" ml={1}>
                   ¥{meal.price.toLocaleString("ja-JP")}
@@ -61,7 +61,7 @@ export function MealPreviewBox({
               </>
             ) : (
               <Text as="span" fontSize="md" fontWeight="bold">
-                ¥{meal.listPrice!.toLocaleString("ja-JP")}
+                ¥{meal.listPrice.toLocaleString("ja-JP")}
               </Text>
             )}
           </Box>

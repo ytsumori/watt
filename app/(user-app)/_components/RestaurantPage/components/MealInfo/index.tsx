@@ -19,14 +19,14 @@ export function MealInfo({ meal, selectedOptions, onOptionChange, isDiscounted }
         {isDiscounted ? (
           <>
             <Text textDecorationLine="line-through" fontSize="md" as="span">
-              {meal.listPrice!.toLocaleString("ja-JP")}円
+              {meal.listPrice.toLocaleString("ja-JP")}円
             </Text>
             <Heading size="md" fontWeight="bold" color="brand.400" as="span" ml={2}>
               {meal.price.toLocaleString("ja-JP")}円
             </Heading>
           </>
         ) : (
-          <Heading size="md">{meal.listPrice!.toLocaleString("ja-JP")}円</Heading>
+          <Heading size="md">{meal.listPrice.toLocaleString("ja-JP")}円</Heading>
         )}
         <Text fontSize="sm" whiteSpace="pre-wrap" mt={2}>
           {meal.description}
