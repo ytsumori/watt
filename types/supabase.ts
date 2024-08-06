@@ -177,7 +177,6 @@ export type Database = {
           id: string
           mealId: string
           position: number
-          price: number | null
           title: string
           updatedAt: string
         }
@@ -187,7 +186,6 @@ export type Database = {
           id: string
           mealId: string
           position: number
-          price?: number | null
           title: string
           updatedAt?: string
         }
@@ -197,7 +195,6 @@ export type Database = {
           id?: string
           mealId?: string
           position?: number
-          price?: number | null
           title?: string
           updatedAt?: string
         }
