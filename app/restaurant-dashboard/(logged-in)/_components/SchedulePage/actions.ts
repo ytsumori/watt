@@ -9,16 +9,8 @@ export async function getRestaurantOpeningInfo(restaurantId: string) {
     select: {
       isOpen: true,
       isFullStatusAvailable: true,
-      openingHours: {
-        orderBy: {
-          openHour: "asc"
-        }
-      },
-      fullStatuses: {
-        where: {
-          easedAt: null
-        }
-      }
+      status: true,
+      openingHours: true
     }
   });
 }

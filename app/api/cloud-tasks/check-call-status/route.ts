@@ -5,7 +5,7 @@ import { createHttpTask } from "@/lib/googleTasks/createHttpTask";
 import { notifyStaffUnansweredCancellation } from "./_actions/notify-staff-unanswered-cancellation";
 import { notifySlackUnansweredCall } from "./_actions/notify-slack-unanswered-call";
 import { logger } from "@/utils/logger";
-import { updateIsOpen } from "@/actions/mutations/restaurant";
+import { updateRestaurantStatus } from "@/actions/mutations/restaurant";
 import { notifyCancelSms } from "@/actions/sms-notification";
 
 export async function POST(request: NextRequest) {
@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
           cancellation: { create: { reason: "CALL_NO_ANSWER", cancelledBy: "STAFF" } }
         }
       });
-      await updateIsOpen({ id: order.restaurantId, isOpen: false });
+      await updateRestaurantStatus({ id: order.restaurantId, status: "CLOSED" });
       await notifyCancelSms({ phoneNumber: order.user.phoneNumber, orderNumber: order.orderNumber });
       await notifyStaffUnansweredCancellation({ orderId: order.id }).catch((e) =>
         logger({ severity: "ERROR", message: "Error notifying staff of unanswered cancellation", payload: { e } })

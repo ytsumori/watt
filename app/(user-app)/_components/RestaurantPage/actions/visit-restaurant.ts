@@ -24,16 +24,12 @@ export async function visitRestaurant({
     throw new Error("Active order already exists");
   }
 
-  const fullStatus = await prisma.restaurantFullStatus.findFirst({
-    where: {
-      restaurantId,
-      easedAt: null
-    },
-    select: {
-      id: true
-    }
-  });
-  if (isDiscounted === !!fullStatus) {
+  const restaurant = await prisma.restaurant.findUnique({ where: { id: restaurantId }, select: { status: true } });
+  if (!restaurant) {
+    throw new Error("Restaurant not found");
+  }
+  const isPacked = restaurant.status === "PACKED";
+  if (isDiscounted && isPacked) {
     return { data: null, error: { message: "Status outdated" } };
   }
 

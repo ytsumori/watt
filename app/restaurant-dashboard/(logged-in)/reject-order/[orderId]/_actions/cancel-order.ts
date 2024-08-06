@@ -3,7 +3,7 @@
 import prisma from "@/lib/prisma/client";
 import { logger } from "@/utils/logger";
 import { notifySlackOrderRejection } from "./notify-slack-order-rejection";
-import { updateIsOpen } from "@/actions/mutations/restaurant";
+import { updateRestaurantStatus } from "@/actions/mutations/restaurant";
 import { notifyCancelSms } from "@/actions/sms-notification";
 
 export async function cancelOrder(orderId: string) {
@@ -27,7 +27,7 @@ export async function cancelOrder(orderId: string) {
     where: { id: orderId },
     data: { canceledAt: new Date(), cancellation: { create: { reason: "FULL", cancelledBy: "STAFF" } } }
   });
-  await updateIsOpen({ id: order.restaurantId, isOpen: false });
+  await updateRestaurantStatus({ id: order.restaurantId, status: "CLOSED" });
 
   if (!order.user.phoneNumber) throw new Error("User has no phone number");
 

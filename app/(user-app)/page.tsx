@@ -19,14 +19,6 @@ export default async function Home() {
           closeMinute: true,
           closeDayOfWeek: true
         }
-      },
-      fullStatuses: {
-        where: {
-          easedAt: null
-        },
-        select: {
-          easedAt: true
-        }
       }
     },
     where: { isPublished: true, meals: { some: { isInactive: false } } },

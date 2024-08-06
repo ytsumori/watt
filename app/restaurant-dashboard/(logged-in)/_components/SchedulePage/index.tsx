@@ -10,7 +10,6 @@ import { RepeatIcon } from "@chakra-ui/icons";
 import { RestaurantIdContext } from "../RestaurantIdProvider";
 import { StatusRadioGroup } from "./_components/StatusRadioGroup";
 import { IsOpenSwitch } from "./_components/IsOpenSwitch";
-import { getRestaurantStatus } from "@/utils/restaurant-status";
 
 export function SchedulePage() {
   const restaurantId = useContext(RestaurantIdContext);
@@ -19,12 +18,8 @@ export function SchedulePage() {
       select: {
         isOpen: true;
         isFullStatusAvailable: true;
+        status: true;
         openingHours: true;
-        fullStatuses: {
-          select: {
-            easedAt: true;
-          };
-        };
       };
     }>
   >();
@@ -73,7 +68,7 @@ export function SchedulePage() {
   return (
     <>
       {restaurant?.isFullStatusAvailable ? (
-        <StatusRadioGroup restaurantId={restaurantId} status={getRestaurantStatus(restaurant)} />
+        <StatusRadioGroup restaurantId={restaurantId} status={restaurant.status} />
       ) : (
         <IsOpenSwitch
           restaurantId={restaurantId}

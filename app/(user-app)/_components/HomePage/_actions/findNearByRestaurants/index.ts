@@ -28,11 +28,6 @@ type Restaurant = Prisma.RestaurantGetPayload<{
         closeDayOfWeek: true;
       };
     };
-    fullStatuses: {
-      select: {
-        easedAt: true;
-      };
-    };
   };
 }>;
 

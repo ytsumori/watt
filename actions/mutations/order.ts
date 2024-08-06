@@ -31,7 +31,7 @@ export async function createOrder({
       listPrice: true,
       isInactive: true,
       restaurant: {
-        select: { phoneNumber: true, fullStatuses: { where: { easedAt: null }, select: { id: true } } }
+        select: { phoneNumber: true, status: true }
       },
       items: { select: { options: { select: { id: true, extraPrice: true } } } }
     }
@@ -52,8 +52,8 @@ export async function createOrder({
   ) {
     throw new Error("First meal options do not match");
   }
-  const isFull = firstMeal.restaurant.fullStatuses.length > 0;
-  if (isDiscounted === isFull) {
+  const isPacked = firstMeal.restaurant.status === "PACKED";
+  if (isDiscounted === isPacked) {
     throw new Error("Status outdated");
   }
 

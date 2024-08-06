@@ -16,7 +16,6 @@ import { VisitingSection } from "./components/VisitingSection";
 import { visitRestaurant } from "./actions/visit-restaurant";
 import { ConfirmModal } from "@/components/confirm-modal";
 import { LineLoginButton } from "../../restaurants/[restaurantId]/_components/LineLoginButton";
-import { getRestaurantStatus } from "@/utils/restaurant-status";
 
 type Props = {
   restaurant: Prisma.RestaurantGetPayload<{
@@ -24,7 +23,6 @@ type Props = {
       meals: { include: { items: { include: { options: true } } } };
       googleMapPlaceInfo: { select: { url: true } };
       paymentOptions: true;
-      fullStatuses: { select: { easedAt: true } };
       exteriorImage: true;
       menuImages: true;
       openingHours: {
@@ -61,8 +59,7 @@ export function RestaurantPage({ restaurant, inProgressOrderId, userId, defaultM
   );
   const [secondPersonMeal, setSecondPersonMeal] = useState<MealWithItems | null>();
   const [secondMealSelectedOptions, setSecondMealSelectedOptions] = useState<(string | null)[]>();
-  const restaurantStatus = getRestaurantStatus(restaurant);
-  const isDiscounted = restaurantStatus === "open";
+  const isDiscounted = restaurant.status === "OPEN";
 
   const handleFirstMealSelected = (selectedMeal: MealWithItems) => {
     setFirstMealSelectedOptions(new Array(selectedMeal.items.length).fill(null));
