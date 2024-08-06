@@ -39,7 +39,11 @@ export function RestaurantListItem({ restaurant, onClickHelp }: Props) {
         <StatusBadge
           status={restaurant.status}
           isWorkingHour={isCurrentlyWorkingHour(restaurant.openingHours)}
-          nextOpenAt={nextOpeningHour ? `${nextOpeningHour.hour}:${nextOpeningHour.minute}` : undefined}
+          nextOpenAt={
+            nextOpeningHour
+              ? `${nextOpeningHour.hour}:${nextOpeningHour.minute.toString().padStart(2, "0")}`
+              : undefined
+          }
         />
         <QuestionOutlineIcon color="gray" onClick={handleQuestionClick} />
       </HStack>
