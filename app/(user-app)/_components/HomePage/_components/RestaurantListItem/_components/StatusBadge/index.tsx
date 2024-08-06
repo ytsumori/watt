@@ -16,13 +16,7 @@ export function StatusBadge({ status, isWorkingHour, nextOpenAt }: Props) {
 }
 
 function getBackgroundColor(status: RestaurantStatus) {
-  switch (status) {
-    case "OPEN":
-      return "brand.400";
-    case "CLOSED":
-    case "PACKED":
-      return "blackAlpha.700";
-  }
+  if (status === "CLOSED") return "blackAlpha.700";
 }
 
 function getVariant(status: RestaurantStatus) {
