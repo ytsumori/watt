@@ -4,7 +4,7 @@ import "./global.css";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://watt.jp.net/"),
+  metadataBase: new URL("https://watt.jp.net"),
   title: {
     default: "Watt",
     template: "%s | Watt"
