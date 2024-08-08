@@ -14,7 +14,7 @@ export function IsOpenSwitch({ restaurantId, isRestaurantOpen, onChange }: Props
   const toast = useToast();
   const handleOpenStatusChange = (event: ChangeEvent<HTMLInputElement>) => {
     const isOpen = event.target.checked;
-    updateRestaurantStatus({ id: restaurantId, status: isOpen ? "OPEN" : "CLOSED" })
+    updateRestaurantStatus({ id: restaurantId, status: isOpen ? "OPEN" : "CLOSED", isInAdvance: true })
       .then(() => {
         onChange(isOpen);
       })
