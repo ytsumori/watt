@@ -19,11 +19,9 @@ import {
   Text
 } from "@chakra-ui/react";
 import { signIn, signOut } from "next-auth/react";
-import { usePathname } from "next/navigation";
 import NextLink from "next/link";
 import Image from "next/image";
 import { User } from "@prisma/client";
-import { OnboardingModal } from "../OnboardingModal";
 import { InProgressOrderModal } from "../InProgressOrderModal";
 
 type Props = {
@@ -103,7 +101,6 @@ export default function UserAppLayout({ children, user }: Props) {
         </Flex>
         {children}
       </Flex>
-      <OnboardingModal />
       <InProgressOrderModal />
     </>
   );
