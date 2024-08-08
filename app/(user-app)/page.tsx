@@ -1,6 +1,6 @@
 import HomePage from "@/app/(user-app)/_components/HomePage";
 import prisma from "@/lib/prisma/client";
-import { OnboardingModal } from "./_components/OnboardingModal";
+import { FirstOnboardingModal } from "./_components/FirstOnboardingModal";
 
 export default async function Home() {
   const restaurants = await prisma.restaurant.findMany({
@@ -28,7 +28,7 @@ export default async function Home() {
   return (
     <>
       <HomePage restaurants={restaurants} />
-      <OnboardingModal />
+      <FirstOnboardingModal />
     </>
   );
 }

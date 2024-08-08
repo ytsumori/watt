@@ -18,8 +18,7 @@ import {
   StepStatus,
   Stepper,
   Text,
-  VStack,
-  useDisclosure
+  VStack
 } from "@chakra-ui/react";
 import { useCallback, useEffect, useState } from "react";
 import useEmblaCarousel from "embla-carousel-react";
@@ -27,6 +26,7 @@ import { StatusBadge } from "../HomePage/_components/RestaurantListItem/_compone
 import { CheckIcon } from "@chakra-ui/icons";
 import Image from "next/image";
 import onboardingImage from "@/public/onboarding.png";
+import { EmblaCarouselType } from "embla-carousel";
 
 const ONBOARDING_STEPS = [
   {
@@ -113,39 +113,43 @@ const ONBOARDING_STEPS = [
   }
 ];
 
-export function OnboardingModal() {
+type Props = {
+  isOpen: boolean;
+  onClose: () => void;
+};
+
+export function OnboardingModal({ isOpen, onClose }: Props) {
   const [isRead, setIsRead] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [emblaRef, emblaApi] = useEmblaCarousel();
-  const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const detectStepChange = useCallback((emblaApi: EmblaCarouselType) => {
+    const selectedIndex = emblaApi.selectedScrollSnap();
+    setCurrentStep(selectedIndex);
+    if (selectedIndex === ONBOARDING_STEPS.length - 1) setIsRead(true);
+  }, []);
 
   useEffect(() => {
-    const onboardingModalShown = localStorage.getItem("onboardingModalShown");
-    if (!onboardingModalShown || onboardingModalShown !== "24-08-08") {
-      onOpen();
+    if (emblaApi) {
+      emblaApi.on("select", detectStepChange);
+      return () => {
+        emblaApi.off("select", detectStepChange);
+      };
     }
-  }, [onOpen]);
+  }, [detectStepChange, emblaApi]);
 
-  useEffect(() => {
-    if (emblaApi)
-      emblaApi.on("select", () => {
-        const selectedIndex = emblaApi.selectedScrollSnap();
-        setCurrentStep(selectedIndex);
-        if (selectedIndex === ONBOARDING_STEPS.length - 1) setIsRead(true);
-      });
-  }, [emblaApi]);
-
-  const handleNextClick = useCallback(() => {
+  const handleNextClick = () => {
     if (isRead) {
-      localStorage.setItem("onboardingModalShown", "24-08-08");
       onClose();
+      setCurrentStep(0);
+      setIsRead(false);
     } else {
       if (emblaApi) emblaApi.scrollNext();
     }
-  }, [emblaApi, isRead, onClose]);
+  };
 
   return (
-    <Modal isOpen={isOpen} onClose={() => undefined} isCentered>
+    <Modal isOpen={isOpen} onClose={isRead ? onClose : () => undefined} isCentered>
       <ModalOverlay />
       <ModalContent>
         <Box overflow="hidden">
