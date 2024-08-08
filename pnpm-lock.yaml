@@ -171,6 +171,9 @@ importers:
       dotenv-cli:
         specifier: ^7.4.2
         version: 7.4.2
+      embla-carousel:
+        specifier: ^8.1.8
+        version: 8.1.8
       jsdom:
         specifier: ^24.1.1
         version: 24.1.1
