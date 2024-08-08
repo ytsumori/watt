@@ -1,10 +1,14 @@
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { Providers } from "./_components/providers";
 import "./global.css";
+import { Metadata } from "next";
 
-export const metadata = {
-  metadataBase: new URL("https://watt-kiizan-kiizan.vercel.app/"),
-  title: "Watt",
+export const metadata: Metadata = {
+  metadataBase: new URL("https://watt.jp.net/"),
+  title: {
+    default: "Watt",
+    template: "%s | Watt"
+  },
   description: "今すぐ入れるお店が見つかる！"
 };
 

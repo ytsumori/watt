@@ -48,17 +48,33 @@ export default async function Restaurant({ params, searchParams }: Params) {
   return <RestaurantPage restaurant={restaurant} defaultMeal={defaultMeal} />;
 }
 
-export async function generateMetadata({ params }: Params): Promise<Metadata | undefined> {
+export async function generateMetadata({ params, searchParams }: Params): Promise<Metadata> {
   const restaurant = await prisma.restaurant.findUnique({
     where: { id: params.restaurantId },
     include: { meals: { where: { isInactive: false } }, googleMapPlaceInfo: { select: { url: true } } }
   });
 
-  if (restaurant && restaurant.meals.length > 0) {
-    const url = getMealImageUrl(restaurant.meals[0].imagePath);
+  if (!restaurant) return {};
+
+  const defaultMeal = restaurant.meals.find((meal) => meal.id === searchParams.mealId);
+
+  if (defaultMeal) {
+    const url = getMealImageUrl(defaultMeal.imagePath);
     return {
-      title: `${restaurant.name} | Watt`,
+      title: restaurant.name,
       openGraph: { images: [url] }
     };
+  } else {
+    if (restaurant.meals.length > 0) {
+      const url = getMealImageUrl(restaurant.meals[0].imagePath);
+      return {
+        title: restaurant.name,
+        openGraph: { images: [url] }
+      };
+    }
   }
+
+  return {
+    title: restaurant.name
+  };
 }

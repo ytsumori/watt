@@ -4,6 +4,7 @@ import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { findInProgressOrder } from "@/app/(user-app)/_actions/findInProgressOrder";
 import { RestaurantModalPage } from "@/app/(user-app)/@modal/(.)restaurants/[restaurantId]/_components/RestaurantModalPage";
+import { Metadata } from "next";
 
 type Params = { params: { restaurantId: string }; searchParams: { mealId?: string } };
 
@@ -44,4 +45,17 @@ export default async function Restaurant({ params, searchParams }: Params) {
   }
 
   return <RestaurantModalPage restaurant={restaurant} defaultMeal={defaultMeal} />;
+}
+
+export async function generateMetadata({ params }: Params): Promise<Metadata> {
+  const restaurant = await prisma.restaurant.findUnique({
+    where: { id: params.restaurantId },
+    select: { name: true }
+  });
+
+  if (!restaurant) return {};
+
+  return {
+    title: restaurant.name
+  };
 }
