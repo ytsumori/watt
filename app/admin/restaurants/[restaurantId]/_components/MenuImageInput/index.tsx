@@ -23,6 +23,10 @@ export const MenuImageInput: React.FC<Props> = ({ restaurantId, defaultMenuImage
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files) return;
+    if (Array.from(files).some((file) => file.size > 1024 * 1024 * 4)) {
+      toast({ title: "4MB以下の画像を選択してください", status: "error" });
+      return;
+    }
 
     const formData = new FormData();
     Array.from(files).forEach((file) => formData.append("image", file));
