@@ -4,10 +4,8 @@ import { RestaurantExteriorImage } from "@prisma/client";
 import { useState } from "react";
 import { getSupabaseImageUrl } from "@/utils/image/getSupabaseImageUrl";
 import { logger } from "@/utils/logger";
-import { useToast } from "@chakra-ui/react";
-
+import { Image, useToast } from "@chakra-ui/react";
 import { uploadExteriorImage } from "@/actions/mutations/restaurantExteriorImage";
-import Image from "next/image";
 
 type Props = {
   restaurantId: string;
