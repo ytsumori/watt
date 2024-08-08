@@ -16,15 +16,12 @@ export function ResourceFooter() {
             <Link as={NextLink} href="https://kiizan-kiizan.co.jp/" isExternal>
               運営会社
             </Link>
-            <Link as={NextLink} href="/terms">
-              利用規約
-            </Link>
           </VStack>
         </GridItem>
         <GridItem>
           <VStack alignItems="start">
-            <Link as={NextLink} href="/transaction-law">
-              特商法表記
+            <Link as={NextLink} href="/terms">
+              利用規約
             </Link>
           </VStack>
         </GridItem>

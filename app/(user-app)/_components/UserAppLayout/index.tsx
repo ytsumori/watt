@@ -16,15 +16,15 @@ import {
   MenuItem,
   MenuList,
   Spacer,
-  Text
+  Text,
+  useDisclosure
 } from "@chakra-ui/react";
 import { signIn, signOut } from "next-auth/react";
-import { usePathname } from "next/navigation";
 import NextLink from "next/link";
 import Image from "next/image";
 import { User } from "@prisma/client";
-import { OnboardingModal } from "../OnboardingModal";
 import { InProgressOrderModal } from "../InProgressOrderModal";
+import { OnboardingModal } from "../OnboardingModal";
 
 type Props = {
   children: React.ReactNode;
@@ -32,6 +32,11 @@ type Props = {
 };
 
 export default function UserAppLayout({ children, user }: Props) {
+  const {
+    isOpen: isOnboardingModalOpen,
+    onOpen: onOpenOnboardingModal,
+    onClose: onCloseOnboardingModal
+  } = useDisclosure();
   const handleSignOutClick = () => {
     if (confirm("ログアウトしますか？")) signOut();
   };
@@ -64,6 +69,7 @@ export default function UserAppLayout({ children, user }: Props) {
               <MenuItem as={NextLink} href="/">
                 ホーム
               </MenuItem>
+              <MenuItem onClick={onOpenOnboardingModal}>使い方</MenuItem>
               {user ? (
                 <>
                   <MenuItem as={NextLink} href="/orders">
@@ -92,9 +98,6 @@ export default function UserAppLayout({ children, user }: Props) {
                     <MenuItem as={NextLink} href="/terms">
                       利用規約
                     </MenuItem>
-                    <MenuItem as={NextLink} href="/transaction-law">
-                      特商法表記
-                    </MenuItem>
                   </AccordionPanel>
                 </AccordionItem>
               </Accordion>
@@ -103,8 +106,8 @@ export default function UserAppLayout({ children, user }: Props) {
         </Flex>
         {children}
       </Flex>
-      <OnboardingModal />
       <InProgressOrderModal />
+      <OnboardingModal isOpen={isOnboardingModalOpen} onClose={onCloseOnboardingModal} />
     </>
   );
 }

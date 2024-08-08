@@ -4,130 +4,192 @@ import {
   Box,
   Button,
   HStack,
-  Heading,
+  ListItem,
   Modal,
   ModalBody,
   ModalContent,
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  OrderedList,
   Step,
-  StepIcon,
   StepIndicator,
   StepSeparator,
   StepStatus,
   Stepper,
+  Text,
   VStack
 } from "@chakra-ui/react";
+import { useCallback, useEffect, useState } from "react";
+import useEmblaCarousel from "embla-carousel-react";
+import { StatusBadge } from "../HomePage/_components/RestaurantListItem/_components/StatusBadge";
+import { CheckIcon } from "@chakra-ui/icons";
 import Image from "next/image";
-import { useEffect, useState } from "react";
-import onboarding1Image from "@/public/onboarding/1.png";
-import onboarding2Image from "@/public/onboarding/2.png";
-import onboarding3Image from "@/public/onboarding/3.png";
+import onboardingImage from "@/public/onboarding.png";
+import { EmblaCarouselType } from "embla-carousel";
 
 const ONBOARDING_STEPS = [
   {
-    text: "今すぐ入れるお店から行きたいお店を探す",
-    imageSrc: onboarding1Image
+    title: "Wattとは？",
+    content: (
+      <VStack alignItems="start" fontSize="sm">
+        <Text>
+          <Image
+            src="/watt-logo.png"
+            alt="Watt"
+            width="45"
+            height="24"
+            style={{ display: "inline", verticalAlign: "bottom", marginRight: "0.2rem" }}
+          />
+          は、混雑状況に応じて価格が変化する飲食サービスです！
+          <br />
+          1人または2人向けにWatt限定の特別セットメニューをお得な値段で提供しています！
+        </Text>
+        <Box w="full">
+          <Image src={onboardingImage} alt="Wattとは？" width={200} style={{ margin: "auto" }} />
+        </Box>
+      </VStack>
+    )
   },
   {
-    text: "「お店に向かうボタン」を押してお店に来店",
-    imageSrc: onboarding2Image
+    title: "混雑ステータスについて",
+    content: (
+      <VStack alignItems="start" fontSize="sm">
+        <Text>お店は以下の混雑ステータスのいずれかに設定されています。</Text>
+        <Box>
+          <StatusBadge status="OPEN" isWorkingHour={true} />
+          <Text>お店に入れる状態です。割引を適用した価格でセットメニューをご提供します。</Text>
+        </Box>
+        <Box>
+          <StatusBadge status="PACKED" isWorkingHour={true} />
+          <Text>お店に入れる状態ですが、席が埋まってしまう可能性があります。定価でセットメニューをご提供します。</Text>
+        </Box>
+        <Box>
+          <HStack>
+            <StatusBadge status="CLOSED" isWorkingHour />
+            <StatusBadge status="CLOSED" isWorkingHour={false} />
+          </HStack>
+          <Text>お店に入れない状態です。</Text>
+        </Box>
+        <Text fontSize="xs" color="gray.500">
+          ※実際の混雑状況と多少ズレが発生する場合がございますので、ご了承ください。
+        </Text>
+      </VStack>
+    )
   },
   {
-    text: "お得なセットで食事をする",
-    imageSrc: onboarding3Image
+    title: "ご利用ステップ",
+    content: (
+      <VStack alignItems="start" fontSize="sm">
+        <Text>以下の手順でWattをご利用ください。</Text>
+        <OrderedList spacing={2} fontWeight="bold">
+          <ListItem>
+            セットメニューを選ぶ
+            <br />
+            <Text fontWeight="normal" fontSize="xs">
+              入店できるお店の中から食べたいものを選びましょう！
+            </Text>
+          </ListItem>
+          <ListItem>
+            「お店に向かう」ボタンを押す
+            <br />
+            <Text fontWeight="normal" fontSize="xs">
+              5分以内に自動的にお店の空き状況の確認を取り、SMSでお知らせします！
+            </Text>
+          </ListItem>
+          <ListItem>
+            お店に向かう
+            <Text fontWeight="normal" fontSize="xs">
+              空き状況が確認できてから30分以内にお店に入店してください！
+            </Text>
+          </ListItem>
+          <ListItem>注文画面をお店スタッフに見せて注文完了！</ListItem>
+        </OrderedList>
+        <Text fontSize="xs" color="gray.500">
+          ※追加での注文は、お店の注文方法に従って注文してください。（追加注文は割引対象外です）
+        </Text>
+      </VStack>
+    )
   }
 ];
 
-export function OnboardingModal() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [currentStep, setCurrentStep] = useState(0);
+type Props = {
+  isOpen: boolean;
+  onClose: () => void;
+};
 
-  useEffect(() => {
-    const isModalShown = localStorage.getItem("onboardingModalShown");
-    if (!isModalShown) {
-      setIsOpen(true);
-    }
+export function OnboardingModal({ isOpen, onClose }: Props) {
+  const [isRead, setIsRead] = useState(false);
+  const [currentStep, setCurrentStep] = useState(0);
+  const [emblaRef, emblaApi] = useEmblaCarousel();
+
+  const detectStepChange = useCallback((emblaApi: EmblaCarouselType) => {
+    const selectedIndex = emblaApi.selectedScrollSnap();
+    setCurrentStep(selectedIndex);
+    if (selectedIndex === ONBOARDING_STEPS.length - 1) setIsRead(true);
   }, []);
 
-  const handleOnSubmit = () => {
-    localStorage.setItem("onboardingModalShown", "true");
-    setIsOpen(false);
+  useEffect(() => {
+    if (emblaApi) {
+      emblaApi.on("select", detectStepChange);
+      return () => {
+        emblaApi.off("select", detectStepChange);
+      };
+    }
+  }, [detectStepChange, emblaApi]);
+
+  const handleNextClick = () => {
+    if (isRead) {
+      onClose();
+      setCurrentStep(0);
+      setIsRead(false);
+    } else {
+      if (emblaApi) emblaApi.scrollNext();
+    }
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={() => undefined} isCentered size="full">
+    <Modal isOpen={isOpen} onClose={isRead ? onClose : () => undefined} isCentered>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader alignSelf="center">
-          <HStack spacing={1}>
-            <Image src="/watt-logo.png" alt="Watt" width="50" height="24" />
-            <Heading size="md" alignSelf="end">
-              の使い方
-            </Heading>
-          </HStack>
-        </ModalHeader>
-        <ModalBody alignContent="center">
-          <VStack m="auto">
-            <Heading whiteSpace="pre-line" textAlign="center">
-              {ONBOARDING_STEPS[currentStep].text}
-            </Heading>
-            {ONBOARDING_STEPS.map((step, index) => (
-              <Image
-                key={index}
-                src={step.imageSrc}
-                alt={`ステップ${index + 1}`}
-                width="400"
-                height="400"
-                style={{ display: index === currentStep ? "block" : "none" }}
-              />
-            ))}
-          </VStack>
-        </ModalBody>
-        <ModalFooter as={VStack} spacing={10}>
-          {currentStep === ONBOARDING_STEPS.length - 1 ? (
-            <Button onClick={handleOnSubmit} size="lg" mx="auto">
-              使い始める
-            </Button>
-          ) : (
-            <Box w="full" position="relative" display="flex" h="32px">
-              <Button
-                onClick={() => setCurrentStep(currentStep - 1)}
-                position="absolute"
-                left={0}
-                variant="outline"
-                isDisabled={currentStep === 0}
-              >
-                前へ
-              </Button>
-              <Stepper index={currentStep + 1} size="sm" gap="0" mx="auto">
-                {ONBOARDING_STEPS.map((_, index) => (
-                  <Step key={index}>
-                    <StepIndicator
-                      sx={{
-                        "[data-status=active] &": {
-                          borderColor: "gray.200"
-                        }
-                      }}
-                    >
-                      <StepStatus active={<></>} complete={<StepIcon />} />
-                    </StepIndicator>
-                    <StepSeparator />
-                  </Step>
-                ))}
-              </Stepper>
-              <Button
-                onClick={() => setCurrentStep(currentStep + 1)}
-                position="absolute"
-                right={0}
-                isDisabled={currentStep === ONBOARDING_STEPS.length - 1}
-              >
-                次へ
-              </Button>
+        <Box overflow="hidden">
+          <Box ref={emblaRef}>
+            <Box display="flex">
+              {ONBOARDING_STEPS.map(({ title, content }, index) => (
+                <Box key={index} flex="0 0 100%" minW={0}>
+                  <ModalHeader>{title}</ModalHeader>
+                  <ModalBody>{content}</ModalBody>
+                </Box>
+              ))}
             </Box>
-          )}
-        </ModalFooter>
+          </Box>
+          <ModalFooter alignSelf="center" flexDirection="column" gap={2}>
+            <Stepper index={currentStep} size="sm" gap="0" mx="auto">
+              {ONBOARDING_STEPS.map((_, index) => (
+                <Step key={index}>
+                  <StepIndicator
+                    sx={{
+                      "[data-status=complete] &": {
+                        borderColor: "gray.200",
+                        borderWidth: "2px",
+                        bg: "transparent"
+                      },
+                      "[data-status=active] &": {
+                        color: "brand.500"
+                      }
+                    }}
+                  >
+                    <StepStatus active={<CheckIcon />} />
+                  </StepIndicator>
+                  <StepSeparator />
+                </Step>
+              ))}
+            </Stepper>
+            <Button className="embla__next" onClick={handleNextClick}>
+              {isRead ? "閉じる" : "次へ"}
+            </Button>
+          </ModalFooter>
+        </Box>
       </ModalContent>
     </Modal>
   );
