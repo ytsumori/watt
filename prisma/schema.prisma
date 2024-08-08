@@ -57,7 +57,6 @@ model OneTimePassword {
 model Restaurant {
   id                    String                           @id @default(cuid())
   name                  String
-  isOpen                Boolean                          @default(false)
   status                RestaurantStatus                 @default(CLOSED)
   isPublished           Boolean                          @default(false)
   isFullStatusAvailable Boolean                          @default(false)

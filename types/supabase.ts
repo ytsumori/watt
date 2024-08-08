@@ -499,7 +499,6 @@ export type Database = {
           id: string
           interiorImagePath: string | null
           isFullStatusAvailable: boolean
-          isOpen: boolean
           isPublished: boolean
           name: string
           password: string
@@ -514,7 +513,6 @@ export type Database = {
           id: string
           interiorImagePath?: string | null
           isFullStatusAvailable?: boolean
-          isOpen?: boolean
           isPublished?: boolean
           name: string
           password: string
@@ -529,7 +527,6 @@ export type Database = {
           id?: string
           interiorImagePath?: string | null
           isFullStatusAvailable?: boolean
-          isOpen?: boolean
           isPublished?: boolean
           name?: string
           password?: string
