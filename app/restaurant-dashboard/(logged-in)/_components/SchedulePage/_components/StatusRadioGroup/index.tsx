@@ -20,19 +20,7 @@ export function StatusRadioGroup({ restaurantId, status }: Props) {
   const toast = useToast();
 
   const handleStatusChange = (value: RestaurantStatus) => {
-    const update = (() => {
-      switch (value) {
-        case "OPEN":
-          return async () => await updateRestaurantStatus({ id: restaurantId, status: "OPEN" });
-        case "PACKED":
-          return async () => await updateRestaurantStatus({ id: restaurantId, status: "PACKED" });
-        case "CLOSED":
-          return async () => await updateRestaurantStatus({ id: restaurantId, status: "CLOSED" });
-        default:
-          throw new Error("Invalid status");
-      }
-    })();
-    update()
+    updateRestaurantStatus({ id: restaurantId, status: value, isInAdvance: true })
       .then(() => {
         setStatus(value);
       })

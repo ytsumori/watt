@@ -18,7 +18,15 @@ export async function updateRestaurantStatusAutomatically({
   });
 }
 
-export async function updateRestaurantStatus({ id, status }: { id: string; status: RestaurantStatus }) {
+export async function updateRestaurantStatus({
+  id,
+  status,
+  isInAdvance
+}: {
+  id: string;
+  status: RestaurantStatus;
+  isInAdvance?: boolean;
+}) {
   const restaurant = await prisma.restaurant.findUnique({ where: { id } });
   if (!restaurant) throw new Error("restaurant not found");
 
@@ -29,12 +37,16 @@ export async function updateRestaurantStatus({ id, status }: { id: string; statu
     },
     data: {
       status,
-      statusChanges: {
-        create: {
-          from: previousStatus,
-          to: status
-        }
-      },
+      ...(isInAdvance
+        ? {
+            statusChanges: {
+              create: {
+                from: previousStatus,
+                to: status
+              }
+            }
+          }
+        : {}),
       closedAlerts: {
         ...(status === "OPEN"
           ? {
