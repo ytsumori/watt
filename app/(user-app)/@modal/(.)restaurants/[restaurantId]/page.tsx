@@ -4,9 +4,9 @@ import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { RestaurantModalPage } from "@/app/(user-app)/@modal/(.)restaurants/[restaurantId]/_components/RestaurantModalPage";
 
-type Params = { params: { restaurantId: string }; searchParams: { mealId?: string } };
+type Params = { params: { restaurantId: string } };
 
-export default async function Restaurant({ params, searchParams }: Params) {
+export default async function Restaurant({ params }: Params) {
   const restaurant = await prisma.restaurant.findUnique({
     where: { id: params.restaurantId },
     include: {

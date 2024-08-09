@@ -1,6 +1,6 @@
 "use client";
 
-import { VStack, Divider, Text, HStack, Button } from "@chakra-ui/react";
+import { VStack, Divider, Text, HStack, Button, Box } from "@chakra-ui/react";
 import { Prisma } from "@prisma/client";
 import { usePathname, useRouter } from "next/navigation";
 import { RestaurantInfo } from "./components/RestaurantInfo";
@@ -38,7 +38,7 @@ export function RestaurantPage({ restaurant, userId }: Props) {
     <VStack w="full" p={4} alignItems="start" spacing={4}>
       <RestaurantInfo restaurant={restaurant} />
       <Divider borderColor="black" my={6} />
-      <VStack alignItems="start" spacing={0}>
+      <Box>
         <Text fontWeight="bold" mb={2}>
           セットメニュー
         </Text>
@@ -49,16 +49,18 @@ export function RestaurantPage({ restaurant, userId }: Props) {
               meal={meal}
               href={`/restaurants/${restaurant.id}/meals/${meal.id}`}
               isRouter
-              isDiscounted={status === "open"}
+              isDiscounted={restaurant.status === "OPEN"}
             />
           ))}
         </HStack>
-        {userId ? (
-          <Button onClick={() => router.push(`/restaurants/${restaurant.id}/orders/new`)}>注文画面に進む</Button>
-        ) : (
-          <LineLoginButton callbackUrl={pathname} />
-        )}
-      </VStack>
+      </Box>
+      {userId ? (
+        <Button onClick={() => router.push(`/restaurants/${restaurant.id}/orders/new`)} w="full" size="md">
+          注文画面に進む
+        </Button>
+      ) : (
+        <LineLoginButton callbackUrl={pathname} />
+      )}
     </VStack>
   );
 }

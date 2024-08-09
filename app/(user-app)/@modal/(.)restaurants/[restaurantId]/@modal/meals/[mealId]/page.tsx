@@ -18,7 +18,7 @@ export default async function MealDetail({ params }: Params) {
   if (!meal) redirect("/");
 
   const session = await getServerSession(options);
-  const isLogined = !!session;
+  const isLoggedIn = !!session;
 
-  return <MealDetailModalPage meal={meal} isLogined={isLogined} />;
+  return <MealDetailModalPage meal={meal} isLoggedIn={isLoggedIn} />;
 }

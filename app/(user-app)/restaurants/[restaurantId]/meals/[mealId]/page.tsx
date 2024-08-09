@@ -4,7 +4,7 @@ import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { Metadata } from "next";
 import { getMealImageUrl } from "@/utils/image/getMealImageUrl";
-import { MealDetailPage } from "@/app/(user-app)/_components/MealDetaiiPage";
+import { MealDetailPage } from "@/app/(user-app)/_components/MealDetailPage";
 
 type Params = { params: { mealId: string } };
 
@@ -20,9 +20,9 @@ export default async function MealDetail({ params }: Params) {
   if (!meal) redirect("/");
 
   const session = await getServerSession(options);
-  const isLogined = !!session;
+  const isLoggedIn = !!session;
 
-  return <MealDetailPage meal={meal} isLogined={isLogined} />;
+  return <MealDetailPage meal={meal} isLoggedIn={isLoggedIn} />;
 }
 
 export async function generateMetadata({ params }: Params): Promise<Metadata | undefined> {
