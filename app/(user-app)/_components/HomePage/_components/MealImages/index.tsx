@@ -1,15 +1,16 @@
 "use client";
 
 import { MealPreviewBox } from "@/components/meal/MealPreviewBox";
-import { RestaurantStatus } from "@/utils/restaurant-status";
+
 import { HStack, Text, VStack } from "@chakra-ui/react";
+import { RestaurantStatus } from "@prisma/client";
 
 type Props = {
   restaurantId: string;
   meals: {
     id: string;
     price: number;
-    listPrice: number | null;
+    listPrice: number;
     imagePath: string;
     title: string;
   }[];
@@ -27,7 +28,7 @@ export function MealImages({ restaurantId, meals, status }: Props) {
             meal={meal}
             href={`restaurants/${restaurantId}/meals/${meal.id}`}
             isRouter
-            isDiscounted={status === "open"}
+            isDiscounted={status === "OPEN"}
           />
         ))}
       </HStack>

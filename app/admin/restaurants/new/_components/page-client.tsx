@@ -1,6 +1,5 @@
 "use client";
 
-import { PlaceDetailResult, searchPlaces } from "@/lib/places-api";
 import {
   Button,
   Card,
@@ -28,6 +27,7 @@ import { useState } from "react";
 import { copySignUpURL } from "../../_util/clipboard-text";
 import { createRestaurant } from "../_actions/create-restaurant";
 import { logger } from "@/utils/logger";
+import { PlaceDetailResult, searchPlaces } from "@/lib/places-api/actions";
 
 export function NewRestaurantPageClient() {
   const [selectedPlace, setSelectedPlace] = useState<PlaceDetailResult>();

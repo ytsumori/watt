@@ -2,17 +2,53 @@
 
 import prisma from "@/lib/prisma/client";
 import { createServiceRoleClient } from "@/lib/supabase/createServiceRoleClient";
+import { RestaurantStatus } from "@prisma/client";
 import { randomUUID } from "crypto";
 
-export async function updateIsOpen({ id, isOpen }: { id: string; isOpen: boolean }) {
+export async function updateRestaurantStatusAutomatically({
+  id,
+  status
+}: {
+  id: string;
+  status: Exclude<RestaurantStatus, "PACKED">;
+}) {
+  return await prisma.restaurant.update({
+    where: { id },
+    data: { status }
+  });
+}
+
+export async function updateRestaurantStatus({
+  id,
+  status,
+  isInAdvance
+}: {
+  id: string;
+  status: RestaurantStatus;
+  isInAdvance?: boolean;
+}) {
+  const restaurant = await prisma.restaurant.findUnique({ where: { id } });
+  if (!restaurant) throw new Error("restaurant not found");
+
+  const previousStatus = restaurant.status;
   return await prisma.restaurant.update({
     where: {
       id
     },
     data: {
-      isOpen,
+      status,
+      ...(isInAdvance
+        ? {
+            statusChanges: {
+              create: {
+                from: previousStatus,
+                to: status
+              }
+            }
+          }
+        : {}),
       closedAlerts: {
-        ...(isOpen
+        ...(status === "OPEN"
           ? {
               updateMany: {
                 where: {
@@ -24,16 +60,6 @@ export async function updateIsOpen({ id, isOpen }: { id: string; isOpen: boolean
               }
             }
           : { create: {} })
-      },
-      fullStatuses: {
-        updateMany: {
-          where: {
-            easedAt: null
-          },
-          data: {
-            easedAt: new Date()
-          }
-        }
       }
     }
   });

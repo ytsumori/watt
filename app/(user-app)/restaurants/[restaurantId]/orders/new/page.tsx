@@ -20,7 +20,6 @@ export default async function OrderNew({ params, searchParams }: Params) {
       },
       googleMapPlaceInfo: { select: { url: true } },
       paymentOptions: true,
-      fullStatuses: { where: { easedAt: null }, select: { easedAt: true } },
       menuImages: { orderBy: { menuNumber: "asc" } }
     }
   });

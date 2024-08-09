@@ -1,10 +1,9 @@
 "use client";
 
 import { HStack, Heading, Text, VStack, useRadioGroup, useToast } from "@chakra-ui/react";
-import { updateIsOpen } from "@/actions/mutations/restaurant";
-import { createFullStatus } from "@/actions/mutations/restaurant-full-status";
+import { updateRestaurantStatus } from "@/actions/mutations/restaurant";
 import { StatusRadioButton } from "../StatusRadioButton";
-import { RestaurantStatus } from "@/utils/restaurant-status";
+import { RestaurantStatus } from "@prisma/client";
 
 type Props = {
   restaurantId: string;
@@ -12,28 +11,16 @@ type Props = {
 };
 
 const STATUS_OPTIONS: { value: RestaurantStatus; label: string }[] = [
-  { value: "open", label: "空席あり\n(入店可)" },
-  { value: "full", label: "混雑中\n(入店可)" },
-  { value: "close", label: "入店不可" }
+  { value: "OPEN", label: "空席あり\n(入店可)" },
+  { value: "PACKED", label: "混雑中\n(入店可)" },
+  { value: "CLOSED", label: "入店不可" }
 ];
 
 export function StatusRadioGroup({ restaurantId, status }: Props) {
   const toast = useToast();
 
-  const handleStatusChange = (value: string) => {
-    const update = (() => {
-      switch (value) {
-        case "open":
-          return async () => await updateIsOpen({ id: restaurantId, isOpen: true });
-        case "full":
-          return async () => await createFullStatus({ restaurantId });
-        case "close":
-          return async () => await updateIsOpen({ id: restaurantId, isOpen: false });
-        default:
-          throw new Error("Invalid status");
-      }
-    })();
-    update()
+  const handleStatusChange = (value: RestaurantStatus) => {
+    updateRestaurantStatus({ id: restaurantId, status: value, isInAdvance: true })
       .then(() => {
         setStatus(value);
       })

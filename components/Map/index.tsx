@@ -3,9 +3,9 @@
 import { Wrapper, Status } from "@googlemaps/react-wrapper";
 import { createCustomEqual } from "fast-equals";
 import { isLatLngLiteral } from "@googlemaps/typescript-guards";
-import { Children, cloneElement, isValidElement, memo, useEffect, useRef, useState } from "react";
-import { RestaurantStatus } from "@/utils/restaurant-status";
+import { Children, cloneElement, isValidElement, useEffect, useRef, useState } from "react";
 import { setFirstCenter } from "./util";
+import { RestaurantStatus } from "@prisma/client";
 
 const render = (status: Status) => {
   return <h1>{status}</h1>;
@@ -210,7 +210,7 @@ function RestaurantMarker({ location, active, status, onClick, ...options }: Mar
   useEffect(() => {
     if (marker) {
       switch (status) {
-        case "open":
+        case "OPEN":
           marker.setIcon({
             path: active ? ACTIVE_ICON_PATH : INACTIVE_ICON_PATH,
             fillColor: "#FF5850",
@@ -222,7 +222,7 @@ function RestaurantMarker({ location, active, status, onClick, ...options }: Mar
           });
           marker.setZIndex(active ? google.maps.Marker.MAX_ZINDEX : 1);
           break;
-        case "close":
+        case "CLOSED":
           marker.setIcon({
             path: active ? ACTIVE_ICON_PATH : INACTIVE_ICON_PATH,
             fillColor: "lightGray",
@@ -234,7 +234,7 @@ function RestaurantMarker({ location, active, status, onClick, ...options }: Mar
           });
           marker.setZIndex(active ? google.maps.Marker.MAX_ZINDEX : 0);
           break;
-        case "full":
+        case "PACKED":
           marker.setIcon({
             path: active ? ACTIVE_ICON_PATH : INACTIVE_ICON_PATH,
             fillColor: "white",

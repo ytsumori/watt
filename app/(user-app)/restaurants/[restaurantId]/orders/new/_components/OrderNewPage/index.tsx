@@ -6,8 +6,7 @@ import { useDisclosure, VStack, Divider, Box, Heading, Alert, AlertIcon, Select,
 import { Prisma } from "@prisma/client";
 import { LineLoginButton } from "@/components/Auth/LineLoginButton";
 import { ConfirmModal } from "@/components/confirm-modal";
-import { getRestaurantStatus } from "@/utils/restaurant-status";
-import { FC, useMemo, useState } from "react";
+import { FC, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { PriceSection } from "./_components/PriceSection";
 import { VisitingSection } from "./_components/VisitingSection";
@@ -26,10 +25,6 @@ type Props = {
       };
       googleMapPlaceInfo: { select: { url: true } };
       paymentOptions: true;
-      fullStatuses: {
-        where: { easedAt: null };
-        select: { easedAt: true };
-      };
       menuImages: { orderBy: { menuNumber: "asc" } };
     };
   }>;
@@ -55,15 +50,7 @@ export const OrderNewPage: FC<Props> = ({ restaurant, inProgressOrderId, userId,
   );
   const [secondPersonMeal, setSecondPersonMeal] = useState<MealWithItems | null>();
   const [secondMealSelectedOptions, setSecondMealSelectedOptions] = useState<(string | null)[]>();
-  const restaurantStatus = useMemo(
-    () =>
-      getRestaurantStatus({
-        isOpen: restaurant.isOpen,
-        isFull: restaurant.fullStatuses.some((status) => status.easedAt === null)
-      }),
-    [restaurant.fullStatuses, restaurant.isOpen]
-  );
-  const isDiscounted = restaurantStatus === "open";
+  const isDiscounted = restaurant.status === "OPEN";
 
   const handleFirstMealSelected = (selectedMeal: MealWithItems) => {
     setFirstMealSelectedOptions(new Array(selectedMeal.items.length).fill(null));
@@ -152,7 +139,7 @@ export const OrderNewPage: FC<Props> = ({ restaurant, inProgressOrderId, userId,
               onOptionChange={handleFirstMealOptionChange}
               isDiscounted={isDiscounted}
             />
-            {restaurant.isOpen ? (
+            {restaurant.status === "OPEN" ? (
               inProgressOrderId ? (
                 <Alert status="warning" as={NextLink} href={`/orders/${inProgressOrderId}`}>
                   <AlertIcon />

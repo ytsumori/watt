@@ -1,5 +1,5 @@
 import { getSupabaseImageUrl } from "@/utils/image/getSupabaseImageUrl";
-import { ArrowLeftIcon, ArrowRightIcon, ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
+import { ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import { Box, Flex, Text, Image, useDisclosure, Modal, ModalContent, ModalOverlay } from "@chakra-ui/react";
 import { RestaurantMenuImage } from "@prisma/client";
 import { FC, useState } from "react";

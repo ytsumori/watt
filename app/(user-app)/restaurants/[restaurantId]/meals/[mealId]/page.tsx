@@ -12,7 +12,7 @@ export default async function MealDetail({ params }: Params) {
   const meal = await prisma.meal.findUnique({
     where: { id: params.mealId, isInactive: false, outdatedAt: null },
     include: {
-      restaurant: { include: { fullStatuses: { select: { easedAt: true } } } },
+      restaurant: true,
       items: { include: { options: true } }
     }
   });

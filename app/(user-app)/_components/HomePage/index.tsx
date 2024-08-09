@@ -3,6 +3,7 @@
 import Map from "@/components/Map";
 import {
   Box,
+  HStack,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -20,7 +21,6 @@ import { useRouter } from "next-nprogress-bar";
 import { useGetCurrentPosition } from "./hooks/useGetCurrentPosition";
 import { useFetchNearbyRestaurants } from "./hooks/useFetchNearbyRestaurants";
 import { useState } from "react";
-import { getRestaurantStatus } from "@/utils/restaurant-status";
 import { StatusBadge } from "./_components/RestaurantListItem/_components/StatusBadge";
 
 export default function HomePage({ restaurants }: { restaurants: RestaurantWithDistance[] }) {
@@ -51,10 +51,7 @@ export default function HomePage({ restaurants }: { restaurants: RestaurantWithD
               id: restaurant.id,
               name: restaurant.name,
               location: { lat: restaurant.googleMapPlaceInfo.latitude, lng: restaurant.googleMapPlaceInfo.longitude },
-              status: getRestaurantStatus({
-                isOpen: restaurant.isOpen,
-                isFull: restaurant.fullStatuses.some((status) => status.easedAt === null)
-              })
+              status: restaurant.status
             };
           })}
           currentLocation={position}
@@ -101,7 +98,7 @@ export default function HomePage({ restaurants }: { restaurants: RestaurantWithD
           >
             <Box
               id={restaurant.id}
-              backgroundColor={restaurant.isOpen ? "white" : "transparent"}
+              backgroundColor="white"
               py={3}
               onClick={() => router.push(`/restaurants/${restaurant.id}`)}
             >
@@ -118,17 +115,20 @@ export default function HomePage({ restaurants }: { restaurants: RestaurantWithD
           <ModalBody pt={0} pb={4}>
             <VStack alignItems="start" fontSize="sm">
               <Box>
-                <StatusBadge status="open" />
+                <StatusBadge status="OPEN" isWorkingHour={true} />
                 <Text>お店に入れる状態です。割引を適用した価格でセットメニューをご提供します。</Text>
               </Box>
               <Box>
-                <StatusBadge status="full" />
+                <StatusBadge status="PACKED" isWorkingHour={true} />
                 <Text>
                   お店に入れる状態ですが、席が埋まってしまう可能性があります。定価でセットメニューをご提供します。
                 </Text>
               </Box>
               <Box>
-                <StatusBadge status="close" />
+                <HStack>
+                  <StatusBadge status="CLOSED" isWorkingHour />
+                  <StatusBadge status="CLOSED" isWorkingHour={false} />
+                </HStack>
                 <Text>お店に入れない状態です。</Text>
               </Box>
               <Text fontSize="xs" color="gray.500">

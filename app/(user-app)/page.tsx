@@ -1,5 +1,6 @@
 import HomePage from "@/app/(user-app)/_components/HomePage";
 import prisma from "@/lib/prisma/client";
+import { FirstOnboardingModal } from "./_components/FirstOnboardingModal";
 
 export default async function Home() {
   const restaurants = await prisma.restaurant.findMany({
@@ -19,18 +20,15 @@ export default async function Home() {
           closeMinute: true,
           closeDayOfWeek: true
         }
-      },
-      fullStatuses: {
-        where: {
-          easedAt: null
-        },
-        select: {
-          easedAt: true
-        }
       }
     },
     where: { isPublished: true, meals: { some: { isInactive: false } } },
-    orderBy: { isOpen: "desc" }
+    orderBy: { status: "asc" }
   });
-  return <HomePage restaurants={restaurants} />;
+  return (
+    <>
+      <HomePage restaurants={restaurants} />
+      <FirstOnboardingModal />
+    </>
+  );
 }

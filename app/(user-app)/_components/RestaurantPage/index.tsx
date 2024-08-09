@@ -2,12 +2,10 @@
 
 import { VStack, Divider, Text, HStack, Button } from "@chakra-ui/react";
 import { Prisma } from "@prisma/client";
-import { useMemo } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { RestaurantInfo } from "./components/RestaurantInfo";
-import { LineLoginButton } from "../../../../components/Auth/LineLoginButton";
-import { getRestaurantStatus } from "@/utils/restaurant-status";
 import { MealPreviewBox } from "@/components/meal/MealPreviewBox";
+import { LineLoginButton } from "@/components/Auth/LineLoginButton";
 
 type Props = {
   restaurant: Prisma.RestaurantGetPayload<{
@@ -15,9 +13,18 @@ type Props = {
       meals: { include: { items: { include: { options: true } } } };
       googleMapPlaceInfo: { select: { url: true } };
       paymentOptions: true;
-      fullStatuses: { select: { easedAt: true } };
       exteriorImage: true;
       menuImages: true;
+      openingHours: {
+        select: {
+          openDayOfWeek: true;
+          openHour: true;
+          openMinute: true;
+          closeDayOfWeek: true;
+          closeHour: true;
+          closeMinute: true;
+        };
+      };
     };
   }>;
   userId?: string;
@@ -26,14 +33,6 @@ type Props = {
 export function RestaurantPage({ restaurant, userId }: Props) {
   const pathname = usePathname();
   const router = useRouter();
-  const status = useMemo(
-    () =>
-      getRestaurantStatus({
-        isOpen: restaurant.isOpen,
-        isFull: restaurant.fullStatuses.some((status) => status.easedAt === null)
-      }),
-    [restaurant.fullStatuses, restaurant.isOpen]
-  );
 
   return (
     <VStack w="full" p={4} alignItems="start" spacing={4}>

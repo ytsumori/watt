@@ -38,7 +38,7 @@ export function PriceSection({ order }: Props) {
             <Text>{orderMeal.meal.title}</Text>
             <Spacer />
             <Text fontWeight="bold" whiteSpace="nowrap">
-              {(order.isDiscounted ? orderMeal.meal.price : orderMeal.meal.listPrice!).toLocaleString("ja-JP")} 円
+              {(order.isDiscounted ? orderMeal.meal.price : orderMeal.meal.listPrice).toLocaleString("ja-JP")} 円
             </Text>
           </Flex>
           {orderMeal.options.map((option) => (

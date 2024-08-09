@@ -12,7 +12,7 @@ import { getSupabaseImageUrl } from "@/utils/image/getSupabaseImageUrl";
 type Props = {
   meal: Prisma.MealGetPayload<{
     include: {
-      restaurant: { include: { fullStatuses: { select: { easedAt: true } } } };
+      restaurant: true;
       items: { include: { options: true } };
     };
   }>;

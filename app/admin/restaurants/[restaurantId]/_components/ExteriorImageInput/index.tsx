@@ -4,10 +4,8 @@ import { RestaurantExteriorImage } from "@prisma/client";
 import { useState } from "react";
 import { getSupabaseImageUrl } from "@/utils/image/getSupabaseImageUrl";
 import { logger } from "@/utils/logger";
-import { useToast } from "@chakra-ui/react";
-
+import { Image, useToast } from "@chakra-ui/react";
 import { uploadExteriorImage } from "@/actions/mutations/restaurantExteriorImage";
-import Image from "next/image";
 
 type Props = {
   restaurantId: string;
@@ -23,6 +21,10 @@ export function ExteriorImageInput({ restaurantId, defaultExteriorImage }: Props
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    if (file.size > 1024 * 1024 * 4) {
+      toast({ title: "4MB以下の画像を選択してください", status: "error" });
+      return;
+    }
 
     const formData = new FormData();
     formData.append("image", file);

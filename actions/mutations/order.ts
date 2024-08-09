@@ -31,7 +31,7 @@ export async function createOrder({
       listPrice: true,
       isInactive: true,
       restaurant: {
-        select: { phoneNumber: true, fullStatuses: { where: { easedAt: null }, select: { id: true } } }
+        select: { phoneNumber: true, status: true }
       },
       items: { select: { options: { select: { id: true, extraPrice: true } } } }
     }
@@ -52,12 +52,12 @@ export async function createOrder({
   ) {
     throw new Error("First meal options do not match");
   }
-  const isFull = firstMeal.restaurant.fullStatuses.length > 0;
-  if (isDiscounted === isFull) {
+  const isPacked = firstMeal.restaurant.status === "PACKED";
+  if (isDiscounted === isPacked) {
     throw new Error("Status outdated");
   }
 
-  const firstMealPrice = isDiscounted ? firstMeal.price : firstMeal.listPrice!;
+  const firstMealPrice = isDiscounted ? firstMeal.price : firstMeal.listPrice;
   const firstOrderTotalPrice =
     firstMealPrice +
     firstMeal.items.reduce((acc, item, index) => {
@@ -95,7 +95,7 @@ export async function createOrder({
       throw new Error("Second meal options do not match");
     }
 
-    const secondMealPrice = isDiscounted ? secondMeal.price : secondMeal.listPrice!;
+    const secondMealPrice = isDiscounted ? secondMeal.price : secondMeal.listPrice;
     const secondOrderTotalPrice =
       secondMealPrice +
       secondMeal.items.reduce((acc, item, index) => {

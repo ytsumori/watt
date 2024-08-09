@@ -127,7 +127,7 @@ export type Database = {
           id: string
           imagePath: string
           isInactive: boolean
-          listPrice: number | null
+          listPrice: number
           outdatedAt: string | null
           price: number
           restaurantId: string
@@ -140,7 +140,7 @@ export type Database = {
           id: string
           imagePath: string
           isInactive?: boolean
-          listPrice?: number | null
+          listPrice: number
           outdatedAt?: string | null
           price: number
           restaurantId: string
@@ -153,7 +153,7 @@ export type Database = {
           id?: string
           imagePath?: string
           isInactive?: boolean
-          listPrice?: number | null
+          listPrice?: number
           outdatedAt?: string | null
           price?: number
           restaurantId?: string
@@ -177,7 +177,6 @@ export type Database = {
           id: string
           mealId: string
           position: number
-          price: number | null
           title: string
           updatedAt: string
         }
@@ -187,7 +186,6 @@ export type Database = {
           id: string
           mealId: string
           position: number
-          price?: number | null
           title: string
           updatedAt?: string
         }
@@ -197,7 +195,6 @@ export type Database = {
           id?: string
           mealId?: string
           position?: number
-          price?: number | null
           title?: string
           updatedAt?: string
         }
@@ -502,12 +499,12 @@ export type Database = {
           id: string
           interiorImagePath: string | null
           isFullStatusAvailable: boolean
-          isOpen: boolean
           isPublished: boolean
           name: string
           password: string
           phoneNumber: string | null
           smokingOption: Database["public"]["Enums"]["SmokingOption"] | null
+          status: Database["public"]["Enums"]["RestaurantStatus"]
           updatedAt: string
         }
         Insert: {
@@ -516,12 +513,12 @@ export type Database = {
           id: string
           interiorImagePath?: string | null
           isFullStatusAvailable?: boolean
-          isOpen?: boolean
           isPublished?: boolean
           name: string
           password: string
           phoneNumber?: string | null
           smokingOption?: Database["public"]["Enums"]["SmokingOption"] | null
+          status?: Database["public"]["Enums"]["RestaurantStatus"]
           updatedAt?: string
         }
         Update: {
@@ -530,12 +527,12 @@ export type Database = {
           id?: string
           interiorImagePath?: string | null
           isFullStatusAvailable?: boolean
-          isOpen?: boolean
           isPublished?: boolean
           name?: string
           password?: string
           phoneNumber?: string | null
           smokingOption?: Database["public"]["Enums"]["SmokingOption"] | null
+          status?: Database["public"]["Enums"]["RestaurantStatus"]
           updatedAt?: string
         }
         Relationships: []
@@ -679,35 +676,6 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "RestaurantExteriorImage_restaurantId_fkey"
-            columns: ["restaurantId"]
-            isOneToOne: false
-            referencedRelation: "Restaurant"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      RestaurantFullStatus: {
-        Row: {
-          easedAt: string | null
-          id: string
-          restaurantId: string
-          startedAt: string
-        }
-        Insert: {
-          easedAt?: string | null
-          id: string
-          restaurantId: string
-          startedAt?: string
-        }
-        Update: {
-          easedAt?: string | null
-          id?: string
-          restaurantId?: string
-          startedAt?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "RestaurantFullStatus_restaurantId_fkey"
             columns: ["restaurantId"]
             isOneToOne: false
             referencedRelation: "Restaurant"
@@ -870,6 +838,38 @@ export type Database = {
           },
         ]
       }
+      RestaurantStatusChange: {
+        Row: {
+          changedAt: string
+          from: Database["public"]["Enums"]["RestaurantStatus"]
+          id: string
+          restaurantId: string
+          to: Database["public"]["Enums"]["RestaurantStatus"]
+        }
+        Insert: {
+          changedAt?: string
+          from: Database["public"]["Enums"]["RestaurantStatus"]
+          id: string
+          restaurantId: string
+          to: Database["public"]["Enums"]["RestaurantStatus"]
+        }
+        Update: {
+          changedAt?: string
+          from?: Database["public"]["Enums"]["RestaurantStatus"]
+          id?: string
+          restaurantId?: string
+          to?: Database["public"]["Enums"]["RestaurantStatus"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "RestaurantStatusChange_restaurantId_fkey"
+            columns: ["restaurantId"]
+            isOneToOne: false
+            referencedRelation: "Restaurant"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       Session: {
         Row: {
           expires: string
@@ -1000,6 +1000,7 @@ export type Database = {
         | "SUNDAY"
       OrderNotificationCallStatus: "IN_PROGRESS" | "ANSWERED" | "NO_ANSWER"
       PaymentOption: "CASH" | "CREDIT_CARD" | "E_MONEY" | "QR_CODE"
+      RestaurantStatus: "OPEN" | "PACKED" | "CLOSED"
       SmokingOption:
         | "SMOKING"
         | "NON_SMOKING"

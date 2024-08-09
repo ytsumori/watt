@@ -1,6 +1,5 @@
 "use client";
 
-import { getRestaurantStatus } from "@/utils/restaurant-status";
 import { Heading, Text } from "@chakra-ui/react";
 import { Prisma } from "@prisma/client";
 import { FC } from "react";
@@ -8,18 +7,14 @@ import { FC } from "react";
 type Props = {
   meal: Prisma.MealGetPayload<{
     include: {
-      restaurant: { include: { fullStatuses: { select: { easedAt: true } } } };
+      restaurant: true;
       items: { include: { options: true } };
     };
   }>;
 };
 
 export const MealPrice: FC<Props> = ({ meal }) => {
-  const isDiscounted =
-    getRestaurantStatus({
-      isOpen: meal.restaurant.isOpen,
-      isFull: meal.restaurant.fullStatuses.some((status) => status.easedAt === null)
-    }) === "open";
+  const isDiscounted = meal.restaurant.status === "OPEN";
 
   return (
     <>

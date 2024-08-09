@@ -1,6 +1,6 @@
 "use client";
 
-import { updateIsOpen } from "@/actions/mutations/restaurant";
+import { updateRestaurantStatus } from "@/actions/mutations/restaurant";
 import { FormControl, FormHelperText, FormLabel, HStack, Switch, useToast } from "@chakra-ui/react";
 import { ChangeEvent } from "react";
 
@@ -14,7 +14,7 @@ export function IsOpenSwitch({ restaurantId, isRestaurantOpen, onChange }: Props
   const toast = useToast();
   const handleOpenStatusChange = (event: ChangeEvent<HTMLInputElement>) => {
     const isOpen = event.target.checked;
-    updateIsOpen({ id: restaurantId, isOpen })
+    updateRestaurantStatus({ id: restaurantId, status: isOpen ? "OPEN" : "CLOSED", isInAdvance: true })
       .then(() => {
         onChange(isOpen);
       })

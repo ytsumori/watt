@@ -7,18 +7,9 @@ export async function getRestaurantOpeningInfo(restaurantId: string) {
   return await prisma.restaurant.findUnique({
     where: { id: restaurantId },
     select: {
-      isOpen: true,
       isFullStatusAvailable: true,
-      openingHours: {
-        orderBy: {
-          openHour: "asc"
-        }
-      },
-      fullStatuses: {
-        where: {
-          easedAt: null
-        }
-      }
+      status: true,
+      openingHours: true
     }
   });
 }

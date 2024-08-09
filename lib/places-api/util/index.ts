@@ -1,7 +1,8 @@
-import { OpeningHoursResult } from "@/lib/places-api";
+import { OpeningHoursResult } from "../actions";
 
 type RequiredOpeningHours = Required<OpeningHoursResult>["currentOpeningHours"];
-export const convertOpeningHours = (currentOpeningHours: RequiredOpeningHours): RequiredOpeningHours => {
+
+export const convertOpeningHours = (currentOpeningHours: RequiredOpeningHours) => {
   return {
     periods: currentOpeningHours?.periods.map((period) => {
       const shouldChangeMinute = period.close.minute === 59;
