@@ -1,9 +1,9 @@
 "use client";
 
 import { FC } from "react";
-import { useRouter } from "next/navigation";
 import { createClientSupabase } from "@/lib/supabase/client";
 import { Button } from "@chakra-ui/react";
+import { useRouter } from "next-nprogress-bar";
 
 export const GoogleLoginButton: FC = () => {
   const router = useRouter();

@@ -22,9 +22,9 @@ import {
   VStack
 } from "@chakra-ui/react";
 import { User } from "@prisma/client";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { checkOneTimePassword } from "./action";
+import { useRouter } from "next-nprogress-bar";
 
 type Props = {
   me: User;

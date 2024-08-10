@@ -17,8 +17,8 @@ import {
 } from "@chakra-ui/react";
 import { Prisma } from "@prisma/client";
 import { format } from "date-fns";
+import { useRouter } from "next-nprogress-bar";
 import NextLink from "next/link";
-import { useRouter } from "next/navigation";
 import { Fragment } from "react";
 
 type Props = {

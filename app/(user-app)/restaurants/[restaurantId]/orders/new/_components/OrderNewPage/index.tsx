@@ -7,13 +7,14 @@ import { Prisma } from "@prisma/client";
 import { LineLoginButton } from "@/components/Auth/LineLoginButton";
 import { ConfirmModal } from "@/components/confirm-modal";
 import { FC, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { PriceSection } from "./_components/PriceSection";
 import { VisitingSection } from "./_components/VisitingSection";
 import { MealWithItems } from "./types/MealWithItems";
 import { visitRestaurant } from "./actions/visit-restaurant";
 import { MealCarousel } from "./_components/MealCarousel";
 import { MealInfo } from "./_components/MealInfo";
+import { useRouter } from "next-nprogress-bar";
 
 type Props = {
   restaurant: Prisma.RestaurantGetPayload<{

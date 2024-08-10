@@ -2,10 +2,11 @@
 
 import { VStack, Divider, Text, HStack, Button, Box } from "@chakra-ui/react";
 import { Prisma } from "@prisma/client";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { RestaurantInfo } from "./components/RestaurantInfo";
 import { MealPreviewBox } from "@/components/meal/MealPreviewBox";
 import { LineLoginButton } from "@/components/Auth/LineLoginButton";
+import { useRouter } from "next-nprogress-bar";
 
 type Props = {
   restaurant: Prisma.RestaurantGetPayload<{
