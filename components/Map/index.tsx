@@ -4,7 +4,7 @@ import { Wrapper, Status } from "@googlemaps/react-wrapper";
 import { createCustomEqual } from "fast-equals";
 import { isLatLngLiteral } from "@googlemaps/typescript-guards";
 import { Children, cloneElement, isValidElement, useEffect, useRef, useState } from "react";
-import { setFirstCenter } from "./util";
+import { setFirstCenter, shrinkBounds } from "./util";
 import { RestaurantStatus } from "@prisma/client";
 
 const render = (status: Status) => {
@@ -101,11 +101,11 @@ function MapComponent({ onIdle, children, style, active, current, setZoom, setCe
       setFirstCenter({ current, active, setCenter, setZoom });
       setIsFirst(false);
     }
-
     const bounds = map.getBounds();
-    if (!bounds?.contains({ lat: active.lat, lng: active.lng })) {
+    const shrinkedBounds = bounds && shrinkBounds(map);
+    if (!shrinkedBounds?.contains({ lat: active.lat, lng: active.lng })) {
       const extendBounds = bounds?.extend(active);
-      extendBounds && map.fitBounds(extendBounds, 45);
+      extendBounds && map.fitBounds(extendBounds, 10);
     }
   }, [active, current, isFirst, map, setCenter, setZoom]);
 

@@ -1,17 +1,45 @@
 import { calculateDistance } from "@/app/(user-app)/_util/calculateDistance";
 
-type Args = {
-  current: { lat: number; lng: number };
-  active: { lat: number; lng: number };
-};
+export const shrinkBounds = (map: google.maps.Map) => {
+  if (!map) return;
+  const bounds = map.getBounds();
+  const center = map.getCenter();
 
-export const calculateDirection = ({ current, active }: Args) => {
-  const north = Math.max(current.lat, active.lat);
-  const south = Math.min(current.lat, active.lat);
-  const east = Math.max(current.lng, active.lng);
-  const west = Math.min(current.lng, active.lng);
+  if (!bounds || !center) return map.getBounds();
 
-  return { north, south, east, west };
+  const zoomLevel = map.getZoom();
+
+  if (!zoomLevel) return map.getBounds();
+
+  const calculatePercentage = (zoom: number) => {
+    if (zoom >= 16) return 0.08;
+    if (zoom >= 12) return 0.1;
+    if (zoom >= 8) return 0.12;
+    return 0.16;
+  };
+
+  const percentage = calculatePercentage(zoomLevel);
+
+  const ne = bounds.getNorthEast();
+  const sw = bounds.getSouthWest();
+
+  const latRange = ne.lat() - sw.lat();
+  const lngRange = ne.lng() - sw.lng();
+
+  const percentLat = latRange * percentage;
+  const percentLng = lngRange * percentage;
+
+  const latDiff = Number(percentLat.toFixed(6));
+  const lngDiff = Number(percentLng.toFixed(6));
+
+  const direction = bounds.toJSON();
+
+  return new google.maps.LatLngBounds({
+    north: direction.north - latDiff,
+    east: direction.east - lngDiff,
+    south: direction.south + latDiff,
+    west: direction.west + lngDiff
+  });
 };
 
 export type SetCenterArgs = {
