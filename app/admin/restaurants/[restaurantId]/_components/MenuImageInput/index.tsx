@@ -13,45 +13,56 @@ type Props = { restaurantId: string; defaultMenuImages?: RestaurantMenuImage[] }
 
 export const MenuImageInput: React.FC<Props> = ({ restaurantId, defaultMenuImages }) => {
   const [menuImages, setMenuImages] = useState<RestaurantMenuImage[]>(defaultMenuImages || []);
-
-  const toast = useToast();
-  const maxMenuNumber =
+  const [maxMenuNumber, setMaxMenuNumber] = useState<number>(
     defaultMenuImages && defaultMenuImages.length !== 0
       ? Math.max(...defaultMenuImages.map((menuImage) => menuImage.menuNumber))
-      : 0;
+      : 0
+  );
+  const [isLoading, setIsLoading] = useState(false);
+
+  const toast = useToast();
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files) return;
-    if (Array.from(files).some((file) => file.size > 1024 * 1024 * 4)) {
-      toast({ title: "4MB以下の画像を選択してください", status: "error" });
+    const fileTotalSize = Array.from(files).reduce((acc, file) => acc + file.size, 0);
+    if (fileTotalSize > 1024 * 1024 * 4) {
+      toast({ title: "合計4MB以下の画像を選択してください", status: "error" });
       return;
     }
 
     const formData = new FormData();
     Array.from(files).forEach((file) => formData.append("image", file));
+    setIsLoading(true);
     await uploadMenuImage(restaurantId, maxMenuNumber, formData)
-      .then((paths) => {
-        const convertedUrlData = paths
-          .map((data) => data && { ...data, imagePath: getSupabaseImageUrl("menus", data.imagePath) })
-          .filter(Boolean) as RestaurantMenuImage[];
-        setMenuImages((prev) => [...prev, ...convertedUrlData].sort((a, b) => a.menuNumber - b.menuNumber));
+      .then((newMenuImages) => {
+        const mergedMenuImage = [...menuImages, ...newMenuImages].sort((a, b) => a.menuNumber - b.menuNumber);
+        setMenuImages(mergedMenuImage);
+        setMaxMenuNumber(Math.max(...mergedMenuImage.map((menuImage) => menuImage.menuNumber)));
         toast({ title: "メニュー画像をアップロードしました", status: "success" });
       })
       .catch((e) => {
         logger({ severity: "ERROR", message: "Failed to upload menu image", payload: e });
         toast({ title: "メニュー画像のアップロードに失敗しました", status: "error" });
-      });
+      })
+      .finally(() => setIsLoading(false));
   };
 
   return (
     <>
-      <input type="file" multiple accept="image/*" onChange={handleFileChange} />
+      <input type="file" multiple accept="image/*" onChange={handleFileChange} disabled={isLoading} />
       <Flex gap={3}>
         {menuImages
           .sort((a, b) => a.menuNumber - b.menuNumber)
           .map((image, idx) => (
-            <MenuImage key={image.id} idx={idx} menuImages={menuImages} setMenuImages={setMenuImages} />
+            <MenuImage
+              key={image.id}
+              idx={idx}
+              menuImages={menuImages}
+              setMenuImages={setMenuImages}
+              isLoading={isLoading}
+              setIsLoading={setIsLoading}
+            />
           ))}
       </Flex>
     </>
