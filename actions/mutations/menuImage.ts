@@ -2,7 +2,6 @@
 
 import prisma from "@/lib/prisma/client";
 import { createServiceRoleClient } from "@/lib/supabase/createServiceRoleClient";
-import { RestaurantMenuImage } from "@prisma/client";
 import { randomUUID } from "crypto";
 
 export const uploadMenuImage = async (restaurantId: string, maxNum: number, formData: FormData) => {
@@ -26,6 +25,29 @@ export const uploadMenuImage = async (restaurantId: string, maxNum: number, form
   };
 
   return await Promise.all(files.map((file, idx) => createMenuImages(file, maxNum + idx + 1)));
+};
+
+export const deleteMenuImage = async (imageId: string) => {
+  const menuImage = await prisma.restaurantMenuImage.findUnique({ where: { id: imageId } });
+  if (!menuImage) throw new Error("menu image not found");
+
+  const effectedMenuImage = await prisma.restaurantMenuImage.findMany({
+    where: { menuNumber: { gt: menuImage.menuNumber } }
+  });
+
+  const supabase = createServiceRoleClient();
+  const { error } = await supabase.storage.from("menus").remove([menuImage.imagePath]);
+  if (error) throw new Error("fail to delete image", error);
+
+  await prisma.restaurantMenuImage.delete({ where: { id: menuImage.id } });
+
+  await Promise.all(
+    effectedMenuImage.map(
+      async (image) =>
+        await prisma.restaurantMenuImage.update({ where: { id: image.id }, data: { menuNumber: image.menuNumber - 1 } })
+    )
+  );
+  return await prisma.restaurantMenuImage.findMany({ where: { restaurantId: menuImage.restaurantId } });
 };
 
 type MoveImageProps = { restaurantId: string; currentPosition: number };
