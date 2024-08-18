@@ -1,45 +1,52 @@
 import { calculateDistance } from "@/app/(user-app)/_util/calculateDistance";
 
-export const shrinkBounds = (map: google.maps.Map) => {
-  if (!map) return;
+export const calculatePixelDistance = (map: google.maps.Map) => {
+  // マップの境界を取得
   const bounds = map.getBounds();
-  const center = map.getCenter();
+  if (!bounds) return;
+  const { lat: north, lng: east } = bounds.getNorthEast().toJSON();
+  const { lat: south, lng: west } = bounds.getSouthWest().toJSON();
 
-  if (!bounds || !center) return map.getBounds();
+  const mapHeight = calculateDistance({ origin: { lat: north, lng: east }, destination: { lat: south, lng: east } });
+  const mapWidth = calculateDistance({ origin: { lat: north, lng: east }, destination: { lat: north, lng: west } });
 
-  const zoomLevel = map.getZoom();
+  if (!mapHeight || !mapWidth) return;
 
-  if (!zoomLevel) return map.getBounds();
+  // map要素のサイズを取得
+  const mapElement = map.getDiv();
+  const mapWidthPixels = mapElement.offsetWidth;
+  const mapHeightPixels = mapElement.offsetHeight;
 
-  const calculatePercentage = (zoom: number) => {
-    if (zoom >= 16) return 0.08;
-    if (zoom >= 12) return 0.1;
-    if (zoom >= 8) return 0.12;
-    return 0.16;
-  };
+  // 1ピクセルあたりの距離を計算
+  const metersPerPixelWidth = mapWidth.raw / mapWidthPixels;
+  const metersPerPixelHeight = mapHeight.raw / mapHeightPixels;
 
-  const percentage = calculatePercentage(zoomLevel);
+  return { perWidth: metersPerPixelWidth, perHeight: metersPerPixelHeight };
+};
 
-  const ne = bounds.getNorthEast();
-  const sw = bounds.getSouthWest();
+type CalculateMarkerCoordinatesArgs = {
+  marker: { w: number; h: number; coordinate: { lat: number; lng: number } };
+  perPixelDistance: { perWidth: number; perHeight: number };
+};
 
-  const latRange = ne.lat() - sw.lat();
-  const lngRange = ne.lng() - sw.lng();
+export const calculateMarkerCoordinates = ({ marker, perPixelDistance }: CalculateMarkerCoordinatesArgs) => {
+  // markerの大きさ
+  const { w, h, coordinate } = marker;
+  // 1pxあたりの距離
+  const { perWidth, perHeight } = perPixelDistance;
+  // 1mあたりの緯度経度
+  const oneMeterLatJP = 0.000008983148616;
+  const oneMeterLngJP = 0.000010966382364;
 
-  const percentLat = latRange * percentage;
-  const percentLng = lngRange * percentage;
+  const lat = h * perHeight * oneMeterLatJP;
+  const lng = w * perWidth * oneMeterLngJP;
 
-  const latDiff = Number(percentLat.toFixed(6));
-  const lngDiff = Number(percentLng.toFixed(6));
-
-  const direction = bounds.toJSON();
-
-  return new google.maps.LatLngBounds({
-    north: direction.north - latDiff,
-    east: direction.east - lngDiff,
-    south: direction.south + latDiff,
-    west: direction.west + lngDiff
-  });
+  return [
+    { type: "origin", lat: coordinate.lat, lng: coordinate.lng },
+    { type: "top", lat: Number((coordinate.lat + lat).toFixed(6)), lng: coordinate.lng },
+    { type: "right", lat: coordinate.lat, lng: Number((coordinate.lng + lng / 2).toFixed(6)) },
+    { type: "left", lat: coordinate.lat, lng: Number((coordinate.lng - lng / 2).toFixed(6)) }
+  ];
 };
 
 export type SetCenterArgs = {
