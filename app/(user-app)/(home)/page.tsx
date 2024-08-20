@@ -1,4 +1,4 @@
-import HomePage from "@/app/(user-app)/_components/HomePage";
+import HomePage from "@/app/(user-app)/(home)/_components/HomePage";
 import prisma from "@/lib/prisma/client";
 import { FirstOnboardingModal } from "./_components/FirstOnboardingModal";
 

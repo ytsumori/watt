@@ -1,4 +1,4 @@
-import { RestaurantWithDistance } from "@/app/(user-app)/_components/HomePage/_types/RestaurantWithDistance";
+import { RestaurantWithDistance } from "@/app/(user-app)/(home)/_components/HomePage/_types/RestaurantWithDistance";
 import { useMemo } from "react";
 import { BusinessHourStatus } from "../../../_types/BusinessHourStatus";
 import { getCurrentOpeningHour, getNextOpeningHour } from "@/utils/opening-hours";

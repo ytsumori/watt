@@ -22,7 +22,7 @@ import {
 } from "@chakra-ui/react";
 import { useCallback, useEffect, useState } from "react";
 import useEmblaCarousel from "embla-carousel-react";
-import { StatusBadge } from "../HomePage/_components/RestaurantListItem/_components/StatusBadge";
+import { StatusBadge } from "../../(home)/_components/HomePage/_components/RestaurantListItem/_components/StatusBadge";
 import { CheckIcon } from "@chakra-ui/icons";
 import Image from "next/image";
 import onboardingImage from "@/public/onboarding.png";

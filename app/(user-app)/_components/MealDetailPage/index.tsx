@@ -1,5 +1,5 @@
 "use client";
-import { Image, VStack, Box, Heading, Divider, Text, Button } from "@chakra-ui/react";
+import { Image, VStack, Box, Heading, Divider, Text, Button, Alert, AlertIcon } from "@chakra-ui/react";
 import { Prisma } from "@prisma/client";
 import { FC } from "react";
 import { MealPrice } from "./_components/MealPrice";
@@ -23,7 +23,7 @@ export const MealDetailPage: FC<Props> = ({ meal, isLoggedIn }) => {
   const pathname = usePathname();
   const router = useRouter();
   return (
-    <VStack w="full" alignItems="start" spacing={2} p={4}>
+    <VStack w="full" alignItems="start" spacing={2}>
       <Box width="100%">
         <Image
           src={getSupabaseImageUrl("meals", meal.imagePath, { width: 500, height: 500 })}
@@ -50,7 +50,13 @@ export const MealDetailPage: FC<Props> = ({ meal, isLoggedIn }) => {
           注文画面に進む
         </Button>
       ) : (
-        <LineLoginButton callbackUrl={pathname} />
+        <>
+          <Alert status="error">
+            <AlertIcon />
+            表示価格での注文にはログインが必要です
+          </Alert>
+          <LineLoginButton callbackPath={pathname} />
+        </>
       )}
     </VStack>
   );

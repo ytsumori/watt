@@ -1,6 +1,6 @@
 "use client";
 
-import { VStack, Divider, Text, HStack, Button, Box } from "@chakra-ui/react";
+import { VStack, Divider, Text, HStack, Button, Box, Alert, AlertIcon } from "@chakra-ui/react";
 import { Prisma } from "@prisma/client";
 import { usePathname } from "next/navigation";
 import { RestaurantInfo } from "./components/RestaurantInfo";
@@ -47,7 +47,7 @@ export function RestaurantPage({ restaurant, userId }: Props) {
             <MealPreviewBox
               key={meal.id}
               meal={meal}
-              href={`/restaurants/${restaurant.id}/meals/${meal.id}`}
+              href={`/meals/${meal.id}`}
               isRouter
               isDiscounted={restaurant.status === "OPEN"}
             />
@@ -59,7 +59,13 @@ export function RestaurantPage({ restaurant, userId }: Props) {
           注文画面に進む
         </Button>
       ) : (
-        <LineLoginButton callbackUrl={pathname} />
+        <>
+          <Alert status="error">
+            <AlertIcon />
+            表示価格での注文にはログインが必要です
+          </Alert>
+          <LineLoginButton callbackPath={pathname} />
+        </>
       )}
     </VStack>
   );

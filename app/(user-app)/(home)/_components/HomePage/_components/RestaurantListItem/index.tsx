@@ -30,7 +30,7 @@ export function RestaurantListItem({ restaurant, onClickHelp }: Props) {
         <BusinessHourLabel openingHours={restaurant.openingHours} />
       </Box>
       <HStack px={4} overflowX="auto" className="hidden-scrollbar" alignItems="start" mt={1}>
-        <MealImages restaurantId={restaurant.id} meals={restaurant.meals} status={restaurant.status} />
+        <MealImages meals={restaurant.meals} status={restaurant.status} />
         {restaurant.interiorImagePath && (
           <InteriorImage restaurantId={restaurant.id} interiorImagePath={restaurant.interiorImagePath} />
         )}

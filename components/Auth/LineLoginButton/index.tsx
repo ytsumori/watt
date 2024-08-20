@@ -4,9 +4,9 @@ import { signIn } from "next-auth/react";
 import Image from "next/image";
 import { FC, useEffect, useRef, useState } from "react";
 
-type Props = { callbackUrl: string };
+type Props = { callbackPath: string };
 
-export const LineLoginButton: FC<Props> = ({ callbackUrl }) => {
+export const LineLoginButton: FC<Props> = ({ callbackPath }) => {
   const opacityValue = { default: 1, hover: 0.9, click: 0.7 };
   const [opacity, setOpacity] = useState(opacityValue.default);
   const [margin, setMargin] = useState(0);
@@ -17,7 +17,7 @@ export const LineLoginButton: FC<Props> = ({ callbackUrl }) => {
   const onMouseLeave = () => setOpacity(opacityValue.default);
   const onClick = () => {
     setOpacity(opacityValue.click);
-    signIn("line", { callbackUrl });
+    signIn("line", { callbackPath });
   };
 
   useEffect(() => {

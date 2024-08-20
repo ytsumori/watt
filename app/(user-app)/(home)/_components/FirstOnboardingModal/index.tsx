@@ -2,7 +2,7 @@
 
 import { useDisclosure } from "@chakra-ui/react";
 import { useEffect } from "react";
-import { OnboardingModal } from "../OnboardingModal";
+import { OnboardingModal } from "../../../_components/OnboardingModal";
 
 const ONBOARDING_MODAL_SHOWN_KEY = "onboardingModalShown";
 

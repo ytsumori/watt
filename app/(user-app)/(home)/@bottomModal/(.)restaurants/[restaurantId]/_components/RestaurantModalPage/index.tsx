@@ -11,7 +11,7 @@ export function RestaurantModalPage(props: Props) {
   const router = useRouter();
 
   return (
-    <Drawer isOpen={true} onClose={router.back} placement="bottom">
+    <Drawer isOpen={true} onClose={router.back} placement="bottom" blockScrollOnMount={false}>
       <DrawerOverlay />
       <DrawerContent maxH="80dvh">
         <DrawerCloseButton zIndex={1} />
