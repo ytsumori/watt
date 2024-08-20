@@ -1,6 +1,7 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next-nprogress-bar";
+import { usePathname } from "next/navigation";
 
 type Props = { isPhoneNumberNotRegistered: boolean };
 

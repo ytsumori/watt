@@ -4,6 +4,7 @@ import { ProfilePage } from "./_components/ProfilePage";
 import { signOut } from "next-auth/react";
 import { options } from "@/lib/next-auth/options";
 import { getServerSession } from "next-auth/next";
+import { HeaderSection } from "../_components/HeaderSection";
 
 type Props = {
   searchParams: {
@@ -25,5 +26,10 @@ export default async function Profile({ searchParams }: Props) {
     await signOut();
     redirect("/");
   }
-  return <ProfilePage me={me} redirectedFrom={searchParams.redirectedFrom} />;
+  return (
+    <>
+      <HeaderSection title="プロフィール" />
+      <ProfilePage me={me} redirectedFrom={searchParams.redirectedFrom} />
+    </>
+  );
 }

@@ -1,7 +1,6 @@
 import { options } from "@/lib/next-auth/options";
 import { getServerSession } from "next-auth";
 import prisma from "@/lib/prisma/client";
-import { InProgressOrderModal } from "./_components/InProgressOrderModal";
 import { ProfileRedirect } from "./_components/ProfileRedirect";
 
 export default async function UserApp({ children }: { children: React.ReactNode }) {

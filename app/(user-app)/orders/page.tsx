@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import prisma from "@/lib/prisma/client";
 import { options } from "@/lib/next-auth/options";
 import { OrdersPage } from "./_components/OrdersPage";
+import { HeaderSection } from "../_components/HeaderSection";
 
 export default async function Orders() {
   const session = await getServerSession(options);
@@ -19,5 +20,10 @@ export default async function Orders() {
     orderBy: { createdAt: "desc" }
   });
 
-  return <OrdersPage orders={orders}></OrdersPage>;
+  return (
+    <>
+      <HeaderSection title="注文履歴" />
+      <OrdersPage orders={orders}></OrdersPage>
+    </>
+  );
 }

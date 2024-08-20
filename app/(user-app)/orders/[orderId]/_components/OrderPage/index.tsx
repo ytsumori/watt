@@ -14,7 +14,6 @@ import {
   useDisclosure
 } from "@chakra-ui/react";
 import { Prisma } from "@prisma/client";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { FaMapMarkedAlt } from "react-icons/fa";
 import NextLink from "next/link";
@@ -27,6 +26,7 @@ import { getOrderStatus } from "@/lib/prisma/order-status";
 import { PriceSection } from "../PriceSection";
 import { format } from "date-fns";
 import { PhoneIcon } from "@chakra-ui/icons";
+import { useRouter } from "next-nprogress-bar";
 
 type Props = {
   order: Prisma.OrderGetPayload<{
