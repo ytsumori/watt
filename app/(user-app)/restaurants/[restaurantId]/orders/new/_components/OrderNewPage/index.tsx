@@ -1,7 +1,7 @@
 "use client";
 
 import NextLink from "next/link";
-import { CheckIcon } from "@chakra-ui/icons";
+import { CheckIcon, ChevronLeftIcon } from "@chakra-ui/icons";
 import {
   useDisclosure,
   VStack,
@@ -13,7 +13,10 @@ import {
   Select,
   Center,
   Text,
-  Button
+  Button,
+  Flex,
+  Icon,
+  IconButton
 } from "@chakra-ui/react";
 import { Prisma } from "@prisma/client";
 import { ConfirmModal } from "@/components/confirm-modal";
@@ -24,6 +27,7 @@ import { visitRestaurant } from "./actions/visit-restaurant";
 import { MealCarousel } from "./_components/MealCarousel";
 import { MealInfo } from "./_components/MealInfo";
 import { useRouter } from "next-nprogress-bar";
+import { HeaderSection } from "@/app/(user-app)/_components/HeaderSection";
 
 type Props = {
   restaurant: Prisma.RestaurantGetPayload<{
@@ -167,6 +171,7 @@ export const OrderNewPage: FC<Props> = ({ restaurant, inProgressOrderId, userId,
 
   return (
     <>
+      <HeaderSection title="セットメニューを注文する" />
       <VStack w="full" p={4} alignItems="start" spacing={4}>
         <Heading size="md">来店人数を選択</Heading>
         <Select value={peopleCount} onChange={handlePeopleCountChange} placeholder="人数を選択">

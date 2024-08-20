@@ -82,7 +82,6 @@ export function ProfilePage({ me, redirectedFrom }: Props) {
 
   return (
     <VStack w="full" p={4} alignItems="start" spacing={3}>
-      <Heading>プロフィール</Heading>
       <FormControl isRequired>
         <FormLabel>ニックネーム</FormLabel>
         <FormHelperText>飲食店や他のユーザーに表示されることがあります</FormHelperText>

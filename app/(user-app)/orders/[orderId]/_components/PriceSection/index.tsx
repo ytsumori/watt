@@ -57,7 +57,7 @@ export function PriceSection({ order }: Props) {
               )}
             </Flex>
           ))}
-          <Button variant="outline" as={NextLink} href={`/order-meals/${orderMeal.id}`} size="xs">
+          <Button variant="outline" as={NextLink} href={`/meals/${orderMeal.mealId}`} size="xs">
             セット詳細
           </Button>
         </Box>
