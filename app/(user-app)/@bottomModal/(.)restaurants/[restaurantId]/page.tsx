@@ -2,7 +2,7 @@ import prisma from "@/lib/prisma/client";
 import { options } from "@/lib/next-auth/options";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
-import { RestaurantModalPage } from "@/app/(user-app)/@modal/(.)restaurants/[restaurantId]/_components/RestaurantModalPage";
+import { RestaurantModalPage } from "./_components/RestaurantModalPage";
 
 type Params = { params: { restaurantId: string } };
 

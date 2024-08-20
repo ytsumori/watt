@@ -38,7 +38,6 @@ export function RestaurantPage({ restaurant, userId }: Props) {
   return (
     <VStack w="full" p={4} alignItems="start" spacing={4}>
       <RestaurantInfo restaurant={restaurant} />
-      <Divider borderColor="black" my={6} />
       <Box>
         <Text fontWeight="bold" mb={2}>
           セットメニュー

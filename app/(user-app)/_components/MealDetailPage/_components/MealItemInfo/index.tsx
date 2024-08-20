@@ -1,7 +1,7 @@
 "use client";
 
 import { FC } from "react";
-import { Box, Flex, SimpleGrid, Text } from "@chakra-ui/react";
+import { Box, Flex, ListItem, Text, UnorderedList } from "@chakra-ui/react";
 import { Prisma } from "@prisma/client";
 
 type Props = {
@@ -18,25 +18,23 @@ export const MealItemInfo: FC<Props> = ({ mealItem }) => {
         {mealItem.description}
       </Text>
       {mealItem.options.length > 0 && (
-        <SimpleGrid columns={2} spacing={1} w="full">
+        <UnorderedList>
           {mealItem.options.map((option) => {
             return (
-              <Flex gap={2} key={option.id}>
-                <Text fontSize="xs" color="blackAlpha.700">
-                  {option.title}
-                </Text>
-                {option.extraPrice !== 0 ? (
-                  <Text fontSize="xs" color="blackAlpha.500" ml={1}>
-                    {option.extraPrice > 0 && "+"}
-                    {option.extraPrice.toLocaleString("ja-JP")}円
-                  </Text>
-                ) : (
-                  <Box h="18px" />
-                )}
-              </Flex>
+              <ListItem key={option.id} fontSize="xs" color="blackAlpha.700" justifyContent="space-between">
+                <Flex justifyContent="space-between">
+                  <Text ml={1}>{option.title}</Text>
+                  {option.extraPrice !== 0 && (
+                    <Text color="blackAlpha.500">
+                      {option.extraPrice > 0 && "+"}
+                      {option.extraPrice.toLocaleString("ja-JP")}円
+                    </Text>
+                  )}
+                </Flex>
+              </ListItem>
             );
           })}
-        </SimpleGrid>
+        </UnorderedList>
       )}
     </Box>
   );

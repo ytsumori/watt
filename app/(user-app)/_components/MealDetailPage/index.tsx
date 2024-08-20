@@ -23,7 +23,7 @@ export const MealDetailPage: FC<Props> = ({ meal, isLoggedIn }) => {
   const pathname = usePathname();
   const router = useRouter();
   return (
-    <VStack w="full" alignItems="start" spacing={2}>
+    <VStack w="full" alignItems="start" spacing={2} p={4}>
       <Box width="100%">
         <Image
           src={getSupabaseImageUrl("meals", meal.imagePath, { width: 500, height: 500 })}
@@ -39,15 +39,15 @@ export const MealDetailPage: FC<Props> = ({ meal, isLoggedIn }) => {
         </Text>
       </Box>
       <Divider borderColor="blackAlpha.400" />
-      <Heading size="sm">セット内容</Heading>
-      <VStack alignItems="start" spacing={1} w="full">
+      <Box mb={2}>
+        <Heading size="sm">セット内容</Heading>
         {meal.items.map((item) => (
           <MealItemInfo key={item.id} mealItem={item} />
         ))}
-      </VStack>
+      </Box>
       {isLoggedIn ? (
-        <Button onClick={() => router.push(`/restaurants/${meal.restaurantId}/orders/new?mealId=${meal.id}`)}>
-          このセットで注文画面に進む
+        <Button onClick={() => router.push(`/restaurants/${meal.restaurantId}/orders/new`)} size="md" w="full">
+          注文画面に進む
         </Button>
       ) : (
         <LineLoginButton callbackUrl={pathname} />
