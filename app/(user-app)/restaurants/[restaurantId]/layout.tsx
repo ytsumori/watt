@@ -1,6 +1,4 @@
-import { InProgressOrderModal } from "./_components/InProgressOrderModal";
-
-export default function UserAppLayout({
+export default function Restaurant({
   children,
   restaurantMealModal
 }: {
@@ -11,7 +9,6 @@ export default function UserAppLayout({
     <>
       {children}
       {restaurantMealModal}
-      <InProgressOrderModal />
     </>
   );
 }
