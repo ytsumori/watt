@@ -83,6 +83,17 @@ export const OrderNewPage: FC<Props> = ({ restaurant, inProgressOrderId, userId,
     );
   }
 
+  const isValid =
+    firstPersonMeal !== undefined &&
+    firstPersonMeal.items.every((item, index) => item.options.length === 0 || !!firstMealSelectedOptions.at(index)) &&
+    (peopleCount === 1 ||
+      (peopleCount === 2 &&
+        secondPersonMeal !== undefined &&
+        (secondPersonMeal === null ||
+          secondPersonMeal.items.every(
+            (item, index) => item.options.length === 0 || !!secondMealSelectedOptions.at(index)
+          ))));
+
   const handlePeopleCountChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const convertedValue = Number(e.target.value);
     switch (convertedValue) {
@@ -260,10 +271,25 @@ export const OrderNewPage: FC<Props> = ({ restaurant, inProgressOrderId, userId,
                   isDiscounted={isDiscounted}
                 />
                 <Divider borderColor="black" my={6} />
-                <Text fontSize="xs">お店に到着後に次の画面で注文を確定するまで、調理は開始されません。</Text>
-                <Button isLoading={isVisitRequesting} onClick={handleVisitingClick} w="full" maxW="full" size="md">
-                  お店に向かう
-                </Button>
+                <Box>
+                  <Text fontSize="xs">お店に到着後に次の画面で注文を確定するまで、調理は開始されません。</Text>
+                  <Button
+                    isLoading={isVisitRequesting}
+                    onClick={handleVisitingClick}
+                    w="full"
+                    maxW="full"
+                    size="md"
+                    isDisabled={!isValid}
+                    mt={1}
+                  >
+                    お店に向かう
+                  </Button>
+                  {!isValid && (
+                    <Text fontSize="xs" color="red.400">
+                      選択が必要な箇所が残っています。
+                    </Text>
+                  )}
+                </Box>
               </>
             )}
           </>
