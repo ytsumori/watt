@@ -1,7 +1,7 @@
 "use client";
 
 import NextLink from "next/link";
-import { CheckIcon, ChevronLeftIcon } from "@chakra-ui/icons";
+import { CheckIcon } from "@chakra-ui/icons";
 import {
   useDisclosure,
   VStack,
@@ -13,10 +13,7 @@ import {
   Select,
   Center,
   Text,
-  Button,
-  Flex,
-  Icon,
-  IconButton
+  Button
 } from "@chakra-ui/react";
 import { Prisma } from "@prisma/client";
 import { ConfirmModal } from "@/components/confirm-modal";

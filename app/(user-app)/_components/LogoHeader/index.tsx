@@ -30,7 +30,7 @@ export function LogoHeader() {
   const [user, setUser] = useState<User>();
   useEffect(() => {
     getUser().then(setUser);
-  }, []);
+  }, [setUser]);
   const {
     isOpen: isOnboardingModalOpen,
     onOpen: onOpenOnboardingModal,
