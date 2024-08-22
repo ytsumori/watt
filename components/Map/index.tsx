@@ -4,8 +4,8 @@ import { Wrapper, Status } from "@googlemaps/react-wrapper";
 import { createCustomEqual } from "fast-equals";
 import { isLatLngLiteral } from "@googlemaps/typescript-guards";
 import { Children, cloneElement, isValidElement, useEffect, useRef, useState } from "react";
-import { setFirstCenter } from "./util";
-import { RestaurantStatus } from "@prisma/client";
+import { calculateMarkerCoordinates, calculatePixelDistance, setFirstCenter } from "./util";
+import { $Enums, RestaurantStatus } from "@prisma/client";
 
 const render = (status: Status) => {
   return <h1>{status}</h1>;
@@ -13,7 +13,12 @@ const render = (status: Status) => {
 
 type Props = {
   restaurants: { id: string; name: string; location: google.maps.LatLngLiteral; status: RestaurantStatus }[];
-  activeRestaurant: { id: string; name: string; location: { lat: number; lng: number } } | null;
+  activeRestaurant: {
+    id: string;
+    name: string;
+    status: $Enums.RestaurantStatus;
+    location: { lat: number; lng: number };
+  } | null;
   currentLocation?: { lat: number; lng: number };
   onRestaurantSelect?: (restaurantId: string) => void;
 };
@@ -52,7 +57,10 @@ export default function Map({ restaurants, activeRestaurant, currentLocation, on
         setZoom={setZoom}
         zoom={zoom}
         disableDefaultUI
-        active={activeRestaurant?.location}
+        active={
+          activeRestaurant?.location &&
+          activeRestaurant.status && { ...activeRestaurant.location, status: activeRestaurant.status }
+        }
         current={currentLocation}
         clickableIcons={false}
         style={{ height: "100%", width: "100%" }}
@@ -77,7 +85,7 @@ interface MapProps extends google.maps.MapOptions {
   style?: { [key: string]: string };
   onIdle: (map: google.maps.Map) => void;
   children?: React.ReactNode;
-  active?: { lat: number; lng: number };
+  active?: { lat: number; lng: number; status: $Enums.RestaurantStatus };
   current?: { lat: number; lng: number };
   setZoom: (zoom: number) => void;
   setCenter: (center: google.maps.LatLngLiteral) => void;
@@ -96,18 +104,34 @@ function MapComponent({ onIdle, children, style, active, current, setZoom, setCe
   }, [ref, map]);
 
   useEffect(() => {
+    const activeCoordinate = active && { lat: active.lat, lng: active.lng };
     if (!map || !active) return;
-    if (isFirst && active) {
-      setFirstCenter({ current, active, setCenter, setZoom });
+    if (isFirst && activeCoordinate) {
+      setFirstCenter({ current, active: activeCoordinate, setCenter, setZoom });
       setIsFirst(false);
     }
-
     const bounds = map.getBounds();
-    if (!bounds?.contains({ lat: active.lat, lng: active.lng })) {
-      const extendBounds = bounds?.extend(active);
-      extendBounds && map.fitBounds(extendBounds, 45);
+    const perPixelDistance = calculatePixelDistance(map);
+    //
+    const markerCoordinates =
+      perPixelDistance &&
+      activeCoordinate &&
+      (active.status === "CLOSED"
+        ? // 検証ツール上のmarkerサイズは46x58, 60x78だがpaddingありきのサイズなので少し(6pxずつ)小さくしている
+          calculateMarkerCoordinates({ marker: { w: 40, h: 52, coordinate: activeCoordinate }, perPixelDistance })
+        : calculateMarkerCoordinates({ marker: { w: 54, h: 72, coordinate: activeCoordinate }, perPixelDistance }));
+
+    const isContains = markerCoordinates?.every((coordinate) =>
+      bounds?.contains({ lat: coordinate.lat, lng: coordinate.lng })
+    );
+
+    if (!isContains) {
+      const extendBounds = activeCoordinate && bounds?.extend(activeCoordinate);
+      extendBounds && map.fitBounds(extendBounds, 10);
     }
-  }, [active, current, isFirst, map, setCenter, setZoom]);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- activeを依存配列に含めると移動するたびにuseEffectが実行されてしまうためそれぞれのプロパティを個別に依存配列に含めている
+  }, [active?.lat, active?.lng, active?.status, current, isFirst, map, setCenter, setZoom]);
 
   useDeepCompareEffectForMaps(() => map && map.setOptions({ ...options }), [map, options]);
 
