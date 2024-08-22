@@ -87,5 +87,5 @@
     "supabase": "^1.190.0",
     "vitest": "^2.0.5"
   },
-  "packageManager": "pnpm@9.0.4+sha256.caa915eaae9d9aefccf50ee8aeda25a2f8684d8f9d5c6e367eaf176d97c1f89e"
+  "packageManager": "pnpm@9.7.1+sha256.46f1bbc8f8020aa9869568c387198f1a813f21fb44c82f400e7d1dbde6c70b40"
 }
