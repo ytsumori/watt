@@ -60,6 +60,7 @@ export default function HomePage({ restaurants }: { restaurants: RestaurantWithD
               ? {
                   id: activeRestaurant?.id ?? "",
                   name: activeRestaurant?.name ?? "",
+                  status: activeRestaurant.status,
                   location: {
                     lat: activeRestaurant.googleMapPlaceInfo.latitude,
                     lng: activeRestaurant.googleMapPlaceInfo.longitude
