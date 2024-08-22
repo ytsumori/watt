@@ -268,7 +268,6 @@ export type Database = {
         Row: {
           approvedByRestaurantAt: string | null
           canceledAt: string | null
-          completedAt: string | null
           createdAt: string
           id: string
           isDiscounted: boolean
@@ -282,7 +281,6 @@ export type Database = {
         Insert: {
           approvedByRestaurantAt?: string | null
           canceledAt?: string | null
-          completedAt?: string | null
           createdAt?: string
           id: string
           isDiscounted?: boolean
@@ -296,7 +294,6 @@ export type Database = {
         Update: {
           approvedByRestaurantAt?: string | null
           canceledAt?: string | null
-          completedAt?: string | null
           createdAt?: string
           id?: string
           isDiscounted?: boolean
@@ -320,35 +317,6 @@ export type Database = {
             columns: ["userId"]
             isOneToOne: false
             referencedRelation: "User"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      OrderAutomaticCancellation: {
-        Row: {
-          createdAt: string
-          googleCloudTaskId: string
-          id: string
-          orderId: string
-        }
-        Insert: {
-          createdAt?: string
-          googleCloudTaskId: string
-          id: string
-          orderId: string
-        }
-        Update: {
-          createdAt?: string
-          googleCloudTaskId?: string
-          id?: string
-          orderId?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "OrderAutomaticCancellation_orderId_fkey"
-            columns: ["orderId"]
-            isOneToOne: false
-            referencedRelation: "Order"
             referencedColumns: ["id"]
           },
         ]
