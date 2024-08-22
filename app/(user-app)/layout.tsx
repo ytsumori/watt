@@ -1,16 +1,19 @@
 import { InProgressOrderModal } from "./_components/InProgressOrderModal";
 
-export default function UserAppLayout({
+export default function UserApp({
   children,
-  mealModal
+  restaurantMealModal,
+  homeModal
 }: {
   children: React.ReactNode;
-  mealModal: React.ReactNode;
+  restaurantMealModal: React.ReactNode;
+  homeModal: React.ReactNode;
 }) {
   return (
     <>
       {children}
-      {mealModal}
+      {restaurantMealModal}
+      {homeModal}
       <InProgressOrderModal />
     </>
   );
