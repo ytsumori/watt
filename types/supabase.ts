@@ -501,6 +501,7 @@ export type Database = {
           isFullStatusAvailable: boolean
           isPublished: boolean
           name: string
+          no: number
           password: string
           phoneNumber: string | null
           smokingOption: Database["public"]["Enums"]["SmokingOption"] | null
@@ -515,6 +516,7 @@ export type Database = {
           isFullStatusAvailable?: boolean
           isPublished?: boolean
           name: string
+          no?: number
           password: string
           phoneNumber?: string | null
           smokingOption?: Database["public"]["Enums"]["SmokingOption"] | null
@@ -529,6 +531,7 @@ export type Database = {
           isFullStatusAvailable?: boolean
           isPublished?: boolean
           name?: string
+          no?: number
           password?: string
           phoneNumber?: string | null
           smokingOption?: Database["public"]["Enums"]["SmokingOption"] | null
