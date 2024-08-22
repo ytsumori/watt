@@ -18,7 +18,6 @@ export async function POST(request: NextRequest) {
     where: { id: body.orderId },
     select: {
       id: true,
-      completedAt: true,
       canceledAt: true,
       approvedByRestaurantAt: true,
       orderNumber: true,
@@ -31,7 +30,6 @@ export async function POST(request: NextRequest) {
   if (!order.user.phoneNumber) return NextResponse.json({ message: "user has no phone number" }, { status: 500 });
 
   if (order.canceledAt) return NextResponse.json({ message: "already canncelled" });
-  if (order.completedAt) return NextResponse.json({ message: "already completed" });
   if (order.approvedByRestaurantAt) return NextResponse.json({ message: "already approved" });
 
   await prisma.order.update({

@@ -27,7 +27,8 @@ type Props = {
       id: true;
       orderNumber: true;
       peopleCount: true;
-      completedAt: true;
+      approvedByRestaurantAt: true;
+      canceledAt: true;
       orderTotalPrice: true;
       isDiscounted: true;
       meals: {
@@ -61,7 +62,8 @@ export function OrdersPage({ orders, page, maxPage }: Props) {
               <Th>セット内容</Th>
               <Th>注文金額</Th>
               <Th>スキ割</Th>
-              <Th>注文日時</Th>
+              <Th>注文完了日時</Th>
+              <Th>キャンセル日時</Th>
             </Tr>
           </Thead>
           <Tbody>
@@ -78,14 +80,17 @@ export function OrdersPage({ orders, page, maxPage }: Props) {
                   <Td>
                     {order.meals.map((meal) => (
                       <Fragment key={meal.id}>
-                        {meal.meal.title}({meal.options.map((option) => option.mealItemOption.title).join(",")})
+                        {meal.meal.title}
+                        {meal.options.length > 0 &&
+                          `(${meal.options.map((option) => option.mealItemOption.title).join(",")})`}
                         <br />
                       </Fragment>
                     ))}
                   </Td>
                   <Td>{order.orderTotalPrice.toLocaleString("ja-JP")}円</Td>
                   <Td>{order.isDiscounted ? <CheckIcon color="green.500" /> : <CloseIcon color="red.500" />}</Td>
-                  <Td>{order.completedAt && format(order.completedAt, "yyyy/MM/dd HH:mm")}</Td>
+                  <Td>{order.approvedByRestaurantAt && format(order.approvedByRestaurantAt, "yyyy/MM/dd HH:mm")}</Td>
+                  <Td>{order.canceledAt && format(order.canceledAt, "yyyy/MM/dd HH:mm")}</Td>
                 </Tr>
               );
             })}

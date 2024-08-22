@@ -12,7 +12,6 @@ export async function getOrders(restaurantId: string, month: string) {
       orderTotalPrice: true,
       orderNumber: true,
       peopleCount: true,
-      completedAt: true,
       createdAt: true,
       meals: {
         select: {
@@ -24,7 +23,7 @@ export async function getOrders(restaurantId: string, month: string) {
     },
     where: {
       restaurantId,
-      completedAt: {
+      createdAt: {
         gte: beginningOfMonth,
         lt: endOfMonth
       }
@@ -38,14 +37,13 @@ export async function getOrders(restaurantId: string, month: string) {
 export async function getFirstOrder(restaurantId: string) {
   return await prisma.order.findFirst({
     select: {
-      completedAt: true
+      createdAt: true
     },
     where: {
-      restaurantId,
-      completedAt: { not: null }
+      restaurantId
     },
     orderBy: {
-      completedAt: "asc"
+      createdAt: "asc"
     }
   });
 }

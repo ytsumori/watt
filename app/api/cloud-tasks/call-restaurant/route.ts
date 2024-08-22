@@ -22,7 +22,6 @@ export async function POST(request: NextRequest) {
   if (!order) return NextResponse.json({ message: "order not found" }, { status: 404 });
 
   if (order.canceledAt) return NextResponse.json({ message: "order already cancelled" }, { status: 200 });
-  if (order.completedAt) return NextResponse.json({ message: "order already completed" }, { status: 200 });
   if (order.approvedByRestaurantAt !== null)
     return NextResponse.json({ message: "order already approved" }, { status: 200 });
   if (!order.restaurant.phoneNumber)

@@ -31,7 +31,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ message: "call not in progress" }, { status: 200 });
   if (order.approvedByRestaurantAt) return NextResponse.json({ message: "order already approved" }, { status: 200 });
   if (order.canceledAt) return NextResponse.json({ message: "order already cancelled" }, { status: 200 });
-  if (order.completedAt) return NextResponse.json({ message: "order already completed" }, { status: 200 });
 
   const { status: callStatus } = await checkCallStatus(order.notificationCall.callId);
   switch (callStatus) {

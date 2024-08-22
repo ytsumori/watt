@@ -28,7 +28,6 @@ export function OrdersPage() {
         orderTotalPrice: true;
         orderNumber: true;
         peopleCount: true;
-        completedAt: true;
         createdAt: true;
         meals: {
           select: {
@@ -57,9 +56,9 @@ export function OrdersPage() {
 
   useEffect(() => {
     getFirstOrder(restaurantId).then((result) => {
-      if (result?.completedAt) {
+      if (result?.createdAt) {
         let monthsFromStart: string[] = [];
-        let currentDate = result.completedAt;
+        let currentDate = result.createdAt;
         const endOfThisMonth = new Date();
         endOfThisMonth.setDate(1);
         endOfThisMonth.setMonth(endOfThisMonth.getMonth() + 1);
@@ -111,9 +110,7 @@ export function OrdersPage() {
             {orders.map((order) => (
               <VStack key={order.id} alignItems="start" spacing={1} w="full">
                 <Flex justifyContent="space-between" w="full">
-                  <Text fontSize="xx-small">
-                    {order.completedAt ? format(order.completedAt, "yyyy/MM/dd HH:mm") : ""}
-                  </Text>
+                  <Text fontSize="xx-small">{order.createdAt ? format(order.createdAt, "yyyy/MM/dd HH:mm") : ""}</Text>
                   <Box>
                     <Text fontSize="xx-small" textAlign="end">
                       注文番号: <b>#{order.orderNumber}</b>

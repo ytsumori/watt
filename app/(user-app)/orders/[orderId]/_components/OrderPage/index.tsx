@@ -19,8 +19,6 @@ import { FaMapMarkedAlt } from "react-icons/fa";
 import NextLink from "next/link";
 import { ConfirmModal } from "@/components/confirm-modal";
 import { cancelOrder } from "../../_actions/cancel-order";
-import { completeOrder } from "../../_actions/complete-order";
-import { CompleteConfirmModal } from "../PaymentConfirmModal";
 import { CancelConfirmModal } from "../CancelConfirmModal";
 import { getOrderStatus } from "@/lib/prisma/order-status";
 import { PriceSection } from "../PriceSection";
@@ -55,20 +53,9 @@ type Props = {
 
 export function OrderPage({ order }: Props) {
   const router = useRouter();
-  const { isOpen: isCompleteModalOpen, onOpen: onCompleteModalOpen, onClose: onCompleteModalClose } = useDisclosure();
   const { isOpen: isCancelModalOpen, onOpen: onCancelModalOpen, onClose: onCancelModalClose } = useDisclosure();
-  const [isConfirming, setIsConfirming] = useState(false);
   const [isCancelling, setIsCancelling] = useState(false);
   const [errorMessage, setErrorMessage] = useState<{ title: string; description: string }>();
-
-  const handleCompleteConfirm = () => {
-    setIsConfirming(true);
-    completeOrder(order.id).then(() => {
-      setIsConfirming(false);
-      router.refresh();
-      window.scrollTo(0, 0);
-    });
-  };
 
   const handleCancelConfirm = (isFull: boolean) => {
     setIsCancelling(true);
@@ -139,33 +126,16 @@ export function OrderPage({ order }: Props) {
             <VStack w="full" mt={10}>
               <Button
                 size="md"
-                w="full"
-                maxW="full"
-                onClick={onCompleteModalOpen}
-                isDisabled={isCancelling}
-                isLoading={isConfirming}
-              >
-                注文を確定する
-              </Button>
-              <Button
-                size="md"
                 colorScheme="gray"
                 w="full"
                 maxW="full"
                 onClick={onCancelModalOpen}
-                isDisabled={isConfirming}
                 isLoading={isCancelling}
               >
                 キャンセル
               </Button>
             </VStack>
           </VStack>
-          <CompleteConfirmModal
-            isOpen={isCompleteModalOpen}
-            isConfirming={isConfirming}
-            onClose={onCompleteModalClose}
-            onConfirm={handleCompleteConfirm}
-          />
           <CancelConfirmModal
             isOpen={isCancelModalOpen}
             isCancelling={isCancelling}
@@ -244,33 +214,16 @@ export function OrderPage({ order }: Props) {
             <VStack w="full" mt={10}>
               <Button
                 size="md"
-                w="full"
-                maxW="full"
-                onClick={onCompleteModalOpen}
-                isDisabled={isCancelling}
-                isLoading={isConfirming}
-              >
-                注文を確定する
-              </Button>
-              <Button
-                size="md"
                 colorScheme="gray"
                 w="full"
                 maxW="full"
                 onClick={onCancelModalOpen}
-                isDisabled={isConfirming}
                 isLoading={isCancelling}
               >
                 キャンセル
               </Button>
             </VStack>
           </VStack>
-          <CompleteConfirmModal
-            isOpen={isCompleteModalOpen}
-            isConfirming={isConfirming}
-            onClose={onCompleteModalClose}
-            onConfirm={handleCompleteConfirm}
-          />
           <CancelConfirmModal
             isOpen={isCancelModalOpen}
             isCancelling={isCancelling}
@@ -316,39 +269,6 @@ export function OrderPage({ order }: Props) {
             <Heading size="md">店舗</Heading>
             <Heading size="sm">{order.restaurant.name}</Heading>
           </VStack>
-          <Button variant="outline" size="md" colorScheme="gray" w="full" maxW="full" as={NextLink} href="/">
-            ホーム画面に戻る
-          </Button>
-        </VStack>
-      );
-    case "COMPLETE":
-      return (
-        <VStack alignItems="start" p={4} spacing={4}>
-          <Heading>注文完了</Heading>
-          <Text>
-            注文番号:
-            <Heading as="span" ml={2}>
-              {order.orderNumber}
-            </Heading>
-          </Text>
-          <Alert
-            status="success"
-            flexDirection="column"
-            alignItems="center"
-            justifyContent="center"
-            textAlign="center"
-            borderRadius={4}
-          >
-            <AlertIcon />
-            <AlertTitle>注文が完了しました</AlertTitle>
-            <AlertDescription>お食事をお楽しみください</AlertDescription>
-          </Alert>
-          <Heading size="md">注文情報</Heading>
-          <VStack alignItems="start">
-            <Heading size="sm">店舗</Heading>
-            <Text fontSize="sm">{order.restaurant.name}</Text>
-          </VStack>
-          <PriceSection order={order} />
           <Button variant="outline" size="md" colorScheme="gray" w="full" maxW="full" as={NextLink} href="/">
             ホーム画面に戻る
           </Button>

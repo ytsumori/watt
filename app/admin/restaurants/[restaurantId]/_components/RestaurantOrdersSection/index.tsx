@@ -29,14 +29,13 @@ type Props = {
 export async function RestaurantOrdersSection({ restaurantId, month }: Props) {
   const firstOrder = await prisma.order.findFirst({
     select: {
-      completedAt: true
+      createdAt: true
     },
     where: {
-      restaurantId: restaurantId,
-      completedAt: { not: null }
+      restaurantId: restaurantId
     },
     orderBy: {
-      completedAt: "asc"
+      createdAt: "asc"
     }
   });
 
@@ -46,6 +45,7 @@ export async function RestaurantOrdersSection({ restaurantId, month }: Props) {
 
   const totalOrders = await prisma.order.findMany({
     select: {
+      canceledAt: true,
       orderTotalPrice: true,
       meals: {
         select: {
@@ -55,18 +55,21 @@ export async function RestaurantOrdersSection({ restaurantId, month }: Props) {
       }
     },
     where: {
-      restaurantId,
-      completedAt: { not: null }
+      restaurantId
     }
   });
-  const totalOrderAmount = totalOrders.reduce((total, order) => total + order.orderTotalPrice, 0);
+  const totalOrderAmount = totalOrders.reduce(
+    (total, order) => (order.canceledAt ? total : total + order.orderTotalPrice),
+    0
+  );
 
   const monthlyOrders = await prisma.order.findMany({
     select: {
       id: true,
       orderNumber: true,
       peopleCount: true,
-      completedAt: true,
+      approvedByRestaurantAt: true,
+      canceledAt: true,
       orderTotalPrice: true,
       meals: {
         select: {
@@ -78,7 +81,7 @@ export async function RestaurantOrdersSection({ restaurantId, month }: Props) {
     },
     where: {
       restaurantId,
-      completedAt: {
+      createdAt: {
         gte: beginningOfMonth,
         lt: endOfMonth
       }
@@ -86,11 +89,11 @@ export async function RestaurantOrdersSection({ restaurantId, month }: Props) {
   });
 
   if (!firstOrder) return <></>;
-  if (!firstOrder.completedAt) return <></>;
+  if (!firstOrder.createdAt) return <></>;
 
   // create a list of months from the first order to the current month
   let monthsFromStart: string[] = [];
-  let currentDate = firstOrder.completedAt;
+  let currentDate = firstOrder.createdAt;
   const endOfThisMonth = new Date();
   endOfThisMonth.setDate(1);
   endOfThisMonth.setMonth(endOfThisMonth.getMonth() + 1);
@@ -99,7 +102,10 @@ export async function RestaurantOrdersSection({ restaurantId, month }: Props) {
     currentDate.setMonth(currentDate.getMonth() + 1);
   }
 
-  const monthlyOrderAmount = monthlyOrders.reduce((total, order) => total + order.orderTotalPrice, 0);
+  const monthlyOrderAmount = monthlyOrders.reduce(
+    (total, order) => (order.canceledAt ? total : total + order.orderTotalPrice),
+    0
+  );
 
   return (
     <VStack width="full" alignItems="baseline" spacing={6}>
@@ -138,7 +144,7 @@ export async function RestaurantOrdersSection({ restaurantId, month }: Props) {
                   <Th>人数</Th>
                   <Th>セット内容</Th>
                   <Th>注文金額</Th>
-                  <Th>注文日時</Th>
+                  <Th>注文完了日時</Th>
                 </Tr>
               </Thead>
               <Tbody>
@@ -155,7 +161,9 @@ export async function RestaurantOrdersSection({ restaurantId, month }: Props) {
                       ))}
                     </Td>
                     <Td>{order.orderTotalPrice.toLocaleString("ja-JP")}円</Td>
-                    <Td>{order.completedAt ? format(order.completedAt, "yyyy/MM/dd HH:mm") : ""}</Td>
+                    <Td>
+                      {order.approvedByRestaurantAt ? format(order.approvedByRestaurantAt, "yyyy/MM/dd HH:mm") : ""}
+                    </Td>
                   </Tr>
                 ))}
               </Tbody>
