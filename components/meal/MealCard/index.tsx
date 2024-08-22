@@ -22,7 +22,7 @@ import { Prisma } from "@prisma/client";
 import { ReactNode } from "react";
 
 type Props = {
-  meal: Prisma.MealGetPayload<{ include: { items: { include: { options: true } } } }>;
+  meal: Prisma.MealGetPayload<{ include: { items: { include: { options: { orderBy: { position: "asc" } } } } } }>;
   button: ReactNode;
 };
 

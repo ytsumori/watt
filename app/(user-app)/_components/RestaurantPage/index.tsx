@@ -11,7 +11,7 @@ import { useRouter } from "next-nprogress-bar";
 type Props = {
   restaurant: Prisma.RestaurantGetPayload<{
     include: {
-      meals: { include: { items: { include: { options: true } } } };
+      meals: { include: { items: { include: { options: { orderBy: { position: "asc" } } } } } };
       googleMapPlaceInfo: { select: { url: true } };
       paymentOptions: true;
       exteriorImage: true;

@@ -8,7 +8,7 @@ import { MealFormModal } from "../MealFormModal";
 import { activateMeal, inactivateMeal, getMeals } from "./action";
 
 type MealProp = Prisma.MealGetPayload<{
-  include: { items: { include: { options: true } }; orders: { select: { id: true } } };
+  include: { items: { include: { options: { orderBy: { position: "asc" } } } }; orders: { select: { id: true } } };
 }>;
 
 type Props = {

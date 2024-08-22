@@ -31,7 +31,9 @@ import { getMealImageUrl } from "@/utils/image/getMealImageUrl";
 
 type Props = {
   restaurantId: string;
-  editingMeal?: Prisma.MealGetPayload<{ include: { items: { include: { options: true } } } }>;
+  editingMeal?: Prisma.MealGetPayload<{
+    include: { items: { include: { options: { orderBy: { position: "asc" } } } } };
+  }>;
   onSubmit: () => void;
 };
 
