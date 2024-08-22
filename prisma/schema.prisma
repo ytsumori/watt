@@ -80,6 +80,7 @@ model Restaurant {
   coordinate            RestaurantCoordinate?
   staffs                Staff[]
   statusChanges         RestaurantStatusChange[]
+  holidays              RestaurantHoliday[]
 }
 
 model RestaurantPaymentOption {
@@ -145,6 +146,31 @@ model RestaurantGoogleMapOpeningHour {
   createdAt              DateTime   @default(now())
   updatedAt              DateTime   @default(now()) @updatedAt
   restaurant             Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+}
+
+model RestaurantHoliday {
+  id                     String     @id @default(cuid())
+  restaurantId           String
+  date                   DateTime
+  createdAt              DateTime   @default(now())
+  updatedAt              DateTime   @default(now()) @updatedAt
+  restaurant             Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  openingHour            RestaurantHolidayOpeningHour?
+}
+
+model RestaurantHolidayOpeningHour {
+  id                     String     @id @default(cuid())
+  restaurantHolidayId    String     @unique
+  openHour               Int
+  openMinute             Int
+  openDayOfWeek          DayOfWeek
+  closeHour              Int
+  closeMinute            Int
+  closeDayOfWeek         DayOfWeek
+  isAutomaticallyApplied Boolean    @default(true)
+  createdAt              DateTime   @default(now())
+  updatedAt              DateTime   @default(now()) @updatedAt
+  restaurant             RestaurantHoliday @relation(fields: [restaurantHolidayId], references: [id], onDelete: Cascade)
 }
 
 model RestaurantClosedAlert {
