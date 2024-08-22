@@ -22,9 +22,9 @@ import {
   VStack
 } from "@chakra-ui/react";
 import { User } from "@prisma/client";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { checkOneTimePassword } from "./action";
+import { useRouter } from "next-nprogress-bar";
 
 type Props = {
   me: User;
@@ -82,7 +82,6 @@ export function ProfilePage({ me, redirectedFrom }: Props) {
 
   return (
     <VStack w="full" p={4} alignItems="start" spacing={3}>
-      <Heading>プロフィール</Heading>
       <FormControl isRequired>
         <FormLabel>ニックネーム</FormLabel>
         <FormHelperText>飲食店や他のユーザーに表示されることがあります</FormHelperText>

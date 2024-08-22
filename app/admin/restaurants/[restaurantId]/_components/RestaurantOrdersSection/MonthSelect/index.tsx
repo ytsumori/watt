@@ -2,7 +2,8 @@
 
 import { Select } from "@chakra-ui/react";
 import { format } from "date-fns";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next-nprogress-bar";
+import { usePathname, useSearchParams } from "next/navigation";
 
 type Props = {
   monthOptions: string[];

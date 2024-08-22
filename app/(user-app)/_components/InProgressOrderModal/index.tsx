@@ -2,9 +2,10 @@
 
 import { Text } from "@chakra-ui/react";
 import { ConfirmModal } from "@/components/confirm-modal";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getInProgressOrder } from "./actions/getInProgressOrder";
+import { useRouter } from "next-nprogress-bar";
 
 export function InProgressOrderModal() {
   const router = useRouter();

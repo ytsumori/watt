@@ -1,12 +1,13 @@
 "use client";
 
 import { verifyIdToken } from "@/lib/line-login";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { createContext, useContext, useEffect, useState } from "react";
 import { Center, Spinner, VStack, Text } from "@chakra-ui/react";
 import { signUpRestaurant } from "@/actions/mutations/restaurant-sign-up";
 import { LineIdTokenContext } from "@/app/restaurant-dashboard/_components/line-login-provider";
 import { getStaffs } from "./action";
+import { useRouter } from "next-nprogress-bar";
 
 export const RestaurantIdContext = createContext("");
 

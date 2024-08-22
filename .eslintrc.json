@@ -1,3 +1,13 @@
 {
-  "extends": "next/core-web-vitals"
+  "extends": "next/core-web-vitals",
+  "rules": {
+    "no-restricted-imports": [
+      "error",
+      {
+        "name": "next/navigation",
+        "importNames": ["useRouter"],
+        "message": "Please use useRouter from next-nprogress-bar instead."
+      }
+    ]
+  }
 }
