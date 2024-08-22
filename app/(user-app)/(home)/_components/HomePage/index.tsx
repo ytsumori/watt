@@ -4,7 +4,6 @@ import Map from "@/components/Map";
 import {
   Box,
   HStack,
-  Link,
   LinkBox,
   LinkOverlay,
   Modal,
