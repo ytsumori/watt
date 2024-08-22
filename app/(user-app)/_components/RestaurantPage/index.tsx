@@ -1,6 +1,6 @@
 "use client";
 
-import { VStack, Text, HStack, Button, Box, Alert, AlertIcon } from "@chakra-ui/react";
+import { VStack, Text, HStack, Button, Box, Alert, AlertIcon, Flex } from "@chakra-ui/react";
 import { Prisma } from "@prisma/client";
 import { usePathname } from "next/navigation";
 import { RestaurantInfo } from "./components/RestaurantInfo";
@@ -38,11 +38,11 @@ export function RestaurantPage({ restaurant, userId }: Props) {
   return (
     <VStack w="full" p={4} alignItems="start" spacing={4}>
       <RestaurantInfo restaurant={restaurant} />
-      <Box>
+      <Box w="full">
         <Text fontWeight="bold" mb={2}>
           セットメニュー
         </Text>
-        <HStack>
+        <Flex gap={3} className="hidden-scrollbar" overflowX="scroll">
           {restaurant.meals.map((meal) => (
             <MealPreviewBox
               key={meal.id}
@@ -52,7 +52,7 @@ export function RestaurantPage({ restaurant, userId }: Props) {
               isDiscounted={restaurant.status === "OPEN"}
             />
           ))}
-        </HStack>
+        </Flex>
       </Box>
 
       {userId ? (
