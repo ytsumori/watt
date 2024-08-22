@@ -66,7 +66,7 @@ export function RestaurantsPage({ restaurants }: Props) {
               };
               return (
                 <Tr key={restaurant.id}>
-                  <Td>{restaurant.id}</Td>
+                  <Td>{restaurant.no}</Td>
                   <Td>
                     <Link as={NextLink} href={"restaurants/" + restaurant.id}>
                       {restaurant.name}
