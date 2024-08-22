@@ -13,7 +13,7 @@ export default async function Restaurant({ params }: Params) {
       meals: {
         where: { isInactive: false, outdatedAt: null },
         orderBy: { price: "asc" },
-        include: { items: { include: { options: true } } }
+        include: { items: { include: { options: { orderBy: { position: "asc" } } } } }
       },
       googleMapPlaceInfo: { select: { url: true } },
       paymentOptions: true,
