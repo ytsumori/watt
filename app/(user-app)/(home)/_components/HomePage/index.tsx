@@ -4,6 +4,9 @@ import Map from "@/components/Map";
 import {
   Box,
   HStack,
+  Link,
+  LinkBox,
+  LinkOverlay,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -22,6 +25,7 @@ import { useGetCurrentPosition } from "./hooks/useGetCurrentPosition";
 import { useFetchNearbyRestaurants } from "./hooks/useFetchNearbyRestaurants";
 import { useState } from "react";
 import { StatusBadge } from "../../../_components/StatusBadge";
+import NextLink from "next/link";
 
 export default function HomePage({ restaurants }: { restaurants: RestaurantWithDistance[] }) {
   const router = useRouter();
@@ -97,14 +101,10 @@ export default function HomePage({ restaurants }: { restaurants: RestaurantWithD
             }}
             style={{ width: "100%" }}
           >
-            <Box
-              id={restaurant.id}
-              backgroundColor="white"
-              py={3}
-              onClick={() => router.push(`/restaurants/${restaurant.id}`)}
-            >
+            <LinkBox id={restaurant.id} backgroundColor="white" py={3}>
+              <LinkOverlay as={NextLink} href={`/restaurants/${restaurant.id}`} />
               <RestaurantListItem restaurant={restaurant} onClickHelp={onHelpModalOpen} />
-            </Box>
+            </LinkBox>
           </InView>
         ))}
       </VStack>
