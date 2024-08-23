@@ -1,22 +1,8 @@
 "use client";
 
-import {
-  Box,
-  Button,
-  Center,
-  Heading,
-  Text,
-  Spinner,
-  Tab,
-  TabList,
-  TabPanel,
-  TabPanels,
-  Tabs,
-  VStack
-} from "@chakra-ui/react";
+import { Box, Center, Heading, Text, Spinner, Tab, TabList, TabPanel, TabPanels, Tabs, VStack } from "@chakra-ui/react";
 import { useContext, useEffect, useState } from "react";
 import { Restaurant } from "@prisma/client";
-import { EditIcon } from "@chakra-ui/icons";
 import { OrdersPage } from "./_components/OrdersPage";
 import { SchedulePage } from "./_components/SchedulePage";
 import { MealPage } from "./_components/MealPage";
@@ -50,14 +36,9 @@ export default function Dashboard() {
   return (
     <Box>
       <Box p={2}>
-        <VStack spacing={1} alignItems="start">
-          <Heading mb={4} display="inline-flex">
-            {restaurant.name}
-          </Heading>
-          <Button leftIcon={<EditIcon />} onClick={() => router.push("/restaurant-dashboard/bank-account/edit")}>
-            振込先口座を登録
-          </Button>
-        </VStack>
+        <Heading mb={4} display="inline-flex">
+          {restaurant.name}
+        </Heading>
       </Box>
       <Tabs isFitted>
         <TabList>
