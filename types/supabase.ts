@@ -774,6 +774,88 @@ export type Database = {
           },
         ]
       }
+      RestaurantHoliday: {
+        Row: {
+          createdAt: string
+          date: string
+          id: string
+          restaurantId: string
+          updatedAt: string
+        }
+        Insert: {
+          createdAt?: string
+          date: string
+          id: string
+          restaurantId: string
+          updatedAt?: string
+        }
+        Update: {
+          createdAt?: string
+          date?: string
+          id?: string
+          restaurantId?: string
+          updatedAt?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "RestaurantHoliday_restaurantId_fkey"
+            columns: ["restaurantId"]
+            isOneToOne: false
+            referencedRelation: "Restaurant"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      RestaurantHolidayOpeningHour: {
+        Row: {
+          closeDayOfWeek: Database["public"]["Enums"]["DayOfWeek"]
+          closeHour: number
+          closeMinute: number
+          createdAt: string
+          id: string
+          isAutomaticallyApplied: boolean
+          openDayOfWeek: Database["public"]["Enums"]["DayOfWeek"]
+          openHour: number
+          openMinute: number
+          restaurantHolidayId: string
+          updatedAt: string
+        }
+        Insert: {
+          closeDayOfWeek: Database["public"]["Enums"]["DayOfWeek"]
+          closeHour: number
+          closeMinute: number
+          createdAt?: string
+          id: string
+          isAutomaticallyApplied?: boolean
+          openDayOfWeek: Database["public"]["Enums"]["DayOfWeek"]
+          openHour: number
+          openMinute: number
+          restaurantHolidayId: string
+          updatedAt?: string
+        }
+        Update: {
+          closeDayOfWeek?: Database["public"]["Enums"]["DayOfWeek"]
+          closeHour?: number
+          closeMinute?: number
+          createdAt?: string
+          id?: string
+          isAutomaticallyApplied?: boolean
+          openDayOfWeek?: Database["public"]["Enums"]["DayOfWeek"]
+          openHour?: number
+          openMinute?: number
+          restaurantHolidayId?: string
+          updatedAt?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "RestaurantHolidayOpeningHour_restaurantHolidayId_fkey"
+            columns: ["restaurantHolidayId"]
+            isOneToOne: false
+            referencedRelation: "RestaurantHoliday"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       RestaurantMenuImage: {
         Row: {
           createdAt: string
@@ -1088,6 +1170,7 @@ export type Database = {
           owner_id: string | null
           path_tokens: string[] | null
           updated_at: string | null
+          user_metadata: Json | null
           version: string | null
         }
         Insert: {
@@ -1101,6 +1184,7 @@ export type Database = {
           owner_id?: string | null
           path_tokens?: string[] | null
           updated_at?: string | null
+          user_metadata?: Json | null
           version?: string | null
         }
         Update: {
@@ -1114,6 +1198,7 @@ export type Database = {
           owner_id?: string | null
           path_tokens?: string[] | null
           updated_at?: string | null
+          user_metadata?: Json | null
           version?: string | null
         }
         Relationships: [
@@ -1135,6 +1220,7 @@ export type Database = {
           key: string
           owner_id: string | null
           upload_signature: string
+          user_metadata: Json | null
           version: string
         }
         Insert: {
@@ -1145,6 +1231,7 @@ export type Database = {
           key: string
           owner_id?: string | null
           upload_signature: string
+          user_metadata?: Json | null
           version: string
         }
         Update: {
@@ -1155,6 +1242,7 @@ export type Database = {
           key?: string
           owner_id?: string | null
           upload_signature?: string
+          user_metadata?: Json | null
           version?: string
         }
         Relationships: [
@@ -1290,6 +1378,10 @@ export type Database = {
           metadata: Json
           updated_at: string
         }[]
+      }
+      operation: {
+        Args: Record<PropertyKey, never>
+        Returns: string
       }
       search: {
         Args: {
