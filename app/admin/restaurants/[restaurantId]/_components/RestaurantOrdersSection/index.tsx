@@ -20,6 +20,8 @@ import {
 import { format } from "date-fns";
 import { Fragment } from "react";
 import { MonthSelect } from "./MonthSelect";
+import { getOrderStatus, translateOrderStatus } from "@/lib/prisma/order-status";
+import { getOrderStatusColor } from "@/app/admin/_utils/order-status-color";
 
 type Props = {
   restaurantId: string;
@@ -70,6 +72,7 @@ export async function RestaurantOrdersSection({ restaurantId, month }: Props) {
       peopleCount: true,
       approvedByRestaurantAt: true,
       canceledAt: true,
+      createdAt: true,
       orderTotalPrice: true,
       meals: {
         select: {
@@ -85,6 +88,9 @@ export async function RestaurantOrdersSection({ restaurantId, month }: Props) {
         gte: beginningOfMonth,
         lt: endOfMonth
       }
+    },
+    orderBy: {
+      createdAt: "desc"
     }
   });
 
@@ -141,31 +147,34 @@ export async function RestaurantOrdersSection({ restaurantId, month }: Props) {
               <Thead>
                 <Tr>
                   <Th>注文番号</Th>
+                  <Th>ステータス</Th>
                   <Th>人数</Th>
-                  <Th>セット内容</Th>
                   <Th>注文金額</Th>
-                  <Th>注文完了日時</Th>
+                  <Th>注文日時</Th>
+                  <Th>セット内容</Th>
                 </Tr>
               </Thead>
               <Tbody>
-                {monthlyOrders.map((order) => (
-                  <Tr key={order.id}>
-                    <Td>#{order.orderNumber}</Td>
-                    <Td>{order.peopleCount}</Td>
-                    <Td>
-                      {order.meals.map((meal) => (
-                        <Fragment key={meal.id}>
-                          {meal.meal.title}({meal.options.map((option) => option.mealItemOption.title).join(",")})
-                          <br />
-                        </Fragment>
-                      ))}
-                    </Td>
-                    <Td>{order.orderTotalPrice.toLocaleString("ja-JP")}円</Td>
-                    <Td>
-                      {order.approvedByRestaurantAt ? format(order.approvedByRestaurantAt, "yyyy/MM/dd HH:mm") : ""}
-                    </Td>
-                  </Tr>
-                ))}
+                {monthlyOrders.map((order) => {
+                  const orderStatus = getOrderStatus(order);
+                  return (
+                    <Tr key={order.id}>
+                      <Td>#{order.orderNumber}</Td>
+                      <Td color={getOrderStatusColor(orderStatus)}>{translateOrderStatus(orderStatus)}</Td>
+                      <Td>{order.peopleCount}</Td>
+                      <Td>{order.orderTotalPrice.toLocaleString("ja-JP")}円</Td>
+                      <Td>{order.createdAt ? format(order.createdAt, "yyyy/MM/dd HH:mm") : ""}</Td>
+                      <Td>
+                        {order.meals.map((meal) => (
+                          <Fragment key={meal.id}>
+                            {meal.meal.title}({meal.options.map((option) => option.mealItemOption.title).join(",")})
+                            <br />
+                          </Fragment>
+                        ))}
+                      </Td>
+                    </Tr>
+                  );
+                })}
               </Tbody>
             </Table>
           </TableContainer>

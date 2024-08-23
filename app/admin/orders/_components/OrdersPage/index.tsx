@@ -1,5 +1,6 @@
 "use client";
 
+import { getOrderStatusColor } from "@/app/admin/_utils/order-status-color";
 import { getOrderStatus, translateOrderStatus } from "@/lib/prisma/order-status";
 import { ArrowLeftIcon, ArrowRightIcon, CheckIcon, CloseIcon } from "@chakra-ui/icons";
 import {
@@ -74,9 +75,7 @@ export function OrdersPage({ orders, page, maxPage }: Props) {
               return (
                 <Tr key={order.id}>
                   <Td>#{order.orderNumber}</Td>
-                  <Td fontWeight="bold" color={getOrderStatusColor(orderStatus)}>
-                    {translateOrderStatus(orderStatus)}
-                  </Td>
+                  <Td color={getOrderStatusColor(orderStatus)}>{translateOrderStatus(orderStatus)}</Td>
                   <Td>
                     <Link as={NextLink} href={"restaurants/" + order.restaurant.id}>
                       {order.restaurant.name}
@@ -118,15 +117,4 @@ export function OrdersPage({ orders, page, maxPage }: Props) {
       </Flex>
     </Box>
   );
-}
-
-function getOrderStatusColor(status: string) {
-  switch (status) {
-    case "CANCELED":
-      return "red.500";
-    case "APPROVED":
-      return "green.500";
-    case "IN PROGRESS":
-      return "yellow.500";
-  }
 }
