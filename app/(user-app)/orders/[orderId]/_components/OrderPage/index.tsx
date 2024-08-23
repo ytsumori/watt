@@ -161,6 +161,7 @@ export function OrderPage({ order }: Props) {
       }
       const arrivalDeadline = new Date(order.approvedByRestaurantAt);
       arrivalDeadline.setMinutes(arrivalDeadline.getMinutes() + 30);
+      const isBeforeDeadline = Date.now() < arrivalDeadline.getTime();
       return (
         <>
           <VStack alignItems="start" spacing={8} p={4} w="full">
@@ -172,7 +173,7 @@ export function OrderPage({ order }: Props) {
               </Heading>
             </Text>
             <Alert
-              status="info"
+              status="success"
               flexDirection="column"
               alignItems="center"
               justifyContent="center"
@@ -180,9 +181,15 @@ export function OrderPage({ order }: Props) {
               borderRadius={4}
             >
               <AlertIcon />
-              <AlertTitle mb={1}>{format(arrivalDeadline, "HH:mm")}までにお店に向かってください</AlertTitle>
-              <AlertDescription fontSize="sm">
-                入店後お店の人に「Wattでの注文で」と伝え、こちらの画面を見せて注文を確定してください
+              <AlertTitle mb={1}>
+                {isBeforeDeadline
+                  ? `${format(arrivalDeadline, "HH:mm")}までにお店に向かってください`
+                  : "注文が完了しました"}
+              </AlertTitle>
+              <AlertDescription fontSize="sm" whiteSpace="pre-wrap">
+                {isBeforeDeadline
+                  ? "入店後お店の人に「Wattでの注文で」と伝え\nこちらの画面を見せてください"
+                  : "お食事をお楽しみください"}
               </AlertDescription>
             </Alert>
             <VStack alignItems="start">
@@ -212,16 +219,21 @@ export function OrderPage({ order }: Props) {
             </VStack>
             <PriceSection order={order} />
             <VStack w="full" mt={10}>
-              <Button
-                size="md"
-                colorScheme="gray"
-                w="full"
-                maxW="full"
-                onClick={onCancelModalOpen}
-                isLoading={isCancelling}
-              >
-                キャンセル
+              <Button variant="outline" size="md" colorScheme="gray" w="full" maxW="full" as={NextLink} href="/">
+                ホーム画面に戻る
               </Button>
+              {isBeforeDeadline && (
+                <Button
+                  size="md"
+                  colorScheme="gray"
+                  w="full"
+                  maxW="full"
+                  onClick={onCancelModalOpen}
+                  isLoading={isCancelling}
+                >
+                  キャンセル
+                </Button>
+              )}
             </VStack>
           </VStack>
           <CancelConfirmModal

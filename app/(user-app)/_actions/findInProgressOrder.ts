@@ -7,16 +7,7 @@ export async function findInProgressOrder(userId: string) {
     where: {
       userId,
       canceledAt: null,
-      OR: [
-        {
-          approvedByRestaurantAt: null
-        },
-        {
-          approvedByRestaurantAt: {
-            gt: new Date(Date.now() - 30 * 60 * 1000) // less than 30 minutes ago
-          }
-        }
-      ]
+      approvedByRestaurantAt: null
     }
   });
 }
