@@ -1,5 +1,6 @@
 "use client";
 
+import { getOrderStatus, translateOrderStatus } from "@/lib/prisma/order-status";
 import { ArrowLeftIcon, ArrowRightIcon, CheckIcon, CloseIcon } from "@chakra-ui/icons";
 import {
   Box,
@@ -29,6 +30,7 @@ type Props = {
       peopleCount: true;
       approvedByRestaurantAt: true;
       canceledAt: true;
+      createdAt: true;
       orderTotalPrice: true;
       isDiscounted: true;
       meals: {
@@ -57,26 +59,33 @@ export function OrdersPage({ orders, page, maxPage }: Props) {
           <Thead>
             <Tr>
               <Th>注文番号</Th>
+              <Th>ステータス</Th>
               <Th>店名</Th>
               <Th>人数</Th>
-              <Th>セット内容</Th>
               <Th>注文金額</Th>
+              <Th>注文日時</Th>
               <Th>スキ割</Th>
-              <Th>注文完了日時</Th>
-              <Th>キャンセル日時</Th>
+              <Th>セット内容</Th>
             </Tr>
           </Thead>
           <Tbody>
             {orders.map((order) => {
+              const orderStatus = getOrderStatus(order);
               return (
                 <Tr key={order.id}>
                   <Td>#{order.orderNumber}</Td>
+                  <Td fontWeight="bold" color={getOrderStatusColor(orderStatus)}>
+                    {translateOrderStatus(orderStatus)}
+                  </Td>
                   <Td>
                     <Link as={NextLink} href={"restaurants/" + order.restaurant.id}>
                       {order.restaurant.name}
                     </Link>
                   </Td>
                   <Td>{order.peopleCount}</Td>
+                  <Td>{order.orderTotalPrice.toLocaleString("ja-JP")}円</Td>
+                  <Td>{order.createdAt && format(order.createdAt, "yyyy/MM/dd HH:mm")}</Td>
+                  <Td>{order.isDiscounted ? <CheckIcon color="green.500" /> : <CloseIcon color="red.500" />}</Td>
                   <Td>
                     {order.meals.map((meal) => (
                       <Fragment key={meal.id}>
@@ -87,10 +96,6 @@ export function OrdersPage({ orders, page, maxPage }: Props) {
                       </Fragment>
                     ))}
                   </Td>
-                  <Td>{order.orderTotalPrice.toLocaleString("ja-JP")}円</Td>
-                  <Td>{order.isDiscounted ? <CheckIcon color="green.500" /> : <CloseIcon color="red.500" />}</Td>
-                  <Td>{order.approvedByRestaurantAt && format(order.approvedByRestaurantAt, "yyyy/MM/dd HH:mm")}</Td>
-                  <Td>{order.canceledAt && format(order.canceledAt, "yyyy/MM/dd HH:mm")}</Td>
                 </Tr>
               );
             })}
@@ -113,4 +118,15 @@ export function OrdersPage({ orders, page, maxPage }: Props) {
       </Flex>
     </Box>
   );
+}
+
+function getOrderStatusColor(status: string) {
+  switch (status) {
+    case "CANCELED":
+      return "red.500";
+    case "APPROVED":
+      return "green.500";
+    case "IN PROGRESS":
+      return "yellow.500";
+  }
 }

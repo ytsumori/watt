@@ -18,6 +18,7 @@ export default async function Orders({ searchParams }: Props) {
       peopleCount: true,
       approvedByRestaurantAt: true,
       canceledAt: true,
+      createdAt: true,
       orderTotalPrice: true,
       isDiscounted: true,
       meals: {

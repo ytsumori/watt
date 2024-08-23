@@ -1,8 +1,10 @@
-import { Order } from "@prisma/client";
+import { Order, Prisma } from "@prisma/client";
 
 export type OrderStatus = "CANCELED" | "IN PROGRESS" | "APPROVED";
 
-export function getOrderStatus(order: Order): OrderStatus {
+export function getOrderStatus(
+  order: Prisma.OrderGetPayload<{ select: { canceledAt: true; approvedByRestaurantAt: true } }>
+): OrderStatus {
   if (order.canceledAt) {
     return "CANCELED";
   }
