@@ -149,18 +149,18 @@ model RestaurantGoogleMapOpeningHour {
 }
 
 model RestaurantHoliday {
-  id           String                        @id @default(cuid())
+  id           String                         @id @default(cuid())
   restaurantId String
   date         DateTime
-  createdAt    DateTime                      @default(now())
-  updatedAt    DateTime                      @default(now()) @updatedAt
-  restaurant   Restaurant                    @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
-  openingHour  RestaurantHolidayOpeningHour?
+  createdAt    DateTime                       @default(now())
+  updatedAt    DateTime                       @default(now()) @updatedAt
+  restaurant   Restaurant                     @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  openingHours RestaurantHolidayOpeningHour[]
 }
 
 model RestaurantHolidayOpeningHour {
   id                     String            @id @default(cuid())
-  restaurantHolidayId    String            @unique
+  restaurantHolidayId    String
   openHour               Int
   openMinute             Int
   openDayOfWeek          DayOfWeek
