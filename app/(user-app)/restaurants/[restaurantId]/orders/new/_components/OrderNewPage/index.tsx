@@ -268,8 +268,8 @@ export const OrderNewPage: FC<Props> = ({ restaurant, inProgressOrderId, userId,
                   isDiscounted={isDiscounted}
                 />
                 <Divider borderColor="black" my={6} />
-                <Box>
-                  <Text fontSize="xs">お店に到着後に次の画面で注文を確定するまで、調理は開始されません。</Text>
+                <Box w="100%">
+                  <Text fontSize="xs">お店に到着するまで、調理は開始されません。</Text>
                   <Button
                     isLoading={isVisitRequesting}
                     onClick={handleVisitingClick}

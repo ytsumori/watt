@@ -1,12 +1,12 @@
 import { getSupabaseImageUrl } from "@/utils/image/getSupabaseImageUrl";
 import { ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
-import { Box, Flex, Text, Image, useDisclosure, Modal, ModalContent, ModalOverlay } from "@chakra-ui/react";
+import { Box, Flex, Image, useDisclosure, Modal, ModalContent, ModalOverlay } from "@chakra-ui/react";
 import { RestaurantMenuImage } from "@prisma/client";
 import { FC, useState } from "react";
 
-type Props = { restaurantId: string; menuImages: RestaurantMenuImage[] };
+type Props = { menuImages: RestaurantMenuImage[] };
 
-export const MenuImageInfo: FC<Props> = ({ restaurantId, menuImages }) => {
+export const MenuImages: FC<Props> = ({ menuImages }) => {
   const [current, setCurrent] = useState<number>(0);
   const { isOpen: isMenuImageOpen, onOpen: onMenuImageOpen, onClose: onMenuImageClose } = useDisclosure();
   const imagePaths = menuImages.map((menuImage) =>
@@ -14,9 +14,8 @@ export const MenuImageInfo: FC<Props> = ({ restaurantId, menuImages }) => {
   );
 
   return (
-    <Box mt={2}>
-      <Text>メニュー</Text>
-      <Flex mt={2} gap={3} maxW="100%" className="hidden-scrollbar" overflowX="scroll">
+    <>
+      <Flex gap={2}>
         {menuImages.map((menuImage, idx) => (
           <Image
             key={menuImage.id}
@@ -35,7 +34,6 @@ export const MenuImageInfo: FC<Props> = ({ restaurantId, menuImages }) => {
           />
         ))}
       </Flex>
-
       <Modal isOpen={isMenuImageOpen} onClose={onMenuImageClose} isCentered>
         <ModalOverlay />
         <ModalContent bg="transparent">
@@ -55,7 +53,7 @@ export const MenuImageInfo: FC<Props> = ({ restaurantId, menuImages }) => {
 
             <Image
               src={imagePaths[current]}
-              alt={`menu-image-${restaurantId}`}
+              alt={`menu-image-${current}`}
               objectFit="cover"
               aspectRatio={1 / 1}
               maxW="full"
@@ -77,6 +75,6 @@ export const MenuImageInfo: FC<Props> = ({ restaurantId, menuImages }) => {
           </Flex>
         </ModalContent>
       </Modal>
-    </Box>
+    </>
   );
 };
