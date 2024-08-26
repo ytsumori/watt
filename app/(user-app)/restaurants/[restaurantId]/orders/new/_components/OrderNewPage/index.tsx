@@ -269,7 +269,7 @@ export const OrderNewPage: FC<Props> = ({ restaurant, inProgressOrderId, userId,
                 />
                 <Divider borderColor="black" my={6} />
                 <Box w="100%">
-                  <Text fontSize="xs">お店に到着するまで、調理は開始されません。</Text>
+                  <Text fontSize="xs">お店の空き状況が確認でき、お店に到着するまで調理は開始されません。</Text>
                   <Button
                     isLoading={isVisitRequesting}
                     onClick={handleVisitingClick}
@@ -279,7 +279,7 @@ export const OrderNewPage: FC<Props> = ({ restaurant, inProgressOrderId, userId,
                     isDisabled={!isValid}
                     mt={1}
                   >
-                    お店に向かう
+                    この注文でお店の空き状況を確認する
                   </Button>
                   {!isValid && (
                     <Text fontSize="xs" color="red.400">
@@ -295,9 +295,9 @@ export const OrderNewPage: FC<Props> = ({ restaurant, inProgressOrderId, userId,
       <ConfirmModal
         isOpen={isVisitConfirmModalOpen}
         onClose={onVisitConfirmModalClose}
-        title="お店に向かいますか？"
+        title="こちらの注文でよろしいですか？"
         confirmButton={{
-          label: "お店に向かう",
+          label: "お店の空き状況を確認する",
           onClick: handleVisitingConfirm,
           isLoading: isVisitRequesting
         }}
@@ -306,9 +306,9 @@ export const OrderNewPage: FC<Props> = ({ restaurant, inProgressOrderId, userId,
           isDisabled: isVisitRequesting
         }}
       >
-        5分以内にお店の空席状況を確認します。
+        5分以内にお店の空席状況を確認し、SMSでお知らせします。
         <br />
-        空席状況が確認でき次第お店に向かってください。
+        空席状況が確認でき次第、30分以内にお店に向かっていただき、注文の品でお食事をお楽しみください。
       </ConfirmModal>
       <ConfirmModal
         isOpen={errorMessage !== undefined}
