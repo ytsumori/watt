@@ -6,8 +6,8 @@ export async function findInProgressOrder(userId: string) {
   return await prisma.order.findFirst({
     where: {
       userId,
-      completedAt: null,
-      canceledAt: null
+      canceledAt: null,
+      approvedByRestaurantAt: null
     }
   });
 }

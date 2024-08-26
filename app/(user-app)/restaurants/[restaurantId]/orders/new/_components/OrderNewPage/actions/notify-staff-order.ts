@@ -70,7 +70,8 @@ export async function notifyStaffOrder({ orderId }: { orderId: string }) {
     where: {
       userId: order.user.id,
       restaurantId: order.restaurant.id,
-      completedAt: { not: null }
+      canceledAt: null,
+      approvedByRestaurantAt: { not: null }
     }
   });
   await multicastMessage({

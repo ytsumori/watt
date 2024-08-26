@@ -16,7 +16,9 @@ export default async function Orders({ searchParams }: Props) {
       id: true,
       orderNumber: true,
       peopleCount: true,
-      completedAt: true,
+      approvedByRestaurantAt: true,
+      canceledAt: true,
+      createdAt: true,
       orderTotalPrice: true,
       isDiscounted: true,
       meals: {
@@ -28,13 +30,8 @@ export default async function Orders({ searchParams }: Props) {
       },
       restaurant: { select: { id: true, name: true } }
     },
-    where: {
-      completedAt: {
-        not: null
-      }
-    },
     orderBy: {
-      completedAt: "desc"
+      createdAt: "desc"
     },
     take: PAGE_SIZE,
     skip

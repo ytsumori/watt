@@ -13,7 +13,7 @@ export function RestaurantModalPage(props: Props) {
   return (
     <Drawer isOpen={true} onClose={router.back} placement="bottom" blockScrollOnMount={false}>
       <DrawerOverlay />
-      <DrawerContent maxH="90%">
+      <DrawerContent maxH="90%" borderTopRadius="md">
         <DrawerCloseButton zIndex={1} />
         <DrawerBody p={0}>
           <RestaurantPage {...props} />

@@ -228,21 +228,19 @@ model MealItemOption {
 }
 
 model Order {
-  id                     String                      @id @default(cuid())
-  orderNumber            Int                         @unique @default(autoincrement())
+  id                     String                 @id @default(cuid())
+  orderNumber            Int                    @unique @default(autoincrement())
   userId                 String
   restaurantId           String
   peopleCount            Int
   orderTotalPrice        Int
-  completedAt            DateTime?
   canceledAt             DateTime?
   approvedByRestaurantAt DateTime?
-  isDiscounted           Boolean                     @default(true)
-  createdAt              DateTime                    @default(now())
-  updatedAt              DateTime                    @default(now()) @updatedAt
-  restaurant             Restaurant                  @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
-  user                   User                        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  automaticCancellation  OrderAutomaticCancellation?
+  isDiscounted           Boolean                @default(true)
+  createdAt              DateTime               @default(now())
+  updatedAt              DateTime               @default(now()) @updatedAt
+  restaurant             Restaurant             @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  user                   User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
   cancellation           OrderCancellation?
   meals                  OrderMeal[]
   notificationCall       OrderNotificationCall?
@@ -284,14 +282,6 @@ model OrderCancellation {
   cancelledBy CancellationUserType
   cancelledAt DateTime             @default(now())
   order       Order                @relation(fields: [orderId], references: [id], onDelete: Cascade)
-}
-
-model OrderAutomaticCancellation {
-  id                String   @id @default(cuid())
-  orderId           String   @unique
-  googleCloudTaskId String
-  createdAt         DateTime @default(now())
-  order             Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
 }
 
 model Staff {

@@ -36,13 +36,13 @@ export function RestaurantPage({ restaurant, userId }: Props) {
   const router = useRouter();
 
   return (
-    <VStack w="full" p={4} alignItems="start" spacing={4}>
+    <VStack w="full" alignItems="start" spacing={4}>
       <RestaurantInfo restaurant={restaurant} />
-      <Box w="full">
-        <Text fontWeight="bold" mb={2}>
+      <Box maxW="full">
+        <Text fontWeight="bold" mb={1} ml={4}>
           セットメニュー
         </Text>
-        <Flex gap={3} className="hidden-scrollbar" overflowX="scroll">
+        <Flex gap={3} className="hidden-scrollbar" overflowX="scroll" px={4}>
           {restaurant.meals.map((meal) => (
             <MealPreviewBox
               key={meal.id}
@@ -55,36 +55,38 @@ export function RestaurantPage({ restaurant, userId }: Props) {
         </Flex>
       </Box>
 
-      {userId ? (
-        (() => {
-          switch (restaurant.status) {
-            case "OPEN":
-            case "PACKED":
-              return (
-                <Button onClick={() => router.push(`/restaurants/${restaurant.id}/orders/new`)} w="full" size="md">
-                  注文画面に進む
-                </Button>
-              );
-            case "CLOSED":
-              return (
-                <Alert status="warning" borderRadius={4}>
-                  <AlertIcon />
-                  現在こちらのお店は入店できません
-                </Alert>
-              );
-            default:
-              return null;
-          }
-        })()
-      ) : (
-        <>
-          <Alert status="error">
-            <AlertIcon />
-            表示価格での注文にはログインが必要です
-          </Alert>
-          <LineLoginButton callbackPath={pathname} />
-        </>
-      )}
+      <Box pb={4} px={4} w="full">
+        {userId ? (
+          (() => {
+            switch (restaurant.status) {
+              case "OPEN":
+              case "PACKED":
+                return (
+                  <Button onClick={() => router.push(`/restaurants/${restaurant.id}/orders/new`)} w="full" size="md">
+                    注文画面に進む
+                  </Button>
+                );
+              case "CLOSED":
+                return (
+                  <Alert status="warning" borderRadius={4}>
+                    <AlertIcon />
+                    現在こちらのお店は入店できません
+                  </Alert>
+                );
+              default:
+                return null;
+            }
+          })()
+        ) : (
+          <>
+            <Alert status="error">
+              <AlertIcon />
+              表示価格での注文にはログインが必要です
+            </Alert>
+            <LineLoginButton callbackPath={pathname} />
+          </>
+        )}
+      </Box>
     </VStack>
   );
 }

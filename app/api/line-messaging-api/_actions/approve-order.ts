@@ -1,6 +1,5 @@
 "use server";
 
-import { createHttpTask } from "@/lib/googleTasks/createHttpTask";
 import { pushMessage } from "@/lib/line-messaging-api";
 import prisma from "@/lib/prisma/client";
 import { sendMessage } from "@/lib/xoxzo";
@@ -40,7 +39,6 @@ export async function approveOrder({ orderId, lineId }: { orderId: string; lineI
   };
 
   if (order.canceledAt) return await notifyStaff(`注文(注文番号:${order.orderNumber})はすでにキャンセルされています。`);
-  if (order.completedAt) return await notifyStaff(`注文(注文番号:${order.orderNumber})はすでに完了しています。`);
   if (order.approvedByRestaurantAt)
     return await notifyStaff(`注文(注文番号:${order.orderNumber})はすでに承諾されています。`);
 
@@ -54,15 +52,4 @@ export async function approveOrder({ orderId, lineId }: { orderId: string; lineI
   ).catch((e) => {
     logger({ severity: "ERROR", message: "Error sending message", payload: { e } });
   });
-
-  const taskId = await createHttpTask({ name: "cancel-order", delaySeconds: 60 * 30, payload: { orderId: order.id } });
-  if (taskId) {
-    await prisma.orderAutomaticCancellation.create({ data: { orderId: order.id, googleCloudTaskId: taskId } });
-  } else {
-    logger({
-      severity: "ERROR",
-      message: "Error creating task",
-      payload: { orderId: order.id }
-    });
-  }
 }

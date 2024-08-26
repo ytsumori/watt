@@ -2,7 +2,7 @@
 
 import { OrderStatus, getOrderStatus, translateOrderStatus } from "@/lib/prisma/order-status";
 import { ChevronRightIcon } from "@chakra-ui/icons";
-import { Badge, Flex, Heading, Text, VStack } from "@chakra-ui/react";
+import { Badge, Flex, Text, VStack } from "@chakra-ui/react";
 import { Prisma } from "@prisma/client";
 import Link from "next/link";
 
@@ -35,9 +35,9 @@ export function OrdersPage({ orders }: Props) {
               {(() => {
                 switch (status) {
                   case "IN PROGRESS":
-                    return `作成日時: ${order.createdAt.toLocaleString("ja-JP")}`;
-                  case "COMPLETE":
-                    return `完了日時: ${order.completedAt?.toLocaleString("ja-JP")}`;
+                    return `注文日時: ${order.createdAt.toLocaleString("ja-JP")}`;
+                  case "APPROVED":
+                    return `注文完了日時: ${order.approvedByRestaurantAt?.toLocaleString("ja-JP")}`;
                   case "CANCELED":
                     return `キャンセル日時: ${order.canceledAt?.toLocaleString("ja-JP")}`;
                   default:
@@ -63,7 +63,7 @@ function getBadgeColor(status: OrderStatus) {
   switch (status) {
     case "IN PROGRESS":
       return "yellow";
-    case "COMPLETE":
+    case "APPROVED":
       return "green";
     case "CANCELED":
       return "red";

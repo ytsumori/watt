@@ -87,11 +87,11 @@ const ONBOARDING_STEPS = [
             セットメニューを選ぶ
             <br />
             <Text fontWeight="normal" fontSize="xs">
-              入店できるお店の中から食べたいものを選びましょう！
+              現在入店できるお店の中から食べたいものを選びましょう！
             </Text>
           </ListItem>
           <ListItem>
-            「お店に向かう」ボタンを押す
+            お店の空き状況を確認する
             <br />
             <Text fontWeight="normal" fontSize="xs">
               5分以内に自動的にお店の空き状況の確認を取り、SMSでお知らせします！

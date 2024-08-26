@@ -46,10 +46,6 @@ export default function RejectOrder({ params }: { params: { orderId: string } })
     });
   };
 
-  if (order.completedAt) {
-    return <Alert status="success">こちらの注文はすでに完了しています</Alert>;
-  }
-
   if (order.canceledAt) {
     return <Alert status="error">こちらの注文はすでにキャンセルされています</Alert>;
   }
