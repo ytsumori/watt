@@ -1,7 +1,7 @@
 "use client";
 
-import { getOrderStatusColor } from "@/app/admin/_utils/order-status-color";
 import { getOrderStatus, translateOrderStatus } from "@/lib/prisma/order-status";
+import { getOrderStatusColor } from "@/utils/order-status";
 import { ArrowLeftIcon, ArrowRightIcon, CheckIcon, CloseIcon } from "@chakra-ui/icons";
 import {
   Box,

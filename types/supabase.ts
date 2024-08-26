@@ -742,6 +742,88 @@ export type Database = {
           },
         ]
       }
+      RestaurantHoliday: {
+        Row: {
+          createdAt: string
+          date: string
+          id: string
+          restaurantId: string
+          updatedAt: string
+        }
+        Insert: {
+          createdAt?: string
+          date: string
+          id: string
+          restaurantId: string
+          updatedAt?: string
+        }
+        Update: {
+          createdAt?: string
+          date?: string
+          id?: string
+          restaurantId?: string
+          updatedAt?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "RestaurantHoliday_restaurantId_fkey"
+            columns: ["restaurantId"]
+            isOneToOne: false
+            referencedRelation: "Restaurant"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      RestaurantHolidayOpeningHour: {
+        Row: {
+          closeDayOfWeek: Database["public"]["Enums"]["DayOfWeek"]
+          closeHour: number
+          closeMinute: number
+          createdAt: string
+          id: string
+          isAutomaticallyApplied: boolean
+          openDayOfWeek: Database["public"]["Enums"]["DayOfWeek"]
+          openHour: number
+          openMinute: number
+          restaurantHolidayId: string
+          updatedAt: string
+        }
+        Insert: {
+          closeDayOfWeek: Database["public"]["Enums"]["DayOfWeek"]
+          closeHour: number
+          closeMinute: number
+          createdAt?: string
+          id: string
+          isAutomaticallyApplied?: boolean
+          openDayOfWeek: Database["public"]["Enums"]["DayOfWeek"]
+          openHour: number
+          openMinute: number
+          restaurantHolidayId: string
+          updatedAt?: string
+        }
+        Update: {
+          closeDayOfWeek?: Database["public"]["Enums"]["DayOfWeek"]
+          closeHour?: number
+          closeMinute?: number
+          createdAt?: string
+          id?: string
+          isAutomaticallyApplied?: boolean
+          openDayOfWeek?: Database["public"]["Enums"]["DayOfWeek"]
+          openHour?: number
+          openMinute?: number
+          restaurantHolidayId?: string
+          updatedAt?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "RestaurantHolidayOpeningHour_restaurantHolidayId_fkey"
+            columns: ["restaurantHolidayId"]
+            isOneToOne: false
+            referencedRelation: "RestaurantHoliday"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       RestaurantMenuImage: {
         Row: {
           createdAt: string

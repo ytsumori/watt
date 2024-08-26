@@ -21,7 +21,7 @@ import { format } from "date-fns";
 import { Fragment } from "react";
 import { MonthSelect } from "./MonthSelect";
 import { getOrderStatus, translateOrderStatus } from "@/lib/prisma/order-status";
-import { getOrderStatusColor } from "@/app/admin/_utils/order-status-color";
+import { getOrderStatusColor } from "@/utils/order-status";
 
 type Props = {
   restaurantId: string;
