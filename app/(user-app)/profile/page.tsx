@@ -28,7 +28,7 @@ export default async function Profile({ searchParams }: Props) {
   }
   return (
     <>
-      <HeaderSection title="プロフィール" />
+      <HeaderSection title="プロフィール" backButtonPath="/" />
       <ProfilePage me={me} redirectedFrom={searchParams.redirectedFrom} />
     </>
   );

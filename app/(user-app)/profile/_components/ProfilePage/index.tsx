@@ -146,7 +146,7 @@ export function ProfilePage({ me, redirectedFrom }: Props) {
             router.refresh();
           }
         }}
-        onClose={() => undefined}
+        onClose={() => setSubmitStatus("idle")}
       >
         変更を保存しました
       </ConfirmModal>
