@@ -130,6 +130,7 @@ export function OrdersPage() {
               const isCancellable =
                 orderStatus === "APPROVED" &&
                 order.approvedByRestaurantAt &&
+                order.approvedByRestaurantAt < new Date(new Date().getTime() - 30 * 60 * 1000) &&
                 order.approvedByRestaurantAt >= new Date(new Date().getTime() - 1 * 24 * 60 * 60 * 1000); // less than one day
               return (
                 <VStack
