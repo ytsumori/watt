@@ -28,6 +28,7 @@ import { User } from "@prisma/client";
 import { OnboardingModal } from "../OnboardingModal";
 import { getUser } from "./actions/getUser";
 import { getRecentOrderId } from "./actions/getRecentOrder";
+import { sendGAEvent } from "@next/third-parties/google";
 
 export function LogoHeader() {
   const [user, setUser] = useState<User>();
@@ -97,7 +98,14 @@ export function LogoHeader() {
                   <MenuItem onClick={handleSignOutClick}>ログアウト</MenuItem>
                 </>
               ) : (
-                <MenuItem onClick={() => signIn("line", { callbackUrl: "/" })}>ログイン</MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    sendGAEvent("event", "login");
+                    signIn("line", { callbackUrl: "/" });
+                  }}
+                >
+                  ログイン
+                </MenuItem>
               )}
               <Accordion allowToggle>
                 <AccordionItem border="none">
