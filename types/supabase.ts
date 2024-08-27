@@ -268,6 +268,7 @@ export type Database = {
         Row: {
           approvedByRestaurantAt: string | null
           canceledAt: string | null
+          completedAt: string | null
           createdAt: string
           id: string
           isDiscounted: boolean
@@ -281,6 +282,7 @@ export type Database = {
         Insert: {
           approvedByRestaurantAt?: string | null
           canceledAt?: string | null
+          completedAt?: string | null
           createdAt?: string
           id: string
           isDiscounted?: boolean
@@ -294,6 +296,7 @@ export type Database = {
         Update: {
           approvedByRestaurantAt?: string | null
           canceledAt?: string | null
+          completedAt?: string | null
           createdAt?: string
           id?: string
           isDiscounted?: boolean
@@ -317,6 +320,35 @@ export type Database = {
             columns: ["userId"]
             isOneToOne: false
             referencedRelation: "User"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      OrderAutomaticCancellation: {
+        Row: {
+          createdAt: string
+          googleCloudTaskId: string
+          id: string
+          orderId: string
+        }
+        Insert: {
+          createdAt?: string
+          googleCloudTaskId: string
+          id: string
+          orderId: string
+        }
+        Update: {
+          createdAt?: string
+          googleCloudTaskId?: string
+          id?: string
+          orderId?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "OrderAutomaticCancellation_orderId_fkey"
+            columns: ["orderId"]
+            isOneToOne: false
+            referencedRelation: "Order"
             referencedColumns: ["id"]
           },
         ]
@@ -1138,6 +1170,7 @@ export type Database = {
           owner_id: string | null
           path_tokens: string[] | null
           updated_at: string | null
+          user_metadata: Json | null
           version: string | null
         }
         Insert: {
@@ -1151,6 +1184,7 @@ export type Database = {
           owner_id?: string | null
           path_tokens?: string[] | null
           updated_at?: string | null
+          user_metadata?: Json | null
           version?: string | null
         }
         Update: {
@@ -1164,6 +1198,7 @@ export type Database = {
           owner_id?: string | null
           path_tokens?: string[] | null
           updated_at?: string | null
+          user_metadata?: Json | null
           version?: string | null
         }
         Relationships: [
@@ -1185,6 +1220,7 @@ export type Database = {
           key: string
           owner_id: string | null
           upload_signature: string
+          user_metadata: Json | null
           version: string
         }
         Insert: {
@@ -1195,6 +1231,7 @@ export type Database = {
           key: string
           owner_id?: string | null
           upload_signature: string
+          user_metadata?: Json | null
           version: string
         }
         Update: {
@@ -1205,6 +1242,7 @@ export type Database = {
           key?: string
           owner_id?: string | null
           upload_signature?: string
+          user_metadata?: Json | null
           version?: string
         }
         Relationships: [
@@ -1340,6 +1378,10 @@ export type Database = {
           metadata: Json
           updated_at: string
         }[]
+      }
+      operation: {
+        Args: Record<PropertyKey, never>
+        Returns: string
       }
       search: {
         Args: {
