@@ -152,8 +152,7 @@ export const OrderNewPage: FC<Props> = ({ restaurant, inProgressOrderId, userId,
         firstOptionIds: firstMealSelectedOptions,
         secondMealId: secondPersonMeal?.id,
         secondOptionIds: secondMealSelectedOptions,
-        peopleCount,
-        isDiscounted
+        peopleCount
       });
 
       if (error) {

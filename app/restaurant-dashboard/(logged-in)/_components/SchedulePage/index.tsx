@@ -8,16 +8,14 @@ import { ScheduleListItem } from "./_components/ScheduleListItem";
 import { dayOfWeekToNumber } from "@/utils/day-of-week";
 import { RepeatIcon } from "@chakra-ui/icons";
 import { RestaurantIdContext } from "../RestaurantIdProvider";
-import { StatusRadioGroup } from "./_components/StatusRadioGroup";
-import { IsOpenSwitch } from "./_components/IsOpenSwitch";
+import { IsAvailableSwitch } from "./_components/IsAvailableSwitch";
 
 export function SchedulePage() {
   const restaurantId = useContext(RestaurantIdContext);
   const [restaurant, setRestaurant] = useState<
     Prisma.RestaurantGetPayload<{
       select: {
-        isFullStatusAvailable: true;
-        status: true;
+        isAvailable: true;
         openingHours: true;
       };
     }>
@@ -66,15 +64,11 @@ export function SchedulePage() {
 
   return (
     <>
-      {restaurant?.isFullStatusAvailable ? (
-        <StatusRadioGroup restaurantId={restaurantId} status={restaurant.status} />
-      ) : (
-        <IsOpenSwitch
-          restaurantId={restaurantId}
-          isRestaurantOpen={restaurant?.status === "OPEN"}
-          onChange={revalidateOpeningInfo}
-        />
-      )}
+      <IsAvailableSwitch
+        restaurantId={restaurantId}
+        isRestaurantAvailable={restaurant?.isAvailable ?? false}
+        onChange={revalidateOpeningInfo}
+      />
       <Heading size="md" mt={6}>
         営業時間の自動開店・閉店設定
       </Heading>

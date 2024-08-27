@@ -49,7 +49,6 @@ export function RestaurantPage({ restaurant, userId }: Props) {
               meal={meal}
               href={`/restaurants/${meal.restaurantId}/meals/${meal.id}`}
               isRouter
-              isDiscounted={restaurant.status === "OPEN"}
             />
           ))}
         </Flex>

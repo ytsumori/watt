@@ -16,20 +16,18 @@ export async function visitRestaurant({
   firstOptionIds,
   secondMealId,
   secondOptionIds,
-  peopleCount,
-  isDiscounted
+  peopleCount
 }: CreateOrderArgs): Promise<Result<Order>> {
   const inProgressOrder = await findInProgressOrder(userId);
   if (inProgressOrder) {
     throw new Error("Active order already exists");
   }
 
-  const restaurant = await prisma.restaurant.findUnique({ where: { id: restaurantId }, select: { status: true } });
+  const restaurant = await prisma.restaurant.findUnique({ where: { id: restaurantId }, select: { isAvailable: true } });
   if (!restaurant) {
     throw new Error("Restaurant not found");
   }
-  const isPacked = restaurant.status === "PACKED";
-  if (isDiscounted && isPacked) {
+  if (!restaurant.isAvailable) {
     return { data: null, error: { message: "Status outdated" } };
   }
 
@@ -40,8 +38,7 @@ export async function visitRestaurant({
     firstOptionIds,
     secondMealId,
     secondOptionIds,
-    peopleCount,
-    isDiscounted
+    peopleCount
   });
 
   try {

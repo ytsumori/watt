@@ -1,6 +1,6 @@
 "use server";
 
-import { updateRestaurantStatus } from "@/actions/mutations/restaurant";
+import { updateRestaurantAvailability } from "@/actions/mutations/restaurant";
 import { notifyStaffCancellation, notifyStaffFullCancellation } from "./notify-staff-cancellation";
 import prisma from "@/lib/prisma/client";
 
@@ -23,7 +23,7 @@ export const cancelOrder = async ({ orderId, restaurantId, isFull }: Args) => {
   });
 
   if (isFull) {
-    await updateRestaurantStatus({ id: restaurantId, status: "CLOSED" });
+    await updateRestaurantAvailability({ id: restaurantId, isAvailable: false });
     try {
       await notifyStaffFullCancellation({ orderId: orderId });
     } catch (e) {

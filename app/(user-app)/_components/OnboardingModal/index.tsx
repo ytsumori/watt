@@ -41,7 +41,7 @@ const ONBOARDING_STEPS = [
             height="24"
             style={{ display: "inline", verticalAlign: "bottom", marginRight: "0.2rem" }}
           />
-          は、混雑状況に応じて価格が変化する飲食サービスです！
+          は、今すぐ入れるお店を確認でき、お得なセットを注文・来店できる飲食サービスです！
           <br />
           1人または2人向けにWatt限定の特別セットメニューをお得な値段で提供しています！
         </Text>
@@ -52,28 +52,21 @@ const ONBOARDING_STEPS = [
     )
   },
   {
-    title: "混雑ステータスについて",
+    title: "空き確認ステータスについて",
     content: (
       <VStack alignItems="start" fontSize="sm">
-        <Text>お店は以下の混雑ステータスのいずれかに設定されています。</Text>
+        <Text>お店の空き確認ステータスのいずれかに設定されています。</Text>
         <Box>
-          <StatusBadge status="OPEN" isWorkingHour={true} />
-          <Text>お店に入れる状態です。割引を適用した価格でセットメニューをご提供します。</Text>
-        </Box>
-        <Box>
-          <StatusBadge status="PACKED" isWorkingHour={true} />
-          <Text>お店に入れる状態ですが、席が埋まってしまう可能性があります。定価でセットメニューをご提供します。</Text>
+          <StatusBadge isAvailable isWorkingHour />
+          <Text>Wattによるお店の空き状況の確認ができる状態です。</Text>
         </Box>
         <Box>
           <HStack>
-            <StatusBadge status="CLOSED" isWorkingHour />
-            <StatusBadge status="CLOSED" isWorkingHour={false} />
+            <StatusBadge isAvailable={false} isWorkingHour />
+            <StatusBadge isAvailable={false} isWorkingHour={false} />
           </HStack>
-          <Text>お店に入れない状態です。</Text>
+          <Text>Wattによる店の空き状況の確認ができない状態です。</Text>
         </Box>
-        <Text fontSize="xs" color="gray.500">
-          ※実際の混雑状況と多少ズレが発生する場合がございますので、ご了承ください。
-        </Text>
       </VStack>
     )
   },
@@ -87,7 +80,7 @@ const ONBOARDING_STEPS = [
             セットメニューを選ぶ
             <br />
             <Text fontWeight="normal" fontSize="xs">
-              現在入店できるお店の中から食べたいものを選びましょう！
+              空き確認ができるお店の中から食べたいものを選びましょう！
             </Text>
           </ListItem>
           <ListItem>

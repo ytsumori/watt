@@ -18,37 +18,25 @@ export async function updateRestaurantStatusAutomatically({
   });
 }
 
-export async function updateRestaurantStatus({
+export async function updateRestaurantAvailability({
   id,
-  status,
-  isInAdvance
+  isAvailable
 }: {
   id: string;
-  status: RestaurantStatus;
+  isAvailable: boolean;
   isInAdvance?: boolean;
 }) {
   const restaurant = await prisma.restaurant.findUnique({ where: { id } });
   if (!restaurant) throw new Error("restaurant not found");
 
-  const previousStatus = restaurant.status;
   return await prisma.restaurant.update({
     where: {
       id
     },
     data: {
-      status,
-      ...(isInAdvance
-        ? {
-            statusChanges: {
-              create: {
-                from: previousStatus,
-                to: status
-              }
-            }
-          }
-        : {}),
+      isAvailable,
       closedAlerts: {
-        ...(status === "OPEN"
+        ...(isAvailable
           ? {
               updateMany: {
                 where: {
@@ -90,18 +78,5 @@ export async function updateRestaurantPublishment({ id, isPublished }: { id: str
   return await prisma.restaurant.update({
     where: { id },
     data: { isPublished }
-  });
-}
-
-export async function updateRestaurantFullStatusAvailability({
-  id,
-  isFullStatusAvailable
-}: {
-  id: string;
-  isFullStatusAvailable: boolean;
-}) {
-  return await prisma.restaurant.update({
-    where: { id },
-    data: { isFullStatusAvailable }
   });
 }
