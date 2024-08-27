@@ -44,7 +44,7 @@ export async function approveOrder({ orderId, lineId }: { orderId: string; lineI
 
   await prisma.order.update({ where: { id: orderId }, data: { approvedByRestaurantAt: new Date() } });
   await notifyStaff(
-    `注文(注文番号:${order.orderNumber})を承諾しました。30分以内にお客様が来店されない場合、自動的にキャンセルされます。`
+    `注文(注文番号:${order.orderNumber})を承諾しました。30分以内にお客様が来店されない場合、管理画面よりキャンセルしてください。`
   );
   await sendMessage(
     order.user.phoneNumber,
