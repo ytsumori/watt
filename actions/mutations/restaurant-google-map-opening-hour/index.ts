@@ -1,10 +1,11 @@
 "use server";
 
-import { getOpeningHours } from "@/lib/places-api/actions";
+import { getCurrentOpeningHours, getRegularOpeningHours } from "@/lib/places-api/actions";
 import prisma from "@/lib/prisma/client";
 import { dayNumberToDayOfWeek } from "@/utils/day-of-week";
+import { createBusinessHourDiff } from "./util";
 
-export async function updateOpeningHours({
+export async function updateRegularOpeningHours({
   restaurantId,
   googleMapPlaceId
 }: {
@@ -12,7 +13,8 @@ export async function updateOpeningHours({
   googleMapPlaceId: string;
 }) {
   const previousOpeningHours = await prisma.restaurantGoogleMapOpeningHour.findMany({ where: { restaurantId } });
-  const { currentOpeningHours: newOpeningHours } = await getOpeningHours({ placeId: googleMapPlaceId });
+
+  const { regularOpeningHours: newOpeningHours } = await getRegularOpeningHours({ placeId: googleMapPlaceId });
 
   if (!newOpeningHours) {
     if (previousOpeningHours.length > 0) {
@@ -54,4 +56,36 @@ export async function updateOpeningHours({
   });
 
   return await prisma.$transaction([...deleteTransactions, ...createTransactions]);
+}
+
+export async function updateCurrentOpeningHours({
+  restaurantId,
+  googleMapPlaceId
+}: {
+  restaurantId: string;
+  googleMapPlaceId: string;
+}) {
+  const { currentOpeningHours } = await getCurrentOpeningHours({ placeId: googleMapPlaceId });
+  if (!currentOpeningHours) throw new Error("currentOpeningHours is not found");
+  const regularOpeningHours = await prisma.restaurantGoogleMapOpeningHour.findMany({ where: { restaurantId } });
+  const diffs = await createBusinessHourDiff({ currentOpeningHours, regularOpeningHours, restaurantId });
+
+  diffs.forEach(async (diff) => {
+    const restaurantHoliday = await prisma.restaurantHoliday.create({
+      data: { restaurantId: restaurantId, date: diff.date }
+    });
+    diff.holidayOpeningHours.forEach(async (item) => {
+      await prisma.restaurantHolidayOpeningHour.create({
+        data: {
+          restaurantHolidayId: restaurantHoliday.id,
+          openHour: item.openHour,
+          openMinute: item.openMinute,
+          closeDayOfWeek: item.closeDayOfWeek,
+          closeHour: item.closeHour,
+          closeMinute: item.closeMinute,
+          openDayOfWeek: item.openDayOfWeek
+        }
+      });
+    });
+  });
 }
