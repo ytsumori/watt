@@ -55,32 +55,31 @@ model OneTimePassword {
 }
 
 model Restaurant {
-  id                    String                           @id @default(cuid())
-  no                    Int                              @unique @default(autoincrement())
-  name                  String
-  status                RestaurantStatus                 @default(CLOSED)
-  isPublished           Boolean                          @default(false)
-  isFullStatusAvailable Boolean                          @default(false)
-  googleMapPlaceId      String                           @unique
-  password              String                           @unique @default(uuid())
-  smokingOption         SmokingOption?
-  phoneNumber           String?
-  interiorImagePath     String?
-  createdAt             DateTime                         @default(now())
-  updatedAt             DateTime                         @default(now()) @updatedAt
-  meals                 Meal[]
-  orders                Order[]
-  bankAccount           RestaurantBankAccount?
-  closedAlerts          RestaurantClosedAlert[]
-  openingHours          RestaurantGoogleMapOpeningHour[]
-  googleMapPlaceInfo    RestaurantGoogleMapPlaceInfo?
-  menuImages            RestaurantMenuImage[]
-  exteriorImage         RestaurantExteriorImage?
-  paymentOptions        RestaurantPaymentOption[]
-  coordinate            RestaurantCoordinate?
-  staffs                Staff[]
-  statusChanges         RestaurantStatusChange[]
-  holidays              RestaurantHoliday[]
+  id                 String                           @id @default(cuid())
+  no                 Int                              @unique @default(autoincrement())
+  name               String
+  status             RestaurantStatus?
+  isPublished        Boolean                          @default(false)
+  isActive           Boolean                          @default(false)
+  googleMapPlaceId   String                           @unique
+  password           String                           @unique @default(uuid())
+  smokingOption      SmokingOption?
+  phoneNumber        String?
+  interiorImagePath  String?
+  createdAt          DateTime                         @default(now())
+  updatedAt          DateTime                         @default(now()) @updatedAt
+  meals              Meal[]
+  orders             Order[]
+  bankAccount        RestaurantBankAccount?
+  closedAlerts       RestaurantClosedAlert[]
+  openingHours       RestaurantGoogleMapOpeningHour[]
+  googleMapPlaceInfo RestaurantGoogleMapPlaceInfo?
+  menuImages         RestaurantMenuImage[]
+  exteriorImage      RestaurantExteriorImage?
+  paymentOptions     RestaurantPaymentOption[]
+  coordinate         RestaurantCoordinate?
+  staffs             Staff[]
+  holidays           RestaurantHoliday[]
 }
 
 model RestaurantPaymentOption {
@@ -236,7 +235,6 @@ model Order {
   orderTotalPrice        Int
   canceledAt             DateTime?
   approvedByRestaurantAt DateTime?
-  isDiscounted           Boolean                @default(true)
   createdAt              DateTime               @default(now())
   updatedAt              DateTime               @default(now()) @updatedAt
   restaurant             Restaurant             @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
@@ -310,15 +308,6 @@ model RestaurantBankAccount {
   restaurant       Restaurant      @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
 
   @@unique([bankCode, branchCode, accountType, accountNo])
-}
-
-model RestaurantStatusChange {
-  id           String           @id @default(cuid())
-  restaurantId String
-  from         RestaurantStatus
-  to           RestaurantStatus
-  changedAt    DateTime         @default(now())
-  restaurant   Restaurant       @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
 }
 
 enum DayOfWeek {
