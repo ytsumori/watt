@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma/client";
 import { Prisma } from "@prisma/client";
 import { notifyRestaurantToOpen } from "./_actions/notify-restaurant-to-open";
-import { updateRestaurantStatusAutomatically } from "@/actions/mutations/restaurant";
+import { updateRestaurantAvailabilityAutomatically } from "@/actions/mutations/restaurant";
 import { isCurrentlyWorkingHour } from "@/utils/opening-hours";
 
 export async function GET(request: NextRequest) {
@@ -62,12 +62,12 @@ export async function GET(request: NextRequest) {
             });
           }
         } else {
-          await updateRestaurantStatusAutomatically({ id: restaurant.id, status: "OPEN" });
+          await updateRestaurantAvailabilityAutomatically({ id: restaurant.id, isAvailable: true });
         }
       }
     } else {
       if (restaurant.status !== "CLOSED") {
-        await updateRestaurantStatusAutomatically({ id: restaurant.id, status: "CLOSED" });
+        await updateRestaurantAvailabilityAutomatically({ id: restaurant.id, isAvailable: false });
       }
     }
   };

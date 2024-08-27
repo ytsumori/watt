@@ -2,19 +2,18 @@
 
 import prisma from "@/lib/prisma/client";
 import { createServiceRoleClient } from "@/lib/supabase/createServiceRoleClient";
-import { RestaurantStatus } from "@prisma/client";
 import { randomUUID } from "crypto";
 
-export async function updateRestaurantStatusAutomatically({
+export async function updateRestaurantAvailabilityAutomatically({
   id,
-  status
+  isAvailable
 }: {
   id: string;
-  status: Exclude<RestaurantStatus, "PACKED">;
+  isAvailable: boolean;
 }) {
   return await prisma.restaurant.update({
     where: { id },
-    data: { status }
+    data: { isAvailable }
   });
 }
 
