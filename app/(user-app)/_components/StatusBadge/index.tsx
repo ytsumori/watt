@@ -8,11 +8,7 @@ type Props = {
 
 export function StatusBadge({ isAvailable, isWorkingHour, nextOpenAt }: Props) {
   return (
-    <Badge
-      backgroundColor={isAvailable ? undefined : "blackAlpha.700"}
-      variant={isAvailable ? "solid" : "outline"}
-      fontSize="sm"
-    >
+    <Badge backgroundColor={isAvailable ? undefined : "blackAlpha.700"} variant="solid" fontSize="sm">
       {getBadgeLabel(isAvailable, isWorkingHour, nextOpenAt)}
     </Badge>
   );
