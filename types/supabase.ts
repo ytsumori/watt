@@ -270,7 +270,6 @@ export type Database = {
           canceledAt: string | null
           createdAt: string
           id: string
-          isDiscounted: boolean
           orderNumber: number
           orderTotalPrice: number
           peopleCount: number
@@ -283,7 +282,6 @@ export type Database = {
           canceledAt?: string | null
           createdAt?: string
           id: string
-          isDiscounted?: boolean
           orderNumber?: number
           orderTotalPrice: number
           peopleCount: number
@@ -296,7 +294,6 @@ export type Database = {
           canceledAt?: string | null
           createdAt?: string
           id?: string
-          isDiscounted?: boolean
           orderNumber?: number
           orderTotalPrice?: number
           peopleCount?: number
@@ -466,14 +463,14 @@ export type Database = {
           googleMapPlaceId: string
           id: string
           interiorImagePath: string | null
-          isFullStatusAvailable: boolean
+          isAvailable: boolean
           isPublished: boolean
           name: string
           no: number
           password: string
           phoneNumber: string | null
           smokingOption: Database["public"]["Enums"]["SmokingOption"] | null
-          status: Database["public"]["Enums"]["RestaurantStatus"]
+          status: Database["public"]["Enums"]["RestaurantStatus"] | null
           updatedAt: string
         }
         Insert: {
@@ -481,14 +478,14 @@ export type Database = {
           googleMapPlaceId: string
           id: string
           interiorImagePath?: string | null
-          isFullStatusAvailable?: boolean
+          isAvailable?: boolean
           isPublished?: boolean
           name: string
           no?: number
           password: string
           phoneNumber?: string | null
           smokingOption?: Database["public"]["Enums"]["SmokingOption"] | null
-          status?: Database["public"]["Enums"]["RestaurantStatus"]
+          status?: Database["public"]["Enums"]["RestaurantStatus"] | null
           updatedAt?: string
         }
         Update: {
@@ -496,14 +493,14 @@ export type Database = {
           googleMapPlaceId?: string
           id?: string
           interiorImagePath?: string | null
-          isFullStatusAvailable?: boolean
+          isAvailable?: boolean
           isPublished?: boolean
           name?: string
           no?: number
           password?: string
           phoneNumber?: string | null
           smokingOption?: Database["public"]["Enums"]["SmokingOption"] | null
-          status?: Database["public"]["Enums"]["RestaurantStatus"]
+          status?: Database["public"]["Enums"]["RestaurantStatus"] | null
           updatedAt?: string
         }
         Relationships: []
@@ -884,38 +881,6 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "RestaurantPaymentOption_restaurantId_fkey"
-            columns: ["restaurantId"]
-            isOneToOne: false
-            referencedRelation: "Restaurant"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      RestaurantStatusChange: {
-        Row: {
-          changedAt: string
-          from: Database["public"]["Enums"]["RestaurantStatus"]
-          id: string
-          restaurantId: string
-          to: Database["public"]["Enums"]["RestaurantStatus"]
-        }
-        Insert: {
-          changedAt?: string
-          from: Database["public"]["Enums"]["RestaurantStatus"]
-          id: string
-          restaurantId: string
-          to: Database["public"]["Enums"]["RestaurantStatus"]
-        }
-        Update: {
-          changedAt?: string
-          from?: Database["public"]["Enums"]["RestaurantStatus"]
-          id?: string
-          restaurantId?: string
-          to?: Database["public"]["Enums"]["RestaurantStatus"]
-        }
-        Relationships: [
-          {
-            foreignKeyName: "RestaurantStatusChange_restaurantId_fkey"
             columns: ["restaurantId"]
             isOneToOne: false
             referencedRelation: "Restaurant"
