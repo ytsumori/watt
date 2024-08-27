@@ -51,7 +51,7 @@ export function MealPrice({ meal, selectedOptions, titlePrefix, isDiscounted }: 
             <Flex fontWeight="bold" textColor="brand.400">
               <Spacer />
               <Text fontSize="sm" as="span" mr={2}>
-                スキ割価格
+                Watt割引価格
               </Text>
               <Text as="span">{(meal.price + totalExtraPrice).toLocaleString("ja-JP")}円</Text>
             </Flex>

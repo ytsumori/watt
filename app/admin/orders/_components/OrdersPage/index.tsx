@@ -65,7 +65,7 @@ export function OrdersPage({ orders, page, maxPage }: Props) {
               <Th>人数</Th>
               <Th>注文金額</Th>
               <Th>注文日時</Th>
-              <Th>スキ割</Th>
+              <Th>割引</Th>
               <Th>セット内容</Th>
             </Tr>
           </Thead>
