@@ -60,7 +60,7 @@ model Restaurant {
   name               String
   status             RestaurantStatus?
   isPublished        Boolean                          @default(false)
-  isActive           Boolean                          @default(false)
+  isAvailable        Boolean                          @default(false)
   googleMapPlaceId   String                           @unique
   password           String                           @unique @default(uuid())
   smokingOption      SmokingOption?
