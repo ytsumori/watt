@@ -470,7 +470,6 @@ export type Database = {
           password: string
           phoneNumber: string | null
           smokingOption: Database["public"]["Enums"]["SmokingOption"] | null
-          status: Database["public"]["Enums"]["RestaurantStatus"] | null
           updatedAt: string
         }
         Insert: {
@@ -485,7 +484,6 @@ export type Database = {
           password: string
           phoneNumber?: string | null
           smokingOption?: Database["public"]["Enums"]["SmokingOption"] | null
-          status?: Database["public"]["Enums"]["RestaurantStatus"] | null
           updatedAt?: string
         }
         Update: {
@@ -500,7 +498,6 @@ export type Database = {
           password?: string
           phoneNumber?: string | null
           smokingOption?: Database["public"]["Enums"]["SmokingOption"] | null
-          status?: Database["public"]["Enums"]["RestaurantStatus"] | null
           updatedAt?: string
         }
         Relationships: []
@@ -1018,7 +1015,6 @@ export type Database = {
         | "SUNDAY"
       OrderNotificationCallStatus: "IN_PROGRESS" | "ANSWERED" | "NO_ANSWER"
       PaymentOption: "CASH" | "CREDIT_CARD" | "E_MONEY" | "QR_CODE"
-      RestaurantStatus: "OPEN" | "PACKED" | "CLOSED"
       SmokingOption:
         | "SMOKING"
         | "NON_SMOKING"
