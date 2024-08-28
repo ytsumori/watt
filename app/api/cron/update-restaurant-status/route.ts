@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
   const update = async (restaurant: Prisma.RestaurantGetPayload<{ include: { openingHours: true } }>) => {
     if (restaurant.openingHours.length === 0) return;
     if (isCurrentlyWorkingHour(restaurant.openingHours)) {
-      if (restaurant.isAvailable) {
+      if (!restaurant.isAvailable) {
         const unopenClosedAlert = await prisma.restaurantClosedAlert.findFirst({
           select: {
             id: true,
