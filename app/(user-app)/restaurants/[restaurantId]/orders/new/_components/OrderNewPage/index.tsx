@@ -152,8 +152,7 @@ export const OrderNewPage: FC<Props> = ({ restaurant, inProgressOrderId, userId,
         firstOptionIds: firstMealSelectedOptions,
         secondMealId: secondPersonMeal?.id,
         secondOptionIds: secondMealSelectedOptions,
-        peopleCount,
-        isDiscounted
+        peopleCount
       });
 
       if (error) {
@@ -269,7 +268,11 @@ export const OrderNewPage: FC<Props> = ({ restaurant, inProgressOrderId, userId,
                 />
                 <Divider borderColor="black" my={6} />
                 <Box w="100%">
-                  <Text fontSize="xs">お店の空き状況が確認でき、お店に到着するまで調理は開始されません。</Text>
+                  <Text fontSize="xs">
+                    この注文内容でWattが自動的にお店の空き状況を確認します。
+                    <br />
+                    店の空き状況が確認でき、お店に到着するまで調理は開始されません。
+                  </Text>
                   <Button
                     isLoading={isVisitRequesting}
                     onClick={handleVisitingClick}
@@ -306,9 +309,10 @@ export const OrderNewPage: FC<Props> = ({ restaurant, inProgressOrderId, userId,
           isDisabled: isVisitRequesting
         }}
       >
-        5分以内にお店の空席状況を確認し、SMSでお知らせします。
+        Wattが自動的にお店の空き状況を確認し、5分以内にSMSでお知らせします。
         <br />
-        空席状況が確認でき次第、30分以内にお店に向かっていただき、注文の品でお食事をお楽しみください。
+        <br />
+        空き状況が確認後30分以内にお店に向かっていただき、注文の品でお食事をお楽しみください。
       </ConfirmModal>
       <ConfirmModal
         isOpen={errorMessage !== undefined}

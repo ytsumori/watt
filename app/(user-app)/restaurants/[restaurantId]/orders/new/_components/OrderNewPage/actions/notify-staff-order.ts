@@ -12,7 +12,6 @@ export async function notifyStaffOrder({ orderId }: { orderId: string }) {
       orderNumber: true,
       peopleCount: true,
       orderTotalPrice: true,
-      isDiscounted: true,
       meals: {
         select: {
           meal: {
@@ -224,7 +223,7 @@ export async function notifyStaffOrder({ orderId }: { orderId: string }) {
                                           },
                                           {
                                             type: "text" as "text",
-                                            text: `${(order.isDiscounted ? orderMeal.meal.price : orderMeal.meal.listPrice).toLocaleString("ja-JP")}円`,
+                                            text: `${orderMeal.meal.price.toLocaleString("ja-JP")}円`,
                                             size: "sm",
                                             color: "#111111",
                                             align: "end" as "end"

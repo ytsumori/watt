@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma/client";
 import { sendSlackMessage } from "@/lib/slack";
-import { Prisma } from "@prisma/client";
 
 export async function GET(request: NextRequest) {
   const authHeader = request.headers.get("authorization");
@@ -22,7 +21,6 @@ export async function GET(request: NextRequest) {
     select: {
       id: true,
       orderTotalPrice: true,
-      isDiscounted: true,
       meals: {
         select: {
           meal: { select: { price: true, listPrice: true } },
@@ -41,7 +39,7 @@ export async function GET(request: NextRequest) {
   await Promise.all(
     orders.map(async (order) => {
       const calculatedTotalPrice = order.meals.reduce((acc, orderMeal) => {
-        const mealPrice = order.isDiscounted ? orderMeal.meal.price : orderMeal.meal.listPrice;
+        const mealPrice = orderMeal.meal.price;
         const optionPrice = orderMeal.options.reduce((acc, option) => {
           return acc + option.mealItemOption.extraPrice;
         }, 0);

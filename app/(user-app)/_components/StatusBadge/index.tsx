@@ -1,41 +1,23 @@
 import { Badge } from "@chakra-ui/react";
-import { RestaurantStatus } from "@prisma/client";
 
 type Props = {
-  status: RestaurantStatus;
+  isAvailable: boolean;
   isWorkingHour: boolean;
   nextOpenAt?: string;
 };
 
-export function StatusBadge({ status, isWorkingHour, nextOpenAt }: Props) {
+export function StatusBadge({ isAvailable, isWorkingHour, nextOpenAt }: Props) {
   return (
-    <Badge backgroundColor={getBackgroundColor(status)} variant={getVariant(status)} fontSize="sm">
-      {getBadgeLabel(status, isWorkingHour, nextOpenAt)}
+    <Badge backgroundColor={isAvailable ? undefined : "blackAlpha.700"} variant="solid" fontSize="sm">
+      {getBadgeLabel(isAvailable, isWorkingHour, nextOpenAt)}
     </Badge>
   );
 }
 
-function getBackgroundColor(status: RestaurantStatus) {
-  if (status === "CLOSED") return "blackAlpha.700";
-}
-
-function getVariant(status: RestaurantStatus) {
-  switch (status) {
-    case "OPEN":
-    case "CLOSED":
-      return "solid";
-    case "PACKED":
-      return "outline";
-  }
-}
-
-function getBadgeLabel(status: RestaurantStatus, isWorkingHour: boolean, nextOpenAt?: string) {
-  switch (status) {
-    case "OPEN":
-      return "○ 空席あり";
-    case "PACKED":
-      return "△ 空席わずか";
-    case "CLOSED":
-      return isWorkingHour ? "× 満席" : `× 準備中${nextOpenAt ? `（${nextOpenAt}営業再開）` : ""}`;
+function getBadgeLabel(isAvailable: boolean, isWorkingHour: boolean, nextOpenAt?: string) {
+  if (isAvailable) {
+    return "空き確認できます";
+  } else {
+    return isWorkingHour ? "× 空き確認できません" : `× 準備中${nextOpenAt ? `（${nextOpenAt}営業再開）` : ""}`;
   }
 }

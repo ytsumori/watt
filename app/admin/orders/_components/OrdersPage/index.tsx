@@ -33,7 +33,6 @@ type Props = {
       canceledAt: true;
       createdAt: true;
       orderTotalPrice: true;
-      isDiscounted: true;
       meals: {
         select: {
           id: true;
@@ -65,7 +64,6 @@ export function OrdersPage({ orders, page, maxPage }: Props) {
               <Th>人数</Th>
               <Th>注文金額</Th>
               <Th>注文日時</Th>
-              <Th>割引</Th>
               <Th>セット内容</Th>
             </Tr>
           </Thead>
@@ -84,7 +82,6 @@ export function OrdersPage({ orders, page, maxPage }: Props) {
                   <Td>{order.peopleCount}</Td>
                   <Td>{order.orderTotalPrice.toLocaleString("ja-JP")}円</Td>
                   <Td>{order.createdAt && format(order.createdAt, "yyyy/MM/dd HH:mm")}</Td>
-                  <Td>{order.isDiscounted ? <CheckIcon color="green.500" /> : <CloseIcon color="red.500" />}</Td>
                   <Td>
                     {order.meals.map((meal) => (
                       <Fragment key={meal.id}>

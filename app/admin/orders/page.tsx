@@ -20,7 +20,6 @@ export default async function Orders({ searchParams }: Props) {
       canceledAt: true,
       createdAt: true,
       orderTotalPrice: true,
-      isDiscounted: true,
       meals: {
         select: {
           id: true,

@@ -4,7 +4,7 @@ import { notifyStaffNoActionCancellation } from "./_actions/notify-staff-no-acti
 import { logger } from "@/utils/logger";
 import { notifySlackStaffNoAction } from "./_actions/notify-slack-staff-no-action";
 import { notifyCancelSms } from "@/actions/sms-notification";
-import { updateRestaurantStatus } from "@/actions/mutations/restaurant";
+import { updateRestaurantAvailability } from "@/actions/mutations/restaurant";
 
 export async function POST(request: NextRequest) {
   const authHeader = request.headers.get("authorization");
@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
     where: { id: body.orderId },
     data: { canceledAt: new Date(), cancellation: { create: { reason: "CALL_NO_ANSWER", cancelledBy: "STAFF" } } }
   });
-  await updateRestaurantStatus({ id: order.restaurantId, status: "CLOSED" });
+  await updateRestaurantAvailability({ id: order.restaurantId, isAvailable: false });
   await notifyCancelSms({ phoneNumber: order.user.phoneNumber, orderNumber: order.orderNumber });
 
   await notifyStaffNoActionCancellation({ orderId: body.orderId }).catch((e) =>
