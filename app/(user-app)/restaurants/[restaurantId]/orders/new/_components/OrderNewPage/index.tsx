@@ -60,9 +60,8 @@ export const OrderNewPage: FC<Props> = ({ restaurant, inProgressOrderId, userId,
   );
   const [secondPersonMeal, setSecondPersonMeal] = useState<MealWithItems | null>();
   const [secondMealSelectedOptions, setSecondMealSelectedOptions] = useState<(string | null)[]>([]);
-  const isDiscounted = restaurant.status === "OPEN";
 
-  if (restaurant.status === "CLOSED") {
+  if (!restaurant.isAvailable) {
     return (
       <Alert status="warning" borderRadius={4}>
         <AlertIcon />
@@ -202,7 +201,6 @@ export const OrderNewPage: FC<Props> = ({ restaurant, inProgressOrderId, userId,
                 meal={firstPersonMeal}
                 selectedOptions={firstMealSelectedOptions}
                 onOptionChange={handleFirstMealOptionChange}
-                isDiscounted={isDiscounted}
               />
             )}
             {peopleCount === 2 && (
@@ -251,7 +249,6 @@ export const OrderNewPage: FC<Props> = ({ restaurant, inProgressOrderId, userId,
                     meal={secondPersonMeal}
                     selectedOptions={secondMealSelectedOptions}
                     onOptionChange={handleSecondMealOptionChange}
-                    isDiscounted={isDiscounted}
                   />
                 )}
               </>
@@ -264,7 +261,6 @@ export const OrderNewPage: FC<Props> = ({ restaurant, inProgressOrderId, userId,
                   firstSelectedOptions={firstMealSelectedOptions}
                   secondPersonMeal={secondPersonMeal ?? undefined}
                   secondSelectedOptions={secondMealSelectedOptions}
-                  isDiscounted={isDiscounted}
                 />
                 <Divider borderColor="black" my={6} />
                 <Box w="100%">

@@ -14,22 +14,14 @@ type Props = {
 };
 
 export const MealPrice: FC<Props> = ({ meal }) => {
-  const isDiscounted = meal.restaurant.status === "OPEN";
-
   return (
     <>
-      {isDiscounted ? (
-        <>
-          <Text textDecorationLine="line-through" fontSize="md" as="span">
-            {meal.listPrice!.toLocaleString("ja-JP")}円
-          </Text>
-          <Heading size="md" fontWeight="bold" color="brand.400" as="span" ml={2}>
-            {meal.price.toLocaleString("ja-JP")}円
-          </Heading>
-        </>
-      ) : (
-        <Heading size="md">{meal.listPrice!.toLocaleString("ja-JP")}円</Heading>
-      )}
+      <Text textDecorationLine="line-through" fontSize="md" as="span">
+        {meal.listPrice!.toLocaleString("ja-JP")}円
+      </Text>
+      <Heading size="md" fontWeight="bold" color="brand.400" as="span" ml={2}>
+        {meal.price.toLocaleString("ja-JP")}円
+      </Heading>
     </>
   );
 };
