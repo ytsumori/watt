@@ -25,7 +25,7 @@ export default async function Home() {
       }
     },
     where: { isPublished: true, meals: { some: { isInactive: false } } },
-    orderBy: { status: "asc" }
+    orderBy: { isAvailable: "desc" }
   });
   return (
     <Flex h="100svh" w="100vw" direction="column">
