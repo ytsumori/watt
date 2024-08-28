@@ -11,7 +11,7 @@ const render = (status: Status) => {
 };
 
 type Props = {
-  restaurants: { id: string; name: string; location: google.maps.LatLngLiteral }[];
+  restaurants: { id: string; name: string; location: google.maps.LatLngLiteral; isAvailable: boolean }[];
   activeRestaurant: {
     id: string;
     name: string;
@@ -69,7 +69,7 @@ export default function Map({ restaurants, activeRestaurant, currentLocation, on
             location={restaurant.location}
             title={restaurant.name}
             active={activeRestaurant?.id === restaurant.id}
-            isAvailable={activeRestaurant?.isAvailable ?? false}
+            isAvailable={restaurant.isAvailable}
             onClick={() => handleRestaurantSelect(restaurant.id)}
           />
         ))}

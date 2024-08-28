@@ -54,7 +54,7 @@ export default function HomePage({ restaurants }: { restaurants: RestaurantWithD
               id: restaurant.id,
               name: restaurant.name,
               location: { lat: restaurant.googleMapPlaceInfo.latitude, lng: restaurant.googleMapPlaceInfo.longitude },
-              status: restaurant.status
+              isAvailable: restaurant.isAvailable
             };
           })}
           currentLocation={position}
