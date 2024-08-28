@@ -58,7 +58,6 @@ model Restaurant {
   id                 String                           @id @default(cuid())
   no                 Int                              @unique @default(autoincrement())
   name               String
-  status             RestaurantStatus?
   isPublished        Boolean                          @default(false)
   isAvailable        Boolean                          @default(false)
   googleMapPlaceId   String                           @unique
@@ -358,10 +357,4 @@ enum OrderNotificationCallStatus {
   IN_PROGRESS
   ANSWERED
   NO_ANSWER
-}
-
-enum RestaurantStatus {
-  OPEN
-  PACKED
-  CLOSED
 }

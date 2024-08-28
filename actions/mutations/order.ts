@@ -29,7 +29,7 @@ export async function createOrder({
       listPrice: true,
       isInactive: true,
       restaurant: {
-        select: { phoneNumber: true, status: true }
+        select: { phoneNumber: true }
       },
       items: { select: { options: { select: { id: true, extraPrice: true } } } }
     }

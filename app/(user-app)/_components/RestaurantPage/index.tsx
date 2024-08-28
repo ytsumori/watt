@@ -57,23 +57,19 @@ export function RestaurantPage({ restaurant, userId }: Props) {
       <Box pb={4} px={4} w="full">
         {userId ? (
           (() => {
-            switch (restaurant.status) {
-              case "OPEN":
-              case "PACKED":
-                return (
-                  <Button onClick={() => router.push(`/restaurants/${restaurant.id}/orders/new`)} w="full" size="md">
-                    注文画面に進む
-                  </Button>
-                );
-              case "CLOSED":
-                return (
-                  <Alert status="warning" borderRadius={4}>
-                    <AlertIcon />
-                    現在こちらのお店は入店できません
-                  </Alert>
-                );
-              default:
-                return null;
+            if (restaurant.isAvailable) {
+              return (
+                <Button onClick={() => router.push(`/restaurants/${restaurant.id}/orders/new`)} w="full" size="md">
+                  注文画面に進む
+                </Button>
+              );
+            } else {
+              return (
+                <Alert status="warning" borderRadius={4}>
+                  <AlertIcon />
+                  現在こちらのお店は入店できません
+                </Alert>
+              );
             }
           })()
         ) : (
