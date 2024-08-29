@@ -83,17 +83,13 @@ export const createBusinessHourDiff = async ({
 
       const date = getDateOfDayThisWeek(dayOfWeekToNumber(dayOfWeek));
 
-      console.log(`-------- ${dayOfWeek} -------- ${formatDate(date, "yyyy-MM-dd(E)")}`);
-
       // 今週の営業時間の方が少ない場合
       if (currentBusinessHoursLength < regularBusinessHoursLength) {
-        console.log("今週の方が少ない");
         return { date, holidayOpeningHours: currentBusinessHours };
       }
 
       // 今週の営業時間の方が多い場合
       if (regularBusinessHoursLength < currentBusinessHoursLength) {
-        console.log("今週の方が多い");
         return { date, holidayOpeningHours: currentBusinessHours };
       }
 
@@ -105,7 +101,6 @@ export const createBusinessHourDiff = async ({
           )
         );
         if (currentBusinessHours.length !== sameBusinessHours.length) {
-          console.log("一緒の数だけど差分あり");
           return { date, holidayOpeningHours: currentBusinessHours };
         }
       }
