@@ -5,18 +5,17 @@ import { createCustomEqual } from "fast-equals";
 import { isLatLngLiteral } from "@googlemaps/typescript-guards";
 import { Children, cloneElement, isValidElement, useEffect, useRef, useState } from "react";
 import { calculateMarkerCoordinates, calculatePixelDistance, setFirstCenter } from "./util";
-import { $Enums, RestaurantStatus } from "@prisma/client";
 
 const render = (status: Status) => {
   return <h1>{status}</h1>;
 };
 
 type Props = {
-  restaurants: { id: string; name: string; location: google.maps.LatLngLiteral; status: RestaurantStatus }[];
+  restaurants: { id: string; name: string; location: google.maps.LatLngLiteral; isAvailable: boolean }[];
   activeRestaurant: {
     id: string;
     name: string;
-    status: $Enums.RestaurantStatus;
+    isAvailable: boolean;
     location: { lat: number; lng: number };
   } | null;
   currentLocation?: { lat: number; lng: number };
@@ -58,8 +57,7 @@ export default function Map({ restaurants, activeRestaurant, currentLocation, on
         zoom={zoom}
         disableDefaultUI
         active={
-          activeRestaurant?.location &&
-          activeRestaurant.status && { ...activeRestaurant.location, status: activeRestaurant.status }
+          activeRestaurant?.location && { ...activeRestaurant.location, isAvailable: activeRestaurant.isAvailable }
         }
         current={currentLocation}
         clickableIcons={false}
@@ -71,7 +69,7 @@ export default function Map({ restaurants, activeRestaurant, currentLocation, on
             location={restaurant.location}
             title={restaurant.name}
             active={activeRestaurant?.id === restaurant.id}
-            status={restaurant.status}
+            isAvailable={restaurant.isAvailable}
             onClick={() => handleRestaurantSelect(restaurant.id)}
           />
         ))}
@@ -85,7 +83,7 @@ interface MapProps extends google.maps.MapOptions {
   style?: { [key: string]: string };
   onIdle: (map: google.maps.Map) => void;
   children?: React.ReactNode;
-  active?: { lat: number; lng: number; status: $Enums.RestaurantStatus };
+  active?: { lat: number; lng: number; isAvailable: boolean };
   current?: { lat: number; lng: number };
   setZoom: (zoom: number) => void;
   setCenter: (center: google.maps.LatLngLiteral) => void;
@@ -104,22 +102,29 @@ function MapComponent({ onIdle, children, style, active, current, setZoom, setCe
   }, [ref, map]);
 
   useEffect(() => {
-    const activeCoordinate = active && { lat: active.lat, lng: active.lng };
     if (!map || !active) return;
+    const activeCoordinate = {
+      lat: active.lat,
+      lng: active.lng
+    };
     if (isFirst && activeCoordinate) {
       setFirstCenter({ current, active: activeCoordinate, setCenter, setZoom });
       setIsFirst(false);
     }
     const bounds = map.getBounds();
     const perPixelDistance = calculatePixelDistance(map);
-    //
     const markerCoordinates =
       perPixelDistance &&
       activeCoordinate &&
-      (active.status === "CLOSED"
-        ? // 検証ツール上のmarkerサイズは46x58, 60x78だがpaddingありきのサイズなので少し(6pxずつ)小さくしている
-          calculateMarkerCoordinates({ marker: { w: 40, h: 52, coordinate: activeCoordinate }, perPixelDistance })
-        : calculateMarkerCoordinates({ marker: { w: 54, h: 72, coordinate: activeCoordinate }, perPixelDistance }));
+      (active.isAvailable
+        ? calculateMarkerCoordinates({
+            marker: { w: 54, h: 72, coordinate: activeCoordinate },
+            perPixelDistance
+          })
+        : calculateMarkerCoordinates({
+            marker: { w: 40, h: 52, coordinate: activeCoordinate },
+            perPixelDistance
+          }));
 
     const isContains = markerCoordinates?.every((coordinate) =>
       bounds?.contains({ lat: coordinate.lat, lng: coordinate.lng })
@@ -131,7 +136,7 @@ function MapComponent({ onIdle, children, style, active, current, setZoom, setCe
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps -- activeを依存配列に含めると移動するたびにuseEffectが実行されてしまうためそれぞれのプロパティを個別に依存配列に含めている
-  }, [active?.lat, active?.lng, active?.status, current, isFirst, map, setCenter, setZoom]);
+  }, [active?.lat, active?.lng, active?.isAvailable, current, isFirst, map, setCenter, setZoom]);
 
   useDeepCompareEffectForMaps(() => map && map.setOptions({ ...options }), [map, options]);
 
@@ -205,7 +210,7 @@ function CurrentLocationMarker({ position, ...options }: CurrentLocationMarkerPr
 interface MarkerProps extends google.maps.MarkerOptions {
   location: google.maps.LatLngLiteral;
   active: boolean;
-  status: RestaurantStatus;
+  isAvailable: boolean;
   onClick: () => void;
 }
 
@@ -215,7 +220,7 @@ const ACTIVE_ICON_PATH =
 const INACTIVE_ICON_PATH =
   "M6.986 0C8.92333 0 10.5717 0.679667 11.931 2.039C13.2903 3.39833 13.97 5.04667 13.97 6.984C13.97 7.95267 13.7277 9.062 13.243 10.312C12.7583 11.562 12.1723 12.734 11.485 13.828C10.7977 14.922 10.118 15.9453 9.446 16.898C8.774 17.8507 8.20367 18.6083 7.735 19.171L6.985 19.968C6.79767 19.7493 6.54767 19.4603 6.235 19.101C5.92233 18.7417 5.35967 18.023 4.547 16.945C3.73433 15.867 3.02333 14.82 2.414 13.804C1.80467 12.788 1.25 11.6397 0.75 10.359C0.25 9.07833 0 7.95333 0 6.984C0 5.04667 0.679667 3.39833 2.039 2.039C3.39833 0.679667 5.04667 0 6.984 0L6.986 0Z";
 
-function RestaurantMarker({ location, active, status, onClick, ...options }: MarkerProps) {
+function RestaurantMarker({ location, active, isAvailable, onClick, ...options }: MarkerProps) {
   const [marker, setMarker] = useState<google.maps.Marker>();
 
   useEffect(() => {
@@ -233,46 +238,31 @@ function RestaurantMarker({ location, active, status, onClick, ...options }: Mar
 
   useEffect(() => {
     if (marker) {
-      switch (status) {
-        case "OPEN":
-          marker.setIcon({
-            path: active ? ACTIVE_ICON_PATH : INACTIVE_ICON_PATH,
-            fillColor: "#FF5850",
-            fillOpacity: 1,
-            strokeWeight: 2,
-            strokeColor: "white",
-            scale: active ? 3 : 2,
-            anchor: new google.maps.Point(7, 20)
-          });
-          marker.setZIndex(active ? google.maps.Marker.MAX_ZINDEX : 1);
-          break;
-        case "CLOSED":
-          marker.setIcon({
-            path: active ? ACTIVE_ICON_PATH : INACTIVE_ICON_PATH,
-            fillColor: "lightGray",
-            fillOpacity: 1,
-            strokeWeight: 1,
-            strokeColor: "gray",
-            scale: active ? 2 : 1.5,
-            anchor: new google.maps.Point(7, 20)
-          });
-          marker.setZIndex(active ? google.maps.Marker.MAX_ZINDEX : 0);
-          break;
-        case "PACKED":
-          marker.setIcon({
-            path: active ? ACTIVE_ICON_PATH : INACTIVE_ICON_PATH,
-            fillColor: "white",
-            fillOpacity: 1,
-            strokeWeight: 2,
-            strokeColor: "#FF5850",
-            scale: active ? 3 : 2,
-            anchor: new google.maps.Point(7, 20)
-          });
-          marker.setZIndex(active ? google.maps.Marker.MAX_ZINDEX : 1);
-          break;
+      if (isAvailable) {
+        marker.setIcon({
+          path: active ? ACTIVE_ICON_PATH : INACTIVE_ICON_PATH,
+          fillColor: "#FF5850",
+          fillOpacity: 1,
+          strokeWeight: 2,
+          strokeColor: "white",
+          scale: active ? 3 : 2,
+          anchor: new google.maps.Point(7, 20)
+        });
+        marker.setZIndex(active ? google.maps.Marker.MAX_ZINDEX : 1);
+      } else {
+        marker.setIcon({
+          path: active ? ACTIVE_ICON_PATH : INACTIVE_ICON_PATH,
+          fillColor: "lightGray",
+          fillOpacity: 1,
+          strokeWeight: 1,
+          strokeColor: "gray",
+          scale: active ? 2 : 1.5,
+          anchor: new google.maps.Point(7, 20)
+        });
+        marker.setZIndex(active ? google.maps.Marker.MAX_ZINDEX : 0);
       }
     }
-  }, [marker, active, status]);
+  }, [marker, active, isAvailable]);
 
   useEffect(() => {
     if (marker) {

@@ -54,7 +54,7 @@ export default function HomePage({ restaurants }: { restaurants: RestaurantWithD
               id: restaurant.id,
               name: restaurant.name,
               location: { lat: restaurant.googleMapPlaceInfo.latitude, lng: restaurant.googleMapPlaceInfo.longitude },
-              status: restaurant.status
+              isAvailable: restaurant.isAvailable
             };
           })}
           currentLocation={position}
@@ -63,7 +63,7 @@ export default function HomePage({ restaurants }: { restaurants: RestaurantWithD
               ? {
                   id: activeRestaurant?.id ?? "",
                   name: activeRestaurant?.name ?? "",
-                  status: activeRestaurant.status,
+                  isAvailable: activeRestaurant.isAvailable,
                   location: {
                     lat: activeRestaurant.googleMapPlaceInfo.latitude,
                     lng: activeRestaurant.googleMapPlaceInfo.longitude
@@ -114,26 +114,18 @@ export default function HomePage({ restaurants }: { restaurants: RestaurantWithD
           <ModalCloseButton />
           <ModalBody pt={0} pb={4}>
             <VStack alignItems="start" fontSize="sm">
+              <Text>お店の空き確認ステータスのいずれかに設定されています。</Text>
               <Box>
-                <StatusBadge status="OPEN" isWorkingHour={true} />
-                <Text>お店に入れる状態です。割引を適用した価格でセットメニューをご提供します。</Text>
-              </Box>
-              <Box>
-                <StatusBadge status="PACKED" isWorkingHour={true} />
-                <Text>
-                  お店に入れる状態ですが、席が埋まってしまう可能性があります。定価でセットメニューをご提供します。
-                </Text>
+                <StatusBadge isAvailable isWorkingHour />
+                <Text>Wattによるお店の空き状況の確認ができる状態です。</Text>
               </Box>
               <Box>
                 <HStack>
-                  <StatusBadge status="CLOSED" isWorkingHour />
-                  <StatusBadge status="CLOSED" isWorkingHour={false} />
+                  <StatusBadge isAvailable={false} isWorkingHour />
+                  <StatusBadge isAvailable={false} isWorkingHour={false} />
                 </HStack>
-                <Text>お店に入れない状態です。</Text>
+                <Text>Wattによる店の空き状況の確認ができない状態です。</Text>
               </Box>
-              <Text fontSize="xs" color="gray.500">
-                ※ステータスはリアルタイムではありません
-              </Text>
             </VStack>
           </ModalBody>
         </ModalContent>

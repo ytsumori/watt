@@ -10,7 +10,6 @@ export type CreateOrderArgs = {
   secondMealId?: string;
   secondOptionIds?: (string | null)[];
   peopleCount: 1 | 2;
-  isDiscounted: boolean;
 };
 
 export async function createOrder({
@@ -20,8 +19,7 @@ export async function createOrder({
   firstOptionIds,
   secondMealId,
   secondOptionIds,
-  peopleCount,
-  isDiscounted
+  peopleCount
 }: CreateOrderArgs) {
   const firstMeal = await prisma.meal.findUnique({
     where: { id: firstMealId, restaurantId },
@@ -31,7 +29,7 @@ export async function createOrder({
       listPrice: true,
       isInactive: true,
       restaurant: {
-        select: { phoneNumber: true, status: true }
+        select: { phoneNumber: true }
       },
       items: { select: { options: { select: { id: true, extraPrice: true } } } }
     }
@@ -52,18 +50,14 @@ export async function createOrder({
   ) {
     throw new Error("First meal options do not match");
   }
-  const isPacked = firstMeal.restaurant.status === "PACKED";
-  if (isDiscounted === isPacked) {
-    throw new Error("Status outdated");
-  }
 
-  const firstMealPrice = isDiscounted ? firstMeal.price : firstMeal.listPrice;
+  const firstMealPrice = firstMeal.price;
   const firstOrderTotalPrice =
     firstMealPrice +
     firstMeal.items.reduce((acc, item, index) => {
       const optionId = firstOptionIds[index];
 
-      return acc + (optionId ? item.options.find((option) => option.id === optionId)?.extraPrice ?? 0 : 0);
+      return acc + (optionId ? (item.options.find((option) => option.id === optionId)?.extraPrice ?? 0) : 0);
     }, 0);
 
   if (secondMealId) {
@@ -95,20 +89,19 @@ export async function createOrder({
       throw new Error("Second meal options do not match");
     }
 
-    const secondMealPrice = isDiscounted ? secondMeal.price : secondMeal.listPrice;
+    const secondMealPrice = secondMeal.price;
     const secondOrderTotalPrice =
       secondMealPrice +
       secondMeal.items.reduce((acc, item, index) => {
         const optionId = secondOptionIds[index];
 
-        return acc + (optionId ? item.options.find((option) => option.id === optionId)?.extraPrice ?? 0 : 0);
+        return acc + (optionId ? (item.options.find((option) => option.id === optionId)?.extraPrice ?? 0) : 0);
       }, 0);
     return await prisma.order.create({
       data: {
         userId,
         restaurantId,
         peopleCount,
-        isDiscounted,
         orderTotalPrice: firstOrderTotalPrice + secondOrderTotalPrice,
         meals: {
           create: [
@@ -138,7 +131,6 @@ export async function createOrder({
         userId,
         restaurantId,
         peopleCount,
-        isDiscounted,
         orderTotalPrice: firstOrderTotalPrice,
         meals: {
           create: [

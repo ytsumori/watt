@@ -31,14 +31,14 @@ export function RestaurantListItem({ restaurant, onClickHelp }: Props) {
         <BusinessHourLabel openingHours={restaurant.openingHours} />
       </Box>
       <HStack px={4} overflowX="auto" className="hidden-scrollbar" alignItems="start" mt={1}>
-        <MealImages meals={restaurant.meals} status={restaurant.status} />
+        <MealImages meals={restaurant.meals} />
         {restaurant.interiorImagePath && (
           <InteriorImage restaurantId={restaurant.id} interiorImagePath={restaurant.interiorImagePath} />
         )}
       </HStack>
       <HStack mx={4} mt={2}>
         <StatusBadge
-          status={restaurant.status}
+          isAvailable={restaurant.isAvailable}
           isWorkingHour={isCurrentlyWorkingHour(restaurant.openingHours)}
           nextOpenAt={
             nextOpeningHour
