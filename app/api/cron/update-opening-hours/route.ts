@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma/client";
 import { updateCurrentOpeningHours } from "@/actions/mutations/restaurant-google-map-opening-hour";
-// import { updateCurrentOpeningHours } from "@/actions/mutations/restaurant-google-map-opening-hour";
 
 export async function GET(request: NextRequest) {
   const authHeader = request.headers.get("authorization");
@@ -16,16 +15,12 @@ export async function GET(request: NextRequest) {
     where: { meals: { some: { isInactive: false } } }
   });
 
-  // DEBUG
-  const restaurant = restaurants[1];
-  await updateCurrentOpeningHours({ restaurantId: restaurant.id, googleMapPlaceId: restaurant.googleMapPlaceId });
-
-  // await Promise.all(
-  //   restaurants.map(
-  //     async (restaurant) =>
-  //       await updateCurrentOpeningHours({ restaurantId: restaurant.id, googleMapPlaceId: restaurant.googleMapPlaceId })
-  //   )
-  // );
+  await Promise.all(
+    restaurants.map(
+      async (restaurant) =>
+        await updateCurrentOpeningHours({ restaurantId: restaurant.id, googleMapPlaceId: restaurant.googleMapPlaceId })
+    )
+  );
 
   return NextResponse.json({ success: true });
 }
