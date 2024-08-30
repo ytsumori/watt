@@ -13,8 +13,8 @@ export const createRestaurantGoogleMapOpeningHourMock = (
     closeMinute: 0,
     openDayOfWeek: "SUNDAY",
     closeDayOfWeek: "SUNDAY",
-    createdAt: new Date("2024-08-24"),
-    updatedAt: new Date("2024-08-24"),
+    createdAt: new Date("2024-09-01"),
+    updatedAt: new Date("2024-09-01"),
     isAutomaticallyApplied: false,
     ...data
   };

@@ -3,13 +3,14 @@ import {
   convertCurrentOpeningHours,
   createBusinessHourDiff,
   createBusinessHoursGroupedByDayOfWeek,
-  getDateOfDayThisWeek
+  getDateOfNextSevenDays
 } from "./util";
 import { createRestaurantGoogleMapOpeningHourMock, mock } from "./mock";
 
 beforeEach(() => {
   vi.useFakeTimers();
-  vi.setSystemTime(new Date("2024-08-24"));
+  // 日本時間で2024-09-01T21:15:00になる
+  vi.setSystemTime(new Date("2024-09-01T12:15:00.000Z"));
 });
 
 afterEach(() => {
@@ -47,16 +48,50 @@ describe("【mutations/restaurant-google-map-opening-hour/util】", () => {
     });
   });
 
-  describe("getDateOfDayThisWeek", () => {
+  describe("getDateOfNextSevenDays", () => {
     it("正常系", () => {
-      expect(getDateOfDayThisWeek(0)).toStrictEqual(new Date("2024-08-18T00:00:00.000Z"));
-      expect(getDateOfDayThisWeek(1)).toStrictEqual(new Date("2024-08-19T00:00:00.000Z"));
-      expect(getDateOfDayThisWeek(2)).toStrictEqual(new Date("2024-08-20T00:00:00.000Z"));
-      expect(getDateOfDayThisWeek(3)).toStrictEqual(new Date("2024-08-21T00:00:00.000Z"));
-      expect(getDateOfDayThisWeek(4)).toStrictEqual(new Date("2024-08-22T00:00:00.000Z"));
-      expect(getDateOfDayThisWeek(5)).toStrictEqual(new Date("2024-08-23T00:00:00.000Z"));
-      expect(getDateOfDayThisWeek(6)).toStrictEqual(new Date("2024-08-24T00:00:00.000Z"));
-      vi.useRealTimers();
+      expect(getDateOfNextSevenDays(0)).eq(20240901);
+      expect(getDateOfNextSevenDays(1)).eq(20240902);
+      expect(getDateOfNextSevenDays(2)).eq(20240903);
+      expect(getDateOfNextSevenDays(3)).eq(20240904);
+      expect(getDateOfNextSevenDays(4)).eq(20240905);
+      expect(getDateOfNextSevenDays(5)).eq(20240906);
+      expect(getDateOfNextSevenDays(6)).eq(20240907);
+    });
+
+    it("指定した曜日に行くために週を跨ぐ場合(1)", () => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date("2024-09-03T12:15:00.000Z"));
+      expect(getDateOfNextSevenDays(0)).eq(20240908);
+      expect(getDateOfNextSevenDays(1)).eq(20240909);
+      expect(getDateOfNextSevenDays(2)).eq(20240903);
+      expect(getDateOfNextSevenDays(3)).eq(20240904);
+      expect(getDateOfNextSevenDays(4)).eq(20240905);
+      expect(getDateOfNextSevenDays(5)).eq(20240906);
+      expect(getDateOfNextSevenDays(6)).eq(20240907);
+    });
+
+    it("指定した曜日に行くために週を跨ぐ場合(2)", () => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date("2024-09-07T12:15:00.000Z"));
+      expect(getDateOfNextSevenDays(0)).eq(20240908);
+      expect(getDateOfNextSevenDays(1)).eq(20240909);
+      expect(getDateOfNextSevenDays(2)).eq(20240910);
+      expect(getDateOfNextSevenDays(3)).eq(20240911);
+      expect(getDateOfNextSevenDays(4)).eq(20240912);
+      expect(getDateOfNextSevenDays(5)).eq(20240913);
+      expect(getDateOfNextSevenDays(6)).eq(20240907);
+    });
+
+    it("timezoneが違っても動く", () => {
+      vi.stubEnv("TZ", "America/Los_Angeles");
+      expect(getDateOfNextSevenDays(0)).eq(20240901);
+      expect(getDateOfNextSevenDays(1)).eq(20240902);
+      expect(getDateOfNextSevenDays(2)).eq(20240903);
+      expect(getDateOfNextSevenDays(3)).eq(20240904);
+      expect(getDateOfNextSevenDays(4)).eq(20240905);
+      expect(getDateOfNextSevenDays(5)).eq(20240906);
+      expect(getDateOfNextSevenDays(6)).eq(20240907);
     });
   });
 
@@ -104,9 +139,9 @@ describe("【mutations/restaurant-google-map-opening-hour/util】", () => {
         });
 
         expect(result).toStrictEqual([
-          { date: new Date("2024-08-19"), holidayOpeningHours: [] },
-          { date: new Date("2024-08-20"), holidayOpeningHours: [] },
-          { date: new Date("2024-08-21"), holidayOpeningHours: [] }
+          { date: 20240902, holidayOpeningHours: [] },
+          { date: 20240903, holidayOpeningHours: [] },
+          { date: 20240904, holidayOpeningHours: [] }
         ]);
       });
 
@@ -128,7 +163,7 @@ describe("【mutations/restaurant-google-map-opening-hour/util】", () => {
           regularOpeningHours: regularOpeningHours
         });
 
-        expect(result).toStrictEqual([{ date: new Date("2024-08-18"), holidayOpeningHours: [] }]);
+        expect(result).toStrictEqual([{ date: 20240901, holidayOpeningHours: [] }]);
       });
     });
 
@@ -159,7 +194,7 @@ describe("【mutations/restaurant-google-map-opening-hour/util】", () => {
 
         expect(result).toStrictEqual([
           {
-            date: new Date("2024-08-23"),
+            date: 20240906,
             holidayOpeningHours: [
               {
                 closeDayOfWeek: "FRIDAY",
@@ -197,7 +232,7 @@ describe("【mutations/restaurant-google-map-opening-hour/util】", () => {
 
         expect(result).toStrictEqual([
           {
-            date: new Date("2024-08-23"),
+            date: 20240906,
             holidayOpeningHours: [
               {
                 closeDayOfWeek: "FRIDAY",
@@ -211,7 +246,7 @@ describe("【mutations/restaurant-google-map-opening-hour/util】", () => {
             ]
           },
           {
-            date: new Date("2024-08-24"),
+            date: 20240907,
             holidayOpeningHours: [
               {
                 closeDayOfWeek: "SATURDAY",
@@ -225,7 +260,7 @@ describe("【mutations/restaurant-google-map-opening-hour/util】", () => {
             ]
           },
           {
-            date: new Date("2024-08-18"),
+            date: 20240901,
             holidayOpeningHours: [
               {
                 closeDayOfWeek: "SUNDAY",
@@ -277,7 +312,7 @@ describe("【mutations/restaurant-google-map-opening-hour/util】", () => {
 
         expect(result).toStrictEqual([
           {
-            date: new Date("2024-08-18"),
+            date: 20240901,
             holidayOpeningHours: [
               {
                 closeDayOfWeek: "SUNDAY",
@@ -318,7 +353,7 @@ describe("【mutations/restaurant-google-map-opening-hour/util】", () => {
 
         expect(result).toStrictEqual([
           {
-            date: new Date("2024-08-18"),
+            date: 20240901,
             holidayOpeningHours: [
               {
                 closeDayOfWeek: "SUNDAY",
@@ -352,7 +387,7 @@ describe("【mutations/restaurant-google-map-opening-hour/util】", () => {
 
         expect(result).toStrictEqual([
           {
-            date: new Date("2024-08-20"),
+            date: 20240903,
             holidayOpeningHours: [
               {
                 closeDayOfWeek: "TUESDAY",

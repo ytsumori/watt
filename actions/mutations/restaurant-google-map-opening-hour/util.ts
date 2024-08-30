@@ -1,8 +1,10 @@
 import { CurrentOpeningHoursResult } from "@/lib/places-api/actions";
 import { convertOpeningHours } from "@/lib/places-api/util";
 import { dayNumberToDayOfWeek, dayOfWeekToNumber } from "@/utils/day-of-week";
+import { getJSTFromUTC } from "@/utils/timezone";
 import { $Enums, RestaurantGoogleMapOpeningHour } from "@prisma/client";
-import { startOfWeek, addDays, formatDate, toDate, parseISO, addHours } from "date-fns";
+import { addDays, addHours, format, getDay } from "date-fns";
+import { ja } from "date-fns/locale";
 
 export type RestaurantOpeningHour = Omit<
   RestaurantGoogleMapOpeningHour,
@@ -30,12 +32,30 @@ const checkHasSameBusinessHours = (
   );
 };
 
-export const getDateOfDayThisWeek = (dayNumber: number) => {
-  const today = new Date();
-  const weekStart = startOfWeek(today, { weekStartsOn: 0 });
-  // startOfWeekStartで前日の15:00で帰ってきてしまうため、9時間足している
-  const fixedWeekStart = addHours(weekStart, 9);
-  return addDays(fixedWeekStart, dayNumber);
+export const getDateOfNextSevenDays = (dayNumber: number) => {
+  const now = new Date();
+  const utc = new Date(
+    Date.UTC(
+      now.getUTCFullYear(),
+      now.getUTCMonth(),
+      now.getUTCDate(),
+      now.getUTCHours(),
+      now.getUTCMinutes(),
+      now.getUTCSeconds()
+    )
+  );
+  // 日本時間に直す
+  const jst = addHours(utc, 9);
+  // 今日の曜日を求める
+  const { jstDayOfWeek: todayNumber } = getJSTFromUTC(now.getUTCDay(), now.getUTCHours());
+
+  // 求めたい曜日までの日数を求める
+  const moveDayNumber =
+    todayNumber === dayNumber ? 0 : todayNumber > dayNumber ? 7 - todayNumber + dayNumber : dayNumber - todayNumber;
+
+  const movedDate = addDays(jst, moveDayNumber);
+
+  return Number(movedDate.toISOString().split("T")[0].replaceAll("-", ""));
 };
 
 export const convertCurrentOpeningHours = (
@@ -81,7 +101,7 @@ export const createBusinessHourDiff = async ({
       const currentBusinessHours = currentDayOfWeek[dayOfWeek];
       const currentBusinessHoursLength = currentBusinessHours.length;
 
-      const date = getDateOfDayThisWeek(dayOfWeekToNumber(dayOfWeek));
+      const date = getDateOfNextSevenDays(dayOfWeekToNumber(dayOfWeek));
 
       // 今週の営業時間の方が少ない場合
       if (currentBusinessHoursLength < regularBusinessHoursLength) {
@@ -106,6 +126,6 @@ export const createBusinessHourDiff = async ({
       }
       return null;
     })
-    .filter(Boolean) as { date: Date; holidayOpeningHours: RestaurantOpeningHour[] }[];
+    .filter(Boolean) as { date: number; holidayOpeningHours: RestaurantOpeningHour[] }[];
   return diff;
 };
