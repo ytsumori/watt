@@ -1,5 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { getCurrentOpeningHour, getNextOpeningHour } from ".";
+import {
+  getCurrentOpeningHour,
+  getDayOfWeekFromDate,
+  getNextOpeningHour,
+  mergeOpeningHours,
+  MergeOpeningHoursArgs
+} from ".";
 import { DayOfWeek } from "@prisma/client";
 
 describe("[opening-hours]", () => {
@@ -305,6 +311,124 @@ describe("[opening-hours]", () => {
       ];
       vi.setSystemTime(Date.UTC(2024, 3, 1, 11, 0, 0)); // JST: 2024-04-01 20:00:00 Monday
       expect(getNextOpeningHour(jstOpeningHours)).toBe(undefined);
+    });
+  });
+
+  describe("getDayOfWeekFromDate", () => {
+    it("returns day of week", () => {
+      expect(getDayOfWeekFromDate(20240901)).eq(0);
+      expect(getDayOfWeekFromDate(20240902)).eq(1);
+      expect(getDayOfWeekFromDate(20240903)).eq(2);
+    });
+  });
+
+  describe("mergeOpeningHours", () => {
+    const mock: MergeOpeningHoursArgs = {
+      regularOpeningHours: [
+        {
+          openDayOfWeek: DayOfWeek.MONDAY,
+          openHour: 17,
+          openMinute: 0,
+          closeDayOfWeek: DayOfWeek.MONDAY,
+          closeHour: 22,
+          closeMinute: 0
+        },
+        {
+          openDayOfWeek: DayOfWeek.TUESDAY,
+          openHour: 17,
+          openMinute: 0,
+          closeDayOfWeek: DayOfWeek.TUESDAY,
+          closeHour: 22,
+          closeMinute: 0
+        }
+      ],
+      holidays: [
+        {
+          date: 20240902,
+          openingHours: [
+            {
+              openDayOfWeek: DayOfWeek.MONDAY,
+              openHour: 11,
+              openMinute: 0,
+              closeDayOfWeek: DayOfWeek.MONDAY,
+              closeHour: 15,
+              closeMinute: 0
+            }
+          ]
+        }
+      ]
+    };
+    it("holidaysがない場合はregularOpeningHoursが返ってくる", () => {
+      expect(mergeOpeningHours({ regularOpeningHours: mock.regularOpeningHours, holidays: [] })).toStrictEqual(
+        mock.regularOpeningHours
+      );
+    });
+
+    it("営業時間が変更した際に変更された配列を返す", () => {
+      expect(
+        mergeOpeningHours({ regularOpeningHours: mock.regularOpeningHours, holidays: mock.holidays })
+      ).toStrictEqual([
+        {
+          openDayOfWeek: DayOfWeek.MONDAY,
+          openHour: 11,
+          openMinute: 0,
+          closeDayOfWeek: DayOfWeek.MONDAY,
+          closeHour: 15,
+          closeMinute: 0
+        },
+        {
+          openDayOfWeek: DayOfWeek.TUESDAY,
+          openHour: 17,
+          openMinute: 0,
+          closeDayOfWeek: DayOfWeek.TUESDAY,
+          closeHour: 22,
+          closeMinute: 0
+        }
+      ]);
+    });
+
+    it("営業時間が増えた場合", () => {
+      const holiday = {
+        date: 20240901,
+        openingHours: [
+          {
+            openDayOfWeek: DayOfWeek.SUNDAY,
+            openHour: 11,
+            openMinute: 0,
+            closeDayOfWeek: DayOfWeek.SUNDAY,
+            closeHour: 15,
+            closeMinute: 0
+          }
+        ]
+      };
+      expect(
+        mergeOpeningHours({
+          regularOpeningHours: mock.regularOpeningHours,
+          holidays: [holiday]
+        })
+      ).toStrictEqual([...mock.regularOpeningHours, holiday.openingHours[0]]);
+    });
+
+    it("営業時間が減った場合", () => {
+      const holiday = {
+        date: 20240902,
+        openingHours: []
+      };
+      expect(
+        mergeOpeningHours({
+          regularOpeningHours: mock.regularOpeningHours,
+          holidays: [holiday]
+        })
+      ).toStrictEqual([
+        {
+          openDayOfWeek: DayOfWeek.TUESDAY,
+          openHour: 17,
+          openMinute: 0,
+          closeDayOfWeek: DayOfWeek.TUESDAY,
+          closeHour: 22,
+          closeMinute: 0
+        }
+      ]);
     });
   });
 });
