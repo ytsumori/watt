@@ -3,7 +3,7 @@ import prisma from "@/lib/prisma/client";
 import { Prisma } from "@prisma/client";
 import { notifyRestaurantToOpen } from "./_actions/notify-restaurant-to-open";
 import { updateRestaurantAvailabilityAutomatically } from "@/actions/mutations/restaurant";
-import { isCurrentlyWorkingHour } from "@/utils/opening-hours";
+import { isCurrentlyWorkingHour, mergeOpeningHours } from "@/utils/opening-hours";
 
 export async function GET(request: NextRequest) {
   const authHeader = request.headers.get("authorization");
@@ -16,35 +16,28 @@ export async function GET(request: NextRequest) {
   const restaurants = await prisma.restaurant.findMany({
     include: {
       meals: true,
-      openingHours: {
-        where: {
-          isAutomaticallyApplied: true
-        }
-      }
+      openingHours: { where: { isAutomaticallyApplied: true } },
+      holidays: { select: { date: true, openingHours: { where: { isAutomaticallyApplied: true } } } }
     },
-    where: {
-      meals: {
-        some: {
-          isInactive: false
-        }
-      }
-    }
+    where: { meals: { some: { isInactive: false } } }
   });
 
-  const update = async (restaurant: Prisma.RestaurantGetPayload<{ include: { openingHours: true } }>) => {
-    if (restaurant.openingHours.length === 0) return;
-    if (isCurrentlyWorkingHour(restaurant.openingHours)) {
+  const update = async (
+    restaurant: Prisma.RestaurantGetPayload<{
+      include: { openingHours: true; holidays: { select: { date: true; openingHours: true } } };
+    }>
+  ) => {
+    const currentOpeningHours = mergeOpeningHours({
+      regularOpeningHours: restaurant.openingHours,
+      holidays: restaurant.holidays
+    });
+
+    if (currentOpeningHours.length === 0) return;
+    if (isCurrentlyWorkingHour(currentOpeningHours)) {
       if (!restaurant.isAvailable) {
         const unopenClosedAlert = await prisma.restaurantClosedAlert.findFirst({
-          select: {
-            id: true,
-            closedAt: true,
-            notifiedAt: true
-          },
-          where: {
-            openAt: null,
-            restaurantId: restaurant.id
-          }
+          select: { id: true, closedAt: true, notifiedAt: true },
+          where: { openAt: null, restaurantId: restaurant.id }
         });
         if (unopenClosedAlert) {
           // notify only once if the restaurant is closed before 24 hours ago
