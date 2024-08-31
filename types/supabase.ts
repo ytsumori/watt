@@ -739,21 +739,21 @@ export type Database = {
       RestaurantHoliday: {
         Row: {
           createdAt: string
-          date: string
+          date: number
           id: string
           restaurantId: string
           updatedAt: string
         }
         Insert: {
           createdAt?: string
-          date: string
+          date: number
           id: string
           restaurantId: string
           updatedAt?: string
         }
         Update: {
           createdAt?: string
-          date?: string
+          date?: number
           id?: string
           restaurantId?: string
           updatedAt?: string
