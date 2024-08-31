@@ -5,13 +5,19 @@ import {
   updateRegularOpeningHours
 } from "@/actions/mutations/restaurant-google-map-opening-hour";
 import prisma from "@/lib/prisma/client";
+import { createTodayDateNumber } from "@/utils/opening-hours";
 
 export async function getRestaurantOpeningInfo(restaurantId: string) {
+  const todayNumber = createTodayDateNumber();
   return await prisma.restaurant.findUnique({
     where: { id: restaurantId },
     select: {
       isAvailable: true,
-      openingHours: true
+      openingHours: true,
+      holidays: {
+        select: { date: true, openingHours: true },
+        where: { date: { gte: todayNumber } }
+      }
     }
   });
 }
