@@ -28,6 +28,21 @@ type Restaurant = Prisma.RestaurantGetPayload<{
         closeDayOfWeek: true;
       };
     };
+    holidays: {
+      select: {
+        date: true;
+        openingHours: {
+          select: {
+            openHour: true;
+            openMinute: true;
+            openDayOfWeek: true;
+            closeHour: true;
+            closeMinute: true;
+            closeDayOfWeek: true;
+          };
+        };
+      };
+    };
   };
 }>;
 
