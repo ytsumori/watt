@@ -11,7 +11,7 @@ export const jobs: protos.google.cloud.scheduler.v1.IJob[] = [
   createJob({
     name: "update-opening-hours",
     description: "営業時間を更新するジョブ",
-    schedule: "15 21 * * *",
+    schedule: "0 6 * * *",
     path: "/update-opening-hours"
   }),
   createJob({
