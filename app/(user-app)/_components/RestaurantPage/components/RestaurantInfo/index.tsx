@@ -17,13 +17,20 @@ import {
   Modal,
   ModalContent,
   ModalOverlay,
-  Flex
+  Flex,
+  Accordion,
+  AccordionButton,
+  AccordionIcon,
+  AccordionItem,
+  AccordionPanel
 } from "@chakra-ui/react";
 import { Prisma } from "@prisma/client";
 import NextLink from "next/link";
 import { Fragment } from "react";
 import { FaMapMarkedAlt } from "react-icons/fa";
 import { MenuImages } from "../MenuImages";
+import { groupedByDayOfWeeks } from "./util";
+import { BusinessHourLabel } from "@/app/(user-app)/(home)/_components/HomePage/components/RestaurantListItem/_components/BusinessHourLabel";
 
 type Props = {
   restaurant: Prisma.RestaurantGetPayload<{
@@ -32,6 +39,16 @@ type Props = {
       exteriorImage: true;
       menuImages: true;
       paymentOptions: true;
+      openingHours: {
+        select: {
+          openDayOfWeek: true;
+          openHour: true;
+          openMinute: true;
+          closeDayOfWeek: true;
+          closeHour: true;
+          closeMinute: true;
+        };
+      };
     };
   }>;
 };
@@ -51,12 +68,13 @@ export function RestaurantInfo({ restaurant }: Props) {
               as={NextLink}
               href={restaurant.googleMapPlaceInfo.url}
               target="_blank"
+              width="300px"
             >
               Googleマップでお店情報を見る
             </Button>
           )}
           <Box fontSize="sm" fontWeight="bold" w="full">
-            <SimpleGrid columns={2} spacingY={2} spacingX={4}>
+            <SimpleGrid columns={2} spacingY={2} spacingX={4} templateColumns="minmax(auto, 100px) 1fr">
               {restaurant.smokingOption && (
                 <>
                   <Text>喫煙・禁煙</Text>
@@ -78,6 +96,26 @@ export function RestaurantInfo({ restaurant }: Props) {
                   </Text>
                 </>
               )}
+              <Text>営業時間</Text>
+              <Box>
+                <Accordion allowToggle border="none">
+                  <AccordionItem border="none">
+                    <AccordionButton padding={0} fontSize="sm">
+                      <BusinessHourLabel openingHours={restaurant.openingHours} />
+                      <AccordionIcon ml={2} />
+                    </AccordionButton>
+                    <Box mt={2}>
+                      {groupedByDayOfWeeks(restaurant.openingHours).map((text, idx) => {
+                        return (
+                          <AccordionPanel key={idx} p={0} my={1}>
+                            <Text fontWeight="normal">{text}</Text>
+                          </AccordionPanel>
+                        );
+                      })}
+                    </Box>
+                  </AccordionItem>
+                </Accordion>
+              </Box>
             </SimpleGrid>
           </Box>
         </Flex>
