@@ -19,7 +19,10 @@ export async function GET(request: NextRequest) {
       openingHours: { where: { isAutomaticallyApplied: true } },
       holidays: { select: { date: true, openingHours: { where: { isAutomaticallyApplied: true } } } }
     },
-    where: { meals: { some: { isInactive: false } } }
+    where: {
+      isPublished: true,
+      meals: { some: { isInactive: false } }
+    }
   });
 
   const update = async (
