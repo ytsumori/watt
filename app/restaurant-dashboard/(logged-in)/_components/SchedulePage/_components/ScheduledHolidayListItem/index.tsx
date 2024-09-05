@@ -31,15 +31,13 @@ export function ScheduledHolidayListItem({ openingHour }: Props) {
       });
   };
   return (
-    <ListItem>
-      <Flex>
-        <Text>
-          {String(openingHour.openHour).padStart(2, "0")}:{String(openingHour.openMinute).padStart(2, "0")}〜
-          {String(openingHour.closeHour).padStart(2, "0")}:{String(openingHour.closeMinute).padStart(2, "0")}
-        </Text>
-        <Spacer />
-        <Switch onChange={handleAutomaticallyAppliedChange} isChecked={isAutomaticallyApplied} />
-      </Flex>
-    </ListItem>
+    <>
+      <Text>
+        {String(openingHour.openHour).padStart(2, "0")}:{String(openingHour.openMinute).padStart(2, "0")}〜
+        {String(openingHour.closeHour).padStart(2, "0")}:{String(openingHour.closeMinute).padStart(2, "0")}
+      </Text>
+      <Spacer />
+      <Switch onChange={handleAutomaticallyAppliedChange} isChecked={isAutomaticallyApplied} />
+    </>
   );
 }

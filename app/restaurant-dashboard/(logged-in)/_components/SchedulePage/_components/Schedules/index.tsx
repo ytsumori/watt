@@ -1,7 +1,7 @@
 "use client";
-import { Box, Divider, List, ListItem, Text, UnorderedList } from "@chakra-ui/react";
+import { Box, Divider, Flex, ListItem, Text, UnorderedList } from "@chakra-ui/react";
 import { DayOfWeek, Prisma, RestaurantGoogleMapOpeningHour, RestaurantHolidayOpeningHour } from "@prisma/client";
-import { Fragment, useEffect } from "react";
+import { Fragment } from "react";
 import { ScheduledHolidayListItem } from "../ScheduledHolidayListItem";
 import { ScheduleListItem } from "../ScheduleListItem";
 import { translateDayOfWeek } from "@/lib/prisma/translate-enum";
@@ -56,48 +56,46 @@ export const Schedules = ({ restaurant }: Props) => {
         [last, ...dayOfWeeks].map((dayOfWeek, idx) => {
           const openingHour = openingHours[dayOfWeek];
           return (
-            <>
-              <UnorderedList key={dayOfWeek} my={2}>
-                <ListItem>
-                  <Text>{translateDayOfWeek(dayOfWeek) + "曜日"}</Text>
-                </ListItem>
-
-                <UnorderedList>
-                  {openingHour.regularOpeningHours.map((regularHour, idx) => {
-                    return (
-                      <Fragment key={regularHour.id}>
-                        <ScheduleListItem openingHour={regularHour} />
-                      </Fragment>
-                    );
-                  })}
-                </UnorderedList>
-                <UnorderedList>
-                  {openingHour.holidayOpeningHours[0] && (
+            <Box key={dayOfWeek} m={2}>
+              <Text>{translateDayOfWeek(dayOfWeek) + "曜日"}</Text>
+              <UnorderedList>
+                {openingHour.regularOpeningHours.map((regularHour, idx) => {
+                  return (
+                    <Fragment key={regularHour.id}>
+                      <ScheduleListItem openingHour={regularHour} />
+                    </Fragment>
+                  );
+                })}
+              </UnorderedList>
+              {openingHour.holidayOpeningHours[0] && (
+                <Box borderColor="gray" borderWidth={1} borderRadius={5} p={3}>
+                  <Text>
+                    <Text as="span" fontWeight="bold">
+                      {Number(openingHour.holidayOpeningHours[0].date.toString().slice(4, 6))}/
+                      {Number(openingHour.holidayOpeningHours[0].date.toString().slice(6, 8))}
+                    </Text>{" "}
+                    特別営業時間
+                  </Text>
+                  <UnorderedList>
                     <>
-                      <ListItem>
-                        <Text>
-                          {Number(openingHour.holidayOpeningHours[0].date.toString().slice(4, 6))}/
-                          {Number(openingHour.holidayOpeningHours[0].date.toString().slice(6, 8))}
-                        </Text>
-                      </ListItem>
                       <UnorderedList>
-                        <ListItem>
-                          <Text>特別営業時間</Text>
-                        </ListItem>
-                        {openingHour.holidayOpeningHours.map((holidayHour, idx) => {
+                        {openingHour.holidayOpeningHours.map((holidayHour) => {
                           return (
                             <ListItem key={holidayHour.id}>
-                              <ScheduledHolidayListItem openingHour={holidayHour} />
+                              <Flex gap={3}>
+                                <ScheduledHolidayListItem openingHour={holidayHour} />
+                              </Flex>
                             </ListItem>
                           );
                         })}
                       </UnorderedList>
                     </>
-                  )}
-                </UnorderedList>
-              </UnorderedList>
-              {[last, ...dayOfWeeks].length - 1 !== idx && <Divider borderColor="black" />}
-            </>
+                  </UnorderedList>
+                </Box>
+              )}
+
+              {[last, ...dayOfWeeks].length - 1 !== idx && <Divider borderColor="black" mt={2} />}
+            </Box>
           );
         })}
     </>
