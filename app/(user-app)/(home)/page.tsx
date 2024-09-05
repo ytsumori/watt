@@ -45,7 +45,7 @@ export default async function Home() {
     where: { isPublished: true, meals: { some: { isInactive: false } } },
     orderBy: { isAvailable: "desc" }
   });
-  console.log(restaurants.find((r) => r.name === "豆腐料理 空野 南船場店"));
+
   return (
     <Flex h="100svh" w="100vw" direction="column">
       <LogoHeader />
