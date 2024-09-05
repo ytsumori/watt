@@ -12,7 +12,10 @@ export async function GET(request: NextRequest) {
 
   const restaurants = await prisma.restaurant.findMany({
     select: { id: true, googleMapPlaceId: true, meals: true },
-    where: { meals: { some: { isInactive: false } } }
+    where: {
+      isPublished: true,
+      meals: { some: { isInactive: false } }
+    }
   });
 
   await Promise.all(
