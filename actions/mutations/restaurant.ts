@@ -28,28 +28,7 @@ export async function updateRestaurantAvailability({
   const restaurant = await prisma.restaurant.findUnique({ where: { id } });
   if (!restaurant) throw new Error("restaurant not found");
 
-  return await prisma.restaurant.update({
-    where: {
-      id
-    },
-    data: {
-      isAvailable,
-      closedAlerts: {
-        ...(isAvailable
-          ? {
-              updateMany: {
-                where: {
-                  openAt: null
-                },
-                data: {
-                  openAt: new Date()
-                }
-              }
-            }
-          : { create: {} })
-      }
-    }
-  });
+  return await prisma.restaurant.update({ where: { id }, data: { isAvailable } });
 }
 
 export async function uploadInteriorImage(restaurantId: string, formData: FormData) {

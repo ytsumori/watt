@@ -552,38 +552,6 @@ export type Database = {
           },
         ]
       }
-      RestaurantClosedAlert: {
-        Row: {
-          closedAt: string
-          id: string
-          notifiedAt: string | null
-          openAt: string | null
-          restaurantId: string
-        }
-        Insert: {
-          closedAt?: string
-          id: string
-          notifiedAt?: string | null
-          openAt?: string | null
-          restaurantId: string
-        }
-        Update: {
-          closedAt?: string
-          id?: string
-          notifiedAt?: string | null
-          openAt?: string | null
-          restaurantId?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "RestaurantClosedAlert_restaurantId_fkey"
-            columns: ["restaurantId"]
-            isOneToOne: false
-            referencedRelation: "Restaurant"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       RestaurantCoordinate: {
         Row: {
           createdAt: string
