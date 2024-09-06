@@ -1,6 +1,6 @@
-import { OpeningHoursResult } from "../actions";
+import { RegularOpeningHoursResult } from "../actions";
 
-type RequiredOpeningHours = Required<OpeningHoursResult>["currentOpeningHours"];
+type RequiredOpeningHours = Required<RegularOpeningHoursResult>["regularOpeningHours"];
 
 export const convertOpeningHours = (currentOpeningHours: RequiredOpeningHours) => {
   return {

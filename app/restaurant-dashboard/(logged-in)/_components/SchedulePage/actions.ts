@@ -1,6 +1,9 @@
 "use server";
 
-import { updateOpeningHours } from "@/actions/mutations/restaurant-google-map-opening-hour";
+import {
+  updateCurrentOpeningHours,
+  updateRegularOpeningHours
+} from "@/actions/mutations/restaurant-google-map-opening-hour";
 import prisma from "@/lib/prisma/client";
 
 export async function getRestaurantOpeningInfo(restaurantId: string) {
@@ -20,5 +23,12 @@ export async function updateBusinessHours({ restaurantId }: { restaurantId: stri
   });
   if (!restaurant) throw new Error("Restaurant not found.");
 
-  return await updateOpeningHours({ restaurantId: restaurant.id, googleMapPlaceId: restaurant.googleMapPlaceId });
+  const updatedHours = await updateRegularOpeningHours({
+    restaurantId: restaurant.id,
+    googleMapPlaceId: restaurant.googleMapPlaceId
+  });
+
+  await updateCurrentOpeningHours({ googleMapPlaceId: restaurant.googleMapPlaceId, restaurantId: restaurant.id });
+
+  return updatedHours;
 }

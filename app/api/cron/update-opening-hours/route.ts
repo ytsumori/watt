@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma/client";
-import { updateOpeningHours } from "@/actions/mutations/restaurant-google-map-opening-hour";
+import { updateCurrentOpeningHours } from "@/actions/mutations/restaurant-google-map-opening-hour";
 
 export async function GET(request: NextRequest) {
   const authHeader = request.headers.get("authorization");
@@ -13,17 +13,15 @@ export async function GET(request: NextRequest) {
   const restaurants = await prisma.restaurant.findMany({
     select: { id: true, googleMapPlaceId: true, meals: true },
     where: {
-      meals: {
-        some: {
-          isInactive: false
-        }
-      }
+      isPublished: true,
+      meals: { some: { isInactive: false } }
     }
   });
+
   await Promise.all(
     restaurants.map(
       async (restaurant) =>
-        await updateOpeningHours({ restaurantId: restaurant.id, googleMapPlaceId: restaurant.googleMapPlaceId })
+        await updateCurrentOpeningHours({ restaurantId: restaurant.id, googleMapPlaceId: restaurant.googleMapPlaceId })
     )
   );
 
