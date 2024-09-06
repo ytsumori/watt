@@ -9,15 +9,14 @@ import { dayOfWeekToNumber } from "@/utils/day-of-week";
 import { RepeatIcon } from "@chakra-ui/icons";
 import { RestaurantIdContext } from "../RestaurantIdProvider";
 import { IsAvailableSwitch } from "./_components/IsAvailableSwitch";
+import { ScheduledHolidayListItem } from "./_components/ScheduledHolidayListItem";
+import { Schedules } from "./_components/Schedules";
 
 export function SchedulePage() {
   const restaurantId = useContext(RestaurantIdContext);
   const [restaurant, setRestaurant] = useState<
     Prisma.RestaurantGetPayload<{
-      select: {
-        isAvailable: true;
-        openingHours: true;
-      };
+      select: { isAvailable: true; openingHours: true; holidays: { select: { date: true; openingHours: true } } };
     }>
   >();
   const [isUpdating, setIsUpdating] = useState(false);
@@ -31,12 +30,7 @@ export function SchedulePage() {
         setRestaurant(restaurant);
       })
       .catch(() =>
-        toast({
-          title: "エラー",
-          description: "営業情報を取得できませんでした",
-          status: "error",
-          isClosable: true
-        })
+        toast({ title: "エラー", description: "営業情報を取得できませんでした", status: "error", isClosable: true })
       );
   }, [restaurantId, toast]);
 
@@ -53,12 +47,7 @@ export function SchedulePage() {
       })
       .catch(() => {
         setIsUpdating(false);
-        toast({
-          title: "エラー",
-          description: "営業時間の更新に失敗しました",
-          status: "error",
-          isClosable: true
-        });
+        toast({ title: "エラー", description: "営業時間の更新に失敗しました", status: "error", isClosable: true });
       });
   };
 
@@ -77,17 +66,8 @@ export function SchedulePage() {
         <Button leftIcon={<RepeatIcon />} onClick={handleUpdateOpeningHoursClick} isLoading={isUpdating}>
           最新の営業時間に更新
         </Button>
-        {restaurant?.openingHours
-          ?.sort((a, b) => dayOfWeekToNumber(a.openDayOfWeek) - dayOfWeekToNumber(b.openDayOfWeek))
-          .map((openingHour, index) => {
-            return (
-              <Fragment key={openingHour.id}>
-                <ScheduleListItem openingHour={openingHour} />
-                {index === restaurant.openingHours.length - 1 ? null : <Divider />}
-              </Fragment>
-            );
-          })}
       </Box>
+      <Schedules restaurant={restaurant} />
     </>
   );
 }

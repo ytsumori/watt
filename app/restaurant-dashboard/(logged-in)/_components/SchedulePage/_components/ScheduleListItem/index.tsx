@@ -1,7 +1,7 @@
 "use client";
 
 import { translateDayOfWeek } from "@/lib/prisma/translate-enum";
-import { Flex, Spacer, Switch, Text, useToast } from "@chakra-ui/react";
+import { Flex, ListItem, Spacer, Switch, Text, useToast } from "@chakra-ui/react";
 import { RestaurantGoogleMapOpeningHour } from "@prisma/client";
 import { ChangeEvent, useState } from "react";
 import { updateIsAutomaticallyApplied } from "./actions";
@@ -31,14 +31,15 @@ export function ScheduleListItem({ openingHour }: Props) {
       });
   };
   return (
-    <Flex my={2}>
-      <Text>
-        {translateDayOfWeek(openingHour.openDayOfWeek)}曜日 {String(openingHour.openHour).padStart(2, "0")}:
-        {String(openingHour.openMinute).padStart(2, "0")}〜{String(openingHour.closeHour).padStart(2, "0")}:
-        {String(openingHour.closeMinute).padStart(2, "0")}
-      </Text>
-      <Spacer />
-      <Switch onChange={handleAutomaticallyAppliedChange} isChecked={isAutomaticallyApplied} />
-    </Flex>
+    <ListItem>
+      <Flex>
+        <Text>
+          {String(openingHour.openHour).padStart(2, "0")}:{String(openingHour.openMinute).padStart(2, "0")}〜
+          {String(openingHour.closeHour).padStart(2, "0")}:{String(openingHour.closeMinute).padStart(2, "0")}
+        </Text>
+        <Spacer />
+        <Switch onChange={handleAutomaticallyAppliedChange} isChecked={isAutomaticallyApplied} />
+      </Flex>
+    </ListItem>
   );
 }

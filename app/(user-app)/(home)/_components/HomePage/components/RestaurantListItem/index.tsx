@@ -8,7 +8,7 @@ import { InteriorImage } from "../InteriorImage";
 import { MouseEventHandler } from "react";
 import { BusinessHourLabel } from "./_components/BusinessHourLabel";
 import { QuestionOutlineIcon } from "@chakra-ui/icons";
-import { getNextOpeningHour, isCurrentlyWorkingHour } from "@/utils/opening-hours";
+import { getNextOpeningHour, isCurrentlyWorkingHour, mergeOpeningHours } from "@/utils/opening-hours";
 import { StatusBadge } from "@/app/(user-app)/_components/StatusBadge";
 
 type Props = {
@@ -17,18 +17,24 @@ type Props = {
 };
 
 export function RestaurantListItem({ restaurant, onClickHelp }: Props) {
-  const nextOpeningHour = getNextOpeningHour(restaurant.openingHours);
+  const currentOpeningHours = mergeOpeningHours({
+    regularOpeningHours: restaurant.openingHours,
+    holidays: restaurant.holidays
+  });
+
+  const nextOpeningHour = getNextOpeningHour(currentOpeningHours);
   const handleQuestionClick: MouseEventHandler = (e) => {
     e.stopPropagation();
     onClickHelp();
   };
+
   return (
     <Box id={restaurant.id} gap={3}>
       <Heading size="sm" mx={4}>
         {restaurant.name}
       </Heading>
       <Box fontSize="xs" mx={4}>
-        <BusinessHourLabel openingHours={restaurant.openingHours} />
+        <BusinessHourLabel openingHours={currentOpeningHours} />
       </Box>
       <HStack px={4} overflowX="auto" className="hidden-scrollbar" alignItems="start" mt={1}>
         <MealImages meals={restaurant.meals} />
@@ -39,7 +45,7 @@ export function RestaurantListItem({ restaurant, onClickHelp }: Props) {
       <HStack mx={4} mt={2}>
         <StatusBadge
           isAvailable={restaurant.isAvailable}
-          isWorkingHour={isCurrentlyWorkingHour(restaurant.openingHours)}
+          isWorkingHour={isCurrentlyWorkingHour(currentOpeningHours)}
           nextOpenAt={
             nextOpeningHour
               ? `${nextOpeningHour.hour}:${nextOpeningHour.minute.toString().padStart(2, "0")}`
