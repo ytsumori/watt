@@ -15,7 +15,7 @@ export default async function Restaurant({ params }: Params) {
         orderBy: { price: "asc" },
         include: { items: { include: { options: { orderBy: { position: "asc" } } } } }
       },
-      googleMapPlaceInfo: { select: { url: true } },
+      googleMapPlaceInfo: { select: { url: true, latitude: true, longitude: true } },
       paymentOptions: true,
       openingHours: true,
       exteriorImage: true,
