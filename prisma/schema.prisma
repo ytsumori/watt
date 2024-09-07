@@ -78,6 +78,7 @@ model Restaurant {
   coordinate         RestaurantCoordinate?
   staffs             Staff[]
   holidays           RestaurantHoliday[]
+  manualCloses       RestaurantManualClose[]
 }
 
 model RestaurantPaymentOption {
@@ -131,7 +132,7 @@ model RestaurantCoordinate {
 }
 
 model RestaurantGoogleMapOpeningHour {
-  id                     String     @id @default(cuid())
+  id                     String                  @id @default(cuid())
   restaurantId           String
   openHour               Int
   openMinute             Int
@@ -139,10 +140,11 @@ model RestaurantGoogleMapOpeningHour {
   closeHour              Int
   closeMinute            Int
   closeDayOfWeek         DayOfWeek
-  isAutomaticallyApplied Boolean    @default(true)
-  createdAt              DateTime   @default(now())
-  updatedAt              DateTime   @default(now()) @updatedAt
-  restaurant             Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  isAutomaticallyApplied Boolean                 @default(true)
+  createdAt              DateTime                @default(now())
+  updatedAt              DateTime                @default(now()) @updatedAt
+  restaurant             Restaurant              @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  manualClose            RestaurantManualClose[]
 }
 
 model RestaurantHoliday {
@@ -156,7 +158,7 @@ model RestaurantHoliday {
 }
 
 model RestaurantHolidayOpeningHour {
-  id                     String            @id @default(cuid())
+  id                     String                  @id @default(cuid())
   restaurantHolidayId    String
   openHour               Int
   openMinute             Int
@@ -164,10 +166,23 @@ model RestaurantHolidayOpeningHour {
   closeHour              Int
   closeMinute            Int
   closeDayOfWeek         DayOfWeek
-  isAutomaticallyApplied Boolean           @default(true)
-  createdAt              DateTime          @default(now())
-  updatedAt              DateTime          @default(now()) @updatedAt
-  holiday                RestaurantHoliday @relation(fields: [restaurantHolidayId], references: [id], onDelete: Cascade)
+  isAutomaticallyApplied Boolean                 @default(true)
+  createdAt              DateTime                @default(now())
+  updatedAt              DateTime                @default(now()) @updatedAt
+  manualClose            RestaurantManualClose[]
+  holiday                RestaurantHoliday       @relation(fields: [restaurantHolidayId], references: [id], onDelete: Cascade)
+}
+
+model RestaurantManualClose {
+  id                               String                          @id @default(cuid())
+  restaurantId                     String
+  restaurantGoogleMapOpeningHourId String?
+  restaurantHolidayOpeningHourId   String?
+  createdAt                        DateTime                        @default(now())
+  updatedAt                        DateTime                        @default(now()) @updatedAt
+  restaurant                       Restaurant                      @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  googleMapOpeningHour             RestaurantGoogleMapOpeningHour? @relation(fields: [restaurantGoogleMapOpeningHourId], references: [id])
+  holidayOpeningHour               RestaurantHolidayOpeningHour?   @relation(fields: [restaurantHolidayOpeningHourId], references: [id])
 }
 
 model Meal {
