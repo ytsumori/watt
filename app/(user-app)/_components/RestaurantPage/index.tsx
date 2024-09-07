@@ -12,7 +12,7 @@ type Props = {
   restaurant: Prisma.RestaurantGetPayload<{
     include: {
       meals: { include: { items: { include: { options: { orderBy: { position: "asc" } } } } } };
-      googleMapPlaceInfo: { select: { url: true } };
+      googleMapPlaceInfo: { select: { url: true; latitude: true; longitude: true } };
       paymentOptions: true;
       exteriorImage: true;
       menuImages: true;

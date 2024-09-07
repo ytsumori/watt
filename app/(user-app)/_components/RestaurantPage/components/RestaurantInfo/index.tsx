@@ -17,21 +17,40 @@ import {
   Modal,
   ModalContent,
   ModalOverlay,
-  Flex
+  Flex,
+  Accordion,
+  AccordionButton,
+  AccordionIcon,
+  AccordionItem,
+  AccordionPanel
 } from "@chakra-ui/react";
 import { Prisma } from "@prisma/client";
 import NextLink from "next/link";
 import { Fragment } from "react";
 import { FaMapMarkedAlt } from "react-icons/fa";
 import { MenuImages } from "../MenuImages";
+import { groupedByDayOfWeeks } from "./util";
+import { BusinessHourLabel } from "@/app/(user-app)/(home)/_components/HomePage/components/RestaurantListItem/_components/BusinessHourLabel";
+import { useGetDuration } from "./hooks";
+import { FaWalking } from "react-icons/fa";
 
 type Props = {
   restaurant: Prisma.RestaurantGetPayload<{
     include: {
-      googleMapPlaceInfo: { select: { url: true } };
+      googleMapPlaceInfo: { select: { url: true; latitude: true; longitude: true } };
       exteriorImage: true;
       menuImages: true;
       paymentOptions: true;
+      openingHours: {
+        select: {
+          openDayOfWeek: true;
+          openHour: true;
+          openMinute: true;
+          closeDayOfWeek: true;
+          closeHour: true;
+          closeMinute: true;
+        };
+      };
     };
   }>;
 };
@@ -39,7 +58,10 @@ type Props = {
 export function RestaurantInfo({ restaurant }: Props) {
   const { isOpen: isInteriorImageOpen, onOpen: onInteriorImageOpen, onClose: onInteriorImageClose } = useDisclosure();
   const { isOpen: isExteriorImageOpen, onOpen: onExteriorImageOpen, onClose: onExteriorImageClose } = useDisclosure();
-
+  const duration = useGetDuration({
+    latitude: restaurant.googleMapPlaceInfo ? restaurant.googleMapPlaceInfo.latitude : undefined,
+    longitude: restaurant.googleMapPlaceInfo ? restaurant.googleMapPlaceInfo.longitude : undefined
+  });
   return (
     <>
       <VStack w="full" alignItems="start" spacing={2} maxW="100%" mt={4}>
@@ -51,12 +73,13 @@ export function RestaurantInfo({ restaurant }: Props) {
               as={NextLink}
               href={restaurant.googleMapPlaceInfo.url}
               target="_blank"
+              width="300px"
             >
               Googleマップでお店情報を見る
             </Button>
           )}
           <Box fontSize="sm" fontWeight="bold" w="full">
-            <SimpleGrid columns={2} spacingY={2} spacingX={4}>
+            <SimpleGrid columns={2} spacingY={2} spacingX={4} templateColumns="minmax(auto, 100px) 1fr">
               {restaurant.smokingOption && (
                 <>
                   <Text>喫煙・禁煙</Text>
@@ -78,6 +101,37 @@ export function RestaurantInfo({ restaurant }: Props) {
                   </Text>
                 </>
               )}
+              {duration && (
+                <>
+                  <Text>現地からの距離</Text>
+                  <Flex alignItems="center">
+                    <FaWalking />
+                    <Text ms={1} fontWeight="normal">
+                      {duration}
+                    </Text>
+                  </Flex>
+                </>
+              )}
+              <Text>営業時間</Text>
+              <Box>
+                <Accordion allowToggle border="none">
+                  <AccordionItem border="none">
+                    <AccordionButton padding={0} fontSize="sm">
+                      <BusinessHourLabel openingHours={restaurant.openingHours} />
+                      <AccordionIcon ml={2} />
+                    </AccordionButton>
+                    <Box mt={2}>
+                      {groupedByDayOfWeeks(restaurant.openingHours).map((text, idx) => {
+                        return (
+                          <AccordionPanel key={idx} p={0} my={1}>
+                            <Text fontWeight="normal">{text}</Text>
+                          </AccordionPanel>
+                        );
+                      })}
+                    </Box>
+                  </AccordionItem>
+                </Accordion>
+              </Box>
             </SimpleGrid>
           </Box>
         </Flex>
