@@ -4,8 +4,8 @@ import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { Metadata } from "next";
 import { getMealImageUrl } from "@/utils/image/getMealImageUrl";
-import { RestaurantPage } from "@/app/(user-app)/_components/RestaurantPage";
-import { LogoHeader } from "../../_components/LogoHeader";
+import { HeaderSection } from "../../_components/HeaderSection";
+import { RestaurantPage } from "./_components/RestaurantPage";
 
 type Params = { params: { restaurantId: string } };
 
@@ -35,7 +35,7 @@ export default async function Restaurant({ params }: Params) {
 
   return (
     <>
-      <LogoHeader />
+      <HeaderSection title={restaurant.name} backButtonPath="/" />
       <RestaurantPage restaurant={restaurant} userId={session?.user.id} />
     </>
   );

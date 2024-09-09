@@ -40,16 +40,11 @@ export function RestaurantPage({ restaurant, userId }: Props) {
       <RestaurantInfo restaurant={restaurant} />
       <Box maxW="full">
         <Text fontWeight="bold" mb={1} ml={4}>
-          セットメニュー
+          Watt限定メニュー
         </Text>
         <Flex gap={3} className="hidden-scrollbar" overflowX="scroll" px={4}>
           {restaurant.meals.map((meal) => (
-            <MealPreviewBox
-              key={meal.id}
-              meal={meal}
-              href={`/restaurants/${meal.restaurantId}/meals/${meal.id}`}
-              isRouter
-            />
+            <MealPreviewBox key={meal.id} meal={meal} href={`/restaurants/${meal.restaurantId}/meals/${meal.id}`} />
           ))}
         </Flex>
       </Box>
@@ -60,7 +55,7 @@ export function RestaurantPage({ restaurant, userId }: Props) {
             if (restaurant.isAvailable) {
               return (
                 <Button onClick={() => router.push(`/restaurants/${restaurant.id}/orders/new`)} w="full" size="md">
-                  注文画面に進む
+                  お店の空き状況を確認する
                 </Button>
               );
             } else {

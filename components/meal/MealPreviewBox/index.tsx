@@ -19,24 +19,16 @@ type Props = {
   href?: string;
   children?: ReactNode;
   isLabelHidden?: boolean;
-  isRouter?: boolean;
 } & BoxProps;
 
-export function MealPreviewBox({
-  meal,
-  href,
-  children,
-  isLabelHidden = false,
-  isRouter = false,
-  onClick,
-  ...boxProps
-}: Props) {
+export function MealPreviewBox({ meal, href, children, isLabelHidden = false, onClick, ...boxProps }: Props) {
   return (
     <Box
       maxW="130px"
       minW="130px"
       borderRadius={12}
-      {...(href ? { as: Link, href: href, onClick: (e) => e.stopPropagation() } : { onClick })}
+      // {...(href ? { as: Link, href: href, onClick: (e) => e.stopPropagation() } : { onClick })}
+      {...boxProps}
     >
       <Box borderRadius={12} position="relative" {...boxProps}>
         <MealPreviewImage src={meal.imagePath} alt={`meal-${meal.id}`} />

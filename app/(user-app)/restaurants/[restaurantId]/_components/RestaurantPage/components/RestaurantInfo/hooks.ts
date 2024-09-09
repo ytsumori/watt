@@ -12,7 +12,8 @@ export const useGetDuration = (destination: { latitude?: number; longitude?: num
           destination: dest,
           origin: { latitude: position.coords.latitude, longitude: position.coords.longitude }
         }).then((data) => {
-          setDuration(data.rows[0].elements[0].duration.text);
+          const result = data.rows.at(0)?.elements.at(0)?.duration.text;
+          result ? setDuration(result) : console.error("Failed to get duration");
         });
       }
     });

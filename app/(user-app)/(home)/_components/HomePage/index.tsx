@@ -4,8 +4,6 @@ import Map from "@/components/Map";
 import {
   Box,
   HStack,
-  LinkBox,
-  LinkOverlay,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -81,7 +79,6 @@ export default function HomePage({ restaurants }: { restaurants: RestaurantWithD
         overflowY="auto"
         pt={3}
         pb={4}
-        className="hidden-scrollbar"
         backgroundColor="blackAlpha.100"
         spacing={3}
         alignItems="start"
@@ -93,17 +90,11 @@ export default function HomePage({ restaurants }: { restaurants: RestaurantWithD
             threshold={0.8}
             onChange={(inView) => {
               if (isScrolling && activeRestaurant && activeRestaurant.id === restaurant.id) setIsScrolling(false);
-              if (inView) {
-                router.prefetch(`/restaurants/${restaurant.id}`);
-                if (!isScrolling) setActiveRestaurant(restaurant);
-              }
+              if (inView && !isScrolling) setActiveRestaurant(restaurant);
             }}
             style={{ width: "100%" }}
           >
-            <LinkBox id={restaurant.id} backgroundColor="white" py={3}>
-              <LinkOverlay as={NextLink} href={`/restaurants/${restaurant.id}`} />
-              <RestaurantListItem restaurant={restaurant} onClickHelp={onHelpModalOpen} />
-            </LinkBox>
+            <RestaurantListItem restaurant={restaurant} onClickHelp={onHelpModalOpen} />
           </InView>
         ))}
       </VStack>

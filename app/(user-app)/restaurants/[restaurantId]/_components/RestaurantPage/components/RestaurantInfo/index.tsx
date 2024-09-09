@@ -67,6 +67,17 @@ export function RestaurantInfo({ restaurant }: Props) {
       <VStack w="full" alignItems="start" spacing={2} maxW="100%" mt={4}>
         <Flex mx={4} flexDir="column" gap={2}>
           <Heading size="lg">{restaurant.name}</Heading>
+          <Flex flexDir="column" fontSize="sm">
+            <BusinessHourLabel openingHours={restaurant.openingHours} />
+            {duration && (
+              <Flex alignItems="center">
+                <FaWalking />
+                <Text ml={1} fontWeight="normal">
+                  {duration}
+                </Text>
+              </Flex>
+            )}
+          </Flex>
           {restaurant.googleMapPlaceInfo && (
             <Button
               leftIcon={<Icon as={FaMapMarkedAlt} />}
@@ -99,17 +110,6 @@ export function RestaurantInfo({ restaurant }: Props) {
                       )
                     )}
                   </Text>
-                </>
-              )}
-              {duration && (
-                <>
-                  <Text>現地からの距離</Text>
-                  <Flex alignItems="center">
-                    <FaWalking />
-                    <Text ms={1} fontWeight="normal">
-                      {duration}
-                    </Text>
-                  </Flex>
                 </>
               )}
               <Text>営業時間</Text>
@@ -209,7 +209,7 @@ export function RestaurantInfo({ restaurant }: Props) {
           )}
           {restaurant.menuImages.length > 0 && (
             <Box>
-              <Text>メニュー</Text>
+              <Text>店内メニュー</Text>
               <MenuImages menuImages={restaurant.menuImages} />
             </Box>
           )}
