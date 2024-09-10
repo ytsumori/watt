@@ -2,14 +2,14 @@
 
 import { ChevronLeftIcon } from "@chakra-ui/icons";
 import { Box, Flex, Heading, IconButton } from "@chakra-ui/react";
-import NextLink from "next/link";
+import { useRouter } from "next-nprogress-bar";
 
 type Props = {
   title: string;
-  backButtonPath: string;
 };
 
-export function HeaderSection({ title, backButtonPath }: Props) {
+export function HeaderSection({ title }: Props) {
+  const router = useRouter();
   return (
     <Flex as="header" w="full" p={4} alignItems="center" justifyContent="space-between">
       <IconButton
@@ -18,9 +18,7 @@ export function HeaderSection({ title, backButtonPath }: Props) {
         aria-label="back"
         textColor="gray.800"
         variant="ghost"
-        as={NextLink}
-        href={backButtonPath}
-        scroll={false}
+        onClick={() => router.back()}
       />
       <Heading size="sm">{title}</Heading>
       <Box w="32px" />

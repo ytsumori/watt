@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { Metadata } from "next";
 import { getMealImageUrl } from "@/utils/image/getMealImageUrl";
 import { HeaderSection } from "../../_components/HeaderSection";
-import { RestaurantPage } from "./_components/RestaurantPage";
+import { RestaurantPage } from "../../_components/RestaurantPage";
 
 type Params = { params: { restaurantId: string } };
 
@@ -35,7 +35,7 @@ export default async function Restaurant({ params }: Params) {
 
   return (
     <>
-      <HeaderSection title={restaurant.name} backButtonPath="/" />
+      <HeaderSection title={restaurant.name} />
       <RestaurantPage restaurant={restaurant} userId={session?.user.id} />
     </>
   );

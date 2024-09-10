@@ -22,7 +22,6 @@ import { useGetCurrentPosition } from "./hooks/useGetCurrentPosition";
 import { useFetchNearbyRestaurants } from "./hooks/useFetchNearbyRestaurants";
 import { useState } from "react";
 import { StatusBadge } from "../../../_components/StatusBadge";
-import NextLink from "next/link";
 
 export default function HomePage({ restaurants }: { restaurants: RestaurantWithDistance[] }) {
   const router = useRouter();

@@ -1,11 +1,16 @@
 import prisma from "@/lib/prisma/client";
 import { FirstOnboardingModal } from "./_components/FirstOnboardingModal";
 import HomePage from "./_components/HomePage";
-import { Flex } from "@chakra-ui/react";
+import { Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerOverlay, Flex } from "@chakra-ui/react";
 import { LogoHeader } from "../_components/LogoHeader";
 import { createTodayDateNumber } from "@/utils/opening-hours";
+import { RestaurantPage } from "../_components/RestaurantPage";
+import { RestaurantModal } from "./_components/RestaurantModal";
+import { getServerSession } from "next-auth";
+import { options } from "@/lib/next-auth/options";
+import { redirect } from "next/navigation";
 
-export default async function Home() {
+export default async function Home({ searchParams }: { searchParams: { selectedRestaurantId?: string } }) {
   const todayNumber = createTodayDateNumber();
   const restaurants = await prisma.restaurant.findMany({
     include: {
@@ -46,11 +51,37 @@ export default async function Home() {
     orderBy: { isAvailable: "desc" }
   });
 
+  const selectedRestaurant = searchParams.selectedRestaurantId
+    ? await prisma.restaurant.findUnique({
+        where: { id: searchParams.selectedRestaurantId },
+        include: {
+          meals: {
+            where: { isInactive: false, outdatedAt: null },
+            orderBy: { price: "asc" },
+            include: { items: { include: { options: { orderBy: { position: "asc" } } } } }
+          },
+          googleMapPlaceInfo: { select: { url: true, latitude: true, longitude: true } },
+          paymentOptions: true,
+          openingHours: true,
+          exteriorImage: true,
+          menuImages: { orderBy: { menuNumber: "asc" } }
+        }
+      })
+    : null;
+  if (searchParams.selectedRestaurantId !== undefined && selectedRestaurant === null) {
+    redirect("/");
+  }
+
+  const session = await getServerSession(options);
+
   return (
-    <Flex h="100svh" w="100vw" direction="column">
-      <LogoHeader />
-      <HomePage restaurants={restaurants} />
+    <>
+      <Flex h="100svh" w="100vw" direction="column">
+        <LogoHeader />
+        <HomePage restaurants={restaurants} />
+      </Flex>
       <FirstOnboardingModal />
-    </Flex>
+      {selectedRestaurant && <RestaurantModal restaurant={selectedRestaurant} userId={session?.user.id} />}
+    </>
   );
 }
