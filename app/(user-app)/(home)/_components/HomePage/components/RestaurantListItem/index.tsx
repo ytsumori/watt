@@ -71,7 +71,10 @@ export function RestaurantListItem({ restaurant, onClickHelp }: Props) {
         <IconButton
           aria-label="help"
           icon={<QuestionOutlineIcon />}
-          onClick={onClickHelp}
+          onClick={(e) => {
+            e.stopPropagation();
+            onClickHelp();
+          }}
           variant="ghost"
           colorScheme="gray"
           minW={5}
