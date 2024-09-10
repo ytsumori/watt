@@ -9,15 +9,19 @@ import { getSupabaseImageUrl } from "@/utils/image/getSupabaseImageUrl";
 
 type Props = {
   meal: Prisma.MealGetPayload<{
-    include: {
-      restaurant: true;
+    select: {
+      id: true;
+      title: true;
+      description: true;
+      imagePath: true;
+      price: true;
+      listPrice: true;
       items: { include: { options: true } };
     };
   }>;
-  isLoggedIn: boolean;
 };
 
-export const MealDetailPage: FC<Props> = ({ meal, isLoggedIn }) => {
+export const MealDetailPage: FC<Props> = ({ meal }) => {
   return (
     <VStack w="full" alignItems="start" spacing={2}>
       <Box width="100%">

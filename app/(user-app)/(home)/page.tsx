@@ -1,19 +1,26 @@
 import prisma from "@/lib/prisma/client";
 import { FirstOnboardingModal } from "./_components/FirstOnboardingModal";
 import HomePage from "./_components/HomePage";
-import { Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerOverlay, Flex } from "@chakra-ui/react";
+import { Flex } from "@chakra-ui/react";
 import { LogoHeader } from "../_components/LogoHeader";
 import { createTodayDateNumber } from "@/utils/opening-hours";
-import { RestaurantPage } from "../_components/RestaurantPage";
 import { RestaurantModal } from "./_components/RestaurantModal";
 import { getServerSession } from "next-auth";
 import { options } from "@/lib/next-auth/options";
 import { redirect } from "next/navigation";
 
-export default async function Home({ searchParams }: { searchParams: { selectedRestaurantId?: string } }) {
+type SearchParams = {
+  selectedRestaurantId?: string;
+};
+
+export default async function Home({ searchParams }: { searchParams: SearchParams }) {
   const todayNumber = createTodayDateNumber();
   const restaurants = await prisma.restaurant.findMany({
-    include: {
+    select: {
+      id: true,
+      name: true,
+      isAvailable: true,
+      interiorImagePath: true,
       meals: {
         where: { isInactive: false, outdatedAt: null },
         orderBy: { price: "asc" },
@@ -54,7 +61,9 @@ export default async function Home({ searchParams }: { searchParams: { selectedR
   const selectedRestaurant = searchParams.selectedRestaurantId
     ? await prisma.restaurant.findUnique({
         where: { id: searchParams.selectedRestaurantId },
-        include: {
+        select: {
+          id: true,
+          name: true,
           meals: {
             where: { isInactive: false, outdatedAt: null },
             orderBy: { price: "asc" },
@@ -64,14 +73,16 @@ export default async function Home({ searchParams }: { searchParams: { selectedR
           paymentOptions: true,
           openingHours: true,
           exteriorImage: true,
-          menuImages: { orderBy: { menuNumber: "asc" } }
+          menuImages: { orderBy: { menuNumber: "asc" } },
+          smokingOption: true,
+          interiorImagePath: true,
+          isAvailable: true
         }
       })
     : null;
   if (searchParams.selectedRestaurantId !== undefined && selectedRestaurant === null) {
     redirect("/");
   }
-
   const session = await getServerSession(options);
 
   return (

@@ -5,12 +5,7 @@ import { Prisma } from "@prisma/client";
 import { FC } from "react";
 
 type Props = {
-  meal: Prisma.MealGetPayload<{
-    include: {
-      restaurant: true;
-      items: { include: { options: true } };
-    };
-  }>;
+  meal: Prisma.MealGetPayload<{ select: { price: true; listPrice: true } }>;
 };
 
 export const MealPrice: FC<Props> = ({ meal }) => {

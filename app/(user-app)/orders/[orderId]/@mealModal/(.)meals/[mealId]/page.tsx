@@ -1,6 +1,4 @@
 import prisma from "@/lib/prisma/client";
-import { options } from "@/lib/next-auth/options";
-import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { MealDetailModalPage } from "./_components/MealDetailModalPage";
 
@@ -17,8 +15,5 @@ export default async function Restaurant({ params }: Params) {
 
   if (!meal) redirect("/");
 
-  const session = await getServerSession(options);
-  const isLoggedIn = !!session;
-
-  return <MealDetailModalPage meal={meal} isLoggedIn={isLoggedIn} />;
+  return <MealDetailModalPage meal={meal} />;
 }

@@ -8,9 +8,7 @@ import { BusinessHourLabel } from "./_components/BusinessHourLabel";
 import { QuestionOutlineIcon } from "@chakra-ui/icons";
 import { getNextOpeningHour, isCurrentlyWorkingHour, mergeOpeningHours } from "@/utils/opening-hours";
 import { StatusBadge } from "@/app/(user-app)/_components/StatusBadge";
-import { usePathname, useSearchParams } from "next/navigation";
-import { useCallback } from "react";
-import { useRouter } from "next-nprogress-bar";
+import { useQueryString } from "@/app/_hooks/useQueryString";
 
 type Props = {
   restaurant: RestaurantWithDistance;
@@ -18,9 +16,7 @@ type Props = {
 };
 
 export function RestaurantListItem({ restaurant, onClickHelp }: Props) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
+  const { addQueryStringToCurrentPath } = useQueryString();
   const currentOpeningHours = mergeOpeningHours({
     regularOpeningHours: restaurant.openingHours,
     holidays: restaurant.holidays
@@ -28,23 +24,13 @@ export function RestaurantListItem({ restaurant, onClickHelp }: Props) {
 
   const nextOpeningHour = getNextOpeningHour(currentOpeningHours);
 
-  const createQueryString = useCallback(
-    (name: string, value: string) => {
-      const params = new URLSearchParams(searchParams.toString());
-      params.set(name, value);
-
-      return params.toString();
-    },
-    [searchParams]
-  );
-
   return (
     <Box
       id={restaurant.id}
       gap={3}
       backgroundColor="white"
       py={3}
-      onClick={() => router.push(pathname + "?" + createQueryString("selectedRestaurantId", restaurant.id))}
+      onClick={() => addQueryStringToCurrentPath("selectedRestaurantId", restaurant.id)}
     >
       <Heading size="sm" mx={4}>
         {restaurant.name}
