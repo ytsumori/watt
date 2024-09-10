@@ -250,7 +250,8 @@ export function RestaurantPage({ restaurant, userId, onClose }: Props) {
         </Box>
       </VStack>
       <Box
-        p={4}
+        px={4}
+        py={2}
         w="full"
         bgColor="white"
         position="sticky"
