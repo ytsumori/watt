@@ -195,6 +195,7 @@ function CurrentLocationMarker({ position, ...options }: CurrentLocationMarkerPr
         strokeOpacity: 0.3,
         strokeWeight: 15
       });
+      marker.setZIndex(2);
     }
   }, [marker, options]);
 
@@ -241,10 +242,10 @@ function RestaurantMarker({ location, active, isAvailable, onClick, ...options }
       if (isAvailable) {
         marker.setIcon({
           path: active ? ACTIVE_ICON_PATH : INACTIVE_ICON_PATH,
-          fillColor: "#FF5850",
+          fillColor: active ? "#FF5850" : "white",
           fillOpacity: 1,
           strokeWeight: 2,
-          strokeColor: "white",
+          strokeColor: active ? "white" : "#FF5850",
           scale: active ? 3 : 2,
           anchor: new google.maps.Point(7, 20)
         });
