@@ -36,7 +36,9 @@ export default function HomePage({ restaurants }: { restaurants: RestaurantWithD
     if (element) {
       setIsScrolling(true);
       const restaurant = nearbyRestaurants.find((r) => r.id === restaurantId);
-      restaurant && setActiveRestaurant(restaurant);
+      if (restaurant) {
+        setActiveRestaurant(restaurant);
+      }
       element.scrollIntoView({ behavior: "smooth" });
     }
   };

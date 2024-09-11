@@ -6,7 +6,7 @@ import { useRouter } from "next-nprogress-bar";
 import { usePathname } from "next/navigation";
 import { ComponentProps } from "react";
 
-export function RestaurantModal(props: ComponentProps<typeof RestaurantPage>) {
+export function RestaurantHalfModal(props: ComponentProps<typeof RestaurantPage>) {
   const router = useRouter();
   const pathname = usePathname();
 

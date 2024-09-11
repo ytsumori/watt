@@ -19,9 +19,11 @@ export function MealDetailModal({ meal, ...modalProps }: Props) {
     <Modal isCentered blockScrollOnMount={false} {...modalProps}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader />
+        <ModalHeader pb={0} px={4}>
+          {meal.title}
+        </ModalHeader>
         <ModalCloseButton />
-        <ModalBody>
+        <ModalBody mb={4} px={4} pt={0}>
           <MealDetailPage meal={meal} />
         </ModalBody>
       </ModalContent>

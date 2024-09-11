@@ -11,9 +11,7 @@ type Props = {
 export const MealItemInfo: FC<Props> = ({ mealItem }) => {
   return (
     <Box key={mealItem.id} w="full">
-      <Text fontSize="sm" as="b">
-        {mealItem.title}
-      </Text>
+      <Text fontSize="sm">{mealItem.title}</Text>
       <Text whiteSpace="pre-wrap" fontSize="xs" color="blackAlpha.700">
         {mealItem.description}
       </Text>

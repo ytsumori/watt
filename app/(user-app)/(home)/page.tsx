@@ -4,10 +4,10 @@ import HomePage from "./_components/HomePage";
 import { Flex } from "@chakra-ui/react";
 import { LogoHeader } from "../_components/LogoHeader";
 import { createTodayDateNumber } from "@/utils/opening-hours";
-import { RestaurantModal } from "./_components/RestaurantModal";
 import { getServerSession } from "next-auth";
 import { options } from "@/lib/next-auth/options";
 import { redirect } from "next/navigation";
+import { RestaurantHalfModal } from "./_components/RestaurantHalfModal";
 
 type SearchParams = {
   selectedRestaurantId?: string;
@@ -92,7 +92,7 @@ export default async function Home({ searchParams }: { searchParams: SearchParam
         <HomePage restaurants={restaurants} />
       </Flex>
       <FirstOnboardingModal />
-      {selectedRestaurant && <RestaurantModal restaurant={selectedRestaurant} userId={session?.user.id} />}
+      {selectedRestaurant && <RestaurantHalfModal restaurant={selectedRestaurant} userId={session?.user.id} />}
     </>
   );
 }

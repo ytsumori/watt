@@ -2,7 +2,7 @@
 
 import { Image, VStack, Box, Heading, Divider, Text } from "@chakra-ui/react";
 import { Prisma } from "@prisma/client";
-import { FC } from "react";
+import { FC, Fragment } from "react";
 import { MealPrice } from "./_components/MealPrice";
 import { MealItemInfo } from "./_components/MealItemInfo";
 import { getSupabaseImageUrl } from "@/utils/image/getSupabaseImageUrl";
@@ -24,6 +24,12 @@ type Props = {
 export const MealDetailPage: FC<Props> = ({ meal }) => {
   return (
     <VStack w="full" alignItems="start" spacing={2}>
+      <Box w="full">
+        <MealPrice meal={meal} />
+        <Text fontSize="sm" whiteSpace="pre-wrap" mt={2}>
+          {meal.description}
+        </Text>
+      </Box>
       <Box width="100%">
         <Image
           src={getSupabaseImageUrl("meals", meal.imagePath, { width: 500, height: 500 })}
@@ -31,18 +37,15 @@ export const MealDetailPage: FC<Props> = ({ meal }) => {
           alt={`meal-${meal.id}`}
         />
       </Box>
-      <Box w="full">
-        <Heading size="md">{meal.title}</Heading>
-        <MealPrice meal={meal} />
-        <Text fontSize="sm" whiteSpace="pre-wrap" mt={2}>
-          {meal.description}
-        </Text>
-      </Box>
-      <Divider borderColor="blackAlpha.400" />
-      <Box mb={2}>
-        <Heading size="sm">セット内容</Heading>
+      <Box mb={2} w="full">
+        <Heading size="sm" mb={1}>
+          セット内容
+        </Heading>
         {meal.items.map((item) => (
-          <MealItemInfo key={item.id} mealItem={item} />
+          <Fragment key={item.id}>
+            <MealItemInfo mealItem={item} />
+            <Divider borderColor="blackAlpha.400" my={1} />
+          </Fragment>
         ))}
       </Box>
     </VStack>

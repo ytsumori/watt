@@ -261,7 +261,7 @@ export function RestaurantPage({ restaurant, userId, onClose }: Props) {
               <Text fontSize="sm" fontWeight="bold" ml={4}>
                 Watt限定メニュー
               </Text>
-              <Flex gap={3} className="hidden-scrollbar" overflowX="scroll" pl={4}>
+              <Flex gap={3} className="hidden-scrollbar" overflowX="scroll" pl={4} w="min-content">
                 {restaurant.meals.map((meal) => (
                   <MealPreview key={meal.id} meal={meal} onClick={() => setSelectedMeal(meal)} />
                 ))}
