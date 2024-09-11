@@ -17,14 +17,12 @@ import {
 import { InView } from "react-intersection-observer";
 import { RestaurantWithDistance } from "./types/RestaurantWithDistance";
 import { RestaurantListItem } from "./components/RestaurantListItem";
-import { useRouter } from "next-nprogress-bar";
 import { useGetCurrentPosition } from "./hooks/useGetCurrentPosition";
 import { useFetchNearbyRestaurants } from "./hooks/useFetchNearbyRestaurants";
 import { useState } from "react";
 import { StatusBadge } from "../../../_components/StatusBadge";
 
 export default function HomePage({ restaurants }: { restaurants: RestaurantWithDistance[] }) {
-  const router = useRouter();
   const { position } = useGetCurrentPosition();
   const { nearbyRestaurants } = useFetchNearbyRestaurants({ position, restaurants });
   const [activeRestaurant, setActiveRestaurant] = useState<RestaurantWithDistance | null>(null);

@@ -12,10 +12,7 @@ import { Result } from "@/types/error";
 export async function visitRestaurant({
   userId,
   restaurantId,
-  firstMealId,
-  firstOptionIds,
-  secondMealId,
-  secondOptionIds,
+  mealOrders,
   peopleCount
 }: CreateOrderArgs): Promise<Result<Order>> {
   const inProgressOrder = await findInProgressOrder(userId);
@@ -28,16 +25,13 @@ export async function visitRestaurant({
     throw new Error("Restaurant not found");
   }
   if (!restaurant.isAvailable) {
-    return { data: null, error: { message: "Status outdated" } };
+    return { data: null, error: { message: "Restaurant not available" } };
   }
 
   const order = await createOrder({
     userId,
     restaurantId,
-    firstMealId,
-    firstOptionIds,
-    secondMealId,
-    secondOptionIds,
+    mealOrders,
     peopleCount
   });
 

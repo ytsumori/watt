@@ -53,7 +53,7 @@ type Props = {
           price: true;
           listPrice: true;
           imagePath: true;
-          items: { include: { options: { orderBy: { position: "asc" } } } };
+          items: true;
         };
       };
       googleMapPlaceInfo: { select: { url: true; latitude: true; longitude: true } };
@@ -92,183 +92,185 @@ export function RestaurantPage({ restaurant, userId, onClose }: Props) {
 
   return (
     <>
-      <Box maxH="full" minH="full" position="relative">
-        <Flex
-          w="full"
-          alignItems="center"
-          justifyContent="space-between"
-          position="sticky"
-          top={0}
-          bgColor="white"
-          pt={4}
-          px={4}
-          zIndex={1}
-          borderTopRadius="md"
-        >
-          <Heading size="md">{restaurant.name}</Heading>
-          {onClose && <CloseButton onClick={onClose} />}
-        </Flex>
-        <VStack w="full" alignItems="start" spacing={4} mb={4}>
-          <Box fontSize="sm" px={4}>
-            <BusinessHourLabel openingHours={restaurant.openingHours} />
-            <Flex gap={2}>
-              {restaurant.googleMapPlaceInfo && (
-                <Button
-                  leftIcon={<FaMapMarkerAlt />}
-                  variant="outline"
-                  as={NextLink}
-                  href={restaurant.googleMapPlaceInfo.url}
-                  target="_blank"
-                  size="xs"
-                >
-                  Google Map
-                </Button>
-              )}
-              {duration && (
-                <Flex alignItems="center">
-                  <FaWalking />
-                  <Text ml={1} fontWeight="normal">
-                    {duration}
-                  </Text>
-                </Flex>
-              )}
-            </Flex>
-          </Box>
-          <VStack width="full" spacing={2} alignItems="start">
-            <SimpleGrid
-              columns={2}
-              spacingY={2}
-              spacingX={2}
-              templateColumns="minmax(auto, 100px) 1fr"
-              fontSize="sm"
-              fontWeight="bold"
-              px={4}
-            >
-              {restaurant.smokingOption && (
-                <>
-                  <Text>喫煙・禁煙</Text>
-                  <Text fontWeight="normal">{translateSmokingOption(restaurant.smokingOption)}</Text>
-                </>
-              )}
-              {restaurant.paymentOptions.length > 0 && (
-                <>
-                  <Text>支払い方法</Text>
-                  <Text fontWeight="normal" whiteSpace="pre-wrap">
-                    {orderPaymentOptions(restaurant.paymentOptions.map((paymentOption) => paymentOption.option)).map(
-                      (option) => `${translatePaymentOption(option)}\n`
-                    )}
-                  </Text>
-                </>
-              )}
-              <Text>営業時間</Text>
-              <Box>
-                <Accordion allowToggle border="none">
-                  <AccordionItem border="none">
-                    <AccordionButton padding={0} fontSize="sm" textAlign="start">
-                      <BusinessHourLabel openingHours={restaurant.openingHours} />
-                      <AccordionIcon ml={2} />
-                    </AccordionButton>
-                    <Box mt={2}>
-                      {groupedByDayOfWeeks(restaurant.openingHours).map((text, idx) => {
-                        return (
-                          <AccordionPanel key={idx} p={0} my={1}>
-                            <Text fontWeight="normal">{text}</Text>
-                          </AccordionPanel>
-                        );
-                      })}
-                    </Box>
-                  </AccordionItem>
-                </Accordion>
-              </Box>
-            </SimpleGrid>
-            <Flex maxW="full" className="hidden-scrollbar" overflowX="scroll" gap={2} pl={4}>
-              {restaurant.interiorImagePath && (
-                <Box position="relative">
-                  <Text fontSize="sm" fontWeight="bold">
-                    内観
-                  </Text>
-                  <Image
-                    maxW="100px"
-                    minW="100px"
-                    src={getRestaurantInteriorImageUrl(restaurant.interiorImagePath)}
-                    alt={`interior-image-${restaurant.id}`}
-                    borderRadius={8}
-                    objectFit="cover"
-                    aspectRatio={1 / 1}
-                    w="full"
-                    onClick={onInteriorImageOpen}
-                  />
-                  <Modal isOpen={isInteriorImageOpen} onClose={onInteriorImageClose} isCentered>
-                    <ModalOverlay />
-                    <ModalContent>
-                      <Image
-                        src={getRestaurantInteriorImageUrl(restaurant.interiorImagePath, {
-                          width: 1000,
-                          height: 1000
-                        })}
-                        alt={`interior-image-${restaurant.id}`}
-                        objectFit="cover"
-                        aspectRatio={1 / 1}
-                        w="full"
-                      />
-                    </ModalContent>
-                  </Modal>
-                </Box>
-              )}
-              {restaurant.exteriorImage && (
-                <Box>
-                  <Text fontSize="sm" fontWeight="bold">
-                    外観
-                  </Text>
-                  <Image
-                    maxW="100px"
-                    minW="100px"
-                    src={getSupabaseImageUrl("restaurant-exteriors", restaurant.exteriorImage.imagePath)}
-                    alt={`exterior-image-${restaurant.id}`}
-                    borderRadius={8}
-                    objectFit="cover"
-                    aspectRatio={1 / 1}
-                    w="full"
-                    onClick={onExteriorImageOpen}
-                  />
-                  <Modal isOpen={isExteriorImageOpen} onClose={onExteriorImageClose} isCentered>
-                    <ModalOverlay />
-                    <ModalContent>
-                      <Image
-                        src={getSupabaseImageUrl("restaurant-exteriors", restaurant.exteriorImage.imagePath, {
-                          width: 1000,
-                          height: 1000
-                        })}
-                        alt={`interior-image-${restaurant.id}`}
-                        objectFit="cover"
-                        aspectRatio={1 / 1}
-                        w="full"
-                      />
-                    </ModalContent>
-                  </Modal>
-                </Box>
-              )}
-              {restaurant.menuImages.length > 0 && (
-                <Box>
-                  <Text fontSize="sm" fontWeight="bold">
-                    店内メニュー
-                  </Text>
-                  <MenuImages menuImages={restaurant.menuImages} />
-                </Box>
-              )}
-            </Flex>
-            <Box w="full">
-              <Text fontSize="sm" fontWeight="bold" ml={4}>
-                Watt限定メニュー
-              </Text>
-              <Flex gap={3} className="hidden-scrollbar" overflowX="scroll" pl={4} w="min-content">
-                {restaurant.meals.map((meal) => (
-                  <MealPreview key={meal.id} meal={meal} onClick={() => setSelectedMeal(meal)} />
-                ))}
+      <Flex maxH="full" minH="full" position="relative" flexDir="column" justifyContent="space-between">
+        <Box>
+          <Flex
+            w="full"
+            alignItems="center"
+            justifyContent="space-between"
+            position="sticky"
+            top={0}
+            bgColor="white"
+            pt={4}
+            px={4}
+            zIndex={1}
+            borderTopRadius="md"
+          >
+            <Heading size="md">{restaurant.name}</Heading>
+            {onClose && <CloseButton onClick={onClose} />}
+          </Flex>
+          <VStack w="full" alignItems="start" spacing={4} mb={4}>
+            <Box fontSize="sm" px={4}>
+              <BusinessHourLabel openingHours={restaurant.openingHours} />
+              <Flex gap={2}>
+                {restaurant.googleMapPlaceInfo && (
+                  <Button
+                    leftIcon={<FaMapMarkerAlt />}
+                    variant="outline"
+                    as={NextLink}
+                    href={restaurant.googleMapPlaceInfo.url}
+                    target="_blank"
+                    size="xs"
+                  >
+                    Google Map
+                  </Button>
+                )}
+                {duration && (
+                  <Flex alignItems="center">
+                    <FaWalking />
+                    <Text ml={1} fontWeight="normal">
+                      {duration}
+                    </Text>
+                  </Flex>
+                )}
               </Flex>
             </Box>
+            <VStack width="full" spacing={2} alignItems="start">
+              <SimpleGrid
+                columns={2}
+                spacingY={2}
+                spacingX={2}
+                templateColumns="minmax(auto, 100px) 1fr"
+                fontSize="sm"
+                fontWeight="bold"
+                px={4}
+              >
+                {restaurant.smokingOption && (
+                  <>
+                    <Text>喫煙・禁煙</Text>
+                    <Text fontWeight="normal">{translateSmokingOption(restaurant.smokingOption)}</Text>
+                  </>
+                )}
+                {restaurant.paymentOptions.length > 0 && (
+                  <>
+                    <Text>支払い方法</Text>
+                    <Text fontWeight="normal" whiteSpace="pre-wrap">
+                      {orderPaymentOptions(restaurant.paymentOptions.map((paymentOption) => paymentOption.option)).map(
+                        (option) => `${translatePaymentOption(option)}\n`
+                      )}
+                    </Text>
+                  </>
+                )}
+                <Text>営業時間</Text>
+                <Box>
+                  <Accordion allowToggle border="none">
+                    <AccordionItem border="none">
+                      <AccordionButton padding={0} fontSize="sm" textAlign="start">
+                        <BusinessHourLabel openingHours={restaurant.openingHours} />
+                        <AccordionIcon ml={2} />
+                      </AccordionButton>
+                      <Box mt={2}>
+                        {groupedByDayOfWeeks(restaurant.openingHours).map((text, idx) => {
+                          return (
+                            <AccordionPanel key={idx} p={0} my={1}>
+                              <Text fontWeight="normal">{text}</Text>
+                            </AccordionPanel>
+                          );
+                        })}
+                      </Box>
+                    </AccordionItem>
+                  </Accordion>
+                </Box>
+              </SimpleGrid>
+              <Flex maxW="full" className="hidden-scrollbar" overflowX="scroll" gap={2} pl={4}>
+                {restaurant.interiorImagePath && (
+                  <Box position="relative">
+                    <Text fontSize="sm" fontWeight="bold">
+                      内観
+                    </Text>
+                    <Image
+                      maxW="100px"
+                      minW="100px"
+                      src={getRestaurantInteriorImageUrl(restaurant.interiorImagePath)}
+                      alt={`interior-image-${restaurant.id}`}
+                      borderRadius={8}
+                      objectFit="cover"
+                      aspectRatio={1 / 1}
+                      w="full"
+                      onClick={onInteriorImageOpen}
+                    />
+                    <Modal isOpen={isInteriorImageOpen} onClose={onInteriorImageClose} isCentered>
+                      <ModalOverlay />
+                      <ModalContent>
+                        <Image
+                          src={getRestaurantInteriorImageUrl(restaurant.interiorImagePath, {
+                            width: 1000,
+                            height: 1000
+                          })}
+                          alt={`interior-image-${restaurant.id}`}
+                          objectFit="cover"
+                          aspectRatio={1 / 1}
+                          w="full"
+                        />
+                      </ModalContent>
+                    </Modal>
+                  </Box>
+                )}
+                {restaurant.exteriorImage && (
+                  <Box>
+                    <Text fontSize="sm" fontWeight="bold">
+                      外観
+                    </Text>
+                    <Image
+                      maxW="100px"
+                      minW="100px"
+                      src={getSupabaseImageUrl("restaurant-exteriors", restaurant.exteriorImage.imagePath)}
+                      alt={`exterior-image-${restaurant.id}`}
+                      borderRadius={8}
+                      objectFit="cover"
+                      aspectRatio={1 / 1}
+                      w="full"
+                      onClick={onExteriorImageOpen}
+                    />
+                    <Modal isOpen={isExteriorImageOpen} onClose={onExteriorImageClose} isCentered>
+                      <ModalOverlay />
+                      <ModalContent>
+                        <Image
+                          src={getSupabaseImageUrl("restaurant-exteriors", restaurant.exteriorImage.imagePath, {
+                            width: 1000,
+                            height: 1000
+                          })}
+                          alt={`interior-image-${restaurant.id}`}
+                          objectFit="cover"
+                          aspectRatio={1 / 1}
+                          w="full"
+                        />
+                      </ModalContent>
+                    </Modal>
+                  </Box>
+                )}
+                {restaurant.menuImages.length > 0 && (
+                  <Box>
+                    <Text fontSize="sm" fontWeight="bold">
+                      店内メニュー
+                    </Text>
+                    <MenuImages menuImages={restaurant.menuImages} />
+                  </Box>
+                )}
+              </Flex>
+              <Box w="full">
+                <Text fontSize="sm" fontWeight="bold" ml={4}>
+                  Watt限定メニュー
+                </Text>
+                <Flex gap={3} className="hidden-scrollbar" overflowX="scroll" pl={4} w="min-content">
+                  {restaurant.meals.map((meal) => (
+                    <MealPreview key={meal.id} meal={meal} onClick={() => setSelectedMeal(meal)} />
+                  ))}
+                </Flex>
+              </Box>
+            </VStack>
           </VStack>
-        </VStack>
+        </Box>
         <Box
           px={4}
           py={2}
@@ -308,7 +310,7 @@ export function RestaurantPage({ restaurant, userId, onClose }: Props) {
             </>
           )}
         </Box>
-      </Box>
+      </Flex>
       {selectedMeal && <MealDetailModal isOpen onClose={() => setSelectedMeal(undefined)} meal={selectedMeal} />}
     </>
   );

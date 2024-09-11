@@ -16,7 +16,7 @@ type Props = {
       imagePath: true;
       price: true;
       listPrice: true;
-      items: { include: { options: true } };
+      items: true;
     };
   }>;
 };
@@ -38,13 +38,13 @@ export const MealDetailPage: FC<Props> = ({ meal }) => {
         />
       </Box>
       <Box mb={2} w="full">
-        <Heading size="sm" mb={1}>
+        <Heading size="sm" mb={2}>
           セット内容
         </Heading>
-        {meal.items.map((item) => (
+        {meal.items.map((item, index) => (
           <Fragment key={item.id}>
             <MealItemInfo mealItem={item} />
-            <Divider borderColor="blackAlpha.400" my={1} />
+            {index < meal.items.length - 1 && <Divider borderColor="blackAlpha.400" my={1} />}
           </Fragment>
         ))}
       </Box>

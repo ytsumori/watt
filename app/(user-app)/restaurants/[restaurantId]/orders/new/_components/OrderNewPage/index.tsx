@@ -1,7 +1,7 @@
 "use client";
 
 import NextLink from "next/link";
-import { CheckIcon } from "@chakra-ui/icons";
+import { AddIcon, MinusIcon } from "@chakra-ui/icons";
 import {
   useDisclosure,
   VStack,
@@ -11,20 +11,22 @@ import {
   Alert,
   AlertIcon,
   Select,
-  Center,
   Text,
-  Button
+  Button,
+  Flex,
+  Spacer,
+  HStack,
+  IconButton
 } from "@chakra-ui/react";
-import { Prisma } from "@prisma/client";
+import { Meal, Prisma } from "@prisma/client";
 import { ConfirmModal } from "@/components/confirm-modal";
-import { FC, useState } from "react";
-import { PriceSection } from "./_components/PriceSection";
-import { MealWithItems } from "./types/MealWithItems";
+import { ComponentProps, FC, useMemo, useState } from "react";
 import { visitRestaurant } from "./actions/visit-restaurant";
-import { MealCarousel } from "./_components/MealCarousel";
-import { MealInfo } from "./_components/MealInfo";
 import { useRouter } from "next-nprogress-bar";
 import { HeaderSection } from "@/app/(user-app)/_components/HeaderSection";
+import { MealPreviewImage } from "@/components/meal/MealPreviewImage";
+import { MealDetailModal } from "@/app/(user-app)/_components/RestaurantPage/components/MealDetailModal";
+import { MealPrice } from "@/app/(user-app)/_components/MealDetailPage/_components/MealPrice";
 
 type Props = {
   restaurant: Prisma.RestaurantGetPayload<{
@@ -32,7 +34,7 @@ type Props = {
       meals: {
         where: { isInactive: false; outdatedAt: null };
         orderBy: { price: "asc" };
-        include: { items: { include: { options: { orderBy: { position: "asc" } } } } };
+        include: { items: true };
       };
       googleMapPlaceInfo: { select: { url: true } };
       paymentOptions: true;
@@ -41,10 +43,9 @@ type Props = {
   }>;
   inProgressOrderId?: string;
   userId?: string;
-  defaultMeal?: Prisma.MealGetPayload<{ include: { items: { include: { options: true } } } }>;
 };
 
-export const OrderNewPage: FC<Props> = ({ restaurant, inProgressOrderId, userId, defaultMeal }) => {
+export const OrderNewPage: FC<Props> = ({ restaurant, inProgressOrderId, userId }) => {
   const router = useRouter();
   const [isVisitRequesting, setIsVisitRequesting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<{ title: string; description: string }>();
@@ -54,12 +55,14 @@ export const OrderNewPage: FC<Props> = ({ restaurant, inProgressOrderId, userId,
     onClose: onVisitConfirmModalClose
   } = useDisclosure();
   const [peopleCount, setPeopleCount] = useState<1 | 2>();
-  const [firstPersonMeal, setFirstPersonMeal] = useState<MealWithItems | undefined>(defaultMeal);
-  const [firstMealSelectedOptions, setFirstMealSelectedOptions] = useState<(string | null)[]>(
-    defaultMeal ? new Array(defaultMeal.items.length).fill(null) : []
+  const [currentOrders, setCurrentOrders] = useState<{ meal: Meal; quantity: number }[]>([]);
+  const [selectedMealDetail, setSelectedMealDetail] = useState<ComponentProps<typeof MealDetailModal>["meal"]>();
+  const isValid = useMemo(() => peopleCount !== undefined, [peopleCount]);
+  const totalCount = useMemo(() => currentOrders.reduce((acc, meal) => acc + meal.quantity, 0), [currentOrders]);
+  const totalPrice = useMemo(
+    () => currentOrders.reduce((acc, meal) => acc + meal.meal.price * meal.quantity, 0),
+    [currentOrders]
   );
-  const [secondPersonMeal, setSecondPersonMeal] = useState<MealWithItems | null>();
-  const [secondMealSelectedOptions, setSecondMealSelectedOptions] = useState<(string | null)[]>([]);
 
   if (!restaurant.isAvailable) {
     return (
@@ -74,62 +77,18 @@ export const OrderNewPage: FC<Props> = ({ restaurant, inProgressOrderId, userId,
     return (
       <Alert status="warning" as={NextLink} href={`/orders/${inProgressOrderId}`}>
         <AlertIcon />
-        既にお店に向かっているの注文があります
+        現在空き状況確認中です
       </Alert>
     );
   }
 
-  const isValid =
-    firstPersonMeal !== undefined &&
-    firstPersonMeal.items.every((item, index) => item.options.length === 0 || !!firstMealSelectedOptions.at(index)) &&
-    (peopleCount === 1 ||
-      (peopleCount === 2 &&
-        secondPersonMeal !== undefined &&
-        (secondPersonMeal === null ||
-          secondPersonMeal.items.every(
-            (item, index) => item.options.length === 0 || !!secondMealSelectedOptions.at(index)
-          ))));
-
   const handlePeopleCountChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const convertedValue = Number(e.target.value);
-    switch (convertedValue) {
-      case 2:
-        setPeopleCount(2);
-        break;
-      case 1:
-        setSecondPersonMeal(undefined);
-        setSecondMealSelectedOptions([]);
-        setPeopleCount(1);
-        break;
-      default:
-        setPeopleCount(undefined);
-        setSecondPersonMeal(undefined);
-        setSecondMealSelectedOptions([]);
-        setFirstPersonMeal(undefined);
+    if (convertedValue === 1 || convertedValue === 2) {
+      setPeopleCount(convertedValue);
+    } else {
+      setPeopleCount(undefined);
     }
-  };
-
-  const handleFirstMealSelected = (selectedMeal: MealWithItems) => {
-    setFirstMealSelectedOptions(new Array(selectedMeal.items.length).fill(null));
-    setFirstPersonMeal(selectedMeal);
-  };
-
-  const handleSecondMealSelected = (selectedMeal: MealWithItems) => {
-    setSecondMealSelectedOptions(new Array(selectedMeal.items.length).fill(null));
-    setSecondPersonMeal(selectedMeal);
-  };
-
-  const handleFirstMealOptionChange = (index: number, value: string) => {
-    const newOptions = [...firstMealSelectedOptions];
-    newOptions[index] = value;
-    setFirstMealSelectedOptions(newOptions);
-  };
-
-  const handleSecondMealOptionChange = (index: number, value: string) => {
-    if (secondMealSelectedOptions === undefined) return;
-    const newOptions = [...secondMealSelectedOptions];
-    newOptions[index] = value;
-    setSecondMealSelectedOptions(newOptions);
   };
 
   const handleVisitingClick = async () => {
@@ -139,7 +98,7 @@ export const OrderNewPage: FC<Props> = ({ restaurant, inProgressOrderId, userId,
   };
 
   const handleVisitingConfirm = async () => {
-    if (!userId || !firstPersonMeal || !peopleCount) return;
+    if (!userId || !peopleCount) return;
 
     setIsVisitRequesting(true);
 
@@ -147,10 +106,9 @@ export const OrderNewPage: FC<Props> = ({ restaurant, inProgressOrderId, userId,
       const { data, error } = await visitRestaurant({
         userId,
         restaurantId: restaurant.id,
-        firstMealId: firstPersonMeal.id,
-        firstOptionIds: firstMealSelectedOptions,
-        secondMealId: secondPersonMeal?.id,
-        secondOptionIds: secondMealSelectedOptions,
+        mealOrders: currentOrders.map((currentOrder) => {
+          return { mealId: currentOrder.meal.id, quantity: currentOrder.quantity };
+        }),
         peopleCount
       });
 
@@ -158,8 +116,8 @@ export const OrderNewPage: FC<Props> = ({ restaurant, inProgressOrderId, userId,
         setIsVisitRequesting(false);
         onVisitConfirmModalClose();
         setErrorMessage({
-          title: "お店のステータスが更新されました",
-          description: "お店のステータスが更新され、価格が変わりました。もう一度お試しください。"
+          title: "お店の空き情報が変更されました",
+          description: "お店の空き情報が変更されました。"
         });
         return;
       }
@@ -177,124 +135,150 @@ export const OrderNewPage: FC<Props> = ({ restaurant, inProgressOrderId, userId,
 
   return (
     <>
-      <HeaderSection title="セットメニューを注文する" />
-      <VStack w="full" p={4} alignItems="start" spacing={4}>
-        <Heading size="md">来店人数を選択</Heading>
-        <Select value={peopleCount} onChange={handlePeopleCountChange} placeholder="人数を選択">
-          <option value="1">1人</option>
-          <option value="2">2人</option>
-        </Select>
-        {peopleCount !== undefined && (
-          <>
-            <Box>
-              <Heading size="md">メニューを選択</Heading>
-              <Text fontSize="xs">食べたいセットを選択してください</Text>
-            </Box>
-            {peopleCount === 2 && <Heading size="sm">1人目の注文</Heading>}
-            <MealCarousel
-              meals={restaurant.meals}
-              selectedMealId={firstPersonMeal?.id}
-              onSelectMeal={handleFirstMealSelected}
-            />
-            {firstPersonMeal && (
-              <MealInfo
-                meal={firstPersonMeal}
-                selectedOptions={firstMealSelectedOptions}
-                onOptionChange={handleFirstMealOptionChange}
-              />
-            )}
-            {peopleCount === 2 && (
+      <Flex w="full" flexDir="column" justifyContent="space-between" maxH="full" minH="full" position="relative">
+        <Box w="full">
+          <Box w="full" position="sticky" top={0} bgColor="white">
+            <HeaderSection title="来店情報を入力する" />
+          </Box>
+          <VStack w="full" spacing={4} alignItems="start" p={4}>
+            <VStack>
+              <Heading size="md">来店人数を選択</Heading>
+              <Select value={peopleCount} onChange={handlePeopleCountChange} placeholder="人数を選択">
+                <option value="1">1人</option>
+                <option value="2">2人</option>
+              </Select>
+            </VStack>
+            {peopleCount !== undefined && (
               <>
-                <Heading size="sm">2人目の注文</Heading>
-                <MealCarousel
-                  meals={restaurant.meals}
-                  selectedMealId={secondPersonMeal?.id}
-                  onSelectMeal={handleSecondMealSelected}
-                  additionalBox={
-                    <Center
-                      minW="130px"
-                      w="130px"
-                      h="130px"
-                      borderRadius={12}
-                      position="relative"
-                      borderWidth={secondPersonMeal === null ? 4 : 0}
-                      borderColor="brand.400"
-                      backgroundColor="gray.100"
-                      onClick={() => setSecondPersonMeal(null)}
-                    >
-                      <Text fontSize="sm" as="b" color="brand.400">
-                        1人目の注文を
-                        <br />
-                        シェアする
-                      </Text>
-                      {secondPersonMeal === null && (
-                        <CheckIcon
-                          position="absolute"
-                          top={0}
-                          right={0}
-                          backgroundColor="brand.400"
-                          color="white"
-                          boxSize={6}
-                          borderRadius={6}
-                          m={1}
-                          p={1}
-                          aria-label="checked"
-                        />
-                      )}
-                    </Center>
-                  }
-                />
-                {secondPersonMeal && (
-                  <MealInfo
-                    meal={secondPersonMeal}
-                    selectedOptions={secondMealSelectedOptions}
-                    onOptionChange={handleSecondMealOptionChange}
-                  />
-                )}
-              </>
-            )}
-            {firstPersonMeal && (
-              <>
-                <Divider borderColor="black" my={6} />
-                <PriceSection
-                  firstPersonMeal={firstPersonMeal}
-                  firstSelectedOptions={firstMealSelectedOptions}
-                  secondPersonMeal={secondPersonMeal ?? undefined}
-                  secondSelectedOptions={secondMealSelectedOptions}
-                />
-                <Divider borderColor="black" my={6} />
-                <Box w="100%">
-                  <Text fontSize="xs">
-                    この注文内容でWattが自動的にお店の空き状況を確認します。
-                    <br />
-                    店の空き状況が確認でき、お店に到着するまで調理は開始されません。
-                  </Text>
-                  <Button
-                    isLoading={isVisitRequesting}
-                    onClick={handleVisitingClick}
-                    w="full"
-                    maxW="full"
-                    size="md"
-                    isDisabled={!isValid}
-                    mt={1}
-                  >
-                    この注文でお店の空き状況を確認する
-                  </Button>
-                  {!isValid && (
-                    <Text fontSize="xs" color="red.400">
-                      選択が必要な箇所が残っています。
-                    </Text>
+                <VStack w="full" alignItems="start">
+                  <Box>
+                    <Heading size="md">Watt限定セットを選択</Heading>
+                    <Text fontSize="xs">店内で注文する場合はこちらのセットはご注文いただけません</Text>
+                  </Box>
+                  <VStack w="full">
+                    {restaurant.meals.map((meal) => {
+                      const currentCount = currentOrders.find((order) => order.meal.id === meal.id)?.quantity ?? 0;
+                      return (
+                        <Flex key={meal.id} w="full" gap={2}>
+                          <MealPreviewImage src={meal.imagePath} alt={`meal-${meal.id}`} />
+                          <Flex flexDir="column" w="full" justifyContent="space-between" py={2}>
+                            <Flex w="full" justifyContent="space-between">
+                              <Heading size="sm">{meal.title}</Heading>
+                              <Button variant="outline" onClick={() => setSelectedMealDetail(meal)}>
+                                詳細
+                              </Button>
+                            </Flex>
+                            <Flex w="full" justifyContent="space-between" alignItems="end">
+                              <Box>
+                                <MealPrice meal={meal} />
+                              </Box>
+                              <HStack>
+                                <IconButton
+                                  aria-label="decrement meal"
+                                  icon={<MinusIcon />}
+                                  variant="outline"
+                                  isRound
+                                  isDisabled={currentCount === 0}
+                                  onClick={() => {
+                                    const index = currentOrders.findIndex((order) => order.meal.id === meal.id);
+                                    if (index === -1) return;
+                                    const newOrders = [...currentOrders];
+                                    if (newOrders[index].quantity === 1) {
+                                      newOrders.splice(index, 1);
+                                    } else {
+                                      newOrders[index] = {
+                                        ...newOrders[index],
+                                        quantity: newOrders[index].quantity - 1
+                                      };
+                                    }
+                                    setCurrentOrders(newOrders);
+                                  }}
+                                />
+                                <Text>{currentCount}</Text>
+                                <IconButton
+                                  aria-label="increment meal"
+                                  icon={<AddIcon />}
+                                  variant="outline"
+                                  isRound
+                                  isDisabled={totalCount === peopleCount}
+                                  onClick={() => {
+                                    const index = currentOrders.findIndex((order) => order.meal.id === meal.id);
+                                    if (index === -1) {
+                                      setCurrentOrders([...currentOrders, { meal, quantity: 1 }]);
+                                    } else {
+                                      const newOrders = [...currentOrders];
+                                      newOrders[index] = {
+                                        ...newOrders[index],
+                                        quantity: newOrders[index].quantity + 1
+                                      };
+                                      setCurrentOrders(newOrders);
+                                    }
+                                  }}
+                                />
+                              </HStack>
+                            </Flex>
+                          </Flex>
+                        </Flex>
+                      );
+                    })}
+                  </VStack>
+                  {totalPrice > 0 && (
+                    <>
+                      <Divider borderColor="black" my={2} />
+                      <Heading size="sm">
+                        <Text as="span" mr="2">
+                          合計
+                        </Text>
+                        <Heading as="span" size="lg">
+                          {currentOrders
+                            .reduce((acc, meal) => acc + meal.meal.price * meal.quantity, 0)
+                            .toLocaleString("ja-JP")}
+                        </Heading>
+                        円
+                      </Heading>
+                    </>
                   )}
-                </Box>
+                </VStack>
               </>
             )}
-          </>
-        )}
-      </VStack>
+          </VStack>
+        </Box>
+        <Box
+          w="full"
+          bgColor="white"
+          position="sticky"
+          bottom={0}
+          boxShadow="0 -4px 15px 0px rgba(0, 0, 0, 0.2)"
+          px={4}
+          py={2}
+        >
+          <Text fontSize="xs">
+            この内容でWattが自動的にお店の空き状況を確認します。
+            <br />
+            空き状況が確認後30分以内にお店に向かってください。
+          </Text>
+          <Button
+            isLoading={isVisitRequesting}
+            onClick={handleVisitingClick}
+            w="full"
+            maxW="full"
+            size="md"
+            isDisabled={!isValid}
+            mt={1}
+          >
+            この内容でお店の空き状況を確認する
+          </Button>
+          {!isValid && (
+            <Text fontSize="xs" color="red.400">
+              空き状況を確認するには人数の選択が必要です
+            </Text>
+          )}
+        </Box>
+      </Flex>
       <ConfirmModal
         isOpen={isVisitConfirmModalOpen}
         onClose={onVisitConfirmModalClose}
-        title="こちらの注文でよろしいですか？"
+        title="こちらの内容でよろしいですか？"
         confirmButton={{
           label: "お店の空き状況を確認する",
           onClick: handleVisitingConfirm,
@@ -305,10 +289,12 @@ export const OrderNewPage: FC<Props> = ({ restaurant, inProgressOrderId, userId,
           isDisabled: isVisitRequesting
         }}
       >
-        Wattが自動的にお店の空き状況を確認し、5分以内にSMSでお知らせします。
+        空き状況を確認し、
+        <br />
+        5分以内にSMSでお知らせします。
         <br />
         <br />
-        空き状況が確認後30分以内にお店に向かっていただき、注文の品でお食事をお楽しみください。
+        確認後30分以内にお店に向かってください。
       </ConfirmModal>
       <ConfirmModal
         isOpen={errorMessage !== undefined}
@@ -324,6 +310,9 @@ export const OrderNewPage: FC<Props> = ({ restaurant, inProgressOrderId, userId,
       >
         {errorMessage?.description ?? ""}
       </ConfirmModal>
+      {selectedMealDetail && (
+        <MealDetailModal isOpen onClose={() => setSelectedMealDetail(undefined)} meal={selectedMealDetail} />
+      )}
     </>
   );
 };
