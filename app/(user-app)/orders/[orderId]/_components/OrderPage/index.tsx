@@ -78,7 +78,7 @@ export function OrderPage({ order }: Props) {
       return (
         <>
           <VStack alignItems="start" spacing={8} p={4} w="full">
-            <Heading>空き状況確認中</Heading>
+            <Heading>空き確認中</Heading>
             <Text>
               注文番号:
               <Heading as="span" ml={2}>

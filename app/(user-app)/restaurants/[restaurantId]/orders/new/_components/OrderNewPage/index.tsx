@@ -14,7 +14,6 @@ import {
   Text,
   Button,
   Flex,
-  Spacer,
   HStack,
   IconButton
 } from "@chakra-ui/react";
@@ -200,7 +199,9 @@ export const OrderNewPage: FC<Props> = ({ restaurant, inProgressOrderId, userId 
                                   icon={<AddIcon />}
                                   variant="outline"
                                   isRound
-                                  isDisabled={totalCount === peopleCount}
+                                  isDisabled={
+                                    currentOrders.find((order) => order.meal.id === meal.id)?.quantity === peopleCount
+                                  }
                                   onClick={() => {
                                     const index = currentOrders.findIndex((order) => order.meal.id === meal.id);
                                     if (index === -1) {
