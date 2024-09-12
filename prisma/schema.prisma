@@ -176,13 +176,13 @@ model RestaurantHolidayOpeningHour {
 model RestaurantManualClose {
   id                               String                          @id @default(cuid())
   restaurantId                     String
-  restaurantGoogleMapOpeningHourId String?
-  restaurantHolidayOpeningHourId   String?
+  googleMapOpeningHourId           String?
+  holidayOpeningHourId             String?
   createdAt                        DateTime                        @default(now())
   updatedAt                        DateTime                        @default(now()) @updatedAt
   restaurant                       Restaurant                      @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
-  googleMapOpeningHour             RestaurantGoogleMapOpeningHour? @relation(fields: [restaurantGoogleMapOpeningHourId], references: [id])
-  holidayOpeningHour               RestaurantHolidayOpeningHour?   @relation(fields: [restaurantHolidayOpeningHourId], references: [id])
+  googleMapOpeningHour             RestaurantGoogleMapOpeningHour? @relation(fields: [googleMapOpeningHourId], references: [id])
+  holidayOpeningHour               RestaurantHolidayOpeningHour?   @relation(fields: [holidayOpeningHourId], references: [id])
 }
 
 model Meal {
