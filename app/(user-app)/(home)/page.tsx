@@ -17,6 +17,7 @@ export default async function Home() {
       googleMapPlaceInfo: { select: { latitude: true, longitude: true } },
       openingHours: {
         select: {
+          id: true,
           openHour: true,
           openMinute: true,
           openDayOfWeek: true,
@@ -30,6 +31,7 @@ export default async function Home() {
           date: true,
           openingHours: {
             select: {
+              id: true,
               openHour: true,
               openMinute: true,
               openDayOfWeek: true,
