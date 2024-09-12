@@ -786,6 +786,55 @@ export type Database = {
           },
         ]
       }
+      RestaurantManualClose: {
+        Row: {
+          createdAt: string
+          googleMapOpeningHourId: string | null
+          holidayOpeningHourId: string | null
+          id: string
+          restaurantId: string
+          updatedAt: string
+        }
+        Insert: {
+          createdAt?: string
+          googleMapOpeningHourId?: string | null
+          holidayOpeningHourId?: string | null
+          id: string
+          restaurantId: string
+          updatedAt?: string
+        }
+        Update: {
+          createdAt?: string
+          googleMapOpeningHourId?: string | null
+          holidayOpeningHourId?: string | null
+          id?: string
+          restaurantId?: string
+          updatedAt?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "RestaurantManualClose_googleMapOpeningHourId_fkey"
+            columns: ["googleMapOpeningHourId"]
+            isOneToOne: false
+            referencedRelation: "RestaurantGoogleMapOpeningHour"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "RestaurantManualClose_holidayOpeningHourId_fkey"
+            columns: ["holidayOpeningHourId"]
+            isOneToOne: false
+            referencedRelation: "RestaurantHolidayOpeningHour"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "RestaurantManualClose_restaurantId_fkey"
+            columns: ["restaurantId"]
+            isOneToOne: false
+            referencedRelation: "Restaurant"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       RestaurantMenuImage: {
         Row: {
           createdAt: string
