@@ -16,6 +16,7 @@ export type RestaurantWithDistance = Prisma.RestaurantGetPayload<{
     };
     openingHours: {
       select: {
+        id: true;
         openHour: true;
         openMinute: true;
         openDayOfWeek: true;
@@ -29,6 +30,7 @@ export type RestaurantWithDistance = Prisma.RestaurantGetPayload<{
         date: true;
         openingHours: {
           select: {
+            id: true;
             openHour: true;
             openMinute: true;
             openDayOfWeek: true;

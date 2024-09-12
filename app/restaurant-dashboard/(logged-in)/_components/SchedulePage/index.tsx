@@ -1,15 +1,13 @@
 "use client";
 
-import { Box, Button, Divider, Heading, Text, useToast } from "@chakra-ui/react";
-import { Fragment, useCallback, useContext, useEffect, useState } from "react";
+import { Box, Button, Heading, Text, useToast } from "@chakra-ui/react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { Prisma } from "@prisma/client";
 import { getRestaurantOpeningInfo, updateBusinessHours } from "./actions";
-import { ScheduleListItem } from "./_components/ScheduleListItem";
-import { dayOfWeekToNumber } from "@/utils/day-of-week";
 import { RepeatIcon } from "@chakra-ui/icons";
 import { RestaurantIdContext } from "../RestaurantIdProvider";
 import { IsAvailableSwitch } from "./_components/IsAvailableSwitch";
-import { ScheduledHolidayListItem } from "./_components/ScheduledHolidayListItem";
+
 import { Schedules } from "./_components/Schedules";
 
 export function SchedulePage() {
@@ -55,6 +53,7 @@ export function SchedulePage() {
     <>
       <IsAvailableSwitch
         restaurantId={restaurantId}
+        restaurant={restaurant}
         isRestaurantAvailable={restaurant?.isAvailable ?? false}
         onChange={revalidateOpeningInfo}
       />
