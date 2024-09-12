@@ -88,9 +88,7 @@ export async function updateCurrentOpeningHours({
   const diffs = await createBusinessHourDiff({ currentOpeningHours, regularOpeningHours, restaurantId });
 
   diffs.forEach(async (diff) => {
-    // date自体がないなら作る
     if (convertedOldCurrentOpeningHours[diff.date]) {
-      // 1. diff.holidayOpeningHoursの数が違うなら、全部消して作り直す
       if (convertedOldCurrentOpeningHours[diff.date].openingHours.length !== diff.holidayOpeningHours.length) {
         await prisma.restaurantHolidayOpeningHour.deleteMany({
           where: { restaurantHolidayId: convertedOldCurrentOpeningHours[diff.date].id }
@@ -108,8 +106,8 @@ export async function updateCurrentOpeningHours({
             }
           });
         });
+        return;
       }
-      // 2. diff.holidayOpeningHoursの数が同じなら、diff.holidaysOpeningHoursをmapで回してoldに一つでもないなら全て消して全て作成
       diff.holidayOpeningHours.forEach(async (item) => {
         const isSame = convertedOldCurrentOpeningHours[diff.date].openingHours.some((oldItem) => {
           return (
