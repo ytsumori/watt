@@ -18,27 +18,22 @@ import {
   AccordionIcon,
   AccordionItem,
   AccordionPanel,
-  Alert,
-  AlertIcon,
   CloseButton
 } from "@chakra-ui/react";
 import { Prisma } from "@prisma/client";
-import { usePathname } from "next/navigation";
-import { LineLoginButton } from "@/components/Auth/LineLoginButton";
-import { useRouter } from "next-nprogress-bar";
-import { FaWalking, FaMapMarkerAlt } from "react-icons/fa";
+import { ComponentProps, ReactNode, useState } from "react";
+import { useGetDuration } from "./hooks";
+import { MealDetailModal } from "./components/MealDetailModal";
 import { BusinessHourLabel } from "../../(home)/_components/HomePage/components/RestaurantListItem/_components/BusinessHourLabel";
+import { FaMapMarkerAlt, FaWalking } from "react-icons/fa";
 import NextLink from "next/link";
-import { translatePaymentOption, translateSmokingOption } from "@/lib/prisma/translate-enum";
+import { groupedByDayOfWeeks } from "./util";
 import { orderPaymentOptions } from "@/lib/prisma/order-enum";
+import { translatePaymentOption, translateSmokingOption } from "@/lib/prisma/translate-enum";
 import { getRestaurantInteriorImageUrl } from "@/utils/image/getRestaurantInteriorImageUrl";
 import { getSupabaseImageUrl } from "@/utils/image/getSupabaseImageUrl";
 import { MenuImages } from "./components/MenuImages";
-import { useGetDuration } from "./hooks";
-import { groupedByDayOfWeeks } from "./util";
 import { MealPreview } from "@/components/meal/MealPreview";
-import { ComponentProps, useState } from "react";
-import { MealDetailModal } from "./components/MealDetailModal";
 
 type Props = {
   restaurant: Prisma.RestaurantGetPayload<{
@@ -72,16 +67,14 @@ type Props = {
       };
       smokingOption: true;
       interiorImagePath: true;
-      isAvailable: true;
     };
   }>;
   userId?: string;
   onClose?: () => void;
+  footer?: ReactNode;
 };
 
-export function RestaurantPage({ restaurant, userId, onClose }: Props) {
-  const pathname = usePathname();
-  const router = useRouter();
+export function RestaurantHalfModalBody({ restaurant, onClose, footer }: Props) {
   const { isOpen: isInteriorImageOpen, onOpen: onInteriorImageOpen, onClose: onInteriorImageClose } = useDisclosure();
   const { isOpen: isExteriorImageOpen, onOpen: onExteriorImageOpen, onClose: onExteriorImageClose } = useDisclosure();
   const duration = useGetDuration({
@@ -89,7 +82,6 @@ export function RestaurantPage({ restaurant, userId, onClose }: Props) {
     longitude: restaurant.googleMapPlaceInfo ? restaurant.googleMapPlaceInfo.longitude : undefined
   });
   const [selectedMeal, setSelectedMeal] = useState<ComponentProps<typeof MealDetailModal>["meal"]>();
-
   return (
     <>
       <Flex maxH="full" minH="full" position="relative" flexDir="column" justifyContent="space-between">
@@ -270,48 +262,24 @@ export function RestaurantPage({ restaurant, userId, onClose }: Props) {
               </Box>
             </VStack>
           </VStack>
+
+          {selectedMeal && <MealDetailModal isOpen onClose={() => setSelectedMeal(undefined)} meal={selectedMeal} />}
         </Box>
-        <Box
-          px={4}
-          py={2}
-          w="full"
-          bgColor="white"
-          position="sticky"
-          bottom={0}
-          boxShadow="0 -4px 15px 0px rgba(0, 0, 0, 0.2)"
-          zIndex={1}
-        >
-          {userId ? (
-            (() => {
-              if (restaurant.isAvailable) {
-                return (
-                  <Button onClick={() => router.push(`/restaurants/${restaurant.id}/orders/new`)} w="full" size="md">
-                    お店の空き状況を確認する
-                  </Button>
-                );
-              } else {
-                return (
-                  <Alert status="warning" borderRadius={4} fontSize="sm">
-                    <AlertIcon />
-                    現在空き状況が確認できません
-                  </Alert>
-                );
-              }
-            })()
-          ) : (
-            <>
-              <Alert status="error" fontSize="sm" mb={2}>
-                <AlertIcon />
-                現在の空き状況が確認するには
-                <br />
-                ログインが必要です
-              </Alert>
-              <LineLoginButton callbackPath={pathname} />
-            </>
-          )}
-        </Box>
+        {footer && (
+          <Box
+            px={4}
+            py={2}
+            w="full"
+            bgColor="white"
+            position="sticky"
+            bottom={0}
+            boxShadow="0 -4px 15px 0px rgba(0, 0, 0, 0.2)"
+            zIndex={1}
+          >
+            {footer}
+          </Box>
+        )}
       </Flex>
-      {selectedMeal && <MealDetailModal isOpen onClose={() => setSelectedMeal(undefined)} meal={selectedMeal} />}
     </>
   );
 }

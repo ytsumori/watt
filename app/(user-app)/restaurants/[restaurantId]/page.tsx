@@ -5,8 +5,8 @@ import { redirect } from "next/navigation";
 import { Metadata } from "next";
 import { getMealImageUrl } from "@/utils/image/getMealImageUrl";
 import { HeaderSection } from "../../_components/HeaderSection";
-import { RestaurantPage } from "../../_components/RestaurantPage";
 import { Box } from "@chakra-ui/react";
+import { RestaurantHalfModalBody } from "../../_components/RestaurantHalfModalBody";
 
 type Params = { params: { restaurantId: string } };
 
@@ -37,7 +37,7 @@ export default async function Restaurant({ params }: Params) {
   return (
     <Box h="100dvh">
       <HeaderSection title={restaurant.name} />
-      <RestaurantPage restaurant={restaurant} userId={session?.user.id} />
+      <RestaurantHalfModalBody restaurant={restaurant} userId={session?.user.id} />
     </Box>
   );
 }

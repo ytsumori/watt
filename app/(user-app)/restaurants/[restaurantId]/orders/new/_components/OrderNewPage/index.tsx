@@ -24,7 +24,7 @@ import { visitRestaurant } from "./actions/visit-restaurant";
 import { useRouter } from "next-nprogress-bar";
 import { HeaderSection } from "@/app/(user-app)/_components/HeaderSection";
 import { MealPreviewImage } from "@/components/meal/MealPreviewImage";
-import { MealDetailModal } from "@/app/(user-app)/_components/RestaurantPage/components/MealDetailModal";
+import { MealDetailModal } from "@/app/(user-app)/_components/RestaurantHalfModalBody/components/MealDetailModal";
 import { MealPrice } from "@/app/(user-app)/_components/MealDetailPage/_components/MealPrice";
 
 type Props = {

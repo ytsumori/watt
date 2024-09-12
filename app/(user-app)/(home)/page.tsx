@@ -7,7 +7,8 @@ import { createTodayDateNumber } from "@/utils/opening-hours";
 import { getServerSession } from "next-auth";
 import { options } from "@/lib/next-auth/options";
 import { redirect } from "next/navigation";
-import { RestaurantHalfModal } from "./_components/RestaurantHalfModal";
+import { HomeRestaurantHalfModal } from "./_components/HomePage/components/HomeRestaurantHalfModal";
+import { RestaurantHalfModal } from "../_components/RestaurantHalfModal";
 
 type SearchParams = {
   selectedRestaurantId?: string;
@@ -92,7 +93,9 @@ export default async function Home({ searchParams }: { searchParams: SearchParam
         <HomePage restaurants={restaurants} />
       </Flex>
       <FirstOnboardingModal />
-      {selectedRestaurant && <RestaurantHalfModal restaurant={selectedRestaurant} userId={session?.user.id} />}
+      {selectedRestaurant && (
+        <HomeRestaurantHalfModal isOpen={true} restaurant={selectedRestaurant} userId={session?.user.id} />
+      )}
     </>
   );
 }
