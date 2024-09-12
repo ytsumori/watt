@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma/client";
 import { Prisma } from "@prisma/client";
-import { notifyRestaurantToOpen } from "./_actions/notify-restaurant-to-open";
 import { updateRestaurantAvailabilityAutomatically } from "@/actions/mutations/restaurant";
-import { isCurrentlyWorkingHour, mergeOpeningHours } from "@/utils/opening-hours";
+import { isCurrentlyWorkingHour } from "@/utils/opening-hours";
 
 export async function GET(request: NextRequest) {
   const authHeader = request.headers.get("authorization");
@@ -14,55 +13,26 @@ export async function GET(request: NextRequest) {
   }
 
   const restaurants = await prisma.restaurant.findMany({
-    include: {
-      meals: true,
-      openingHours: { where: { isAutomaticallyApplied: true } },
-      holidays: { select: { date: true, openingHours: { where: { isAutomaticallyApplied: true } } } }
-    },
-    where: {
-      isPublished: true,
-      meals: { some: { isInactive: false } }
-    }
+    include: { meals: true, manualCloses: { take: 1, orderBy: { createdAt: "desc" } } },
+    where: { isPublished: true, meals: { some: { isInactive: false } } }
   });
 
   const update = async (
-    restaurant: Prisma.RestaurantGetPayload<{
-      include: { openingHours: true; holidays: { select: { date: true; openingHours: true } } };
-    }>
+    restaurant: Prisma.RestaurantGetPayload<{ include: { manualCloses: { take: 1; orderBy: { createdAt: "desc" } } } }>
   ) => {
-    const currentOpeningHours = mergeOpeningHours({
-      regularOpeningHours: restaurant.openingHours,
-      holidays: restaurant.holidays
-    });
+    const manualCloses = restaurant.manualCloses;
+    if (manualCloses.length === 0) return;
 
-    if (currentOpeningHours.length === 0) return;
-    if (isCurrentlyWorkingHour(currentOpeningHours)) {
-      if (!restaurant.isAvailable) {
-        const unopenClosedAlert = await prisma.restaurantClosedAlert.findFirst({
-          select: { id: true, closedAt: true, notifiedAt: true },
-          where: { openAt: null, restaurantId: restaurant.id }
-        });
-        if (unopenClosedAlert) {
-          // notify only once if the restaurant is closed before 24 hours ago
-          const isClosedBeforeOneDayAgo =
-            new Date().getTime() - unopenClosedAlert.closedAt.getTime() > 24 * 60 * 60 * 1000;
-          if (!unopenClosedAlert.notifiedAt && isClosedBeforeOneDayAgo) {
-            try {
-              await notifyRestaurantToOpen({ restaurantId: restaurant.id });
-            } catch (e) {
-              console.error("Error notifying restaurant to open", e);
-            }
-            await prisma.restaurantClosedAlert.update({
-              where: { id: unopenClosedAlert.id },
-              data: { notifiedAt: new Date() }
-            });
-          }
-        } else {
-          await updateRestaurantAvailabilityAutomatically({ id: restaurant.id, isAvailable: true });
-        }
-      }
-    } else {
-      await updateRestaurantAvailabilityAutomatically({ id: restaurant.id, isAvailable: false });
+    const closedHour = manualCloses[0].googleMapOpeningHourId
+      ? await prisma.restaurantGoogleMapOpeningHour.findUnique({
+          where: { id: manualCloses[0].googleMapOpeningHourId }
+        })
+      : manualCloses[0].holidayOpeningHourId &&
+        (await prisma.restaurantHolidayOpeningHour.findUnique({ where: { id: manualCloses[0].holidayOpeningHourId } }));
+
+    // 現在が前回手動で閉めた時間帯でない場合は営業中に変更
+    if (closedHour && !isCurrentlyWorkingHour([closedHour])) {
+      await updateRestaurantAvailabilityAutomatically({ id: restaurant.id, isAvailable: true });
     }
   };
   await Promise.all(restaurants.map(update));
