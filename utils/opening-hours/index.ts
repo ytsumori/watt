@@ -20,35 +20,49 @@ export function getCurrentOpeningHour(jstOpeningHours: JstOpeningHours) {
   const currentUtcHour = current.getUTCHours();
   const currentUtcMinute = current.getUTCMinutes();
   const { jstDayOfWeek: currentJstDay, jstHour: currentJstHour } = getJSTFromUTC(currentUtcDay, currentUtcHour);
-  return jstOpeningHours.find((openingHour) => {
-    const openDay = dayOfWeekToNumber(openingHour.openDayOfWeek);
-    const closeDay = dayOfWeekToNumber(openingHour.closeDayOfWeek);
-    if (
-      openDay === currentJstDay &&
-      (openingHour.openHour < currentJstHour ||
-        (openingHour.openHour === currentJstHour && openingHour.openMinute <= currentUtcMinute))
-    ) {
-      // if opening day is today
-      if (closeDay === currentJstDay) {
-        // if closing day is today
-        return (
-          openingHour.closeHour > currentJstHour ||
-          (openingHour.closeHour === currentJstHour && openingHour.closeMinute > currentUtcMinute)
-        );
-      } else if (closeDay === currentJstDay + 1 || (currentJstDay === 6 && closeDay === 0)) {
-        // if the closing day is tomorrow
-        return true;
-      }
-    } else if (openDay === currentJstDay - 1 || (currentJstDay === 0 && openDay === 6)) {
-      // if opening day is yesterday
-      return (
-        closeDay === currentJstDay &&
-        (openingHour.closeHour > currentJstHour ||
-          (openingHour.closeHour === currentJstHour && openingHour.closeMinute > currentUtcMinute))
-      );
-    }
-  });
+  return jstOpeningHours.find((openingHour) =>
+    isCurrentOpeningHour({ openingHour, currentJstDay, currentJstHour, currentUtcMinute })
+  );
 }
+
+export const isCurrentOpeningHour = ({
+  openingHour,
+  currentJstDay,
+  currentJstHour,
+  currentUtcMinute
+}: {
+  openingHour: JstOpeningHours[number];
+  currentJstDay: number;
+  currentJstHour: number;
+  currentUtcMinute: number;
+}) => {
+  const openDay = dayOfWeekToNumber(openingHour.openDayOfWeek);
+  const closeDay = dayOfWeekToNumber(openingHour.closeDayOfWeek);
+  if (
+    openDay === currentJstDay &&
+    (openingHour.openHour < currentJstHour ||
+      (openingHour.openHour === currentJstHour && openingHour.openMinute <= currentUtcMinute))
+  ) {
+    // if opening day is today
+    if (closeDay === currentJstDay) {
+      // if closing day is today
+      return (
+        openingHour.closeHour > currentJstHour ||
+        (openingHour.closeHour === currentJstHour && openingHour.closeMinute > currentUtcMinute)
+      );
+    } else if (closeDay === currentJstDay + 1 || (currentJstDay === 6 && closeDay === 0)) {
+      // if the closing day is tomorrow
+      return true;
+    }
+  } else if (openDay === currentJstDay - 1 || (currentJstDay === 0 && openDay === 6)) {
+    // if opening day is yesterday
+    return (
+      closeDay === currentJstDay &&
+      (openingHour.closeHour > currentJstHour ||
+        (openingHour.closeHour === currentJstHour && openingHour.closeMinute > currentUtcMinute))
+    );
+  }
+};
 
 export function isCurrentlyWorkingHour(jstOpeningHours: JstOpeningHours) {
   return !!getCurrentOpeningHour(jstOpeningHours);
@@ -85,13 +99,14 @@ export function getDayOfWeekFromDate(date: number) {
 export type MergeOpeningHoursArgs = {
   regularOpeningHours: Omit<
     RestaurantGoogleMapOpeningHour,
-    "id" | "restaurantId" | "isAutomaticallyApplied" | "createdAt" | "updatedAt"
+    "restaurantId" | "isAutomaticallyApplied" | "createdAt" | "updatedAt"
   >[];
   holidays: Prisma.RestaurantHolidayGetPayload<{
     select: {
       date: true;
       openingHours: {
         select: {
+          id: true;
           openHour: true;
           openMinute: true;
           openDayOfWeek: true;
@@ -107,21 +122,29 @@ export type MergeOpeningHoursArgs = {
 export function mergeOpeningHours({
   regularOpeningHours,
   holidays
-}: MergeOpeningHoursArgs): MergeOpeningHoursArgs["regularOpeningHours"] {
-  if (holidays.length === 0) return regularOpeningHours;
+}: MergeOpeningHoursArgs): ({ isRegular: boolean } & MergeOpeningHoursArgs["regularOpeningHours"][number])[] {
+  if (holidays.length === 0) return regularOpeningHours.map((regular) => ({ ...regular, isRegular: true }));
 
   const res = Object.values($Enums.DayOfWeek)
     .map((dayOfWeek) => {
       const holiday = holidays.find((holiday) => getDayOfWeekFromDate(holiday.date) === dayOfWeekToNumber(dayOfWeek));
-      const regularOpeningHour = regularOpeningHours.find((regular) => regular.openDayOfWeek === dayOfWeek);
+      const regularOpeningHourGroupedByDayofWeek = regularOpeningHours.filter(
+        (regular) => regular.openDayOfWeek === dayOfWeek
+      );
       if (holiday) {
         // holidayはあるがopeningHoursがない場合は休みになっているのでnull返す
-        return holiday.openingHours ? holiday.openingHours : null;
+        if (holiday.openingHours.length === 0) return null;
+        return holiday.openingHours.map((openingHour) => ({ ...openingHour, isRegular: false }));
       }
-      return regularOpeningHour ?? null;
+      return regularOpeningHourGroupedByDayofWeek.length === 0
+        ? null
+        : regularOpeningHourGroupedByDayofWeek.map((regularOpeningHour) => ({
+            ...regularOpeningHour,
+            isRegular: true
+          }));
     })
     .filter(Boolean)
-    .flat() as MergeOpeningHoursArgs["regularOpeningHours"];
+    .flat() as ({ isRegular: boolean } & MergeOpeningHoursArgs["regularOpeningHours"][number])[];
   return res;
 }
 
