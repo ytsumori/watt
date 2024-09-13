@@ -3,10 +3,9 @@
 import { updateRestaurantAvailability } from "@/actions/mutations/restaurant";
 import { FormControl, FormHelperText, FormLabel, HStack, Switch, useToast } from "@chakra-ui/react";
 import { ChangeEvent } from "react";
-import { createManualClose } from "../../actions";
 import { Prisma } from "@prisma/client";
-import { mergeOpeningHours } from "@/utils/opening-hours";
-import { getCurrentOpeningHourWithId } from "../../util";
+import { getCurrentOpeningHour, mergeOpeningHours } from "@/utils/opening-hours";
+import { createManualClose } from "@/actions/mutations/manual-close";
 
 type Props = {
   restaurantId: string;
@@ -26,7 +25,7 @@ export function IsAvailableSwitch({ restaurantId, restaurant, isRestaurantAvaila
       holidays: restaurant.holidays
     });
 
-  const currentOpeningHour = mergedOpeningHours && getCurrentOpeningHourWithId(mergedOpeningHours);
+  const currentOpeningHour = mergedOpeningHours && getCurrentOpeningHour(mergedOpeningHours);
 
   const handleOpenStatusChange = (event: ChangeEvent<HTMLInputElement>) => {
     const isAvailable = event.target.checked;
