@@ -459,6 +459,7 @@ export type Database = {
       }
       Restaurant: {
         Row: {
+          counterSeatCount: number | null
           createdAt: string
           googleMapPlaceId: string
           id: string
@@ -470,9 +471,11 @@ export type Database = {
           password: string
           phoneNumber: string | null
           smokingOption: Database["public"]["Enums"]["SmokingOption"] | null
+          tableSeatCount: number | null
           updatedAt: string
         }
         Insert: {
+          counterSeatCount?: number | null
           createdAt?: string
           googleMapPlaceId: string
           id: string
@@ -484,9 +487,11 @@ export type Database = {
           password: string
           phoneNumber?: string | null
           smokingOption?: Database["public"]["Enums"]["SmokingOption"] | null
+          tableSeatCount?: number | null
           updatedAt?: string
         }
         Update: {
+          counterSeatCount?: number | null
           createdAt?: string
           googleMapPlaceId?: string
           id?: string
@@ -498,6 +503,7 @@ export type Database = {
           password?: string
           phoneNumber?: string | null
           smokingOption?: Database["public"]["Enums"]["SmokingOption"] | null
+          tableSeatCount?: number | null
           updatedAt?: string
         }
         Relationships: []
