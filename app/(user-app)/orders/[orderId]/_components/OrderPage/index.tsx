@@ -8,6 +8,7 @@ import {
   AlertTitle,
   Box,
   Button,
+  Divider,
   Heading,
   HStack,
   Text,
@@ -16,8 +17,7 @@ import {
 } from "@chakra-ui/react";
 import { GoogleMapsEmbed } from "@next/third-parties/google";
 import { Prisma } from "@prisma/client";
-import { ComponentProps, useState } from "react";
-import { PriceSection } from "./components/PriceSection";
+import { useState } from "react";
 import { useRouter } from "next-nprogress-bar";
 import { CancelConfirmModal } from "../CancelConfirmModal";
 import { ConfirmModal } from "@/components/confirm-modal";
@@ -25,6 +25,7 @@ import { cancelOrder } from "../../_actions/cancel-order";
 import NextLink from "next/link";
 import { PhoneIcon } from "@chakra-ui/icons";
 import { RestaurantHalfModal } from "@/app/(user-app)/_components/RestaurantHalfModal";
+import { PriceListItem } from "./components/PriceListItem";
 
 type Props = {
   heading: string;
@@ -38,6 +39,23 @@ type Props = {
     select: {
       id: true;
       orderNumber: true;
+      orderTotalPrice: true;
+      meals: {
+        select: {
+          id: true;
+          meal: {
+            select: {
+              id: true;
+              title: true;
+              description: true;
+              imagePath: true;
+              price: true;
+              listPrice: true;
+              items: true;
+            };
+          };
+        };
+      };
       restaurant: {
         select: {
           id: true;
@@ -73,8 +91,7 @@ type Props = {
         };
       };
     };
-  }> &
-    ComponentProps<typeof PriceSection>["order"];
+  }>;
   isHomeButtonVisible?: boolean;
   isCancelButtonVisible?: boolean;
 };
@@ -159,7 +176,18 @@ export function OrderPage({
             </Box>
           )}
         </VStack>
-        {order.orderTotalPrice > 0 && <PriceSection order={order} />}
+        {order.orderTotalPrice > 0 && (
+          <VStack alignItems="start" w="full">
+            <Heading size="sm">注文内容</Heading>
+            {order.meals.map((orderMeal) => (
+              <PriceListItem key={orderMeal.id} meal={orderMeal.meal} />
+            ))}
+            <Divider />
+            <Heading size="sm" alignSelf="self-end">
+              合計 {order.orderTotalPrice.toLocaleString("ja-JP")}円
+            </Heading>
+          </VStack>
+        )}
         <VStack w="full" mt={10}>
           {isHomeButtonVisible && (
             <Button variant="outline" size="md" colorScheme="gray" w="full" maxW="full" as={NextLink} href="/">

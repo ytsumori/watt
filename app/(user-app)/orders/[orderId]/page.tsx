@@ -20,6 +20,27 @@ export default async function Order({ params }: { params: Params }) {
   const order = await prisma.order.findUnique({
     where: { id: params.orderId },
     include: {
+      meals: {
+        select: {
+          id: true,
+          meal: {
+            select: {
+              id: true,
+              title: true,
+              description: true,
+              imagePath: true,
+              price: true,
+              listPrice: true,
+              items: true
+            }
+          },
+          options: {
+            select: {
+              id: true
+            }
+          }
+        }
+      },
       restaurant: {
         select: {
           id: true,
@@ -52,17 +73,6 @@ export default async function Order({ params }: { params: Params }) {
           },
           smokingOption: true,
           interiorImagePath: true
-        }
-      },
-      meals: {
-        select: {
-          id: true,
-          meal: { select: { title: true, price: true, listPrice: true } },
-          options: {
-            select: {
-              id: true
-            }
-          }
         }
       }
     }
