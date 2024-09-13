@@ -11,6 +11,8 @@ import { PublishSwitch } from "./_components/PublishSwitch";
 import { RestaurantBankAccount } from "./_components/RestaurantBankAccount";
 import { ExteriorImageInput } from "./_components/ExteriorImageInput";
 import { MenuImageInput } from "./_components/MenuImageInput";
+import { CounterSeatCountInput } from "./_components/CounterSeatCountInput";
+import { TableSeatCountInput } from "./_components/TableSeatCountInput";
 
 type PageProps = { params: { restaurantId: string }; searchParams: { month?: string } };
 
@@ -46,6 +48,8 @@ export default async function RestaurantPage({ params, searchParams }: PageProps
       paymentOptions: true,
       phoneNumber: true,
       exteriorImage: true,
+      tableSeatCount: true,
+      counterSeatCount: true,
       menuImages: { orderBy: { menuNumber: "asc" } }
     }
   });
@@ -85,6 +89,14 @@ export default async function RestaurantPage({ params, searchParams }: PageProps
       <VStack alignItems="start">
         <Heading size="md">メニュー画像</Heading>
         <MenuImageInput restaurantId={restaurant.id} defaultMenuImages={restaurant.menuImages ?? undefined} />
+      </VStack>
+      <VStack alignItems="start">
+        <Heading size="md">テーブル席数</Heading>
+        <TableSeatCountInput restaurantId={restaurant.id} tableSeatCount={restaurant.tableSeatCount} />
+      </VStack>
+      <VStack alignItems="start">
+        <Heading size="md">カウンター席数</Heading>
+        <CounterSeatCountInput restaurantId={restaurant.id} counterSeatCount={restaurant.counterSeatCount} />
       </VStack>
       <VStack alignItems="start">
         <Heading size="md">電話番号</Heading>
