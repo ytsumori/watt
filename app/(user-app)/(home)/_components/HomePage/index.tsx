@@ -76,6 +76,7 @@ export default function HomePage({ restaurants }: { restaurants: RestaurantWithD
         minH="280px"
         h="50%"
         overflowY="auto"
+        overflowX="hidden"
         pt={3}
         pb={4}
         backgroundColor="blackAlpha.100"
