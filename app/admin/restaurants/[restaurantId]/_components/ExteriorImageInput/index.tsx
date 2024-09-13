@@ -14,7 +14,9 @@ type Props = {
 
 export function ExteriorImageInput({ restaurantId, defaultExteriorImage }: Props) {
   const [previewUrl, setPreviewUrl] = useState<string | undefined>(
-    defaultExteriorImage ? getSupabaseImageUrl("restaurant-exteriors", defaultExteriorImage.imagePath) : undefined
+    defaultExteriorImage
+      ? getSupabaseImageUrl("restaurant-exteriors", defaultExteriorImage.imagePath, { width: 500, height: 500 })
+      : undefined
   );
   const toast = useToast();
 
@@ -31,7 +33,7 @@ export function ExteriorImageInput({ restaurantId, defaultExteriorImage }: Props
 
     uploadExteriorImage(restaurantId, formData)
       .then((path) => {
-        setPreviewUrl(getSupabaseImageUrl("restaurant-exteriors", path));
+        setPreviewUrl(getSupabaseImageUrl("restaurant-exteriors", path, { width: 500, height: 500 }));
         toast({ title: "外観画像をアップロードしました", status: "success" });
       })
       .catch((e) => {
