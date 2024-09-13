@@ -4,13 +4,11 @@ import {
   Box,
   Button,
   Divider,
-  Flex,
   FormControl,
   FormErrorMessage,
   FormHelperText,
   FormLabel,
   HStack,
-  IconButton,
   Image,
   Input,
   NumberInput,
@@ -134,14 +132,6 @@ export function MealForm({ restaurantId, editingMeal, onSubmit }: Props) {
                 validated: false
               });
             };
-            const handleAddOption = () => {
-              const options = itemFields.options;
-              form.update({
-                name: options.name,
-                value: [...options.getFieldList().map((option) => option.value), { extraPrice: 0 }],
-                validated: false
-              });
-            };
 
             return (
               <Box key={item.key} borderWidth={1} p={1} mb={2} borderColor="black" borderRadius={8}>
@@ -159,68 +149,6 @@ export function MealForm({ restaurantId, editingMeal, onSubmit }: Props) {
                     defaultValue={itemFields.description.initialValue}
                   />
                   <FormErrorMessage>{itemFields.description.errors?.join("、") ?? ""}</FormErrorMessage>
-                </FormControl>
-                <FormControl mt={1} isInvalid={!!itemFields.options.errors}>
-                  <FormLabel>選択肢</FormLabel>
-                  <Flex px={3} flexWrap="wrap" gap={4}>
-                    {itemFields.options.getFieldList().map((option, optionIndex) => {
-                      const optionFields = option.getFieldset();
-
-                      const handleDeleteOption = () => {
-                        form.update({
-                          name: itemFields.options.name,
-                          value: itemFields.options
-                            .getFieldList()
-                            .map((option, i) => (i === optionIndex ? undefined : option.value))
-                            .filter(Boolean),
-                          validated: false
-                        });
-                      };
-                      return (
-                        <Box
-                          key={option.key}
-                          borderWidth={1}
-                          p={1}
-                          mb={2}
-                          borderColor="blackAlpha.500"
-                          borderRadius={8}
-                        >
-                          <FormControl isRequired isInvalid={!!optionFields.title.errors}>
-                            <FormLabel>選択肢名</FormLabel>
-                            <Input name={optionFields.title.name} defaultValue={optionFields.title.initialValue} />
-                            <FormErrorMessage>{optionFields.title.errors?.join("、") ?? ""}</FormErrorMessage>
-                          </FormControl>
-                          <FormControl isRequired isInvalid={!!optionFields.extraPrice.errors} mt={1}>
-                            <FormLabel>追加料金</FormLabel>
-                            <HStack maxW="full">
-                              <NumberInput
-                                allowMouseWheel={false}
-                                name={optionFields.extraPrice.name}
-                                defaultValue={optionFields.extraPrice.initialValue}
-                              >
-                                <NumberInputField />
-                              </NumberInput>
-                              <Text>円</Text>
-                            </HStack>
-                            <FormErrorMessage>{optionFields.extraPrice.errors?.join("、") ?? ""}</FormErrorMessage>
-                          </FormControl>
-                          <Box w="full" textAlign="right" mt={2}>
-                            <IconButton
-                              colorScheme="red"
-                              icon={<DeleteIcon />}
-                              aria-label="Delete Option"
-                              onClick={handleDeleteOption}
-                              variant="ghost"
-                            />
-                          </Box>
-                        </Box>
-                      );
-                    })}
-                    <Button rightIcon={<AddIcon />} variant="outline" onClick={handleAddOption}>
-                      選択肢を追加
-                    </Button>
-                  </Flex>
-                  <FormErrorMessage>{itemFields.options.errors?.join("、") ?? ""}</FormErrorMessage>
                 </FormControl>
                 <Box w="full" textAlign="right" mt={2}>
                   <Button rightIcon={<DeleteIcon />} colorScheme="red" onClick={handleDeleteItem} variant="ghost">

@@ -3,52 +3,10 @@
 import { formatDistance } from "@/app/(user-app)/_util/formatDistance";
 import { createServiceRoleClient } from "@/lib/supabase/createServiceRoleClient";
 import { logger } from "@/utils/logger";
+import { RestaurantListItem, RestaurantWithDistance } from "../../types/RestaurantWithDistance";
 import { Prisma } from "@prisma/client";
-import { RestaurantWithDistance } from "../../types/RestaurantWithDistance";
 
-type Restaurant = Prisma.RestaurantGetPayload<{
-  include: {
-    meals: {
-      select: {
-        id: true;
-        title: true;
-        price: true;
-        listPrice: true;
-        imagePath: true;
-      };
-    };
-    googleMapPlaceInfo: { select: { latitude: true; longitude: true } };
-    openingHours: {
-      select: {
-        id: true;
-        openHour: true;
-        openMinute: true;
-        openDayOfWeek: true;
-        closeHour: true;
-        closeMinute: true;
-        closeDayOfWeek: true;
-      };
-    };
-    holidays: {
-      select: {
-        date: true;
-        openingHours: {
-          select: {
-            id: true;
-            openHour: true;
-            openMinute: true;
-            openDayOfWeek: true;
-            closeHour: true;
-            closeMinute: true;
-            closeDayOfWeek: true;
-          };
-        };
-      };
-    };
-  };
-}>;
-
-type Args = { lat: number; long: number; restaurants: Restaurant[] };
+type Args = { lat: number; long: number; restaurants: RestaurantListItem[] };
 
 export const findNearbyRestaurants = async ({ lat, long, restaurants }: Args): Promise<RestaurantWithDistance[]> => {
   const supabase = createServiceRoleClient();
@@ -61,7 +19,7 @@ export const findNearbyRestaurants = async ({ lat, long, restaurants }: Args): P
 
   if (!nearbyRestaurants) return [];
 
-  const restaurantMap = restaurants.reduce((obj: { [id: string]: Restaurant }, item) => {
+  const restaurantMap = restaurants.reduce((obj: { [id: string]: RestaurantListItem }, item) => {
     obj[item.id] = item;
     return obj;
   }, {});
