@@ -1,14 +1,3 @@
-export default function OrderDetail({
-  children,
-  mealModal
-}: {
-  children: React.ReactNode;
-  mealModal: React.ReactNode;
-}) {
-  return (
-    <>
-      {children}
-      {mealModal}
-    </>
-  );
+export default function OrderDetail({ children }: { children: React.ReactNode }) {
+  return <>{children}</>;
 }
