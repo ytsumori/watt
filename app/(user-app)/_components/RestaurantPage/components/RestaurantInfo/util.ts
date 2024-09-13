@@ -1,5 +1,4 @@
 import { translateDayOfWeek } from "@/lib/prisma/translate-enum";
-import { dayOfWeekToNumber } from "@/utils/day-of-week";
 import { DayOfWeek, RestaurantGoogleMapOpeningHour } from "@prisma/client";
 
 export const groupedByDayOfWeeks = (
