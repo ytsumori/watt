@@ -21,7 +21,10 @@ export async function GET(request: NextRequest) {
     restaurant: Prisma.RestaurantGetPayload<{ include: { manualCloses: { take: 1; orderBy: { createdAt: "desc" } } } }>
   ) => {
     const manualCloses = restaurant.manualCloses;
-    if (manualCloses.length === 0) return;
+    if (manualCloses.length === 0) {
+      await updateRestaurantAvailabilityAutomatically({ id: restaurant.id, isAvailable: true });
+      return NextResponse.json({ success: true });
+    }
 
     const closedHour = manualCloses[0].googleMapOpeningHourId
       ? await prisma.restaurantGoogleMapOpeningHour.findUnique({
