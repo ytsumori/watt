@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { getCurrentOpeningHour, getDayOfWeekFromDate, getNextOpeningHour, mergeOpeningHours } from ".";
 import { DayOfWeek } from "@prisma/client";
+import { id } from "date-fns/locale";
 
 describe("[opening-hours]", () => {
   beforeEach(() => {
@@ -15,6 +16,7 @@ describe("[opening-hours]", () => {
     it("returns current opening hour", () => {
       const jstOpeningHours = [
         {
+          id: "1",
           openDayOfWeek: DayOfWeek.MONDAY,
           openHour: 11,
           openMinute: 0,
@@ -23,6 +25,7 @@ describe("[opening-hours]", () => {
           closeMinute: 0
         },
         {
+          id: "2",
           openDayOfWeek: DayOfWeek.MONDAY,
           openHour: 17,
           openMinute: 0,
@@ -33,6 +36,7 @@ describe("[opening-hours]", () => {
       ];
       vi.setSystemTime(Date.UTC(2024, 3, 1, 9, 0, 0)); // JST: 2024-04-01 18:00:00 Monday
       expect(getCurrentOpeningHour(jstOpeningHours)).toStrictEqual({
+        id: "2",
         openDayOfWeek: DayOfWeek.MONDAY,
         openHour: 17,
         openMinute: 0,
@@ -45,6 +49,7 @@ describe("[opening-hours]", () => {
     it("returns undefined if currently not opened", () => {
       const jstOpeningHours = [
         {
+          id: "1",
           openDayOfWeek: DayOfWeek.SUNDAY,
           openHour: 11,
           openMinute: 0,
@@ -53,6 +58,7 @@ describe("[opening-hours]", () => {
           closeMinute: 0
         },
         {
+          id: "2",
           openDayOfWeek: DayOfWeek.SUNDAY,
           openHour: 17,
           openMinute: 0,
@@ -61,6 +67,7 @@ describe("[opening-hours]", () => {
           closeMinute: 0
         },
         {
+          id: "3",
           openDayOfWeek: DayOfWeek.TUESDAY,
           openHour: 11,
           openMinute: 0,
@@ -69,6 +76,7 @@ describe("[opening-hours]", () => {
           closeMinute: 0
         },
         {
+          id: "4",
           openDayOfWeek: DayOfWeek.TUESDAY,
           openHour: 17,
           openMinute: 0,
@@ -84,6 +92,7 @@ describe("[opening-hours]", () => {
     it("returns undefined if currently not opened, closed 1 minute before", () => {
       const jstOpeningHours = [
         {
+          id: "1",
           openDayOfWeek: DayOfWeek.MONDAY,
           openHour: 11,
           openMinute: 0,
@@ -92,6 +101,7 @@ describe("[opening-hours]", () => {
           closeMinute: 0
         },
         {
+          id: "2",
           openDayOfWeek: DayOfWeek.MONDAY,
           openHour: 17,
           openMinute: 0,
@@ -107,6 +117,7 @@ describe("[opening-hours]", () => {
     it("returns undefined if currently not opened, closed 1 minute before", () => {
       const jstOpeningHours = [
         {
+          id: "1",
           openDayOfWeek: DayOfWeek.MONDAY,
           openHour: 11,
           openMinute: 0,
@@ -115,6 +126,7 @@ describe("[opening-hours]", () => {
           closeMinute: 0
         },
         {
+          id: "2",
           openDayOfWeek: DayOfWeek.MONDAY,
           openHour: 17,
           openMinute: 0,
@@ -125,6 +137,7 @@ describe("[opening-hours]", () => {
       ];
       vi.setSystemTime(Date.UTC(2024, 3, 1, 14, 29, 0)); // JST: 2024-04-01 23:29:00 Monday
       expect(getCurrentOpeningHour(jstOpeningHours)).toStrictEqual({
+        id: "2",
         openDayOfWeek: DayOfWeek.MONDAY,
         openHour: 17,
         openMinute: 0,
@@ -137,6 +150,7 @@ describe("[opening-hours]", () => {
     it("returns current opening hour when the closing time is the next day", () => {
       const jstOpeningHours = [
         {
+          id: "1",
           openDayOfWeek: DayOfWeek.MONDAY,
           openHour: 11,
           openMinute: 0,
@@ -147,6 +161,7 @@ describe("[opening-hours]", () => {
       ];
       vi.setSystemTime(Date.UTC(2024, 3, 1, 14, 0, 0)); // JST: 2024-04-01 23:00:00 Monday
       expect(getCurrentOpeningHour(jstOpeningHours)).toStrictEqual({
+        id: "1",
         openDayOfWeek: DayOfWeek.MONDAY,
         openHour: 11,
         openMinute: 0,
@@ -159,6 +174,7 @@ describe("[opening-hours]", () => {
     it("returns current opening hour when the opening time is the previous day", () => {
       const jstOpeningHours = [
         {
+          id: "1",
           openDayOfWeek: DayOfWeek.SUNDAY,
           openHour: 18,
           openMinute: 0,
@@ -169,6 +185,7 @@ describe("[opening-hours]", () => {
       ];
       vi.setSystemTime(Date.UTC(2024, 2, 31, 16, 0, 0)); // JST: 2024-04-01 1:00:00 Monday
       expect(getCurrentOpeningHour(jstOpeningHours)).toStrictEqual({
+        id: "1",
         openDayOfWeek: DayOfWeek.SUNDAY,
         openHour: 18,
         openMinute: 0,
@@ -181,6 +198,7 @@ describe("[opening-hours]", () => {
     it("returns current opening hour when the closing time is the next day", () => {
       const jstOpeningHours = [
         {
+          id: "1",
           openDayOfWeek: DayOfWeek.MONDAY,
           openHour: 11,
           openMinute: 0,
@@ -191,6 +209,7 @@ describe("[opening-hours]", () => {
       ];
       vi.setSystemTime(Date.UTC(2024, 3, 1, 14, 0, 0)); // JST: 2024-04-01 23:00:00 Monday
       expect(getCurrentOpeningHour(jstOpeningHours)).toStrictEqual({
+        id: "1",
         openDayOfWeek: DayOfWeek.MONDAY,
         openHour: 11,
         openMinute: 0,
@@ -203,6 +222,7 @@ describe("[opening-hours]", () => {
     it("returns current opening hour when the opening time is the previous day through weekend", () => {
       const jstOpeningHours = [
         {
+          id: "1",
           openDayOfWeek: DayOfWeek.SATURDAY,
           openHour: 18,
           openMinute: 0,
@@ -213,6 +233,7 @@ describe("[opening-hours]", () => {
       ];
       vi.setSystemTime(Date.UTC(2024, 2, 30, 16, 0, 0)); // JST: 2024-03-31 1:00:00 Sunday
       expect(getCurrentOpeningHour(jstOpeningHours)).toStrictEqual({
+        id: "1",
         openDayOfWeek: DayOfWeek.SATURDAY,
         openHour: 18,
         openMinute: 0,
@@ -225,6 +246,7 @@ describe("[opening-hours]", () => {
     it("returns current opening hour when the closing time is the next day through weekend", () => {
       const jstOpeningHours = [
         {
+          id: "1",
           openDayOfWeek: DayOfWeek.SATURDAY,
           openHour: 11,
           openMinute: 0,
@@ -235,6 +257,7 @@ describe("[opening-hours]", () => {
       ];
       vi.setSystemTime(Date.UTC(2024, 2, 30, 14, 0, 0)); // JST: 2024-03-30 23:00:00 Saturday
       expect(getCurrentOpeningHour(jstOpeningHours)).toStrictEqual({
+        id: "1",
         openDayOfWeek: DayOfWeek.SATURDAY,
         openHour: 11,
         openMinute: 0,
@@ -249,6 +272,7 @@ describe("[opening-hours]", () => {
     it("returns next opening hour", () => {
       const jstOpeningHours = [
         {
+          id: "1",
           openDayOfWeek: DayOfWeek.MONDAY,
           openHour: 11,
           openMinute: 0,
@@ -257,6 +281,7 @@ describe("[opening-hours]", () => {
           closeMinute: 0
         },
         {
+          id: "2",
           openDayOfWeek: DayOfWeek.MONDAY,
           openHour: 17,
           openMinute: 0,
@@ -272,6 +297,7 @@ describe("[opening-hours]", () => {
     it("returns undefined if next opening hour is tomorrow", () => {
       const jstOpeningHours = [
         {
+          id: "1",
           openDayOfWeek: DayOfWeek.TUESDAY,
           openHour: 11,
           openMinute: 0,
@@ -280,6 +306,7 @@ describe("[opening-hours]", () => {
           closeMinute: 0
         },
         {
+          id: "2",
           openDayOfWeek: DayOfWeek.TUESDAY,
           openHour: 17,
           openMinute: 0,
@@ -295,6 +322,7 @@ describe("[opening-hours]", () => {
     it("returns undefined if currently opened and no next opening hour", () => {
       const jstOpeningHours = [
         {
+          id: "1",
           openDayOfWeek: DayOfWeek.MONDAY,
           openHour: 18,
           openMinute: 0,
