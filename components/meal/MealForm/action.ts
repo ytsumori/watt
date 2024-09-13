@@ -56,20 +56,7 @@ export async function submit(formData: FormData) {
               return {
                 title: item.title,
                 description: item.description,
-                position: index,
-                ...(item.options && {
-                  options: {
-                    createMany: {
-                      data: item.options.map((option, optionIndex) => {
-                        return {
-                          title: option.title,
-                          position: optionIndex,
-                          extraPrice: option.extraPrice
-                        };
-                      })
-                    }
-                  }
-                })
+                position: index
               };
             })
           }
@@ -90,20 +77,7 @@ export async function submit(formData: FormData) {
                 return {
                   title: item.title,
                   description: item.description,
-                  position: index,
-                  ...(item.options && {
-                    options: {
-                      createMany: {
-                        data: item.options.map((option, optionIndex) => {
-                          return {
-                            title: option.title,
-                            position: optionIndex,
-                            extraPrice: option.extraPrice
-                          };
-                        })
-                      }
-                    }
-                  })
+                  position: index
                 };
               })
             }
@@ -140,20 +114,7 @@ export async function submit(formData: FormData) {
             return {
               title: item.title,
               description: item.description,
-              position: index,
-              ...(item.options && {
-                options: {
-                  createMany: {
-                    data: item.options.map((option, optionIndex) => {
-                      return {
-                        title: option.title,
-                        position: optionIndex,
-                        extraPrice: option.extraPrice
-                      };
-                    })
-                  }
-                }
-              })
+              position: index
             };
           })
         }

@@ -26,9 +26,9 @@ export function InProgressOrderModal() {
     <ConfirmModal
       isOpen={inProgressOrderId !== undefined}
       onClose={() => setInProgressOrderId(undefined)}
-      title="すでにお店に向かっている注文があります"
+      title="空き確認をしているお店があります"
       confirmButton={{
-        label: "注文ページに移動する",
+        label: "確認ページに移動する",
         onClick: () => {
           router.push(`/orders/${inProgressOrderId}`);
           setInProgressOrderId(undefined);
@@ -36,9 +36,9 @@ export function InProgressOrderModal() {
       }}
     >
       <Text>
-        既にお店に向かってる注文があります。
+        現在、空き状況の確認を行っているお店があります。
         <br />
-        お店に向かってください。
+        空き状況の確認ができ次第、お店に向かってください。
       </Text>
     </ConfirmModal>
   );

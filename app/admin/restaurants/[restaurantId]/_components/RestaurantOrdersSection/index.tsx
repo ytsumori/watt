@@ -113,6 +113,10 @@ export async function RestaurantOrdersSection({ restaurantId, month }: Props) {
     0
   );
 
+  const noPaymentOrderNum = monthlyOrders.filter(
+    (order) => order.canceledAt === null && order.orderTotalPrice === 0
+  ).length;
+
   return (
     <VStack width="full" alignItems="baseline" spacing={6}>
       <Heading size="md">売上</Heading>
@@ -136,9 +140,20 @@ export async function RestaurantOrdersSection({ restaurantId, month }: Props) {
               <StatNumber w="max-content">{monthlyOrderAmount.toLocaleString("ja-JP")}円</StatNumber>
             </Stat>
             <Stat>
-              <StatLabel w="max-content">送客手数料(目安)</StatLabel>
+              <StatLabel w="max-content">合計送客手数料</StatLabel>
+              <StatNumber w="max-content">
+                {(Math.floor(monthlyOrderAmount * 0.05) + noPaymentOrderNum * 50).toLocaleString("ja-JP")}円
+              </StatNumber>
+            </Stat>
+            <Stat>
+              <StatLabel w="max-content">送客手数料(注文アリ)</StatLabel>
               <StatNumber w="max-content">{Math.floor(monthlyOrderAmount * 0.05).toLocaleString("ja-JP")}円</StatNumber>
               <StatHelpText w="max-content">注文額x5%</StatHelpText>
+            </Stat>
+            <Stat>
+              <StatLabel w="max-content">送客手数料(注文ナシ)</StatLabel>
+              <StatNumber w="max-content">{(noPaymentOrderNum * 50).toLocaleString("ja-JP")}円</StatNumber>
+              <StatHelpText w="max-content">注文数x50円</StatHelpText>
             </Stat>
           </HStack>
           <Heading size="sm">注文一覧</Heading>
@@ -167,7 +182,9 @@ export async function RestaurantOrdersSection({ restaurantId, month }: Props) {
                       <Td>
                         {order.meals.map((meal) => (
                           <Fragment key={meal.id}>
-                            {meal.meal.title}({meal.options.map((option) => option.mealItemOption.title).join(",")})
+                            {meal.meal.title}
+                            {meal.options.length > 0 &&
+                              `(${meal.options.map((option) => option.mealItemOption.title).join(",")})`}
                             <br />
                           </Fragment>
                         ))}

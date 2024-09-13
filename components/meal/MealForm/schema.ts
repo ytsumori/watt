@@ -1,16 +1,10 @@
 import { z } from "zod";
 
-const mealItemOptionFormSchema = z.object({
-  title: z.string({ invalid_type_error: "選択肢名を入力してください", required_error: "選択肢名を入力してください" }),
-  extraPrice: z.number({ invalid_type_error: "価格を入力してください", required_error: "価格を入力してください" })
-});
-
 const mealItemFormSchema = z.object({
   title: z.string({ invalid_type_error: "商品名を入力してください", required_error: "商品名を入力してください" }),
   description: z.optional(
     z.string({ invalid_type_error: "説明を入力してください", required_error: "説明を入力してください" })
-  ),
-  options: mealItemOptionFormSchema.array().min(2, { message: "選択肢を2つ以上追加してください" }).optional()
+  )
 });
 
 export const mealFormSchema = z

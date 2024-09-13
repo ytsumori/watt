@@ -11,6 +11,7 @@ import {
   Card,
   CardBody,
   CardFooter,
+  Center,
   Flex,
   Heading,
   ListItem,
@@ -29,7 +30,9 @@ type Props = {
 export function MealCard({ meal, button }: Props) {
   return (
     <Card variant="outline" maxW="250px">
-      <MealPreviewImage src={meal.imagePath} alt={meal.id} />
+      <Center w="full">
+        <MealPreviewImage src={meal.imagePath} alt={meal.id} />
+      </Center>
       <VStack spacing={0}>
         <CardBody w="full">
           <VStack alignItems="start">
