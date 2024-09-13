@@ -19,7 +19,7 @@ type Props = {
 
 export function MealPreview({ meal, onClick }: Props) {
   return (
-    <VStack key={meal.id} alignItems="start" spacing={0} onClick={onClick}>
+    <VStack key={meal.id} alignItems="start" spacing={0} onClick={onClick} w="min-content">
       <MealPreviewImage src={meal.imagePath} alt={`meal-${meal.id}`} />
       <Text noOfLines={1} fontSize="xs" mt={1} fontWeight="bold">
         {meal.title}

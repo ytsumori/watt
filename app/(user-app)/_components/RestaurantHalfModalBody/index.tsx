@@ -174,7 +174,7 @@ export function RestaurantHalfModalBody({ restaurant, onClose, footer }: Props) 
                   </Accordion>
                 </Box>
               </SimpleGrid>
-              <Flex maxW="full" className="hidden-scrollbar" overflowX="scroll" gap={2} pl={4}>
+              <Flex w="full" className="hidden-scrollbar" overflowX="scroll" gap={2} px={4}>
                 {restaurant.interiorImagePath && (
                   <Box position="relative">
                     <Text fontSize="sm" fontWeight="bold">
@@ -254,7 +254,7 @@ export function RestaurantHalfModalBody({ restaurant, onClose, footer }: Props) 
                 <Text fontSize="sm" fontWeight="bold" ml={4}>
                   Watt限定メニュー
                 </Text>
-                <Flex gap={3} className="hidden-scrollbar" overflowX="scroll" pl={4} w="min-content">
+                <Flex gap={3} className="hidden-scrollbar" overflowX="scroll" px={4}>
                   {restaurant.meals.map((meal) => (
                     <MealPreview key={meal.id} meal={meal} onClick={() => setSelectedMeal(meal)} />
                   ))}

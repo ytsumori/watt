@@ -57,7 +57,6 @@ export const OrderNewPage: FC<Props> = ({ restaurant, inProgressOrderId, userId 
   const [currentOrders, setCurrentOrders] = useState<{ meal: Meal; quantity: number }[]>([]);
   const [selectedMealDetail, setSelectedMealDetail] = useState<ComponentProps<typeof MealDetailModal>["meal"]>();
   const isValid = useMemo(() => peopleCount !== undefined, [peopleCount]);
-  const totalCount = useMemo(() => currentOrders.reduce((acc, meal) => acc + meal.quantity, 0), [currentOrders]);
   const totalPrice = useMemo(
     () => currentOrders.reduce((acc, meal) => acc + meal.meal.price * meal.quantity, 0),
     [currentOrders]
@@ -163,14 +162,12 @@ export const OrderNewPage: FC<Props> = ({ restaurant, inProgressOrderId, userId 
                           <Flex flexDir="column" w="full" justifyContent="space-between" py={2}>
                             <Flex w="full" justifyContent="space-between">
                               <Heading size="sm">{meal.title}</Heading>
-                              <Button variant="outline" onClick={() => setSelectedMealDetail(meal)}>
+                              <Button variant="outline" onClick={() => setSelectedMealDetail(meal)} ml={1}>
                                 詳細
                               </Button>
                             </Flex>
-                            <Flex w="full" justifyContent="space-between" alignItems="end">
-                              <Box>
-                                <MealPrice meal={meal} />
-                              </Box>
+                            <Flex justifyContent="space-between" alignItems="end" w="full">
+                              <MealPrice meal={meal} />
                               <HStack>
                                 <IconButton
                                   aria-label="decrement meal"

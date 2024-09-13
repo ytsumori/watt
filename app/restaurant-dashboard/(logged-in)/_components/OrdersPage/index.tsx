@@ -167,7 +167,10 @@ export function OrdersPage() {
                     <br />
                     {order.meals.map((meal) => (
                       <b key={meal.id}>
-                        {meal.meal.title}({meal.options.map((option) => option.mealItemOption.title).join(",")})
+                        {meal.meal.title}
+                        {meal.options.length > 0
+                          ? `(${meal.options.map((option) => option.mealItemOption.title).join(",")})`
+                          : ""}
                         <br />
                       </b>
                     ))}
