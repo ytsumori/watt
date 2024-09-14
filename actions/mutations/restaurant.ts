@@ -32,16 +32,15 @@ export async function updateRestaurantAvailability({ id, isAvailable }: { id: st
 
   const currentHour = getCurrentOpeningHour(mergedOpeningHours);
 
-  if (!isAvailable && currentHour) {
-    const isHoliday = !!(await prisma.restaurantHolidayOpeningHour.findUnique({ where: { id: currentHour.id } }));
-    return isHoliday
-      ? await prisma.restaurantManualClose.create({ data: { restaurantId: id, holidayOpeningHourId: currentHour.id } })
-      : await prisma.restaurantManualClose.create({
-          data: { restaurantId: id, googleMapOpeningHourId: currentHour.id }
-        });
-  }
-
-  return await prisma.restaurant.update({ where: { id }, data: { isAvailable } });
+  return await prisma.$transaction(async (tx) => {
+    if (!isAvailable && currentHour) {
+      const isHoliday = !!(await tx.restaurantHolidayOpeningHour.findUnique({ where: { id: currentHour.id } }));
+      return isHoliday
+        ? await tx.restaurantManualClose.create({ data: { restaurantId: id, holidayOpeningHourId: currentHour.id } })
+        : await tx.restaurantManualClose.create({ data: { restaurantId: id, googleMapOpeningHourId: currentHour.id } });
+    }
+    return await tx.restaurant.update({ where: { id }, data: { isAvailable } });
+  });
 }
 
 export async function uploadInteriorImage(restaurantId: string, formData: FormData) {
