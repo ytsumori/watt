@@ -62,16 +62,14 @@ export function LogoHeader() {
     <>
       <Flex flexDirection="column">
         <Flex px={4} py={2} w="full" backgroundColor="white">
-          <Box w="full">
-            <HStack spacing={4} alignItems="center">
-              <NextLink href="/">
-                <Image src="/watt-logo.png" alt="Watt" width={80} height={31} />
-              </NextLink>
-              <Text fontSize="sm" color="brand.400" fontWeight="bold">
-                今すぐ入れるお店が見つかる！
-              </Text>
-            </HStack>
-          </Box>
+          <HStack spacing={4} alignItems="center">
+            <NextLink href="/">
+              <Image src="/watt-logo.png" alt="Watt" width={60} height={30} />
+            </NextLink>
+            <Text fontSize="xs" color="brand.400" fontWeight="bold">
+              今すぐ入れるお店が見つかる！
+            </Text>
+          </HStack>
           <Spacer />
           <Menu>
             <MenuButton

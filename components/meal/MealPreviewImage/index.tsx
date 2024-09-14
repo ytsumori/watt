@@ -11,5 +11,16 @@ type Props = {
 export function MealPreviewImage({ src, alt }: Props) {
   const publicUrl = getMealImageUrl(src);
 
-  return <Image src={publicUrl} alt={alt} objectFit="cover" aspectRatio={1 / 1} borderRadius={8} loading="lazy" />;
+  return (
+    <Image
+      src={publicUrl}
+      minW="130px"
+      maxW="130px"
+      alt={alt}
+      objectFit="cover"
+      aspectRatio={1 / 1}
+      borderRadius={8}
+      loading="lazy"
+    />
+  );
 }

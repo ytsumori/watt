@@ -4,58 +4,114 @@ import {
   Alert,
   AlertDescription,
   AlertIcon,
+  AlertStatus,
   AlertTitle,
   Box,
   Button,
+  Divider,
   Heading,
-  Icon,
+  HStack,
   Text,
-  VStack,
-  useDisclosure
+  useDisclosure,
+  VStack
 } from "@chakra-ui/react";
+import { GoogleMapsEmbed } from "@next/third-parties/google";
 import { Prisma } from "@prisma/client";
 import { useState } from "react";
-import { FaMapMarkedAlt } from "react-icons/fa";
-import NextLink from "next/link";
+import { useRouter } from "next-nprogress-bar";
+import { CancelConfirmModal } from "../CancelConfirmModal";
 import { ConfirmModal } from "@/components/confirm-modal";
 import { cancelOrder } from "../../_actions/cancel-order";
-import { CancelConfirmModal } from "../CancelConfirmModal";
-import { getOrderStatus } from "@/lib/prisma/order-status";
-import { PriceSection } from "../PriceSection";
-import { format } from "date-fns";
+import NextLink from "next/link";
 import { PhoneIcon } from "@chakra-ui/icons";
-import { useRouter } from "next-nprogress-bar";
+import { RestaurantHalfModal } from "@/app/(user-app)/_components/RestaurantHalfModal";
+import { PriceListItem } from "./components/PriceListItem";
 
 type Props = {
+  heading: string;
+  alertProps: {
+    title: string;
+    description?: string;
+    status: AlertStatus;
+    isPhoneIcon?: boolean;
+  };
   order: Prisma.OrderGetPayload<{
-    include: {
-      restaurant: { include: { googleMapPlaceInfo: { select: { url: true } } } };
+    select: {
+      id: true;
+      orderNumber: true;
+      orderTotalPrice: true;
       meals: {
-        include: {
-          meal: { select: { title: true; price: true; listPrice: true } };
-          options: {
+        select: {
+          id: true;
+          meal: {
             select: {
               id: true;
-              mealItemOption: {
-                select: {
-                  title: true;
-                  extraPrice: true;
-                  mealItem: { select: { title: true } };
-                };
-              };
+              title: true;
+              description: true;
+              imagePath: true;
+              price: true;
+              listPrice: true;
+              items: true;
             };
           };
         };
       };
+      restaurant: {
+        select: {
+          id: true;
+          name: true;
+          googleMapPlaceId: true;
+          meals: {
+            select: {
+              id: true;
+              title: true;
+              description: true;
+              price: true;
+              listPrice: true;
+              imagePath: true;
+              items: true;
+            };
+          };
+          googleMapPlaceInfo: { select: { url: true; latitude: true; longitude: true } };
+          paymentOptions: true;
+          exteriorImage: true;
+          menuImages: true;
+          openingHours: {
+            select: {
+              openDayOfWeek: true;
+              openHour: true;
+              openMinute: true;
+              closeDayOfWeek: true;
+              closeHour: true;
+              closeMinute: true;
+            };
+          };
+          smokingOption: true;
+          interiorImagePath: true;
+        };
+      };
     };
   }>;
+  isHomeButtonVisible?: boolean;
+  isCancelButtonVisible?: boolean;
 };
 
-export function OrderPage({ order }: Props) {
+export function OrderPage({
+  heading,
+  alertProps,
+  order,
+  isHomeButtonVisible = false,
+  isCancelButtonVisible = false
+}: Props) {
   const router = useRouter();
   const { isOpen: isCancelModalOpen, onOpen: onCancelModalOpen, onClose: onCancelModalClose } = useDisclosure();
   const [isCancelling, setIsCancelling] = useState(false);
   const [errorMessage, setErrorMessage] = useState<{ title: string; description: string }>();
+  const {
+    isOpen: isRestaurantDetailOpen,
+    onOpen: onRestaurantDetailOpen,
+    onClose: onRestaurantDetailClose
+  } = useDisclosure();
 
   const handleCancelConfirm = (isFull: boolean) => {
     setIsCancelling(true);
@@ -73,220 +129,107 @@ export function OrderPage({ order }: Props) {
       });
   };
 
-  switch (getOrderStatus(order)) {
-    case "IN PROGRESS":
-      return (
-        <>
-          <VStack alignItems="start" spacing={8} p={4} w="full">
-            <Heading>空き状況確認中</Heading>
-            <Text>
-              注文番号:
-              <Heading as="span" ml={2}>
-                {order.orderNumber}
-              </Heading>
-            </Text>
-            <Alert
-              status="warning"
-              flexDirection="column"
-              alignItems="center"
-              justifyContent="center"
-              textAlign="center"
-              borderRadius={4}
-            >
-              <AlertIcon as={PhoneIcon} />
-              <AlertTitle mb={1}>お店の空き状況を確認しています</AlertTitle>
-              <AlertDescription fontSize="sm">5分以内に確認し、SMSで通知します</AlertDescription>
-            </Alert>
-            <VStack alignItems="start">
-              <Heading size="md">店舗</Heading>
-              <Heading size="sm">{order.restaurant.name}</Heading>
-              {order.restaurant.googleMapPlaceInfo && (
-                <Button
-                  w="full"
-                  leftIcon={<Icon as={FaMapMarkedAlt} />}
-                  as={NextLink}
-                  href={order.restaurant.googleMapPlaceInfo.url}
-                  target="_blank"
-                >
-                  Googleマップでお店情報を見る
-                </Button>
-              )}
-              <Box h="15vh" w="full">
-                <iframe
-                  width="100%"
-                  height="100%"
-                  style={{ border: 0 }}
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                  src={`https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY}&q=place_id:${order.restaurant.googleMapPlaceId}`}
-                />
-              </Box>
-            </VStack>
-            <PriceSection order={order} />
-            <VStack w="full" mt={10}>
-              <Button
-                size="md"
-                colorScheme="gray"
-                w="full"
-                maxW="full"
-                onClick={onCancelModalOpen}
-                isLoading={isCancelling}
-              >
-                キャンセル
-              </Button>
-            </VStack>
-          </VStack>
-          <CancelConfirmModal
-            isOpen={isCancelModalOpen}
-            isCancelling={isCancelling}
-            onClose={onCancelModalClose}
-            onConfirm={handleCancelConfirm}
-          />
-          <ConfirmModal
-            isOpen={errorMessage !== undefined}
-            title={errorMessage?.title ?? ""}
-            confirmButton={{
-              label: "OK",
-              onClick: () => router.refresh()
-            }}
-            onClose={() => undefined}
-          >
-            {errorMessage?.description ?? ""}
-          </ConfirmModal>
-        </>
-      );
-    case "APPROVED":
-      if (!order.approvedByRestaurantAt) {
-        throw new Error("approvedByRestaurantAt is not set");
-      }
-      const arrivalDeadline = new Date(order.approvedByRestaurantAt);
-      arrivalDeadline.setMinutes(arrivalDeadline.getMinutes() + 30);
-      const isBeforeDeadline = Date.now() < arrivalDeadline.getTime();
-      return (
-        <>
-          <VStack alignItems="start" spacing={8} p={4} w="full">
-            <Heading>注文完了</Heading>
-            <Text>
-              注文番号:
-              <Heading as="span" ml={2}>
-                {order.orderNumber}
-              </Heading>
-            </Text>
-            <Alert
-              status="success"
-              flexDirection="column"
-              alignItems="center"
-              justifyContent="center"
-              textAlign="center"
-              borderRadius={4}
-            >
-              <AlertIcon />
-              <AlertTitle mb={1}>
-                {isBeforeDeadline
-                  ? `${format(arrivalDeadline, "HH:mm")}までにお店に向かってください`
-                  : "注文が完了しました"}
-              </AlertTitle>
-              <AlertDescription fontSize="sm" whiteSpace="pre-wrap">
-                {isBeforeDeadline
-                  ? "入店後お店の人に「Wattでの注文で」と伝え\nこちらの画面を見せてください"
-                  : "お食事をお楽しみください"}
-              </AlertDescription>
-            </Alert>
-            <VStack alignItems="start">
-              <Heading size="md">店舗</Heading>
-              <Heading size="sm">{order.restaurant.name}</Heading>
-              {order.restaurant.googleMapPlaceInfo && (
-                <Button
-                  w="full"
-                  leftIcon={<Icon as={FaMapMarkedAlt} />}
-                  as={NextLink}
-                  href={order.restaurant.googleMapPlaceInfo.url}
-                  target="_blank"
-                >
-                  Googleマップでお店情報を見る
-                </Button>
-              )}
-              <Box h="15vh" w="full">
-                <iframe
-                  width="100%"
-                  height="100%"
-                  style={{ border: 0 }}
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                  src={`https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY}&q=place_id:${order.restaurant.googleMapPlaceId}`}
-                />
-              </Box>
-            </VStack>
-            <PriceSection order={order} />
-            <VStack w="full" mt={10}>
-              <Button variant="outline" size="md" colorScheme="gray" w="full" maxW="full" as={NextLink} href="/">
-                ホーム画面に戻る
-              </Button>
-              {isBeforeDeadline && (
-                <Button
-                  size="md"
-                  colorScheme="gray"
-                  w="full"
-                  maxW="full"
-                  onClick={onCancelModalOpen}
-                  isLoading={isCancelling}
-                >
-                  キャンセル
-                </Button>
-              )}
-            </VStack>
-          </VStack>
-          <CancelConfirmModal
-            isOpen={isCancelModalOpen}
-            isCancelling={isCancelling}
-            onClose={onCancelModalClose}
-            onConfirm={handleCancelConfirm}
-          />
-          <ConfirmModal
-            isOpen={errorMessage !== undefined}
-            title={errorMessage?.title ?? ""}
-            confirmButton={{
-              label: "OK",
-              onClick: () => router.refresh()
-            }}
-            onClose={() => undefined}
-          >
-            {errorMessage?.description ?? ""}
-          </ConfirmModal>
-        </>
-      );
-    case "CANCELED":
-      return (
-        <VStack alignItems="start" p={4} spacing={4}>
-          <Heading>キャンセル済み</Heading>
-          <Text>
-            注文番号:
-            <Heading as="span" ml={2}>
-              {order.orderNumber}
-            </Heading>
-          </Text>
-          <Alert
-            status="error"
-            flexDirection="column"
-            alignItems="center"
-            justifyContent="center"
-            textAlign="center"
-            borderRadius={4}
-          >
-            <AlertIcon />
-            <AlertTitle>こちらの注文はすでにキャンセルされています</AlertTitle>
-          </Alert>
-          <Heading>注文情報</Heading>
-          <VStack alignItems="start">
-            <Heading size="md">店舗</Heading>
+  return (
+    <>
+      <VStack alignItems="start" spacing={8} p={4} w="full">
+        <Heading>{heading}</Heading>
+        <Text>
+          注文番号:
+          <Heading as="span" ml={2}>
+            {order.orderNumber}
+          </Heading>
+        </Text>
+        <Alert
+          status={alertProps.status}
+          flexDirection="column"
+          alignItems="center"
+          justifyContent="center"
+          textAlign="center"
+          borderRadius={4}
+        >
+          <AlertIcon {...(alertProps.isPhoneIcon ? { as: PhoneIcon } : {})} />
+          <AlertTitle mb={1}>{alertProps.title}</AlertTitle>
+          {alertProps.description && (
+            <AlertDescription fontSize="sm" whiteSpace="pre-wrap">
+              {alertProps.description}
+            </AlertDescription>
+          )}
+        </Alert>
+        <VStack alignItems="start" w="full">
+          <Heading size="md">店舗</Heading>
+          <HStack>
             <Heading size="sm">{order.restaurant.name}</Heading>
-          </VStack>
-          <Button variant="outline" size="md" colorScheme="gray" w="full" maxW="full" as={NextLink} href="/">
-            ホーム画面に戻る
-          </Button>
+            <Button variant="outline" onClick={onRestaurantDetailOpen}>
+              詳細
+            </Button>
+          </HStack>
+          {process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY && (
+            <Box h="15vh" w="full">
+              <GoogleMapsEmbed
+                apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY}
+                height="100%"
+                width="100%"
+                mode="place"
+                q={`place_id:${order.restaurant.googleMapPlaceId}`}
+                style="border: 0;"
+              />
+            </Box>
+          )}
         </VStack>
-      );
-    default:
-      throw new Error("Invalid payment status");
-  }
+        {order.orderTotalPrice > 0 && (
+          <VStack alignItems="start" w="full">
+            <Heading size="sm">注文内容</Heading>
+            {order.meals.map((orderMeal) => (
+              <PriceListItem key={orderMeal.id} meal={orderMeal.meal} />
+            ))}
+            <Divider />
+            <Heading size="sm" alignSelf="self-end">
+              合計 {order.orderTotalPrice.toLocaleString("ja-JP")}円
+            </Heading>
+          </VStack>
+        )}
+        <VStack w="full" mt={10}>
+          {isHomeButtonVisible && (
+            <Button variant="outline" size="md" colorScheme="gray" w="full" maxW="full" as={NextLink} href="/">
+              ホーム画面に戻る
+            </Button>
+          )}
+          {isCancelButtonVisible && (
+            <Button
+              size="md"
+              colorScheme="gray"
+              w="full"
+              maxW="full"
+              onClick={onCancelModalOpen}
+              isLoading={isCancelling}
+            >
+              キャンセル
+            </Button>
+          )}
+        </VStack>
+      </VStack>
+      <CancelConfirmModal
+        isOpen={isCancelModalOpen}
+        isCancelling={isCancelling}
+        onClose={onCancelModalClose}
+        onConfirm={handleCancelConfirm}
+      />
+      <ConfirmModal
+        isOpen={errorMessage !== undefined}
+        title={errorMessage?.title ?? ""}
+        confirmButton={{
+          label: "OK",
+          onClick: () => router.refresh()
+        }}
+        onClose={() => undefined}
+      >
+        {errorMessage?.description ?? ""}
+      </ConfirmModal>
+      <RestaurantHalfModal
+        isOpen={isRestaurantDetailOpen}
+        restaurant={order.restaurant}
+        onClose={onRestaurantDetailClose}
+      />
+    </>
+  );
 }

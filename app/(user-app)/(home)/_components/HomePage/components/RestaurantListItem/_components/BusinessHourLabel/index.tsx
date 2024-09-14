@@ -16,7 +16,7 @@ export function BusinessHourLabel({ openingHours }: Props) {
       return null;
     case "open":
       return (
-        <Text suppressHydrationWarning>
+        <Text>
           <Text as="span" color="green">
             営業中
           </Text>
@@ -25,7 +25,7 @@ export function BusinessHourLabel({ openingHours }: Props) {
       );
     case "closed":
       return (
-        <Text suppressHydrationWarning>
+        <Text>
           <Text as="span" color="red">
             営業時間外
           </Text>
@@ -34,7 +34,7 @@ export function BusinessHourLabel({ openingHours }: Props) {
       );
     case "closing":
       return (
-        <Text suppressHydrationWarning>
+        <Text>
           <Text as="span" color="brown">
             まもなく閉店
           </Text>
@@ -43,7 +43,7 @@ export function BusinessHourLabel({ openingHours }: Props) {
       );
     case "opening":
       return (
-        <Text suppressHydrationWarning>
+        <Text>
           <Text as="span" color="brown">
             まもなく営業開始
           </Text>

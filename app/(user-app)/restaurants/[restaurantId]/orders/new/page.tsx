@@ -6,10 +6,11 @@ import { Metadata } from "next";
 import { getMealImageUrl } from "@/utils/image/getMealImageUrl";
 import { OrderNewPage } from "./_components/OrderNewPage";
 import { findInProgressOrder } from "@/app/(user-app)/_actions/findInProgressOrder";
+import { Box } from "@chakra-ui/react";
 
-type Params = { params: { restaurantId: string }; searchParams: { mealId?: string } };
+type Params = { params: { restaurantId: string } };
 
-export default async function OrderNew({ params, searchParams }: Params) {
+export default async function OrderNew({ params }: Params) {
   const restaurant = await prisma.restaurant.findUnique({
     where: { id: params.restaurantId },
     include: {
@@ -26,7 +27,6 @@ export default async function OrderNew({ params, searchParams }: Params) {
 
   if (!restaurant) redirect("/");
 
-  const defaultMeal = restaurant.meals.find((meal) => meal.id === searchParams.mealId);
   const session = await getServerSession(options);
   const userId = session?.user.id;
 
@@ -35,12 +35,9 @@ export default async function OrderNew({ params, searchParams }: Params) {
   const order = await findInProgressOrder(userId);
 
   return (
-    <OrderNewPage
-      restaurant={restaurant}
-      inProgressOrderId={order?.id ?? undefined}
-      userId={userId}
-      defaultMeal={defaultMeal}
-    />
+    <Box h="100dvh">
+      <OrderNewPage restaurant={restaurant} inProgressOrderId={order?.id ?? undefined} userId={userId} />
+    </Box>
   );
 }
 
@@ -52,6 +49,6 @@ export async function generateMetadata({ params }: Params): Promise<Metadata | u
 
   if (restaurant && restaurant.meals.length > 0) {
     const url = getMealImageUrl(restaurant.meals[0].imagePath);
-    return { title: `${restaurant.name} | Watt`, openGraph: { images: [url] } };
+    return { title: restaurant.name, openGraph: { images: [url] } };
   }
 }
