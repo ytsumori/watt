@@ -26,6 +26,7 @@ import { HeaderSection } from "@/app/(user-app)/_components/HeaderSection";
 import { MealPreviewImage } from "@/components/meal/MealPreviewImage";
 import { MealDetailModal } from "@/app/(user-app)/_components/RestaurantHalfModalBody/components/MealDetailModal";
 import { MealPrice } from "@/app/(user-app)/_components/MealDetailPage/_components/MealPrice";
+import { sendGAEvent } from "@next/third-parties/google";
 
 type Props = {
   restaurant: Prisma.RestaurantGetPayload<{
@@ -99,6 +100,8 @@ export const OrderNewPage: FC<Props> = ({ restaurant, inProgressOrderId, userId 
     if (!userId || !peopleCount) return;
 
     setIsVisitRequesting(true);
+
+    sendGAEvent("event", "order");
 
     try {
       const { data, error } = await visitRestaurant({
