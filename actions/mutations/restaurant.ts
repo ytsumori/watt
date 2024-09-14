@@ -2,6 +2,7 @@
 
 import prisma from "@/lib/prisma/client";
 import { createServiceRoleClient } from "@/lib/supabase/createServiceRoleClient";
+import { getCurrentOpeningHour, mergeOpeningHours } from "@/utils/opening-hours";
 import { randomUUID } from "crypto";
 
 export async function updateRestaurantAvailabilityAutomatically({
@@ -17,16 +18,28 @@ export async function updateRestaurantAvailabilityAutomatically({
   });
 }
 
-export async function updateRestaurantAvailability({
-  id,
-  isAvailable
-}: {
-  id: string;
-  isAvailable: boolean;
-  isInAdvance?: boolean;
-}) {
-  const restaurant = await prisma.restaurant.findUnique({ where: { id } });
+export async function updateRestaurantAvailability({ id, isAvailable }: { id: string; isAvailable: boolean }) {
+  const restaurant = await prisma.restaurant.findUnique({
+    where: { id },
+    select: { openingHours: true, holidays: { select: { openingHours: true, date: true } } }
+  });
   if (!restaurant) throw new Error("restaurant not found");
+
+  const mergedOpeningHours = mergeOpeningHours({
+    regularOpeningHours: restaurant.openingHours,
+    holidays: restaurant.holidays
+  });
+
+  const currentHour = getCurrentOpeningHour(mergedOpeningHours);
+
+  if (!isAvailable && currentHour) {
+    const isHoliday = !!(await prisma.restaurantHolidayOpeningHour.findUnique({ where: { id: currentHour.id } }));
+    return isHoliday
+      ? await prisma.restaurantManualClose.create({ data: { restaurantId: id, holidayOpeningHourId: currentHour.id } })
+      : await prisma.restaurantManualClose.create({
+          data: { restaurantId: id, googleMapOpeningHourId: currentHour.id }
+        });
+  }
 
   return await prisma.restaurant.update({ where: { id }, data: { isAvailable } });
 }

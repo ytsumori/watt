@@ -5,7 +5,6 @@ import { FormControl, FormHelperText, FormLabel, HStack, Switch, useToast } from
 import { ChangeEvent } from "react";
 import { Prisma } from "@prisma/client";
 import { getCurrentOpeningHour, mergeOpeningHours } from "@/utils/opening-hours";
-import { createManualClose } from "@/actions/mutations/manual-close";
 
 type Props = {
   restaurantId: string;
@@ -29,11 +28,8 @@ export function IsAvailableSwitch({ restaurantId, restaurant, isRestaurantAvaila
 
   const handleOpenStatusChange = (event: ChangeEvent<HTMLInputElement>) => {
     const isAvailable = event.target.checked;
-    updateRestaurantAvailability({ id: restaurantId, isAvailable: isAvailable, isInAdvance: true })
-      .then(() => {
-        onChange(isAvailable);
-        createManualClose(restaurantId, isAvailable);
-      })
+    updateRestaurantAvailability({ id: restaurantId, isAvailable: isAvailable })
+      .then(() => onChange(isAvailable))
       .catch(() =>
         toast({
           title: "エラー",
