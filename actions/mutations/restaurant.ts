@@ -20,11 +20,18 @@ export async function updateRestaurantAvailability({ id, isAvailable }: { id: st
   const currentHour = getCurrentOpeningHour(mergedOpeningHours);
 
   return await prisma.$transaction(async (tx) => {
-    if (!isAvailable && currentHour) {
-      const isHoliday = !!(await tx.restaurantHolidayOpeningHour.findUnique({ where: { id: currentHour.id } }));
-      return isHoliday
-        ? await tx.restaurantManualClose.create({ data: { restaurantId: id, holidayOpeningHourId: currentHour.id } })
-        : await tx.restaurantManualClose.create({ data: { restaurantId: id, googleMapOpeningHourId: currentHour.id } });
+    if (isAvailable) {
+      const manualClose = await tx.restaurantManualClose.findFirst({ where: { restaurantId: id } });
+      await tx.restaurantManualClose.delete({ where: { id: manualClose?.id } });
+    } else {
+      if (currentHour) {
+        const isHoliday = !!(await tx.restaurantHolidayOpeningHour.findUnique({ where: { id: currentHour.id } }));
+        isHoliday
+          ? await tx.restaurantManualClose.create({ data: { restaurantId: id, holidayOpeningHourId: currentHour.id } })
+          : await tx.restaurantManualClose.create({
+              data: { restaurantId: id, googleMapOpeningHourId: currentHour.id }
+            });
+      }
     }
     return await tx.restaurant.update({ where: { id }, data: { isAvailable } });
   });
