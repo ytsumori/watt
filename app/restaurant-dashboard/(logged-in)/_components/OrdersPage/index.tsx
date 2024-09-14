@@ -91,6 +91,8 @@ export function OrdersPage() {
     });
   };
 
+  const noPaymentOrderNum = orders.filter((order) => order.canceledAt === null && order.orderTotalPrice === 0).length;
+
   const ordersPriceSum = orders.reduce(
     (total, order) => (order.canceledAt === null ? total + order.orderTotalPrice : total),
     0
@@ -109,7 +111,7 @@ export function OrdersPage() {
         <Text mt={4}>取得中...</Text>
       ) : (
         <>
-          <HStack spacing={2} alignItems="baseline" mt={4}>
+          <HStack spacing={2} alignItems="baseline" mt={4} overflowX="auto">
             <Stat>
               <StatLabel w="max-content">件数</StatLabel>
               <StatNumber w="max-content">{orders.length.toLocaleString("ja-JP")}件</StatNumber>
@@ -119,9 +121,12 @@ export function OrdersPage() {
               <StatNumber w="max-content">{ordersPriceSum.toLocaleString("ja-JP")}円</StatNumber>
             </Stat>
             <Stat>
-              <StatLabel w="max-content">送客手数料(目安)</StatLabel>
-              <StatNumber w="max-content">{Math.floor(ordersPriceSum * 0.05).toLocaleString("ja-JP")}円</StatNumber>
-              <StatHelpText w="max-content">注文額x5%</StatHelpText>
+              <StatLabel w="max-content">送客手数料(注文アリ / ナシ)</StatLabel>
+              <StatNumber w="max-content">
+                {(Math.floor(ordersPriceSum * 0.05) + noPaymentOrderNum * 50).toLocaleString("ja-JP")}円 (
+                {Math.floor(ordersPriceSum * 0.05)}円 / {noPaymentOrderNum * 50}円)
+              </StatNumber>
+              <StatHelpText w="max-content">(注文額x5% / 注文数x50円)</StatHelpText>
             </Stat>
           </HStack>
           <VStack divider={<Divider />} alignItems="start" spacing={1} w="full" mt={4}>
@@ -167,7 +172,9 @@ export function OrdersPage() {
                     <br />
                     {order.meals.map((meal) => (
                       <b key={meal.id}>
-                        {meal.meal.title}({meal.options.map((option) => option.mealItemOption.title).join(",")})
+                        {meal.meal.title}
+                        {meal.options.length > 0 &&
+                          `(${meal.options.map((option) => option.mealItemOption.title).join(",")})`}
                         <br />
                       </b>
                     ))}
