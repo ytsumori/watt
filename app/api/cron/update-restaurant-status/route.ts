@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma/client";
 import { Prisma } from "@prisma/client";
-import { updateRestaurantAvailabilityAutomatically } from "@/actions/mutations/restaurant";
 import { isCurrentlyWorkingHour } from "@/utils/opening-hours";
 
 export async function GET(request: NextRequest) {
@@ -22,7 +21,7 @@ export async function GET(request: NextRequest) {
   ) => {
     const manualCloses = restaurant.manualCloses;
     if (manualCloses.length === 0) {
-      await updateRestaurantAvailabilityAutomatically({ id: restaurant.id, isAvailable: true });
+      await prisma.restaurant.update({ where: { id: restaurant.id }, data: { isAvailable: true } });
       return NextResponse.json({ success: true });
     }
 
@@ -35,7 +34,10 @@ export async function GET(request: NextRequest) {
 
     // 現在が前回手動で閉めた時間帯でない場合は営業中に変更
     if (closedHour && !isCurrentlyWorkingHour([closedHour])) {
-      await updateRestaurantAvailabilityAutomatically({ id: restaurant.id, isAvailable: true });
+      prisma.$transaction(async (tx) => {
+        await tx.restaurantManualClose.delete({ where: { id: manualCloses[0].id } });
+        await tx.restaurant.update({ where: { id: restaurant.id }, data: { isAvailable: true } });
+      });
     }
   };
   await Promise.all(restaurants.map(update));

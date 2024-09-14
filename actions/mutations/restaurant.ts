@@ -5,19 +5,6 @@ import { createServiceRoleClient } from "@/lib/supabase/createServiceRoleClient"
 import { getCurrentOpeningHour, mergeOpeningHours } from "@/utils/opening-hours";
 import { randomUUID } from "crypto";
 
-export async function updateRestaurantAvailabilityAutomatically({
-  id,
-  isAvailable
-}: {
-  id: string;
-  isAvailable: boolean;
-}) {
-  return await prisma.restaurant.update({
-    where: { id },
-    data: { isAvailable }
-  });
-}
-
 export async function updateRestaurantAvailability({ id, isAvailable }: { id: string; isAvailable: boolean }) {
   const restaurant = await prisma.restaurant.findUnique({
     where: { id },
