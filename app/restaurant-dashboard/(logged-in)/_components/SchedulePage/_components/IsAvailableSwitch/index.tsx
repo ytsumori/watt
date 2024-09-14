@@ -44,7 +44,7 @@ export function IsAvailableSwitch({ restaurantId, restaurant, isRestaurantAvaila
     <FormControl>
       <HStack>
         <FormLabel mb={0}>現在入店可能</FormLabel>
-        <Switch disabled={!!!currentOpeningHour} onChange={handleOpenStatusChange} isChecked={isRestaurantAvailable} />
+        <Switch disabled={!currentOpeningHour} onChange={handleOpenStatusChange} isChecked={isRestaurantAvailable} />
       </HStack>
       <FormHelperText>お客さんを案内できない場合はオフにしてください</FormHelperText>
     </FormControl>
