@@ -125,16 +125,24 @@ export async function notifyStaffOrder({ orderId }: { orderId: string }) {
                       },
                       {
                         type: "text",
-                        contents: [
-                          {
-                            type: "span",
-                            text: "過去来店回数："
-                          },
-                          {
-                            type: "span",
-                            text: count.toString()
-                          }
-                        ],
+                        contents:
+                          count === 0
+                            ? [
+                                {
+                                  type: "span",
+                                  text: "初来店"
+                                }
+                              ]
+                            : [
+                                {
+                                  type: "span",
+                                  text: "来店"
+                                },
+                                {
+                                  type: "span",
+                                  text: `${count + 1}回目`
+                                }
+                              ],
                         size: "xs",
                         color: "#aaaaaa"
                       }

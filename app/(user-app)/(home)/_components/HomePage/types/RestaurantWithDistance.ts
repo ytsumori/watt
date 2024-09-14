@@ -1,7 +1,11 @@
 import { Prisma } from "@prisma/client";
 
-export type RestaurantWithDistance = Prisma.RestaurantGetPayload<{
-  include: {
+export type RestaurantListItem = Prisma.RestaurantGetPayload<{
+  select: {
+    id: true;
+    name: true;
+    isAvailable: true;
+    interiorImagePath: true;
     meals: {
       select: {
         id: true;
@@ -40,4 +44,6 @@ export type RestaurantWithDistance = Prisma.RestaurantGetPayload<{
       };
     };
   };
-}> & { distance?: string };
+}>;
+
+export type RestaurantWithDistance = RestaurantListItem & { distance?: string };
