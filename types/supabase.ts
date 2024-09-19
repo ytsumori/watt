@@ -459,6 +459,7 @@ export type Database = {
       }
       Restaurant: {
         Row: {
+          counterSeatCount: number | null
           createdAt: string
           googleMapPlaceId: string
           id: string
@@ -470,9 +471,11 @@ export type Database = {
           password: string
           phoneNumber: string | null
           smokingOption: Database["public"]["Enums"]["SmokingOption"] | null
+          tableSeatCount: number | null
           updatedAt: string
         }
         Insert: {
+          counterSeatCount?: number | null
           createdAt?: string
           googleMapPlaceId: string
           id: string
@@ -484,9 +487,11 @@ export type Database = {
           password: string
           phoneNumber?: string | null
           smokingOption?: Database["public"]["Enums"]["SmokingOption"] | null
+          tableSeatCount?: number | null
           updatedAt?: string
         }
         Update: {
+          counterSeatCount?: number | null
           createdAt?: string
           googleMapPlaceId?: string
           id?: string
@@ -498,6 +503,7 @@ export type Database = {
           password?: string
           phoneNumber?: string | null
           smokingOption?: Database["public"]["Enums"]["SmokingOption"] | null
+          tableSeatCount?: number | null
           updatedAt?: string
         }
         Relationships: []
@@ -1099,7 +1105,6 @@ export type Database = {
           owner_id: string | null
           path_tokens: string[] | null
           updated_at: string | null
-          user_metadata: Json | null
           version: string | null
         }
         Insert: {
@@ -1113,7 +1118,6 @@ export type Database = {
           owner_id?: string | null
           path_tokens?: string[] | null
           updated_at?: string | null
-          user_metadata?: Json | null
           version?: string | null
         }
         Update: {
@@ -1127,7 +1131,6 @@ export type Database = {
           owner_id?: string | null
           path_tokens?: string[] | null
           updated_at?: string | null
-          user_metadata?: Json | null
           version?: string | null
         }
         Relationships: [
@@ -1149,7 +1152,6 @@ export type Database = {
           key: string
           owner_id: string | null
           upload_signature: string
-          user_metadata: Json | null
           version: string
         }
         Insert: {
@@ -1160,7 +1162,6 @@ export type Database = {
           key: string
           owner_id?: string | null
           upload_signature: string
-          user_metadata?: Json | null
           version: string
         }
         Update: {
@@ -1171,7 +1172,6 @@ export type Database = {
           key?: string
           owner_id?: string | null
           upload_signature?: string
-          user_metadata?: Json | null
           version?: string
         }
         Relationships: [
@@ -1307,10 +1307,6 @@ export type Database = {
           metadata: Json
           updated_at: string
         }[]
-      }
-      operation: {
-        Args: Record<PropertyKey, never>
-        Returns: string
       }
       search: {
         Args: {

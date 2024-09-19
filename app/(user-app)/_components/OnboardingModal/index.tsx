@@ -41,9 +41,10 @@ const ONBOARDING_STEPS = [
             height="24"
             style={{ display: "inline", verticalAlign: "bottom", marginRight: "0.2rem" }}
           />
-          は、今すぐ入れるお店を確認でき、お得なセットを注文・来店できる飲食サービスです！
+          は、気になるお店の空席状況を来店せずに確認できるグルメサービスです！
           <br />
-          1人または2人向けにWatt限定の特別セットメニューをお得な値段で提供しています！
+          <br />
+          1人または2人でのお客様向けにWatt限定の特別メニューをお得な値段で提供しています！
         </Text>
         <Box w="full">
           <Image src={onboardingImage} alt="Wattとは？" width={200} style={{ margin: "auto" }} />
@@ -77,10 +78,17 @@ const ONBOARDING_STEPS = [
         <Text>以下の手順でWattをご利用ください。</Text>
         <OrderedList spacing={2} fontWeight="bold">
           <ListItem>
-            セットメニューを選ぶ
+            行きたいお店を選ぶ
             <br />
             <Text fontWeight="normal" fontSize="xs">
-              空き確認ができるお店の中から食べたいものを選びましょう！
+              どんな食事がどれくらいの値段で注文できるか簡単に確認できます！
+            </Text>
+          </ListItem>
+          <ListItem>
+            Watt限定メニューを選ぶ
+            <br />
+            <Text fontWeight="normal" fontSize="xs">
+              お店の方が用意したお得なメニューを提供しています！
             </Text>
           </ListItem>
           <ListItem>
@@ -96,10 +104,10 @@ const ONBOARDING_STEPS = [
               空き状況が確認できてから30分以内にお店に入店してください！
             </Text>
           </ListItem>
-          <ListItem>注文画面をお店スタッフに見せて注文完了！</ListItem>
+          <ListItem>注文番号をお店スタッフに伝えてお食事をお楽しみください！！</ListItem>
         </OrderedList>
         <Text fontSize="xs" color="gray.500">
-          ※追加での注文は、お店の注文方法に従って注文してください。（追加注文は割引対象外です）
+          ※Watt限定メニュー以外の注文は、お店の注文方法に従って注文してください。
         </Text>
       </VStack>
     )

@@ -4,8 +4,9 @@ import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { Metadata } from "next";
 import { getMealImageUrl } from "@/utils/image/getMealImageUrl";
-import { RestaurantPage } from "@/app/(user-app)/_components/RestaurantPage";
-import { LogoHeader } from "../../_components/LogoHeader";
+import { HeaderSection } from "../../_components/HeaderSection";
+import { Box } from "@chakra-ui/react";
+import { RestaurantHalfModalBody } from "../../_components/RestaurantHalfModalBody";
 
 type Params = { params: { restaurantId: string } };
 
@@ -34,10 +35,10 @@ export default async function Restaurant({ params }: Params) {
   }
 
   return (
-    <>
-      <LogoHeader />
-      <RestaurantPage restaurant={restaurant} userId={session?.user.id} />
-    </>
+    <Box h="100dvh">
+      <HeaderSection title={restaurant.name} />
+      <RestaurantHalfModalBody restaurant={restaurant} userId={session?.user.id} />
+    </Box>
   );
 }
 

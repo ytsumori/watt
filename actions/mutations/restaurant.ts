@@ -79,3 +79,19 @@ export async function updateRestaurantPublishment({ id, isPublished }: { id: str
     data: { isPublished }
   });
 }
+
+export async function updateRestaurantTableSeatCount({ id, tableSeatCount }: { id: string; tableSeatCount: number }) {
+  if (tableSeatCount < 0) throw new Error("tableSeatCount must be greater than or equal to 0");
+  return await prisma.restaurant.update({ where: { id }, data: { tableSeatCount } });
+}
+
+export async function updateRestaurantCounterSeatCount({
+  id,
+  counterSeatCount
+}: {
+  id: string;
+  counterSeatCount: number;
+}) {
+  if (counterSeatCount < 0) throw new Error("counterSeatCount must be greater than or equal to 0");
+  return await prisma.restaurant.update({ where: { id }, data: { counterSeatCount } });
+}

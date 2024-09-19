@@ -65,6 +65,8 @@ model Restaurant {
   smokingOption      SmokingOption?
   phoneNumber        String?
   interiorImagePath  String?
+  tableSeatCount     Int?
+  counterSeatCount   Int?
   createdAt          DateTime                         @default(now())
   updatedAt          DateTime                         @default(now()) @updatedAt
   meals              Meal[]
