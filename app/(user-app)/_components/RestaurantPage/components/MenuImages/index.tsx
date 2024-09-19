@@ -9,7 +9,9 @@ type Props = { menuImages: RestaurantMenuImage[] };
 export const MenuImages: FC<Props> = ({ menuImages }) => {
   const [current, setCurrent] = useState<number>(0);
   const { isOpen: isMenuImageOpen, onOpen: onMenuImageOpen, onClose: onMenuImageClose } = useDisclosure();
-  const imagePaths = menuImages.map((menuImage) => getSupabaseImageUrl("menus", menuImage.imagePath));
+  const imagePaths = menuImages.map((menuImage) =>
+    getSupabaseImageUrl("menus", menuImage.imagePath, { width: 1000, height: 1000 })
+  );
 
   return (
     <>

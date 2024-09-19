@@ -151,7 +151,7 @@ export function RestaurantInfo({ restaurant }: Props) {
               <Image
                 maxW="100px"
                 minW="100px"
-                src={getRestaurantInteriorImageUrl(restaurant.interiorImagePath)}
+                src={getRestaurantInteriorImageUrl(restaurant.interiorImagePath, { width: 500, height: 500 })}
                 alt={`interior-image-${restaurant.id}`}
                 borderRadius={8}
                 objectFit="cover"
@@ -163,7 +163,7 @@ export function RestaurantInfo({ restaurant }: Props) {
                 <ModalOverlay />
                 <ModalContent m={3}>
                   <Image
-                    src={getRestaurantInteriorImageUrl(restaurant.interiorImagePath)}
+                    src={getRestaurantInteriorImageUrl(restaurant.interiorImagePath, { width: 1000, height: 1000 })}
                     alt={`interior-image-${restaurant.id}`}
                     w="full"
                   />
@@ -192,7 +192,10 @@ export function RestaurantInfo({ restaurant }: Props) {
                 <ModalOverlay />
                 <ModalContent m={3}>
                   <Image
-                    src={getSupabaseImageUrl("restaurant-exteriors", restaurant.exteriorImage.imagePath)}
+                    src={getSupabaseImageUrl("restaurant-exteriors", restaurant.exteriorImage.imagePath, {
+                      width: 1000,
+                      height: 1000
+                    })}
                     alt={`exterior-image-${restaurant.id}`}
                     w="full"
                   />
