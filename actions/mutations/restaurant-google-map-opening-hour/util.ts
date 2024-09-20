@@ -3,8 +3,7 @@ import { convertOpeningHours } from "@/lib/places-api/util";
 import { dayNumberToDayOfWeek, dayOfWeekToNumber } from "@/utils/day-of-week";
 import { getJSTFromUTC } from "@/utils/timezone";
 import { $Enums, RestaurantGoogleMapOpeningHour } from "@prisma/client";
-import { addDays, addHours, format, getDay } from "date-fns";
-import { ja } from "date-fns/locale";
+import { addDays, addHours } from "date-fns";
 
 export type RestaurantOpeningHour = Omit<
   RestaurantGoogleMapOpeningHour,
