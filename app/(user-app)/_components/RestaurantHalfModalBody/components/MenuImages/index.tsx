@@ -21,7 +21,7 @@ export const MenuImages: FC<Props> = ({ menuImages }) => {
             key={menuImage.id}
             maxW="100px"
             minW="100px"
-            src={getSupabaseImageUrl("menus", menuImage.imagePath)}
+            src={getSupabaseImageUrl("menus", menuImage.imagePath, { width: 500, height: 500 })}
             alt={`menu-image-${menuImage.id}`}
             borderRadius={8}
             objectFit="cover"
@@ -36,7 +36,7 @@ export const MenuImages: FC<Props> = ({ menuImages }) => {
       </Flex>
       <Modal isOpen={isMenuImageOpen} onClose={onMenuImageClose} isCentered>
         <ModalOverlay />
-        <ModalContent bg="transparent">
+        <ModalContent bg="transparent" m={3}>
           <Flex w="full" position="relative" justifyContent="center" alignItems="center">
             {current !== 0 && (
               <Box
@@ -51,15 +51,7 @@ export const MenuImages: FC<Props> = ({ menuImages }) => {
               </Box>
             )}
 
-            <Image
-              src={imagePaths[current]}
-              alt={`menu-image-${current}`}
-              objectFit="cover"
-              aspectRatio={1 / 1}
-              maxW="full"
-              position="absolute"
-              zIndex={1}
-            />
+            <Image src={imagePaths[current]} alt={`menu-image-${current}`} maxW="full" position="absolute" zIndex={1} />
             {current !== menuImages.length - 1 && (
               <Box
                 position="absolute"

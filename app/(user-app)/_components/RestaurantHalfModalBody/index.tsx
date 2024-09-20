@@ -184,7 +184,10 @@ export function RestaurantHalfModalBody({ restaurant, onClose, footer }: Props) 
                     <Image
                       maxW="100px"
                       minW="100px"
-                      src={getRestaurantInteriorImageUrl(restaurant.interiorImagePath)}
+                      src={getRestaurantInteriorImageUrl(restaurant.interiorImagePath, {
+                        width: 500,
+                        height: 500
+                      })}
                       alt={`interior-image-${restaurant.id}`}
                       borderRadius={8}
                       objectFit="cover"
@@ -194,15 +197,10 @@ export function RestaurantHalfModalBody({ restaurant, onClose, footer }: Props) 
                     />
                     <Modal isOpen={isInteriorImageOpen} onClose={onInteriorImageClose} isCentered>
                       <ModalOverlay />
-                      <ModalContent>
+                      <ModalContent m={3}>
                         <Image
-                          src={getRestaurantInteriorImageUrl(restaurant.interiorImagePath, {
-                            width: 1000,
-                            height: 1000
-                          })}
+                          src={getRestaurantInteriorImageUrl(restaurant.interiorImagePath)}
                           alt={`interior-image-${restaurant.id}`}
-                          objectFit="cover"
-                          aspectRatio={1 / 1}
                           w="full"
                         />
                       </ModalContent>
@@ -217,7 +215,10 @@ export function RestaurantHalfModalBody({ restaurant, onClose, footer }: Props) 
                     <Image
                       maxW="100px"
                       minW="100px"
-                      src={getSupabaseImageUrl("restaurant-exteriors", restaurant.exteriorImage.imagePath)}
+                      src={getSupabaseImageUrl("restaurant-exteriors", restaurant.exteriorImage.imagePath, {
+                        width: 500,
+                        height: 500
+                      })}
                       alt={`exterior-image-${restaurant.id}`}
                       borderRadius={8}
                       objectFit="cover"
@@ -227,15 +228,10 @@ export function RestaurantHalfModalBody({ restaurant, onClose, footer }: Props) 
                     />
                     <Modal isOpen={isExteriorImageOpen} onClose={onExteriorImageClose} isCentered>
                       <ModalOverlay />
-                      <ModalContent>
+                      <ModalContent m={3}>
                         <Image
-                          src={getSupabaseImageUrl("restaurant-exteriors", restaurant.exteriorImage.imagePath, {
-                            width: 1000,
-                            height: 1000
-                          })}
-                          alt={`interior-image-${restaurant.id}`}
-                          objectFit="cover"
-                          aspectRatio={1 / 1}
+                          src={getSupabaseImageUrl("restaurant-exteriors", restaurant.exteriorImage.imagePath)}
+                          alt={`exterior-image-${restaurant.id}`}
                           w="full"
                         />
                       </ModalContent>
