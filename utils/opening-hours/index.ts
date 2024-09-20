@@ -5,6 +5,7 @@ import { addHours } from "date-fns";
 
 type JstOpeningHours = Prisma.RestaurantGoogleMapOpeningHourGetPayload<{
   select: {
+    id: true;
     openDayOfWeek: true;
     openHour: true;
     openMinute: true;
@@ -85,13 +86,14 @@ export function getDayOfWeekFromDate(date: number) {
 export type MergeOpeningHoursArgs = {
   regularOpeningHours: Omit<
     RestaurantGoogleMapOpeningHour,
-    "id" | "restaurantId" | "isAutomaticallyApplied" | "createdAt" | "updatedAt"
+    "restaurantId" | "isAutomaticallyApplied" | "createdAt" | "updatedAt"
   >[];
   holidays: Prisma.RestaurantHolidayGetPayload<{
     select: {
       date: true;
       openingHours: {
         select: {
+          id: true;
           openHour: true;
           openMinute: true;
           openDayOfWeek: true;
@@ -107,21 +109,29 @@ export type MergeOpeningHoursArgs = {
 export function mergeOpeningHours({
   regularOpeningHours,
   holidays
-}: MergeOpeningHoursArgs): MergeOpeningHoursArgs["regularOpeningHours"] {
-  if (holidays.length === 0) return regularOpeningHours;
+}: MergeOpeningHoursArgs): ({ isRegular: boolean } & MergeOpeningHoursArgs["regularOpeningHours"][number])[] {
+  if (holidays.length === 0) return regularOpeningHours.map((regular) => ({ ...regular, isRegular: true }));
 
   const res = Object.values($Enums.DayOfWeek)
     .map((dayOfWeek) => {
       const holiday = holidays.find((holiday) => getDayOfWeekFromDate(holiday.date) === dayOfWeekToNumber(dayOfWeek));
-      const regularOpeningHour = regularOpeningHours.find((regular) => regular.openDayOfWeek === dayOfWeek);
+      const regularOpeningHourGroupedByDayofWeek = regularOpeningHours.filter(
+        (regular) => regular.openDayOfWeek === dayOfWeek
+      );
       if (holiday) {
         // holidayはあるがopeningHoursがない場合は休みになっているのでnull返す
-        return holiday.openingHours ? holiday.openingHours : null;
+        if (holiday.openingHours.length === 0) return null;
+        return holiday.openingHours.map((openingHour) => ({ ...openingHour, isRegular: false }));
       }
-      return regularOpeningHour ?? null;
+      return regularOpeningHourGroupedByDayofWeek.length === 0
+        ? null
+        : regularOpeningHourGroupedByDayofWeek.map((regularOpeningHour) => ({
+            ...regularOpeningHour,
+            isRegular: true
+          }));
     })
     .filter(Boolean)
-    .flat() as MergeOpeningHoursArgs["regularOpeningHours"];
+    .flat() as ({ isRegular: boolean } & MergeOpeningHoursArgs["regularOpeningHours"][number])[];
   return res;
 }
 

@@ -20,6 +20,7 @@ export type RestaurantListItem = Prisma.RestaurantGetPayload<{
     };
     openingHours: {
       select: {
+        id: true;
         openHour: true;
         openMinute: true;
         openDayOfWeek: true;
@@ -33,6 +34,7 @@ export type RestaurantListItem = Prisma.RestaurantGetPayload<{
         date: true;
         openingHours: {
           select: {
+            id: true;
             openHour: true;
             openMinute: true;
             openDayOfWeek: true;

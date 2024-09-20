@@ -30,6 +30,7 @@ export default async function Home({ searchParams }: { searchParams: SearchParam
       googleMapPlaceInfo: { select: { latitude: true, longitude: true } },
       openingHours: {
         select: {
+          id: true,
           openHour: true,
           openMinute: true,
           openDayOfWeek: true,
@@ -43,6 +44,7 @@ export default async function Home({ searchParams }: { searchParams: SearchParam
           date: true,
           openingHours: {
             select: {
+              id: true,
               openHour: true,
               openMinute: true,
               openDayOfWeek: true,

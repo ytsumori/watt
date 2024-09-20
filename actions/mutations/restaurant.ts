@@ -2,53 +2,38 @@
 
 import prisma from "@/lib/prisma/client";
 import { createServiceRoleClient } from "@/lib/supabase/createServiceRoleClient";
+import { getCurrentOpeningHour, mergeOpeningHours } from "@/utils/opening-hours";
 import { randomUUID } from "crypto";
 
-export async function updateRestaurantAvailabilityAutomatically({
-  id,
-  isAvailable
-}: {
-  id: string;
-  isAvailable: boolean;
-}) {
-  return await prisma.restaurant.update({
+export async function updateRestaurantAvailability({ id, isAvailable }: { id: string; isAvailable: boolean }) {
+  const restaurant = await prisma.restaurant.findUnique({
     where: { id },
-    data: { isAvailable }
+    select: { openingHours: true, holidays: { select: { openingHours: true, date: true } } }
   });
-}
-
-export async function updateRestaurantAvailability({
-  id,
-  isAvailable
-}: {
-  id: string;
-  isAvailable: boolean;
-  isInAdvance?: boolean;
-}) {
-  const restaurant = await prisma.restaurant.findUnique({ where: { id } });
   if (!restaurant) throw new Error("restaurant not found");
 
-  return await prisma.restaurant.update({
-    where: {
-      id
-    },
-    data: {
-      isAvailable,
-      closedAlerts: {
-        ...(isAvailable
-          ? {
-              updateMany: {
-                where: {
-                  openAt: null
-                },
-                data: {
-                  openAt: new Date()
-                }
-              }
-            }
-          : { create: {} })
+  const mergedOpeningHours = mergeOpeningHours({
+    regularOpeningHours: restaurant.openingHours,
+    holidays: restaurant.holidays
+  });
+
+  const currentHour = getCurrentOpeningHour(mergedOpeningHours);
+
+  return await prisma.$transaction(async (tx) => {
+    if (isAvailable) {
+      const manualClose = await tx.restaurantManualClose.findFirst({ where: { restaurantId: id } });
+      await tx.restaurantManualClose.delete({ where: { id: manualClose?.id } });
+    } else {
+      if (currentHour) {
+        const isHoliday = !!(await tx.restaurantHolidayOpeningHour.findUnique({ where: { id: currentHour.id } }));
+        isHoliday
+          ? await tx.restaurantManualClose.create({ data: { restaurantId: id, holidayOpeningHourId: currentHour.id } })
+          : await tx.restaurantManualClose.create({
+              data: { restaurantId: id, googleMapOpeningHourId: currentHour.id }
+            });
       }
     }
+    return await tx.restaurant.update({ where: { id }, data: { isAvailable } });
   });
 }
 

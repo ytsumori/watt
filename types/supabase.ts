@@ -558,38 +558,6 @@ export type Database = {
           },
         ]
       }
-      RestaurantClosedAlert: {
-        Row: {
-          closedAt: string
-          id: string
-          notifiedAt: string | null
-          openAt: string | null
-          restaurantId: string
-        }
-        Insert: {
-          closedAt?: string
-          id: string
-          notifiedAt?: string | null
-          openAt?: string | null
-          restaurantId: string
-        }
-        Update: {
-          closedAt?: string
-          id?: string
-          notifiedAt?: string | null
-          openAt?: string | null
-          restaurantId?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "RestaurantClosedAlert_restaurantId_fkey"
-            columns: ["restaurantId"]
-            isOneToOne: false
-            referencedRelation: "Restaurant"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       RestaurantCoordinate: {
         Row: {
           createdAt: string
@@ -820,6 +788,55 @@ export type Database = {
             columns: ["restaurantHolidayId"]
             isOneToOne: false
             referencedRelation: "RestaurantHoliday"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      RestaurantManualClose: {
+        Row: {
+          createdAt: string
+          googleMapOpeningHourId: string | null
+          holidayOpeningHourId: string | null
+          id: string
+          restaurantId: string
+          updatedAt: string
+        }
+        Insert: {
+          createdAt?: string
+          googleMapOpeningHourId?: string | null
+          holidayOpeningHourId?: string | null
+          id: string
+          restaurantId: string
+          updatedAt?: string
+        }
+        Update: {
+          createdAt?: string
+          googleMapOpeningHourId?: string | null
+          holidayOpeningHourId?: string | null
+          id?: string
+          restaurantId?: string
+          updatedAt?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "RestaurantManualClose_googleMapOpeningHourId_fkey"
+            columns: ["googleMapOpeningHourId"]
+            isOneToOne: false
+            referencedRelation: "RestaurantGoogleMapOpeningHour"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "RestaurantManualClose_holidayOpeningHourId_fkey"
+            columns: ["holidayOpeningHourId"]
+            isOneToOne: false
+            referencedRelation: "RestaurantHolidayOpeningHour"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "RestaurantManualClose_restaurantId_fkey"
+            columns: ["restaurantId"]
+            isOneToOne: false
+            referencedRelation: "Restaurant"
             referencedColumns: ["id"]
           },
         ]

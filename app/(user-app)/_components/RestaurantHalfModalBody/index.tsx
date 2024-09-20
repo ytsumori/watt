@@ -57,6 +57,7 @@ type Props = {
       menuImages: true;
       openingHours: {
         select: {
+          id: true;
           openDayOfWeek: true;
           openHour: true;
           openMinute: true;
