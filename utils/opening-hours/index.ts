@@ -143,3 +143,10 @@ export function createTodayDateNumber() {
   const today = Number(jst.toISOString().split("T")[0].replaceAll("-", ""));
   return today;
 }
+
+export function sortOpeningHours<T extends { openHour: number; openMinute: number }>(openingHours: T[]) {
+  return openingHours.sort((a, b) => {
+    if (a.openHour === b.openHour) return a.openMinute > b.openMinute ? 1 : -1;
+    return a.openHour > b.openHour ? 1 : -1;
+  });
+}

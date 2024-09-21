@@ -1,4 +1,5 @@
 import { translateDayOfWeek } from "@/lib/prisma/translate-enum";
+import { sortOpeningHours } from "@/utils/opening-hours";
 import { DayOfWeek, RestaurantGoogleMapOpeningHour } from "@prisma/client";
 
 export const groupedByDayOfWeeks = (
@@ -9,15 +10,10 @@ export const groupedByDayOfWeeks = (
 ) => {
   const groupedByDayOfWeeks = Object.groupBy(openingHours, (openingHour) => openingHour.openDayOfWeek);
   return Object.keys(DayOfWeek).map((dayOfWeek) => {
-    return groupedByDayOfWeeks[dayOfWeek as keyof typeof DayOfWeek]
-      ? `${translateDayOfWeek(dayOfWeek as keyof typeof DayOfWeek)} ${groupedByDayOfWeeks[
-          dayOfWeek as keyof typeof DayOfWeek
-        ]
-          ?.sort((a, b) => {
-            if (a.openHour === b.openHour) return a.openMinute > b.openMinute ? 1 : -1;
-            return a.openHour > b.openHour ? 1 : -1;
-          })
-          .map(
+    const dayofWeekOpeningHour = groupedByDayOfWeeks[dayOfWeek as keyof typeof DayOfWeek];
+    return dayofWeekOpeningHour
+      ? `${translateDayOfWeek(dayOfWeek as keyof typeof DayOfWeek)} ${sortOpeningHours(dayofWeekOpeningHour)
+          ?.map(
             (openingHour) =>
               `${String(openingHour.openHour).padStart(2, "0")}:${String(openingHour.openMinute).padStart(2, "0")} ~ ${String(openingHour.closeHour).padStart(2, "0")}:${String(openingHour.closeMinute).padStart(2, "0")}`
           )
