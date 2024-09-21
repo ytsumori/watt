@@ -5,7 +5,17 @@ import { createServiceRoleClient } from "@/lib/supabase/createServiceRoleClient"
 import { getCurrentOpeningHour, mergeOpeningHours } from "@/utils/opening-hours";
 import { randomUUID } from "crypto";
 
-export async function updateRestaurantAvailability({ id, isAvailable }: { id: string; isAvailable: boolean }) {
+export async function setRestaurantAvailable(id: string) {
+  const restaurant = await prisma.restaurant.findUnique({ where: { id } });
+  if (!restaurant) throw new Error("restaurant not found");
+
+  return await prisma.$transaction([
+    prisma.restaurantManualClose.deleteMany({ where: { restaurantId: id } }),
+    prisma.restaurant.update({ where: { id }, data: { isAvailable: true } })
+  ]);
+}
+
+export async function setRestaurantUnavailable(id: string) {
   const restaurant = await prisma.restaurant.findUnique({
     where: { id },
     select: { openingHours: true, holidays: { select: { openingHours: true, date: true } } }
@@ -20,21 +30,20 @@ export async function updateRestaurantAvailability({ id, isAvailable }: { id: st
   const currentHour = getCurrentOpeningHour(mergedOpeningHours);
 
   return await prisma.$transaction(async (tx) => {
-    if (isAvailable) {
-      const manualClose = await tx.restaurantManualClose.findFirst({ where: { restaurantId: id } });
-      await tx.restaurantManualClose.delete({ where: { id: manualClose?.id } });
-    } else {
-      if (currentHour) {
-        const isHoliday = !!(await tx.restaurantHolidayOpeningHour.findUnique({ where: { id: currentHour.id } }));
-        isHoliday
-          ? await tx.restaurantManualClose.create({ data: { restaurantId: id, holidayOpeningHourId: currentHour.id } })
-          : await tx.restaurantManualClose.create({
-              data: { restaurantId: id, googleMapOpeningHourId: currentHour.id }
-            });
-      }
+    if (currentHour) {
+      const isHoliday = !!(await tx.restaurantHolidayOpeningHour.findUnique({ where: { id: currentHour.id } }));
+      isHoliday
+        ? await tx.restaurantManualClose.create({ data: { restaurantId: id, holidayOpeningHourId: currentHour.id } })
+        : await tx.restaurantManualClose.create({
+            data: { restaurantId: id, googleMapOpeningHourId: currentHour.id }
+          });
     }
-    return await tx.restaurant.update({ where: { id }, data: { isAvailable } });
+    return await tx.restaurant.update({ where: { id }, data: { isAvailable: false } });
   });
+}
+
+export async function setRestaurantUnavailableAutomatically(id: string) {
+  return await prisma.restaurant.update({ where: { id }, data: { isAvailable: false } });
 }
 
 export async function uploadInteriorImage(restaurantId: string, formData: FormData) {

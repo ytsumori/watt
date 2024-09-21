@@ -1,6 +1,6 @@
 "use client";
 
-import { updateRestaurantAvailability } from "@/actions/mutations/restaurant";
+import { setRestaurantAvailable, setRestaurantUnavailable } from "@/actions/mutations/restaurant";
 import { FormControl, FormHelperText, FormLabel, HStack, Switch, useToast } from "@chakra-ui/react";
 import { ChangeEvent } from "react";
 import { Prisma } from "@prisma/client";
@@ -28,16 +28,29 @@ export function IsAvailableSwitch({ restaurantId, restaurant, isRestaurantAvaila
 
   const handleOpenStatusChange = (event: ChangeEvent<HTMLInputElement>) => {
     const isAvailable = event.target.checked;
-    updateRestaurantAvailability({ id: restaurantId, isAvailable: isAvailable })
-      .then(() => onChange(isAvailable))
-      .catch(() =>
-        toast({
-          title: "エラー",
-          description: "入店可否ステータスの変更に失敗しました",
-          status: "error",
-          isClosable: true
-        })
-      );
+    if (isAvailable) {
+      setRestaurantAvailable(restaurantId)
+        .then(() => onChange(isAvailable))
+        .catch(() =>
+          toast({
+            title: "エラー",
+            description: "入店可否ステータスの変更に失敗しました",
+            status: "error",
+            isClosable: true
+          })
+        );
+    } else {
+      setRestaurantUnavailable(restaurantId)
+        .then(() => onChange(isAvailable))
+        .catch(() =>
+          toast({
+            title: "エラー",
+            description: "入店可否ステータスの変更に失敗しました",
+            status: "error",
+            isClosable: true
+          })
+        );
+    }
   };
 
   return (
