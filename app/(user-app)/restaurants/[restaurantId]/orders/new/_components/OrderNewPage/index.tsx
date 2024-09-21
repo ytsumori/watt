@@ -149,6 +149,16 @@ export const OrderNewPage: FC<Props> = ({ restaurant, inProgressOrderId, userId 
                 <option value="2">2人</option>
               </Select>
             </VStack>
+            {restaurant.remark && (
+              <VStack>
+                <Heading mr="auto" size="md">
+                  備考
+                </Heading>
+                <Text whiteSpace="pre-wrap" fontSize="small">
+                  {restaurant.remark}
+                </Text>
+              </VStack>
+            )}
             {peopleCount !== undefined && (
               <>
                 <VStack w="full" alignItems="start">

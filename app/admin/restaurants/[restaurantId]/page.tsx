@@ -13,6 +13,7 @@ import { ExteriorImageInput } from "./_components/ExteriorImageInput";
 import { MenuImageInput } from "./_components/MenuImageInput";
 import { CounterSeatCountInput } from "./_components/CounterSeatCountInput";
 import { TableSeatCountInput } from "./_components/TableSeatCountInput";
+import { RemarkInput } from "./_components/RemarkInput";
 
 type PageProps = { params: { restaurantId: string }; searchParams: { month?: string } };
 
@@ -25,6 +26,7 @@ export default async function RestaurantPage({ params, searchParams }: PageProps
       bankAccount: true,
       interiorImagePath: true,
       isPublished: true,
+      remark: true,
       meals: {
         orderBy: { price: "asc" },
         include: {
@@ -102,6 +104,10 @@ export default async function RestaurantPage({ params, searchParams }: PageProps
         <Heading size="md">電話番号</Heading>
         <Text fontSize="xs">数字のみで入力してください</Text>
         <PhoneNumberForm restaurantId={restaurant.id} defaultPhoneNumber={restaurant.phoneNumber} />
+      </VStack>
+      <VStack alignItems="start">
+        <Heading size="md">備考</Heading>
+        <RemarkInput restaurantId={restaurant.id} defaultRemark={restaurant.remark} />
       </VStack>
       <MealList restaurantId={restaurant.id} defaultMeals={restaurant.meals} />
       <Suspense fallback="Loading...">

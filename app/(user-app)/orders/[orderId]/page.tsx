@@ -71,7 +71,8 @@ export default async function Order({ params }: { params: Params }) {
             }
           },
           smokingOption: true,
-          interiorImagePath: true
+          interiorImagePath: true,
+          remark: true
         }
       }
     }

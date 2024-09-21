@@ -68,6 +68,7 @@ type Props = {
       };
       smokingOption: true;
       interiorImagePath: true;
+      remark: true;
     };
   }>;
   userId?: string;
@@ -162,18 +163,28 @@ export function RestaurantHalfModalBody({ restaurant, onClose, footer }: Props) 
                         <BusinessHourLabel openingHours={restaurant.openingHours} />
                         <AccordionIcon ml={2} />
                       </AccordionButton>
-                      <Box mt={2}>
-                        {groupedByDayOfWeeks(restaurant.openingHours).map((text, idx) => {
-                          return (
-                            <AccordionPanel key={idx} p={0} my={1}>
-                              <Text fontWeight="normal">{text}</Text>
-                            </AccordionPanel>
-                          );
-                        })}
-                      </Box>
+                      <AccordionPanel p={0} mt={1}>
+                        <Box>
+                          {groupedByDayOfWeeks(restaurant.openingHours).map((text, idx) => {
+                            return (
+                              <Text key={idx} fontWeight="normal">
+                                {text}
+                              </Text>
+                            );
+                          })}
+                        </Box>
+                      </AccordionPanel>
                     </AccordionItem>
                   </Accordion>
                 </Box>
+                {restaurant.remark && (
+                  <>
+                    <Text>備考</Text>
+                    <Text whiteSpace="pre-wrap" fontWeight="normal">
+                      {restaurant.remark}
+                    </Text>
+                  </>
+                )}
               </SimpleGrid>
               <Flex w="full" className="hidden-scrollbar" overflowX="scroll" gap={2} px={4}>
                 {restaurant.interiorImagePath && (
