@@ -15,8 +15,8 @@ export async function GET(request: NextRequest) {
     include: {
       meals: true,
       manualCloses: { take: 1, orderBy: { createdAt: "desc" } },
-      openingHours: true,
-      holidays: { include: { openingHours: true } }
+      openingHours: { where: { isAutomaticallyApplied: true } },
+      holidays: { include: { openingHours: { where: { isAutomaticallyApplied: true } } } }
     },
     where: { isPublished: true, meals: { some: { isInactive: false } } }
   });
