@@ -80,3 +80,7 @@ export async function updateRestaurantCounterSeatCount({
   if (counterSeatCount < 0) throw new Error("counterSeatCount must be greater than or equal to 0");
   return await prisma.restaurant.update({ where: { id }, data: { counterSeatCount } });
 }
+
+export async function updateRemark({ id, remark }: { id: string; remark: string }) {
+  return await prisma.restaurant.update({ where: { id }, data: { remark } });
+}
