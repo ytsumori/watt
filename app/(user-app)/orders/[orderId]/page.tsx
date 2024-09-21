@@ -4,7 +4,6 @@ import { redirect } from "next/navigation";
 import prisma from "@/lib/prisma/client";
 import { getOrderStatus } from "@/lib/prisma/order-status";
 import { OrderPage } from "./_components/OrderPage";
-import { format } from "date-fns";
 
 type Params = {
   orderId: string;
@@ -112,7 +111,7 @@ export default async function Order({ params }: { params: Params }) {
           heading="注文完了"
           alertProps={{
             title: isBeforeDeadline
-              ? `${format(arrivalDeadline, "HH:mm")}
+              ? `${arrivalDeadline.toLocaleTimeString("ja-JP", { timeZone: "Asia/Tokyo", hour: "2-digit", minute: "2-digit" })}
               までにお店に向かってください`
               : "注文が完了しました",
             description: isBeforeDeadline
