@@ -4,7 +4,6 @@ import { formatDistance } from "@/app/(user-app)/_util/formatDistance";
 import { createServiceRoleClient } from "@/lib/supabase/createServiceRoleClient";
 import { logger } from "@/utils/logger";
 import { RestaurantListItem, RestaurantWithDistance } from "../../types/RestaurantWithDistance";
-import { Prisma } from "@prisma/client";
 
 type Args = { lat: number; long: number; restaurants: RestaurantListItem[] };
 
