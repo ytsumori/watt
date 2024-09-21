@@ -89,6 +89,7 @@ type Props = {
           };
           smokingOption: true;
           interiorImagePath: true;
+          remark: true;
         };
       };
     };
