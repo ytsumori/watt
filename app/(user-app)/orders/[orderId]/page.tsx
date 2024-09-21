@@ -72,7 +72,9 @@ export default async function Order({ params }: { params: Params }) {
           },
           smokingOption: true,
           interiorImagePath: true,
-          remark: true
+          remark: true,
+          tableSeatCount: true,
+          counterSeatCount: true
         }
       }
     }
