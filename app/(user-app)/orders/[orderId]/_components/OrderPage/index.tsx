@@ -90,6 +90,8 @@ type Props = {
           smokingOption: true;
           interiorImagePath: true;
           remark: true;
+          tableSeatCount: true;
+          counterSeatCount: true;
         };
       };
     };

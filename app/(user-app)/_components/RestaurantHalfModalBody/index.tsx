@@ -69,6 +69,8 @@ type Props = {
       smokingOption: true;
       interiorImagePath: true;
       remark: true;
+      tableSeatCount: true;
+      counterSeatCount: true;
     };
   }>;
   userId?: string;
@@ -139,6 +141,16 @@ export function RestaurantHalfModalBody({ restaurant, onClose, footer }: Props) 
                 fontWeight="bold"
                 px={4}
               >
+                {((restaurant.tableSeatCount ?? 0) > 0 || (restaurant.counterSeatCount ?? 0) > 0) && (
+                  <>
+                    <Text>席数</Text>
+                    <Text fontWeight="normal">
+                      {(restaurant.counterSeatCount ?? 0) > 0 && `カウンター${restaurant.counterSeatCount}席`}
+                      {(restaurant.tableSeatCount ?? 0) > 0 && (restaurant.counterSeatCount ?? 0) > 0 && " ・ "}
+                      {(restaurant.tableSeatCount ?? 0) > 0 && `テーブル${restaurant.tableSeatCount}席`}
+                    </Text>
+                  </>
+                )}
                 {restaurant.smokingOption && (
                   <>
                     <Text>喫煙・禁煙</Text>

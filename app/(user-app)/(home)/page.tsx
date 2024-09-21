@@ -79,7 +79,9 @@ export default async function Home({ searchParams }: { searchParams: SearchParam
           menuImages: { orderBy: { menuNumber: "asc" } },
           smokingOption: true,
           interiorImagePath: true,
-          isAvailable: true
+          isAvailable: true,
+          counterSeatCount: true,
+          tableSeatCount: true
         }
       })
     : null;
