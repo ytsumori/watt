@@ -1,9 +1,9 @@
-import { $Enums, Prisma, RestaurantGoogleMapOpeningHour, RestaurantHoliday } from "@prisma/client";
+import { $Enums, Prisma } from "@prisma/client";
 import { getJSTFromUTC } from "../timezone";
 import { dayOfWeekToNumber } from "../day-of-week";
 import { addHours } from "date-fns";
 
-type JstOpeningHours = Prisma.RestaurantGoogleMapOpeningHourGetPayload<{
+type OpeningHour = Prisma.RestaurantGoogleMapOpeningHourGetPayload<{
   select: {
     id: true;
     openDayOfWeek: true;
@@ -13,7 +13,9 @@ type JstOpeningHours = Prisma.RestaurantGoogleMapOpeningHourGetPayload<{
     closeHour: true;
     closeMinute: true;
   };
-}>[];
+}>;
+
+type JstOpeningHours = OpeningHour[];
 
 export function getCurrentOpeningHour(jstOpeningHours: JstOpeningHours) {
   const current = new Date();
@@ -84,10 +86,7 @@ export function getDayOfWeekFromDate(date: number) {
 }
 
 export type MergeOpeningHoursArgs = {
-  regularOpeningHours: Omit<
-    RestaurantGoogleMapOpeningHour,
-    "restaurantId" | "isAutomaticallyApplied" | "createdAt" | "updatedAt"
-  >[];
+  regularOpeningHours: OpeningHour[];
   holidays: Prisma.RestaurantHolidayGetPayload<{
     select: {
       date: true;
@@ -106,32 +105,25 @@ export type MergeOpeningHoursArgs = {
   }>[];
 };
 
-export function mergeOpeningHours({
-  regularOpeningHours,
-  holidays
-}: MergeOpeningHoursArgs): ({ isRegular: boolean } & MergeOpeningHoursArgs["regularOpeningHours"][number])[] {
+export function mergeOpeningHours({ regularOpeningHours, holidays }: MergeOpeningHoursArgs) {
   if (holidays.length === 0) return regularOpeningHours.map((regular) => ({ ...regular, isRegular: true }));
 
-  const res = Object.values($Enums.DayOfWeek)
-    .map((dayOfWeek) => {
-      const holiday = holidays.find((holiday) => getDayOfWeekFromDate(holiday.date) === dayOfWeekToNumber(dayOfWeek));
-      const regularOpeningHourGroupedByDayofWeek = regularOpeningHours.filter(
-        (regular) => regular.openDayOfWeek === dayOfWeek
-      );
-      if (holiday) {
-        // holidayはあるがopeningHoursがない場合は休みになっているのでnull返す
-        if (holiday.openingHours.length === 0) return null;
-        return holiday.openingHours.map((openingHour) => ({ ...openingHour, isRegular: false }));
-      }
-      return regularOpeningHourGroupedByDayofWeek.length === 0
-        ? null
-        : regularOpeningHourGroupedByDayofWeek.map((regularOpeningHour) => ({
-            ...regularOpeningHour,
-            isRegular: true
-          }));
-    })
-    .filter(Boolean)
-    .flat() as ({ isRegular: boolean } & MergeOpeningHoursArgs["regularOpeningHours"][number])[];
+  const res = Object.values($Enums.DayOfWeek).flatMap((dayOfWeek) => {
+    const holiday = holidays.find((holiday) => getDayOfWeekFromDate(holiday.date) === dayOfWeekToNumber(dayOfWeek));
+    const regularOpeningHourGroupedByDayofWeek = regularOpeningHours.filter(
+      (regular) => regular.openDayOfWeek === dayOfWeek
+    );
+    if (holiday) {
+      if (holiday.openingHours.length === 0) return []; // holiday with no opening hours
+      return holiday.openingHours.map((openingHour) => ({ ...openingHour, isRegular: false }));
+    }
+    return regularOpeningHourGroupedByDayofWeek.length === 0
+      ? []
+      : regularOpeningHourGroupedByDayofWeek.map((regularOpeningHour) => ({
+          ...regularOpeningHour,
+          isRegular: true
+        }));
+  });
   return res;
 }
 
