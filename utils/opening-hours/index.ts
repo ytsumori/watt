@@ -114,8 +114,7 @@ export function mergeOpeningHours({ regularOpeningHours, holidays }: MergeOpenin
       (regular) => regular.openDayOfWeek === dayOfWeek
     );
     if (holiday) {
-      // holidayはあるがopeningHoursがない場合は休みになっているのでnull返す
-      if (holiday.openingHours.length === 0) return [];
+      if (holiday.openingHours.length === 0) return []; // holiday with no opening hours
       return holiday.openingHours.map((openingHour) => ({ ...openingHour, isRegular: false }));
     }
     return regularOpeningHourGroupedByDayofWeek.length === 0
