@@ -145,9 +145,9 @@ export function RestaurantHalfModalBody({ restaurant, onClose, footer }: Props) 
                   <>
                     <Text>席数</Text>
                     <Text fontWeight="normal">
-                      {(restaurant.tableSeatCount ?? 0) > 0 && `テーブル席${restaurant.tableSeatCount}席`}
+                      {(restaurant.counterSeatCount ?? 0) > 0 && `カウンター${restaurant.counterSeatCount}席`}
                       {(restaurant.tableSeatCount ?? 0) > 0 && (restaurant.counterSeatCount ?? 0) > 0 && " ・ "}
-                      {(restaurant.counterSeatCount ?? 0) > 0 && `カウンター席${restaurant.counterSeatCount}席`}
+                      {(restaurant.tableSeatCount ?? 0) > 0 && `テーブル${restaurant.tableSeatCount}席`}
                     </Text>
                   </>
                 )}
