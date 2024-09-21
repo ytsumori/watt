@@ -8,7 +8,6 @@ import { getServerSession } from "next-auth";
 import { options } from "@/lib/next-auth/options";
 import { redirect } from "next/navigation";
 import { HomeRestaurantHalfModal } from "./_components/HomePage/components/HomeRestaurantHalfModal";
-import { RestaurantHalfModal } from "../_components/RestaurantHalfModal";
 
 type SearchParams = {
   selectedRestaurantId?: string;
@@ -67,6 +66,7 @@ export default async function Home({ searchParams }: { searchParams: SearchParam
         select: {
           id: true,
           name: true,
+          remark: true,
           meals: {
             where: { isInactive: false, outdatedAt: null },
             orderBy: { price: "asc" },
