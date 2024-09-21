@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
 
         // 現在が前回手動で閉めた時間帯でない場合は営業中に変更
         if (closedHour && !isCurrentlyWorkingHour([closedHour])) {
-          setRestaurantAvailable(restaurant.id);
+          await setRestaurantAvailable(restaurant.id);
         }
       }
     } else if (restaurant.isAvailable) {
