@@ -42,7 +42,7 @@ export function PublishSwitch({ restaurantId, defaultIsPublished }: Props) {
   };
 
   const handleCopyRestaurantUrlClick = () => {
-    navigator.clipboard.writeText(`${process.env.NEXT_PUBLIC_HOST_URL}/restaurants/${restaurantId}`);
+    navigator.clipboard.writeText(`${process.env.NEXT_PUBLIC_HOST_URL}/?selectedRestaurantId=${restaurantId}`);
     toast({
       title: "URLをコピーしました",
       status: "success",
