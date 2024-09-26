@@ -6,8 +6,20 @@ import { getCurrentOpeningHour, mergeOpeningHours } from "@/utils/opening-hours"
 import { randomUUID } from "crypto";
 
 export async function setRestaurantAvailable(id: string) {
-  const restaurant = await prisma.restaurant.findUnique({ where: { id } });
+  const restaurant = await prisma.restaurant.findUnique({
+    where: { id },
+    include: { openingHours: true, holidays: { select: { openingHours: true, date: true } } }
+  });
   if (!restaurant) throw new Error("restaurant not found");
+
+  const mergedOpeningHours = mergeOpeningHours({
+    regularOpeningHours: restaurant.openingHours,
+    holidays: restaurant.holidays
+  });
+
+  const currentOpeningHour = mergedOpeningHours && getCurrentOpeningHour(mergedOpeningHours);
+
+  if (!currentOpeningHour) throw new Error("out of opening hours");
 
   return await prisma.$transaction([
     prisma.restaurantManualClose.deleteMany({ where: { restaurantId: id } }),
