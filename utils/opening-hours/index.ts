@@ -143,3 +143,11 @@ export function createTodayDateNumber() {
   const today = Number(jst.toISOString().split("T")[0].replaceAll("-", ""));
   return today;
 }
+
+export function openingHourCompareFn(
+  a: { openHour: number; openMinute: number },
+  b: { openHour: number; openMinute: number }
+) {
+  if (a.openHour === b.openHour) return a.openMinute > b.openMinute ? 1 : -1;
+  return a.openHour > b.openHour ? 1 : -1;
+}

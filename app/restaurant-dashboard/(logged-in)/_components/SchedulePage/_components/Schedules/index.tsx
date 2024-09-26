@@ -5,6 +5,7 @@ import { Fragment } from "react";
 import { ScheduledHolidayListItem } from "../ScheduledHolidayListItem";
 import { ScheduleListItem } from "../ScheduleListItem";
 import { translateDayOfWeek } from "@/lib/prisma/translate-enum";
+import { openingHourCompareFn } from "@/utils/opening-hours";
 
 type Props = {
   restaurant?: Prisma.RestaurantGetPayload<{
@@ -59,7 +60,7 @@ export const Schedules = ({ restaurant }: Props) => {
             <Box key={dayOfWeek} m={2}>
               <Text>{translateDayOfWeek(dayOfWeek) + "曜日"}</Text>
               <UnorderedList>
-                {openingHour.regularOpeningHours.map((regularHour, idx) => {
+                {openingHour.regularOpeningHours.sort(openingHourCompareFn).map((regularHour) => {
                   return (
                     <Fragment key={regularHour.id}>
                       <ScheduleListItem openingHour={regularHour} />
@@ -79,7 +80,7 @@ export const Schedules = ({ restaurant }: Props) => {
                   <UnorderedList>
                     <>
                       <UnorderedList>
-                        {openingHour.holidayOpeningHours.map((holidayHour) => {
+                        {openingHour.holidayOpeningHours.sort(openingHourCompareFn).map((holidayHour) => {
                           return (
                             <ListItem key={holidayHour.id}>
                               <Flex gap={3}>
