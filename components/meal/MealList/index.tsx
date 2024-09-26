@@ -14,9 +14,10 @@ type MealProp = Prisma.MealGetPayload<{
 type Props = {
   restaurantId: string;
   defaultMeals?: MealProp[];
+  isEditable?: boolean;
 };
 
-export function MealList({ restaurantId, defaultMeals }: Props) {
+export function MealList({ restaurantId, defaultMeals, isEditable }: Props) {
   const { isOpen: isMealFormOpen, onOpen: onMealFormOpen, onClose: onMealFormClose } = useDisclosure();
 
   const [meals, setMeals] = useState<MealProp[]>(defaultMeals?.filter((meal) => !meal.isInactive) ?? []);
@@ -62,9 +63,11 @@ export function MealList({ restaurantId, defaultMeals }: Props) {
               meal={meal}
               button={
                 <HStack>
-                  <Button variant="outline" onClick={() => handleClickEdit(meal)}>
-                    編集する
-                  </Button>
+                  {isEditable && (
+                    <Button variant="outline" onClick={() => handleClickEdit(meal)}>
+                      編集する
+                    </Button>
+                  )}
                   <Button variant="solid" colorScheme="red" onClick={() => handleClickInactivate(meal.id)}>
                     取り消す
                   </Button>
@@ -77,27 +80,24 @@ export function MealList({ restaurantId, defaultMeals }: Props) {
           取り消し済み
         </Heading>
         <Flex wrap="wrap" justify="space-evenly" gap={4}>
-          {inactiveMeals.map((meal) => {
-            const isEditable = meal.orders.length === 0;
-            return (
-              <MealCard
-                key={meal.id}
-                meal={meal}
-                button={
-                  <HStack>
-                    {isEditable && (
-                      <Button variant="outline" onClick={() => handleClickEdit(meal)}>
-                        編集する
-                      </Button>
-                    )}
-                    <Button variant="ghost" colorScheme="brand" onClick={() => handleClickReopen(meal.id)}>
-                      提供再開
+          {inactiveMeals.map((meal) => (
+            <MealCard
+              key={meal.id}
+              meal={meal}
+              button={
+                <HStack>
+                  {isEditable && (
+                    <Button variant="outline" onClick={() => handleClickEdit(meal)}>
+                      編集する
                     </Button>
-                  </HStack>
-                }
-              />
-            );
-          })}
+                  )}
+                  <Button variant="ghost" colorScheme="brand" onClick={() => handleClickReopen(meal.id)}>
+                    提供再開
+                  </Button>
+                </HStack>
+              }
+            />
+          ))}
         </Flex>
       </VStack>
       <MealFormModal
