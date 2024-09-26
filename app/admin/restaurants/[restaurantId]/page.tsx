@@ -109,7 +109,7 @@ export default async function RestaurantPage({ params, searchParams }: PageProps
         <Heading size="md">備考</Heading>
         <RemarkInput restaurantId={restaurant.id} defaultRemark={restaurant.remark} />
       </VStack>
-      <MealList restaurantId={restaurant.id} defaultMeals={restaurant.meals} />
+      <MealList restaurantId={restaurant.id} defaultMeals={restaurant.meals} isEditable />
       <Suspense fallback="Loading...">
         <RestaurantOrdersSection restaurantId={restaurant.id} month={searchParams.month} />
       </Suspense>
