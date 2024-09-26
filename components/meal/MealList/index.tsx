@@ -30,11 +30,6 @@ export function MealList({ restaurantId, defaultMeals }: Props) {
     });
   };
 
-  const handleClickEdit = (meal: MealProp) => {
-    setEditingMeal(meal);
-    onMealFormOpen();
-  };
-
   const handleClickInactivate = async (mealId: string) => {
     inactivateMeal({ id: mealId }).then(() => {
       revalidateMeals();
@@ -62,9 +57,6 @@ export function MealList({ restaurantId, defaultMeals }: Props) {
               meal={meal}
               button={
                 <HStack>
-                  <Button variant="outline" onClick={() => handleClickEdit(meal)}>
-                    編集する
-                  </Button>
                   <Button variant="solid" colorScheme="red" onClick={() => handleClickInactivate(meal.id)}>
                     取り消す
                   </Button>
@@ -78,18 +70,12 @@ export function MealList({ restaurantId, defaultMeals }: Props) {
         </Heading>
         <Flex wrap="wrap" justify="space-evenly" gap={4}>
           {inactiveMeals.map((meal) => {
-            const isEditable = meal.orders.length === 0;
             return (
               <MealCard
                 key={meal.id}
                 meal={meal}
                 button={
                   <HStack>
-                    {isEditable && (
-                      <Button variant="outline" onClick={() => handleClickEdit(meal)}>
-                        編集する
-                      </Button>
-                    )}
                     <Button variant="ghost" colorScheme="brand" onClick={() => handleClickReopen(meal.id)}>
                       提供再開
                     </Button>
