@@ -144,9 +144,10 @@ export function createTodayDateNumber() {
   return today;
 }
 
-export function sortOpeningHours<T extends { openHour: number; openMinute: number }>(openingHours: T[]) {
-  return openingHours.sort((a, b) => {
-    if (a.openHour === b.openHour) return a.openMinute > b.openMinute ? 1 : -1;
-    return a.openHour > b.openHour ? 1 : -1;
-  });
+export function openingHourCompareFn(
+  a: { openHour: number; openMinute: number },
+  b: { openHour: number; openMinute: number }
+) {
+  if (a.openHour === b.openHour) return a.openMinute > b.openMinute ? 1 : -1;
+  return a.openHour > b.openHour ? 1 : -1;
 }
