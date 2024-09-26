@@ -7,7 +7,6 @@ import { getRestaurantOpeningInfo, updateBusinessHours } from "./actions";
 import { RepeatIcon } from "@chakra-ui/icons";
 import { RestaurantIdContext } from "../RestaurantIdProvider";
 import { IsAvailableSwitch } from "./_components/IsAvailableSwitch";
-
 import { Schedules } from "./_components/Schedules";
 
 export function SchedulePage() {
