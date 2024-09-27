@@ -4,7 +4,7 @@ import { Wrapper, Status } from "@googlemaps/react-wrapper";
 import { createCustomEqual } from "fast-equals";
 import { isLatLngLiteral } from "@googlemaps/typescript-guards";
 import { Children, cloneElement, isValidElement, useEffect, useRef, useState } from "react";
-import { calculateMarkerCoordinates, calculatePixelDistance, setFirstCenter } from "./util";
+import { setFirstCenter } from "./util";
 
 const render = (status: Status) => {
   return <h1>{status}</h1>;
@@ -92,7 +92,6 @@ interface MapProps extends google.maps.MapOptions {
 function MapComponent({ onIdle, children, style, active, current, setZoom, setCenter, ...options }: MapProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [map, setMap] = useState<google.maps.Map>();
-  const [isFirst, setIsFirst] = useState(true);
 
   useEffect(() => {
     if (ref.current && !map) {
@@ -103,40 +102,10 @@ function MapComponent({ onIdle, children, style, active, current, setZoom, setCe
 
   useEffect(() => {
     if (!map || !active) return;
-    const activeCoordinate = {
-      lat: active.lat,
-      lng: active.lng
-    };
-    if (isFirst && activeCoordinate) {
-      setFirstCenter({ current, active: activeCoordinate, setCenter, setZoom });
-      setIsFirst(false);
-    }
-    const bounds = map.getBounds();
-    const perPixelDistance = calculatePixelDistance(map);
-    const markerCoordinates =
-      perPixelDistance &&
-      activeCoordinate &&
-      (active.isAvailable
-        ? calculateMarkerCoordinates({
-            marker: { w: 54, h: 72, coordinate: activeCoordinate },
-            perPixelDistance
-          })
-        : calculateMarkerCoordinates({
-            marker: { w: 40, h: 52, coordinate: activeCoordinate },
-            perPixelDistance
-          }));
-
-    const isContains = markerCoordinates?.every((coordinate) =>
-      bounds?.contains({ lat: coordinate.lat, lng: coordinate.lng })
-    );
-
-    if (!isContains) {
-      const extendBounds = activeCoordinate && bounds?.extend(activeCoordinate);
-      extendBounds && map.fitBounds(extendBounds, 10);
-    }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- activeを依存配列に含めると移動するたびにuseEffectが実行されてしまうためそれぞれのプロパティを個別に依存配列に含めている
-  }, [active?.lat, active?.lng, active?.isAvailable, current, isFirst, map, setCenter, setZoom]);
+    const activePos = new google.maps.LatLng(active.lat, active.lng);
+    map.panToBounds(new google.maps.LatLngBounds(activePos));
+    map.panTo(activePos);
+  }, [active?.lat, active?.lng, setCenter]);
 
   useDeepCompareEffectForMaps(() => map && map.setOptions({ ...options }), [map, options]);
 

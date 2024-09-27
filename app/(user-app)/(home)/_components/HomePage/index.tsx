@@ -82,6 +82,7 @@ export default function HomePage({ restaurants }: { restaurants: RestaurantWithD
         backgroundColor="blackAlpha.100"
         spacing={3}
         alignItems="start"
+        scrollSnapType="y mandatory"
       >
         {nearbyRestaurants.map((restaurant, index) => (
           <InView
@@ -92,7 +93,7 @@ export default function HomePage({ restaurants }: { restaurants: RestaurantWithD
               if (isScrolling && activeRestaurant && activeRestaurant.id === restaurant.id) setIsScrolling(false);
               if (inView && !isScrolling) setActiveRestaurant(restaurant);
             }}
-            style={{ width: "100%" }}
+            style={{ width: "100%", scrollSnapStop: "always", scrollSnapAlign: "center" }}
           >
             <RestaurantListItem restaurant={restaurant} onClickHelp={onHelpModalOpen} />
           </InView>
