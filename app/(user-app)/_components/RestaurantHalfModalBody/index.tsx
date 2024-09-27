@@ -4,14 +4,9 @@ import {
   Heading,
   VStack,
   Text,
-  Image,
   SimpleGrid,
   Button,
   Box,
-  useDisclosure,
-  Modal,
-  ModalContent,
-  ModalOverlay,
   Flex,
   Accordion,
   AccordionButton,
@@ -30,10 +25,8 @@ import NextLink from "next/link";
 import { groupedByDayOfWeeks } from "./util";
 import { orderPaymentOptions } from "@/lib/prisma/order-enum";
 import { translatePaymentOption, translateSmokingOption } from "@/lib/prisma/translate-enum";
-import { getRestaurantInteriorImageUrl } from "@/utils/image/getRestaurantInteriorImageUrl";
-import { getSupabaseImageUrl } from "@/utils/image/getSupabaseImageUrl";
-import { MenuImages } from "./components/MenuImages";
 import { MealPreview } from "@/components/meal/MealPreview";
+import { RestaurantInfoImages } from "./components/RestaurantInfoImages";
 
 type Props = {
   restaurant: Prisma.RestaurantGetPayload<{
@@ -79,13 +72,12 @@ type Props = {
 };
 
 export function RestaurantHalfModalBody({ restaurant, onClose, footer }: Props) {
-  const { isOpen: isInteriorImageOpen, onOpen: onInteriorImageOpen, onClose: onInteriorImageClose } = useDisclosure();
-  const { isOpen: isExteriorImageOpen, onOpen: onExteriorImageOpen, onClose: onExteriorImageClose } = useDisclosure();
   const duration = useGetDuration({
     latitude: restaurant.googleMapPlaceInfo ? restaurant.googleMapPlaceInfo.latitude : undefined,
     longitude: restaurant.googleMapPlaceInfo ? restaurant.googleMapPlaceInfo.longitude : undefined
   });
   const [selectedMeal, setSelectedMeal] = useState<ComponentProps<typeof MealDetailModal>["meal"]>();
+
   return (
     <>
       <Flex maxH="full" minH="full" position="relative" flexDir="column" justifyContent="space-between">
@@ -198,78 +190,12 @@ export function RestaurantHalfModalBody({ restaurant, onClose, footer }: Props) 
                   </>
                 )}
               </SimpleGrid>
-              <Flex w="full" className="hidden-scrollbar" overflowX="scroll" gap={2} px={4}>
-                {restaurant.interiorImagePath && (
-                  <Box position="relative">
-                    <Text fontSize="sm" fontWeight="bold">
-                      内観
-                    </Text>
-                    <Image
-                      maxW="100px"
-                      minW="100px"
-                      src={getRestaurantInteriorImageUrl(restaurant.interiorImagePath, {
-                        width: 500,
-                        height: 500
-                      })}
-                      alt={`interior-image-${restaurant.id}`}
-                      borderRadius={8}
-                      objectFit="cover"
-                      aspectRatio={1 / 1}
-                      w="full"
-                      onClick={onInteriorImageOpen}
-                    />
-                    <Modal isOpen={isInteriorImageOpen} onClose={onInteriorImageClose} isCentered>
-                      <ModalOverlay />
-                      <ModalContent m={3}>
-                        <Image
-                          src={getRestaurantInteriorImageUrl(restaurant.interiorImagePath)}
-                          alt={`interior-image-${restaurant.id}`}
-                          w="full"
-                        />
-                      </ModalContent>
-                    </Modal>
-                  </Box>
-                )}
-                {restaurant.exteriorImage && (
-                  <Box>
-                    <Text fontSize="sm" fontWeight="bold">
-                      外観
-                    </Text>
-                    <Image
-                      maxW="100px"
-                      minW="100px"
-                      src={getSupabaseImageUrl("restaurant-exteriors", restaurant.exteriorImage.imagePath, {
-                        width: 500,
-                        height: 500
-                      })}
-                      alt={`exterior-image-${restaurant.id}`}
-                      borderRadius={8}
-                      objectFit="cover"
-                      aspectRatio={1 / 1}
-                      w="full"
-                      onClick={onExteriorImageOpen}
-                    />
-                    <Modal isOpen={isExteriorImageOpen} onClose={onExteriorImageClose} isCentered>
-                      <ModalOverlay />
-                      <ModalContent m={3}>
-                        <Image
-                          src={getSupabaseImageUrl("restaurant-exteriors", restaurant.exteriorImage.imagePath)}
-                          alt={`exterior-image-${restaurant.id}`}
-                          w="full"
-                        />
-                      </ModalContent>
-                    </Modal>
-                  </Box>
-                )}
-                {restaurant.menuImages.length > 0 && (
-                  <Box>
-                    <Text fontSize="sm" fontWeight="bold">
-                      店内メニュー
-                    </Text>
-                    <MenuImages menuImages={restaurant.menuImages} />
-                  </Box>
-                )}
-              </Flex>
+              <RestaurantInfoImages
+                restaurantId={restaurant.id}
+                interiorImagePath={restaurant.interiorImagePath}
+                exteriorImagePath={restaurant.exteriorImage?.imagePath}
+                menuImages={restaurant.menuImages}
+              />
               <Box w="full">
                 <Text fontSize="sm" fontWeight="bold" ml={4}>
                   Watt限定メニュー
